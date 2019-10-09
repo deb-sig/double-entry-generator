@@ -1,4 +1,4 @@
-package util
+package wechat
 
 import (
 	"strings"
@@ -7,18 +7,19 @@ import (
 	"github.com/gaocegege/double-entry-generator/pkg/ir"
 )
 
-// TODO(gaocegege): Define an interface
+type Wechat struct {
+}
 
 // GetAllCandidateAccounts returns all accounts defined in config.
-func GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
+func (w Wechat) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 	// uniqMap will be used to create the concepts.
 	uniqMap := make(map[string]bool)
 
-	if cfg.Alipay == nil || len(cfg.Alipay.Rules) == 0 {
+	if cfg.Wechat == nil || len(cfg.Wechat.Rules) == 0 {
 		return uniqMap
 	}
 
-	for _, r := range cfg.Alipay.Rules {
+	for _, r := range cfg.Wechat.Rules {
 		if r.MinusAccount != nil {
 			uniqMap[*r.MinusAccount] = true
 		}
@@ -32,16 +33,25 @@ func GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 }
 
 // GetAccounts returns minus and plus account.
-func GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string) {
-
-	if cfg.Alipay == nil || len(cfg.Alipay.Rules) == 0 {
+func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string) {
+	if cfg.Wechat == nil || len(cfg.Wechat.Rules) == 0 {
 		return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount
 	}
 
-	for _, r := range cfg.Alipay.Rules {
+	for _, r := range cfg.Wechat.Rules {
 		match := true
 		if r.Peer != nil {
 			if !strings.Contains(o.Peer, *r.Peer) {
+				match = false
+			}
+		}
+		if r.Type != nil {
+			if !strings.Contains(o.TypeOriginal, *r.Type) {
+				match = false
+			}
+		}
+		if r.Method != nil {
+			if !strings.Contains(o.Method, *r.Method) {
 				match = false
 			}
 		}
