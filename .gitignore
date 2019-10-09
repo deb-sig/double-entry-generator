@@ -10,3 +10,10 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+.vscode/
+bin/
+
+# Alipay records
+alipay_records_*.csv
+default_output.beancount

@@ -1,0 +1,11 @@
+defaultMinusAccount: Liabilities:CreditCard:Test
+defaultPlusAccount: Expenses:Test
+defaultCurrency: CNY
+title: 测试
+alipay:
+  rules:
+    - peer: 餐厅
+      plusAccount: Expenses:Food
+    - item: 收益
+      plusAccount: Assets:Alipay
+      minusAccount: Income:Earnings
