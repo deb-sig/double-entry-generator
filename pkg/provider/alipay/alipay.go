@@ -32,8 +32,6 @@ import (
 
 // Alipay is the provider for alipay.
 type Alipay struct {
-	// TODO(gaocegege): Parse the text file concurrently.
-
 	Statistics Statistics `json:"statistics,omitempty"`
 	LineNum    int        `json:"line_num,omitempty"`
 	Orders     []Order    `json:"orders,omitempty"`
@@ -91,29 +89,4 @@ func (a *Alipay) Translate(filename string) (*ir.IR, error) {
 	log.Printf("Finished to parse the file %s", filename)
 
 	return a.convertToIR(), nil
-}
-
-// convertToIR convert alipay bills to IR.
-func (a *Alipay) convertToIR() *ir.IR {
-	i := ir.New()
-	for _, o := range a.Orders {
-		// Do not convert the freeze tx.
-		if o.MoneyStatus == MoneyUnfreeze || o.MoneyStatus == MoneyFreeze {
-			continue
-		}
-
-		irO := ir.Order{
-			Peer:    o.Peer,
-			Item:    o.ItemName,
-			PayTime: o.CreateTime,
-			Money:   o.Money,
-			OrderID: &o.DealNo,
-			Type:    conevertType(o.TxType),
-		}
-		if o.OrderNo != "" {
-			irO.MerchantOrderID = &o.OrderNo
-		}
-		i.Orders = append(i.Orders, irO)
-	}
-	return i
 }

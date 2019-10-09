@@ -14,9 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package provider
+package consts
 
 const (
+	// CompilerBeanCount is the name for beancount backend.
+	CompilerBeanCount = "beancount"
+
 	// ProviderAlipay is the name for alipay provider.
 	ProviderAlipay = "alipay"
+	// ProviderWechat is the name for wechat provider.
+	ProviderWechat = "wechat"
 )

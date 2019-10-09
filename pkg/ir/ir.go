@@ -35,6 +35,8 @@ type Order struct {
 	Money           float64
 	PayTime         time.Time
 	Type            TxType
+	TypeOriginal    string
+	Method          string
 
 	MinusAccount string
 	PlusAccount  string

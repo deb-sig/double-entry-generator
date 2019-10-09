@@ -1,10 +1,9 @@
 # double-entry-generator
 
-Generate Double-Entry Bookkeeping Code From Bills
-
 根据账单生成复式记账语言的代码。目前账单支持：
 
 - 支付宝
+- 微信
 
 目前记账语言支持：
 
@@ -12,23 +11,25 @@ Generate Double-Entry Bookkeeping Code From Bills
 
 架构支持扩展，如需支持新的账单（如银行账单等），可添加 [provider](pkg/provider)。如需支持新的记账语言，可添加 [compiler](pkg/compiler)。
 
-## Installation
+## 安装
 
 ```bash
 go get github.com/gaocegege/double-entry-generator
 ```
 
-## Usage
+## 使用
 
-Please see the [doc](doc/double-entry-generator_translate.md)
+请见[使用文档](doc/double-entry-generator_translate.md)
 
-## Example
+## 示例
+
+### 支付宝
 
 ```bash
-double-entry-generator translate --config ./config.yaml ./example-alipay-records.csv
+double-entry-generator translate --config ./example/alipay/config.yaml ./example/alipay/example-alipay-records.csv
 ```
 
-The result will be generated in `default_output.beancount`:
+其中 `--config` 是配置文件，默认情况下，使用支付宝作为提供方，也可手动指定 `--provider`。具体参考[使用文档](doc/double-entry-generator_translate.md)。默认生成的文件是 `default_output.beancount`:
 
 ```
 option "title" "测试"
@@ -49,7 +50,37 @@ option "operating_currency" "CNY"
 	Income:Earnings -0.01 CNY
 ```
 
-## Configuration
+### 微信
+
+```bash
+double-entry-generator translate --config ./example/wechat/config.yaml --provider wechat ./example/wechat/example-wechat-records.csv
+```
+
+## 账单下载与格式问题
+
+### 支付宝
+
+#### 下载方式
+
+登录 PC 支付宝后，访问 https://consumeprod.alipay.com/record/standard.htm，选择时间区间，下拉到页面底端，点击下载查询结果。
+
+注意：请下载查询结果，而非[收支明细](https://cshall.alipay.com/lab/help_detail.htm?help_id=212688)。
+
+#### 格式示例
+
+[example-alipay-records.csv](./example/alipay/example-alipay-records.csv)
+
+### 微信
+
+#### 下载方式
+
+参考[百度经验](https://jingyan.baidu.com/article/1974b28941f977f4b0f7747b.html)。
+
+#### 格式示例
+
+[example-wechat-records.csv](./example/wechat/example-wechat-records.csv)
+
+## 配置
 
 ```
 defaultMinusAccount: Liabilities:CreditCard:Test
@@ -64,8 +95,6 @@ alipay:
       plusAccount: Assets:Alipay
       minusAccount: Income:Earnings
 ```
-
-`defaultMinusAccount`, `defaultPlusAccount` and `defaultCurrency` are global default options. `defaultMinusAccount` is the default account which amount is the minuend.
 
 `defaultMinusAccount`, `defaultPlusAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户。 `defaultCurrency` 是默认货币。
 

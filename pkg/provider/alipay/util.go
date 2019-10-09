@@ -1,9 +1,5 @@
 package alipay
 
-import (
-	"github.com/gaocegege/double-entry-generator/pkg/ir"
-)
-
 func getMoneyStatus(str string) MoneyStatusType {
 	switch str {
 	case string(MoneySend):
@@ -31,15 +27,4 @@ func getTxType(str string) TxTypeType {
 		return TxTypeEmpty
 	}
 	return TxTypeNil
-}
-
-func conevertType(t TxTypeType) ir.TxType {
-	switch t {
-	case TxTypeSend:
-		return ir.TxTypeSend
-	case TxTypeRecv:
-		return ir.TxTypeRecv
-	default:
-		return ir.TxTypeUnknown
-	}
 }

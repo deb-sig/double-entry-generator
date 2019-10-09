@@ -19,8 +19,10 @@ package provider
 import (
 	"fmt"
 
+	"github.com/gaocegege/double-entry-generator/pkg/consts"
 	"github.com/gaocegege/double-entry-generator/pkg/ir"
 	"github.com/gaocegege/double-entry-generator/pkg/provider/alipay"
+	"github.com/gaocegege/double-entry-generator/pkg/provider/wechat"
 )
 
 // Interface is the interface for the provider.
@@ -31,8 +33,10 @@ type Interface interface {
 // New creates a new interface.
 func New(name string) (Interface, error) {
 	switch name {
-	case ProviderAlipay:
+	case consts.ProviderAlipay:
 		return alipay.New(), nil
+	case consts.ProviderWechat:
+		return wechat.New(), nil
 	default:
 		return nil, fmt.Errorf("Fail to create the provider for the given name %s", name)
 	}
