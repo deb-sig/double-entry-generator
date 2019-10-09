@@ -1,0 +1,13 @@
+defaultMinusAccount: Liabilities:CreditCard:Test
+defaultPlusAccount: Expenses:Test
+defaultCurrency: CNY
+title: 测试
+wechat:
+  rules:
+    - peer: 云膳过桥米线
+      method: 中国银行
+      plusAccount: Expenses:Food
+      minusAccount: Assets:BOC
+    - type: 收入
+      plusAccount: Assets:Wechat
+      minusAccount: Income:Earnings

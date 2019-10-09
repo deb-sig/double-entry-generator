@@ -6,9 +6,10 @@ import (
 	"log"
 	"os"
 
+	"github.com/gaocegege/double-entry-generator/pkg/analyser"
+
 	"github.com/gaocegege/double-entry-generator/pkg/config"
 	"github.com/gaocegege/double-entry-generator/pkg/ir"
-	"github.com/gaocegege/double-entry-generator/pkg/util"
 )
 
 // BeanCount is the implementation.
@@ -19,11 +20,13 @@ type BeanCount struct {
 	Output     string
 	Config     *config.Config
 	IR         *ir.IR
+
+	analyser.Interface
 }
 
 // New creates a new BeanCount.
 func New(providerName, targetName, output string,
-	appendMode bool, c *config.Config, i *ir.IR) *BeanCount {
+	appendMode bool, c *config.Config, i *ir.IR, a analyser.Interface) *BeanCount {
 	return &BeanCount{
 		Provider:   providerName,
 		Target:     targetName,
@@ -31,6 +34,7 @@ func New(providerName, targetName, output string,
 		Output:     output,
 		Config:     c,
 		IR:         i,
+		Interface:  a,
 	}
 }
 
@@ -40,7 +44,7 @@ func (b *BeanCount) Compile() error {
 	log.Printf("Getting the expected account for the bills")
 	for index, o := range b.IR.Orders {
 		// Get the expected accounts according to the configuration.
-		minusAccount, plusAccount := util.GetAccounts(&o, b.Config, b.Provider, b.Target)
+		minusAccount, plusAccount := b.GetAccounts(&o, b.Config, b.Provider, b.Target)
 		b.IR.Orders[index].MinusAccount = minusAccount
 		b.IR.Orders[index].PlusAccount = plusAccount
 	}
@@ -74,7 +78,7 @@ func (b *BeanCount) writeHeader(file *os.File) error {
 		return fmt.Errorf("write option currency error: %v", err)
 	}
 
-	accounts := util.GetAllCandidateAccounts(b.Config)
+	accounts := b.GetAllCandidateAccounts(b.Config)
 	for k := range accounts {
 		if k == "" {
 			continue
