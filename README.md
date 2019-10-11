@@ -62,7 +62,7 @@ double-entry-generator translate --config ./example/wechat/config.yaml --provide
 
 #### 下载方式
 
-登录 PC 支付宝后，访问 https://consumeprod.alipay.com/record/standard.htm，选择时间区间，下拉到页面底端，点击下载查询结果。
+登录 PC 支付宝后，访问 [这里](https://consumeprod.alipay.com/record/standard.htm)，选择时间区间，下拉到页面底端，点击下载查询结果。
 
 注意：请下载查询结果，而非[收支明细](https://cshall.alipay.com/lab/help_detail.htm?help_id=212688)。
 
