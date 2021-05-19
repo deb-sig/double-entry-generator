@@ -22,7 +22,10 @@ func (w *Wechat) translateToOrders(array []string) error {
 	}
 
 	bill.TxType = getTxType(array[1])
-	if bill.TxType == TxTypeUnknown {
+	if bill.TxType == TxTypeCash2Cash {
+		fmt.Printf("Get an unusable tx type, ignore it: %s\n", bill.TxType)
+		return nil
+	} else if bill.TxType == TxTypeUnknown {
 		return fmt.Errorf("Failed to get the tx type %s: %v", array[1], err)
 	}
 	bill.Peer = array[2]
