@@ -8,6 +8,8 @@ func getOrderType(ot string) OrderType {
 		return OrderTypeRecv
 	case string(OrderTypeSend):
 		return OrderTypeSend
+	case string(OrderTypeNil):
+		return OrderTypeNil
 	default:
 		return OrderTypeUnknown
 	}
@@ -20,6 +22,18 @@ func getTxType(tt string) TxType {
 		return TxTypeConsume
 	} else if strings.Contains(tt, string(TxTypeTransfer)) {
 		return TxTypeTransfer
+	} else if strings.Contains(tt, string(TxTypeQRIncome)) {
+		return TxTypeQRIncome
+	} else if strings.Contains(tt, string(TxTypeQRSend)) {
+		return TxTypeQRSend
+	} else if strings.Contains(tt, string(TxTypeGroup)) {
+		return TxTypeGroup
+	} else if strings.Contains(tt, string(TxTypeRefund)) {
+		return TxTypeRefund
+	} else if strings.Contains(tt, string(TxTypeCash2Cash)) {
+		return TxTypeCash2Cash
+	} else if strings.Contains(tt, string(TxTypeIntoCash)) {
+		return TxTypeIntoCash
 	} else {
 		return TxTypeUnknown
 	}
