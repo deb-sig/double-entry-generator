@@ -39,14 +39,21 @@ type OrderType string
 const (
 	OrderTypeSend    OrderType = "支出"
 	OrderTypeRecv              = "收入"
+	OrderTypeNil               = "/"
 	OrderTypeUnknown           = "Unknown"
 )
 
 type TxType string
 
 const (
-	TxTypeConsume  TxType = "商户消费"
-	TxTypeLucky           = "微信红包"
-	TxTypeTransfer        = "转账"
-	TxTypeUnknown         = "Unknown"
+	TxTypeConsume   TxType = "商户消费"
+	TxTypeLucky            = "微信红包"
+	TxTypeTransfer         = "转账"
+	TxTypeQRIncome         = "二维码收款"
+	TxTypeQRSend           = "扫二维码付款"
+	TxTypeGroup            = "群收款"
+	TxTypeRefund           = "退款"
+	TxTypeCash2Cash        = "转入零钱通-来自零钱"
+	TxTypeIntoCash         = "转入零钱通"
+	TxTypeUnknown          = "Unknown"
 )
