@@ -23,12 +23,12 @@ type Config struct {
 
 // Rule is the type for match rules.
 type Rule struct {
-	Peer         *string `yaml:"peer,omitempty"`
-	Item         *string `yaml:"item,omitempty"`
-	Type         *string `yaml:"type,omitempty"`
-	Method       *string `yaml:"method,omitempty"`
-	StartTime    *string `yaml:"startTime,omitempty"`
-	EndTime      *string `yaml:"endTime,omitempty"`
-	MinusAccount *string `yaml:"minusAccount,omitempty"`
-	PlusAccount  *string `yaml:"plusAccount,omitempty"`
+	Peer          *string `yaml:"peer,omitempty"`
+	Item          *string `yaml:"item,omitempty"`
+	Type          *string `yaml:"type,omitempty"`
+	Method        *string `yaml:"method,omitempty"`
+	StartTime     *string `yaml:"startTime,omitempty"`
+	EndTime       *string `yaml:"endTime,omitempty"`
+	MethodAccount *string `yaml:"methodAccount,omitempty"`
+	TargetAccount *string `yaml:"targetAccount,omitempty"`
 }
