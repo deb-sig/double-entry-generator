@@ -17,3 +17,4 @@ bin/
 # Alipay records
 alipay_records_*.csv
 default_output.beancount
+dist/
