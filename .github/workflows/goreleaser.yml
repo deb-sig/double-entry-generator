@@ -1,8 +1,10 @@
 name: goreleaser
 
+# only run on new tag
 on:
-  pull_request:
   push:
+    tags:
+      - '*'
 
 permissions:
   contents: write
