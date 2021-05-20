@@ -20,11 +20,11 @@ func (w Wechat) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 	}
 
 	for _, r := range cfg.Wechat.Rules {
-		if r.MinusAccount != nil {
-			uniqMap[*r.MinusAccount] = true
+		if r.MethodAccount != nil {
+			uniqMap[*r.MethodAccount] = true
 		}
-		if r.PlusAccount != nil {
-			uniqMap[*r.PlusAccount] = true
+		if r.TargetAccount != nil {
+			uniqMap[*r.TargetAccount] = true
 		}
 	}
 	uniqMap[cfg.DefaultPlusAccount] = true
@@ -37,6 +37,9 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 	if cfg.Wechat == nil || len(cfg.Wechat.Rules) == 0 {
 		return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount
 	}
+
+	resMinus := cfg.DefaultMinusAccount
+	resPlus := cfg.DefaultPlusAccount
 
 	for _, r := range cfg.Wechat.Rules {
 		match := true
@@ -64,16 +67,24 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 			// TODO(gaocegege): Support it.
 		}
 		if match {
-			resMinus := cfg.DefaultMinusAccount
-			resPlus := cfg.DefaultPlusAccount
-			if r.MinusAccount != nil {
-				resMinus = *r.MinusAccount
+			// Support multiple matches, like one rule matches the minus accout, the other rule matches the plus account.
+			// FIXME(TripleZ): two-layer if... can u refact it?
+			if r.TargetAccount != nil {
+				if o.Type == ir.TxTypeRecv {
+					resMinus = *r.TargetAccount
+				} else {
+					resPlus = *r.TargetAccount
+				}
 			}
-			if r.PlusAccount != nil {
-				resPlus = *r.PlusAccount
+			if r.MethodAccount != nil {
+				if o.Type == ir.TxTypeRecv {
+					resPlus = *r.MethodAccount
+				} else {
+					resMinus = *r.MethodAccount
+				}
 			}
-			return resMinus, resPlus
 		}
+
 	}
-	return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount
+	return resMinus, resPlus
 }
