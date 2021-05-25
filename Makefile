@@ -55,3 +55,7 @@ build-local:
 		-X $(ROOT)/pkg/version.COMMIT=$(GIT_COMMIT)"                                   \
 	  $(CMD_DIR)/;                                                                     \
 	done
+
+install: build
+	@install ./bin/double-entry-generator /usr/local/bin
+	@echo "Installed double-entry-generator at /usr/local/bin/double-entry-generator !"
