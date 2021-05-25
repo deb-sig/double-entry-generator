@@ -4,8 +4,10 @@ defaultCurrency: CNY
 title: 测试
 alipay:
   rules:
-    - peer: 餐厅
+    - peer: 肯德基
       plusAccount: Expenses:Food
     - item: 收益
       plusAccount: Assets:Alipay
       minusAccount: Income:Earnings
+    - peer: 医院
+      plusAccount: Expenses:Medical
