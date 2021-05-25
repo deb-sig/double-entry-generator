@@ -63,8 +63,16 @@ func (a Alipay) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 			if r.PlusAccount != nil {
 				resPlus = *r.PlusAccount
 			}
+
+			if strings.HasPrefix(o.Item, "退款-") {
+				return resPlus, resMinus
+			}
 			return resMinus, resPlus
 		}
+	}
+
+	if strings.HasPrefix(o.Item, "退款-") {
+		return cfg.DefaultPlusAccount, cfg.DefaultMinusAccount
 	}
 	return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount
 }
