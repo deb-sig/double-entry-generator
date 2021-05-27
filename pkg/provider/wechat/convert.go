@@ -14,7 +14,7 @@ func (w *Wechat) convertToIR() *ir.IR {
 			PayTime:      o.PayTime,
 			Money:        o.Money,
 			OrderID:      &o.OrderID,
-			Type:         conevertType(o.Type),
+			TxType:       conevertType(o.Type),
 			TypeOriginal: o.TypeOriginal,
 			Method:       o.Method,
 		}

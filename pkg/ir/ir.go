@@ -28,18 +28,24 @@ type IR struct {
 
 // Order is the intermediate representation for the order.
 type Order struct {
+	OrderType       OrderType
 	Peer            string
 	Item            string
 	MerchantOrderID *string
 	OrderID         *string
 	Money           float64
 	PayTime         time.Time
-	Type            TxType
+	TxType          TxType // 方向，一般为 收/支
+	TxTypeOriginal  string
 	TypeOriginal    string
 	Method          string
-
-	MinusAccount string
-	PlusAccount  string
+	Amount          float64
+	Price           float64
+	Commission      float64
+	Units           map[string]string
+	ExtraAccounts   map[string]string
+	MinusAccount    string
+	PlusAccount     string
 }
 
 // TxType is transanction type defined by alipay.
@@ -49,6 +55,13 @@ const (
 	TxTypeSend    TxType = "Send"
 	TxTypeRecv           = "Recv"
 	TxTypeUnknown        = "Unknwon"
+)
+
+type OrderType string // 为 IR 设置的交易类别
+
+const (
+	OrderTypeNormal OrderType = "Normal" // 流水交易
+	OrderTypeTrade            = "Trade"  // 金融交易
 )
 
 // New creates a new IR.

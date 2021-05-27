@@ -1,10 +1,13 @@
 package beancount
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"log"
 	"os"
+	"sort"
+	"text/template"
 
 	"github.com/gaocegege/double-entry-generator/pkg/analyser"
 
@@ -26,8 +29,8 @@ type BeanCount struct {
 
 // New creates a new BeanCount.
 func New(providerName, targetName, output string,
-	appendMode bool, c *config.Config, i *ir.IR, a analyser.Interface) *BeanCount {
-	return &BeanCount{
+	appendMode bool, c *config.Config, i *ir.IR, a analyser.Interface) (*BeanCount, error) {
+	b := &BeanCount{
 		Provider:   providerName,
 		Target:     targetName,
 		AppendMode: appendMode,
@@ -36,6 +39,30 @@ func New(providerName, targetName, output string,
 		IR:         i,
 		Interface:  a,
 	}
+	err := b.initTemplates()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to init beancount templates.")
+	}
+	return b, nil
+}
+
+func (b *BeanCount) initTemplates() error {
+	// init the templates
+	var err error
+	normalOrderTemplate, err = template.New("normalOrder").Parse(normalOrder)
+	if err != nil {
+		return fmt.Errorf("Failed to init the normalOrder template.")
+	}
+	tradeBuyOrderTemplate, err = template.New("tradeBuyOrder").Parse(tradeBuyOrder)
+	if err != nil {
+		return fmt.Errorf("Failed to init the tradeBuyOrder template.")
+	}
+	tradeSellOrderTemplate, err = template.New("tradeSellOrder").Parse(tradeSellOrder)
+	if err != nil {
+		return fmt.Errorf("Failed to init the tradeSellOrder template.")
+	}
+
+	return nil
 }
 
 // Compile compiles IR to the given platform.
@@ -44,9 +71,10 @@ func (b *BeanCount) Compile() error {
 	log.Printf("Getting the expected account for the bills")
 	for index, o := range b.IR.Orders {
 		// Get the expected accounts according to the configuration.
-		minusAccount, plusAccount := b.GetAccounts(&o, b.Config, b.Provider, b.Target)
+		minusAccount, plusAccount, extraAccounts := b.GetAccounts(&o, b.Config, b.Provider, b.Target)
 		b.IR.Orders[index].MinusAccount = minusAccount
 		b.IR.Orders[index].PlusAccount = plusAccount
+		b.IR.Orders[index].ExtraAccounts = extraAccounts
 	}
 
 	log.Printf("Writing to %s", b.Output)
@@ -97,6 +125,14 @@ func (b *BeanCount) writeHeader(file *os.File) error {
 
 // writeBills writes bills to the file.
 func (b *BeanCount) writeBills(file *os.File) error {
+	// Sort the bills from earliest to lastest.
+	// If the bills are the same day, the tx which has lower
+	// line number is considered happened earlier than the tx
+	// which has a higher line number by beancount default.
+	sort.Slice(b.IR.Orders, func(i, j int) bool {
+		return b.IR.Orders[i].PayTime.Before(b.IR.Orders[j].PayTime)
+	})
+
 	for i := range b.IR.Orders {
 		if err := b.writeBill(file, i); err != nil {
 			return err
@@ -108,18 +144,21 @@ func (b *BeanCount) writeBills(file *os.File) error {
 func (b *BeanCount) writeBill(file *os.File, index int) error {
 	o := b.IR.Orders[index]
 
-	str := o.PayTime.Format("2006-01-02")
-	str = str + " * \"" + o.Peer + "\" \"" + o.Item + "\"\n"
-	if _, err := io.WriteString(file, str); err != nil {
+	var buf bytes.Buffer
+
+	err := normalOrderTemplate.Execute(&buf, &NormalOrderVars{
+		PayTime:      o.PayTime,
+		Peer:         o.Peer,
+		Item:         o.Item,
+		Money:        o.Money,
+		PlusAccount:  o.PlusAccount,
+		MinusAccount: o.MinusAccount,
+		Currency:     b.Config.DefaultCurrency,
+	})
+	if err != nil {
 		return err
 	}
-
-	str = "\t"
-	str = str + o.PlusAccount + " " + fmt.Sprintf("%.2f", o.Money) + " "
-	str = str + b.Config.DefaultCurrency + "\n"
-	str = str + "\t" + o.MinusAccount + " -" + fmt.Sprintf("%.2f", o.Money) + " "
-	str = str + b.Config.DefaultCurrency + "\n\n"
-	if _, err := io.WriteString(file, str); err != nil {
+	if _, err := io.WriteString(file, buf.String()); err != nil {
 		return err
 	}
 	return nil

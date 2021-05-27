@@ -33,9 +33,9 @@ func (w Wechat) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 }
 
 // GetAccounts returns minus and plus account.
-func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string) {
+func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[string]string) {
 	if cfg.Wechat == nil || len(cfg.Wechat.Rules) == 0 {
-		return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount
+		return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount, nil
 	}
 
 	resMinus := cfg.DefaultMinusAccount
@@ -70,14 +70,14 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 			// Support multiple matches, like one rule matches the minus accout, the other rule matches the plus account.
 			// FIXME(TripleZ): two-layer if... can u refact it?
 			if r.TargetAccount != nil {
-				if o.Type == ir.TxTypeRecv {
+				if o.TxType == ir.TxTypeRecv {
 					resMinus = *r.TargetAccount
 				} else {
 					resPlus = *r.TargetAccount
 				}
 			}
 			if r.MethodAccount != nil {
-				if o.Type == ir.TxTypeRecv {
+				if o.TxType == ir.TxTypeRecv {
 					resPlus = *r.MethodAccount
 				} else {
 					resMinus = *r.MethodAccount
@@ -86,5 +86,5 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 		}
 
 	}
-	return resMinus, resPlus
+	return resMinus, resPlus, nil
 }
