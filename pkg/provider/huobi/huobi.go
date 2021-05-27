@@ -49,7 +49,7 @@ func (h *Huobi) Translate(filename string) (*ir.IR, error) {
 		}
 
 		h.LineNum++
-		if h.LineNum <= 2 {
+		if h.LineNum <= 1 {
 			// The first line is csv file header.
 			continue
 		}

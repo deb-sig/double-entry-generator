@@ -24,10 +24,18 @@ func (h *Huobi) translateToOrders(arr []string) error {
 
 	bill.Type = getOrderType(arr[1])
 	if bill.Type == OrderTypeUnknown {
-		return fmt.Errorf("Failed to get the order type: %s: %v", arr[1], err)
+		return fmt.Errorf("Failed to get the order type %s: %v", arr[1], err)
 	}
 	bill.TypeOriginal = arr[1]
+
 	bill.Item = arr[2]
+	units := strings.Split(arr[2], "/")
+	if len(units) != 2 {
+		return fmt.Errorf("Failed to get the base & target units from %s", arr[2])
+	}
+	bill.BaseUnit = units[1]
+	bill.TargetUnit = units[0]
+
 	bill.TxType = getTxType(arr[3])
 	if bill.TxType == TxTypeNil {
 		return fmt.Errorf("Failed to get the tx type: %s: %v", arr[3], err)

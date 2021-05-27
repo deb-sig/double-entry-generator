@@ -33,7 +33,7 @@ func (w Wechat) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 }
 
 // GetAccounts returns minus and plus account.
-func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[string]string) {
+func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string) {
 	if cfg.Wechat == nil || len(cfg.Wechat.Rules) == 0 {
 		return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount, nil
 	}

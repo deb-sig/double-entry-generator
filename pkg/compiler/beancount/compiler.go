@@ -41,7 +41,7 @@ func New(providerName, targetName, output string,
 	}
 	err := b.initTemplates()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to init beancount templates.")
+		return nil, err
 	}
 	return b, nil
 }
@@ -51,15 +51,19 @@ func (b *BeanCount) initTemplates() error {
 	var err error
 	normalOrderTemplate, err = template.New("normalOrder").Parse(normalOrder)
 	if err != nil {
-		return fmt.Errorf("Failed to init the normalOrder template.")
+		return fmt.Errorf("Failed to init the normalOrder template. %v", err)
 	}
-	tradeBuyOrderTemplate, err = template.New("tradeBuyOrder").Parse(tradeBuyOrder)
+	huobiTradeBuyOrderTemplate, err = template.New("tradeBuyOrder").Parse(huobiTradeBuyOrder)
 	if err != nil {
-		return fmt.Errorf("Failed to init the tradeBuyOrder template.")
+		return fmt.Errorf("Failed to init the tradeBuyOrder template. %v", err)
 	}
-	tradeSellOrderTemplate, err = template.New("tradeSellOrder").Parse(tradeSellOrder)
+	huobiTradeBuyOrderDiffCommissionUnitTemplate, err = template.New("tradeBuyOrderDiffCommissionUnit").Parse(huobiTradeBuyOrderDiffCommissionUnit)
 	if err != nil {
-		return fmt.Errorf("Failed to init the tradeSellOrder template.")
+		return fmt.Errorf("Failed to init the tradeBuyOrderDiffCommissionUnit template. %v", err)
+	}
+	huobiTradeSellOrderTemplate, err = template.New("tradeSellOrder").Parse(huobiTradeSellOrder)
+	if err != nil {
+		return fmt.Errorf("Failed to init the tradeSellOrder template. %v", err)
 	}
 
 	return nil
@@ -145,16 +149,104 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 	o := b.IR.Orders[index]
 
 	var buf bytes.Buffer
+	var err error
 
-	err := normalOrderTemplate.Execute(&buf, &NormalOrderVars{
-		PayTime:      o.PayTime,
-		Peer:         o.Peer,
-		Item:         o.Item,
-		Money:        o.Money,
-		PlusAccount:  o.PlusAccount,
-		MinusAccount: o.MinusAccount,
-		Currency:     b.Config.DefaultCurrency,
-	})
+	switch o.OrderType {
+	default:
+		fallthrough
+	case ir.OrderTypeNormal:
+		err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
+			PayTime:      o.PayTime,
+			Peer:         o.Peer,
+			Item:         o.Item,
+			Money:        o.Money,
+			PlusAccount:  o.PlusAccount,
+			MinusAccount: o.MinusAccount,
+			Currency:     b.Config.DefaultCurrency,
+		})
+	case ir.OrderTypeHuobiTrade: // Huobi trades
+		switch o.TxType {
+		case ir.TxTypeSend: // buy
+			isDiffCommissionUnit := false
+			commissionUnit, ok := o.Units[ir.CommissionUnit]
+			if !ok {
+				isDiffCommissionUnit = true
+			}
+			targetUnit, ok := o.Units[ir.TargetUnit]
+			if !ok {
+				isDiffCommissionUnit = true
+			}
+			if commissionUnit != targetUnit {
+				// for example, using HT for commission fee.
+				isDiffCommissionUnit = true
+			}
+
+			if isDiffCommissionUnit {
+				err = huobiTradeBuyOrderDiffCommissionUnitTemplate.Execute(&buf, &HuobiTradeBuyOrderVars{
+					PayTime:        o.PayTime,
+					Peer:           o.Peer,
+					TypeOriginal:   o.TypeOriginal,
+					TxTypeOriginal: o.TxTypeOriginal,
+					Item:           o.Item,
+					Amount:         o.Amount,
+					Money:          o.Money,
+					Commission:     o.Commission,
+					Price:          o.Price,
+					// FIXME(TripleZ): these keys to const vars
+					CashAccount:       o.ExtraAccounts[ir.CashAccount],
+					PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
+					CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
+					PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
+					BaseUnit:          o.Units[ir.BaseUnit],
+					TargetUnit:        o.Units[ir.TargetUnit],
+					CommissionUnit:    o.Units[ir.CommissionUnit],
+				})
+			} else {
+				err = huobiTradeBuyOrderTemplate.Execute(&buf, &HuobiTradeBuyOrderVars{
+					PayTime:        o.PayTime,
+					Peer:           o.Peer,
+					TypeOriginal:   o.TypeOriginal,
+					TxTypeOriginal: o.TxTypeOriginal,
+					Item:           o.Item,
+					Amount:         o.Amount,
+					Money:          o.Money,
+					Commission:     o.Commission,
+					Price:          o.Price,
+					// FIXME(TripleZ): these keys to const vars
+					CashAccount:       o.ExtraAccounts[ir.CashAccount],
+					PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
+					CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
+					PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
+					BaseUnit:          o.Units[ir.BaseUnit],
+					TargetUnit:        o.Units[ir.TargetUnit],
+					CommissionUnit:    o.Units[ir.CommissionUnit],
+				})
+			}
+		case ir.TxTypeRecv: // sell
+			err = huobiTradeSellOrderTemplate.Execute(&buf, &HuobiTradeSellOrderVars{
+				PayTime:        o.PayTime,
+				Peer:           o.Peer,
+				TypeOriginal:   o.TypeOriginal,
+				TxTypeOriginal: o.TxTypeOriginal,
+				Item:           o.Item,
+				Amount:         o.Amount,
+				Money:          o.Money,
+				Commission:     o.Commission,
+				Price:          o.Price,
+				// FIXME(TripleZ): these keys to const vars
+				CashAccount:       o.ExtraAccounts[ir.CashAccount],
+				PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
+				CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
+				PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
+				BaseUnit:          o.Units[ir.BaseUnit],
+				TargetUnit:        o.Units[ir.TargetUnit],
+				CommissionUnit:    o.Units[ir.CommissionUnit],
+			})
+		default:
+			err = fmt.Errorf("Failed to get the TxType.")
+		}
+
+	}
 	if err != nil {
 		return err
 	}

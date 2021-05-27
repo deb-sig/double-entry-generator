@@ -24,6 +24,8 @@ type Order struct {
 	Amount         float64   // 数量
 	Money          float64   // 成交额
 	Commission     float64   // 手续费
+	BaseUnit       string    // 基准单位
+	TargetUnit     string    // 目标单位
 	CommissionUnit string    // 手续费单位
 }
 

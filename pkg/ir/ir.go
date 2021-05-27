@@ -42,11 +42,32 @@ type Order struct {
 	Amount          float64
 	Price           float64
 	Commission      float64
-	Units           map[string]string
-	ExtraAccounts   map[string]string
+	Units           map[Unit]string
+	ExtraAccounts   map[Account]string
 	MinusAccount    string
 	PlusAccount     string
 }
+
+// Unit is the key commodity names
+type Unit string
+
+const (
+	BaseUnit       Unit = "BaseUnit"
+	TargetUnit          = "TargetUnit"
+	CommissionUnit      = "CommissionUnit"
+)
+
+// Account is the key for account names
+type Account string
+
+const (
+	CashAccount       Account = "CashAccount"
+	PositionAccount           = "PositionAccount"
+	CommissionAccount         = "CommissionAccount"
+	PnlAccount                = "PnlAccount"
+	PlusAccount               = "PlusAccount"
+	MinusAccount              = "MinusAccount"
+)
 
 // TxType is transanction type defined by alipay.
 type TxType string
@@ -60,8 +81,8 @@ const (
 type OrderType string // 为 IR 设置的交易类别
 
 const (
-	OrderTypeNormal OrderType = "Normal" // 流水交易
-	OrderTypeTrade            = "Trade"  // 金融交易
+	OrderTypeNormal     OrderType = "Normal"     // 流水交易
+	OrderTypeHuobiTrade           = "HuobiTrade" //  火币交易
 )
 
 // New creates a new IR.

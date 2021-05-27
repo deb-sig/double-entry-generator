@@ -14,7 +14,7 @@ import (
 // Interface is the interface of analyser.
 type Interface interface {
 	GetAllCandidateAccounts(cfg *config.Config) map[string]bool
-	GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[string]string)
+	GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string)
 }
 
 // New creates a new analyser.

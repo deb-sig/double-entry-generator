@@ -1,0 +1,8 @@
+defaultCashAccount: Assets:Huobi:Cash
+defaultPositionAccount: Assets:Huobi:Positions
+defaultCommissionAccount: Expenses:Huobi:Commission
+defaultPnlAccount: Income:Huobi:PnL
+defaultCurrency: CNY
+title: 测试
+huobi:
+  rules:

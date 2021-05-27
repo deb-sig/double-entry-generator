@@ -62,6 +62,12 @@ option "operating_currency" "CNY"
 double-entry-generator translate --config ./example/wechat/config.yaml --provider wechat ./example/wechat/example-wechat-records.csv
 ```
 
+### Huobi Global
+
+```bash
+double-entry-generator translate --config ./example/huobi/config.yaml --provider huobi ./example/huobi/example-huobi-records.csv
+```
+
 ## 账单下载与格式问题
 
 ### 支付宝

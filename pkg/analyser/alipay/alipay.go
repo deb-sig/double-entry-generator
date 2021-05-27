@@ -33,7 +33,7 @@ func (a Alipay) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 }
 
 // GetAccounts returns minus and plus account.
-func (a Alipay) GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[string]string) {
+func (a Alipay) GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string) {
 
 	if cfg.Alipay == nil || len(cfg.Alipay.Rules) == 0 {
 		return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount, nil
