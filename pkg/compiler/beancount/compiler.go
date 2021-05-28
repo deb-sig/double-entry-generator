@@ -183,16 +183,15 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 
 			if isDiffCommissionUnit {
 				err = huobiTradeBuyOrderDiffCommissionUnitTemplate.Execute(&buf, &HuobiTradeBuyOrderVars{
-					PayTime:        o.PayTime,
-					Peer:           o.Peer,
-					TypeOriginal:   o.TypeOriginal,
-					TxTypeOriginal: o.TxTypeOriginal,
-					Item:           o.Item,
-					Amount:         o.Amount,
-					Money:          o.Money,
-					Commission:     o.Commission,
-					Price:          o.Price,
-					// FIXME(TripleZ): these keys to const vars
+					PayTime:           o.PayTime,
+					Peer:              o.Peer,
+					TypeOriginal:      o.TypeOriginal,
+					TxTypeOriginal:    o.TxTypeOriginal,
+					Item:              o.Item,
+					Amount:            o.Amount,
+					Money:             o.Money,
+					Commission:        o.Commission,
+					Price:             o.Price,
 					CashAccount:       o.ExtraAccounts[ir.CashAccount],
 					PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
 					CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
@@ -203,16 +202,15 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 				})
 			} else {
 				err = huobiTradeBuyOrderTemplate.Execute(&buf, &HuobiTradeBuyOrderVars{
-					PayTime:        o.PayTime,
-					Peer:           o.Peer,
-					TypeOriginal:   o.TypeOriginal,
-					TxTypeOriginal: o.TxTypeOriginal,
-					Item:           o.Item,
-					Amount:         o.Amount,
-					Money:          o.Money,
-					Commission:     o.Commission,
-					Price:          o.Price,
-					// FIXME(TripleZ): these keys to const vars
+					PayTime:           o.PayTime,
+					Peer:              o.Peer,
+					TypeOriginal:      o.TypeOriginal,
+					TxTypeOriginal:    o.TxTypeOriginal,
+					Item:              o.Item,
+					Amount:            o.Amount,
+					Money:             o.Money,
+					Commission:        o.Commission,
+					Price:             o.Price,
 					CashAccount:       o.ExtraAccounts[ir.CashAccount],
 					PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
 					CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
@@ -224,16 +222,15 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 			}
 		case ir.TxTypeRecv: // sell
 			err = huobiTradeSellOrderTemplate.Execute(&buf, &HuobiTradeSellOrderVars{
-				PayTime:        o.PayTime,
-				Peer:           o.Peer,
-				TypeOriginal:   o.TypeOriginal,
-				TxTypeOriginal: o.TxTypeOriginal,
-				Item:           o.Item,
-				Amount:         o.Amount,
-				Money:          o.Money,
-				Commission:     o.Commission,
-				Price:          o.Price,
-				// FIXME(TripleZ): these keys to const vars
+				PayTime:           o.PayTime,
+				Peer:              o.Peer,
+				TypeOriginal:      o.TypeOriginal,
+				TxTypeOriginal:    o.TxTypeOriginal,
+				Item:              o.Item,
+				Amount:            o.Amount,
+				Money:             o.Money,
+				Commission:        o.Commission,
+				Price:             o.Price,
 				CashAccount:       o.ExtraAccounts[ir.CashAccount],
 				PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
 				CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
