@@ -2,15 +2,21 @@ package config
 
 import (
 	"github.com/gaocegege/double-entry-generator/pkg/provider/alipay"
+	"github.com/gaocegege/double-entry-generator/pkg/provider/huobi"
 	"github.com/gaocegege/double-entry-generator/pkg/provider/wechat"
 )
 
 // Config is the global configuration.
 type Config struct {
-	Title               string         `yaml:"title,omitempty"`
-	DefaultMinusAccount string         `yaml:"defaultMinusAccount,omitempty"`
-	DefaultPlusAccount  string         `yaml:"defaultPlusAccount,omitempty"`
-	DefaultCurrency     string         `yaml:"defaultCurrency,omitempty"`
-	Alipay              *alipay.Config `yaml:"alipay,omitempty"`
-	Wechat              *wechat.Config `yaml:"wechat,omitempty"`
+	Title                    string         `yaml:"title,omitempty"`
+	DefaultMinusAccount      string         `yaml:"defaultMinusAccount,omitempty"`
+	DefaultPlusAccount       string         `yaml:"defaultPlusAccount,omitempty"`
+	DefaultCashAccount       string         `yaml:"defaultCashAccount,omitempty`
+	DefaultPositionAccount   string         `yaml:"defaultPositionAccount,omitempty`
+	DefaultCommissionAccount string         `yaml:"defaultCommissionAccount,omitempty`
+	DefaultPnlAccount        string         `yaml:"defaultPnlAccount,omitempty`
+	DefaultCurrency          string         `yaml:"defaultCurrency,omitempty"`
+	Alipay                   *alipay.Config `yaml:"alipay,omitempty"`
+	Wechat                   *wechat.Config `yaml:"wechat,omitempty"`
+	Huobi                    *huobi.Config  `yaml:"huobi,omitempty`
 }

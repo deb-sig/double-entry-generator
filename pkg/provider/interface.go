@@ -22,6 +22,7 @@ import (
 	"github.com/gaocegege/double-entry-generator/pkg/consts"
 	"github.com/gaocegege/double-entry-generator/pkg/ir"
 	"github.com/gaocegege/double-entry-generator/pkg/provider/alipay"
+	"github.com/gaocegege/double-entry-generator/pkg/provider/huobi"
 	"github.com/gaocegege/double-entry-generator/pkg/provider/wechat"
 )
 
@@ -37,6 +38,8 @@ func New(name string) (Interface, error) {
 		return alipay.New(), nil
 	case consts.ProviderWechat:
 		return wechat.New(), nil
+	case consts.ProviderHuobi:
+		return huobi.New(), nil
 	default:
 		return nil, fmt.Errorf("Fail to create the provider for the given name %s", name)
 	}

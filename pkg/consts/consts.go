@@ -24,4 +24,6 @@ const (
 	ProviderAlipay = "alipay"
 	// ProviderWechat is the name for wechat provider.
 	ProviderWechat = "wechat"
+	// ProviderHuobi is the name for huobi provider.
+	ProviderHuobi = "huobi"
 )
