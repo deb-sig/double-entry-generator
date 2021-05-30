@@ -4,15 +4,15 @@ import "time"
 
 // Statistics is the Statistics of the bill file.
 type Statistics struct {
-	UserID           string    `json:"user_id,omitempty"`
-	Username         string    `json:"username,omitempty"`
-	ParsedItems      int       `json:"parsed_items,omitempty"`
-	Start            time.Time `json:"start,omitempty"`
-	End              time.Time `json:"end,omitempty"`
-	TotalInRecords   int       `json:"total_in_records,omitempty"`
-	TotalInMoney     float64   `json:"total_in_money,omitempty"`
-	TotoalOutRecords int       `json:"totoal_out_records,omitempty"`
-	TotoalOutMoney   float64   `json:"totoal_out_money,omitempty"`
+	UserID          string    `json:"user_id,omitempty"`
+	Username        string    `json:"username,omitempty"`
+	ParsedItems     int       `json:"parsed_items,omitempty"`
+	Start           time.Time `json:"start,omitempty"`
+	End             time.Time `json:"end,omitempty"`
+	TotalInRecords  int       `json:"total_in_records,omitempty"`
+	TotalInMoney    float64   `json:"total_in_money,omitempty"`
+	TotalOutRecords int       `json:"total_out_records,omitempty"`
+	TotalOutMoney   float64   `json:"total_out_money,omitempty"`
 }
 
 // Order is the single order.

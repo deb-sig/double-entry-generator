@@ -26,6 +26,7 @@ import (
 
 	"github.com/gaocegege/double-entry-generator/pkg/compiler"
 	"github.com/gaocegege/double-entry-generator/pkg/config"
+	"github.com/gaocegege/double-entry-generator/pkg/consts"
 	"github.com/gaocegege/double-entry-generator/pkg/provider"
 )
 
@@ -72,10 +73,29 @@ func run(args []string) {
 	c := &config.Config{}
 	err := viper.Unmarshal(c)
 	logErrorIfNotNil(err)
-	if c.DefaultCurrency == "" ||
-		c.DefaultMinusAccount == "" ||
-		c.DefaultPlusAccount == "" {
-		log.Fatalf("Failed to get default options in config")
+	// check financial trades by provider
+	isTrade := false
+	tradeProviders := map[string]bool{
+		consts.ProviderHuobi: true,
+	}
+	if tradeProviders[providerName] {
+		isTrade = true
+	}
+
+	if !isTrade {
+		if c.DefaultCurrency == "" ||
+			c.DefaultMinusAccount == "" ||
+			c.DefaultPlusAccount == "" {
+			log.Fatalf("Failed to get default options in config")
+		}
+	} else {
+		if c.DefaultCurrency == "" ||
+			c.DefaultCashAccount == "" ||
+			c.DefaultPositionAccount == "" ||
+			c.DefaultCommissionAccount == "" ||
+			c.DefaultPnlAccount == "" {
+			log.Fatalf("Failed to get default options in config")
+		}
 	}
 
 	p, err := provider.New(providerName)
@@ -86,7 +106,8 @@ func run(args []string) {
 
 	cpl, err := compiler.New(providerName, targetName, output, appendMode, c, i)
 	logErrorIfNotNil(err)
-	cpl.Compile()
+	err = cpl.Compile()
+	logErrorIfNotNil(err)
 }
 
 func logErrorIfNotNil(err error) {

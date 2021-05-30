@@ -4,6 +4,7 @@
 
 - 支付宝
 - 微信
+- 火币-币币交易
 
 目前记账语言支持：
 
@@ -15,6 +16,9 @@
 ┌───────────┐  ┌──────────┐  ┌────┐  ┌──────────┐  ┌──────────┐
 │ translate │->│ provider │->│ IR │->│ compiler │->│ analyser │
 └───────────┘  └──────────┘  └────┘  └──────────┘  └──────────┘
+                  alipay               beancount      alipay
+                  wechat                              wechat
+                  huobi                               huobi
 ```
 
 ## 安装
@@ -62,6 +66,12 @@ option "operating_currency" "CNY"
 double-entry-generator translate --config ./example/wechat/config.yaml --provider wechat ./example/wechat/example-wechat-records.csv
 ```
 
+### Huobi Global (Crypto)
+
+```bash
+double-entry-generator translate --config ./example/huobi/config.yaml --provider huobi ./example/huobi/example-huobi-records.csv
+```
+
 ## 账单下载与格式问题
 
 ### 支付宝
@@ -85,6 +95,22 @@ double-entry-generator translate --config ./example/wechat/config.yaml --provide
 #### 格式示例
 
 [example-wechat-records.csv](./example/wechat/example-wechat-records.csv)
+
+### Huobi Global (Crypto)
+
+目前该项目只保证币币交易订单的转换，暂未测试合约、杠杆等交易订单。
+
+> PR welcome :)
+
+#### 下载方式
+
+登录[火币 Global 网站](https://www.huobi.com/)，进入[币币订单的成交明细](https://www.huobi.com/zh-cn/transac/?tab=2&type=0)页面，选择合适的时间区间后，点击成交明细右上角的导出按钮即可。
+
+#### 格式示例
+
+[exmaple-huobi-records.csv](./example/huobi/example-huobi-records.csv)
+
+转换后的结果示例：[exmaple-huobi-output.bean](./example/huobi/example-huobi-output.bean).
 
 ## 配置
 
@@ -156,6 +182,47 @@ wechat:
 |----|----|----|
 |收入|plusAccount|minusAccount|
 |支出|minusAccount|plusAccount|
+
+### Huobi Global (Crypto)
+
+```yaml
+defaultCashAccount: Assets:Huobi:Cash
+defaultPositionAccount: Assets:Huobi:Positions
+defaultCommissionAccount: Expenses:Huobi:Commission
+defaultPnlAccount: Income:Huobi:PnL
+defaultCurrency: USDT
+title: 测试
+huobi:
+  rules:
+    - item: BTC/USDT,BTC1S/USDT  # multiple keywords with separator
+      type: 币币交易
+      txType: 买入
+      sep: ','  # define separator as a comma
+      cashAccount: Assets:Rule1:Cash
+      positionAccount: Assets:Rule1:Positions
+      CommissionAccount: Expenses:Rule1:Commission
+      pnlAccount: Income:Rule1:PnL
+```
+
+`defaultCashAccount`, `defaultPositionAccount`, `defaultCommissionAccount`, `defaultPnlAccount` 和 `defaultCurrency` 是全局的必填默认值。
+
+`huobi` is the provider-specific configuration. Huobi provider has rules matching mechanism.
+
+`huobi` 是火币相关的配置。它提供基于规则的匹配。可以指定：
+- item（交易对）的包含匹配。
+- type（交易类型）的包含匹配。
+- txType（交易方向）的包含匹配。
+
+在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
+
+匹配成功则使用规则中定义的 `cashAccount`, `positionAccount`, `commissionAccount` 和 `pnlAccount` 覆盖默认定义。
+
+其中：
+- `defaultCashAccount` 是默认资本账户，一般用于存储 USDT。
+- `defaultPositionAccount` 是默认持仓账户。
+- `defaultCommissionAccount` 是默认手续费账户。
+- `defaultPnlAccount` 是默认损益账户。
+- `defaultCurrency` 是默认货币。
 
 ## Special Thanks
 

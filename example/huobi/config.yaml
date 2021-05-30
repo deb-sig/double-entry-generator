@@ -1,0 +1,16 @@
+defaultCashAccount: Assets:Huobi:Cash
+defaultPositionAccount: Assets:Huobi:Positions
+defaultCommissionAccount: Expenses:Huobi:Commission
+defaultPnlAccount: Income:Huobi:PnL
+defaultCurrency: CNY
+title: 测试
+huobi:
+  rules:
+    - item: BTC/USDT,BTC1S/USDT
+      type: 币币交易
+      txType: 买入
+      sep: ','
+      cashAccount: Assets:Rule1:Cash
+      positionAccount: Assets:Rule1:Positions
+      CommissionAccount: Expenses:Rule1:Commission
+      pnlAccount: Income:Rule1:PnL

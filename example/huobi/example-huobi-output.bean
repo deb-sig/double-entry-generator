@@ -1,0 +1,23 @@
+option "title" "测试"
+option "operating_currency" "CNY"
+
+
+2021-02-23 * "Huobi-币币交易" "买入-BTC/USDT"
+	Assets:Huobi:Cash -13.98369600 USDT
+	Assets:Huobi:Positions 0.00030400 BTC {45999.00000000 USDT} @@ 13.98369600 USDT
+	Assets:Huobi:Cash -0.00000060 BTC @ 45999.00000000 USDT
+	Expenses:Huobi:Commission 0.00000060 BTC @ 45999.00000000 USDT
+
+2021-02-23 * "Huobi-币币交易" "买入-BTC1S/USDT"
+	Assets:Huobi:Cash -5.60652159 USDT
+	Assets:Huobi:Positions 4.57600000 BTC1S {1.22520000 USDT} @@ 5.60652159 USDT
+	Assets:Huobi:Cash -0.00915201 BTC1S @ 1.22520000 USDT
+	Expenses:Huobi:Commission 0.00915201 BTC1S @ 1.22520000 USDT
+
+2021-02-24 * "Huobi-币币交易" "卖出-BTC/USDT"
+	Assets:Huobi:Positions -0.00010800 BTC {} @ 49850.00000000 USDT
+	Assets:Huobi:Cash 5.38380000 USDT
+	Assets:Huobi:Cash -0.01076760 USDT
+	Expenses:Huobi:Commission 0.01076760 USDT
+	Income:Huobi:PnL
+

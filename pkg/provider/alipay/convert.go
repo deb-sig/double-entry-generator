@@ -19,7 +19,7 @@ func (a *Alipay) convertToIR() *ir.IR {
 			PayTime: o.CreateTime,
 			Money:   o.Money,
 			OrderID: &o.DealNo,
-			Type:    conevertType(o.TxType),
+			TxType:  conevertType(o.TxType),
 		}
 		if o.OrderNo != "" {
 			irO.MerchantOrderID = &o.OrderNo
