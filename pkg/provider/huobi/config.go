@@ -1,17 +1,17 @@
 package huobi
 
 type Config struct {
-	Rules []Rule `yaml:"rules,omitempty"`
+	Rules []Rule `mapstructure:"rules,omitempty"`
 }
 
 type Rule struct {
-	// Peer              *string `yaml:"peer,omitempty"`
-	Item              *string `yaml:"item,omitempty"`   // "BTC/USDT"
-	Type              *string `yaml:"type,omitempty"`   // "币币交易"
-	TxType            *string `yaml:"txType,omitempty"` // "买入"、"卖出"
-	Seperator         *string `yaml:"sep,omitempty"`    // default: ,
-	CashAccount       *string `yaml:"cashAccount,omitempty"`
-	PositionAccount   *string `yaml:"positionAccount,omitempty"`
-	CommissionAccount *string `yaml:"commissionAccount,omitempty"`
-	PnlAccount        *string `yaml:"pnlAccount,omitempty"`
+	// Peer              *string `mapstructure:"peer,omitempty"`
+	Item              *string `mapstructure:"item,omitempty"`   // "BTC/USDT"
+	Type              *string `mapstructure:"type,omitempty"`   // "币币交易"
+	TxType            *string `mapstructure:"txType,omitempty"` // "买入"、"卖出"
+	Seperator         *string `mapstructure:"sep,omitempty"`    // default: ,
+	CashAccount       *string `mapstructure:"cashAccount,omitempty"`
+	PositionAccount   *string `mapstructure:"positionAccount,omitempty"`
+	CommissionAccount *string `mapstructure:"commissionAccount,omitempty"`
+	PnlAccount        *string `mapstructure:"pnlAccount,omitempty"`
 }

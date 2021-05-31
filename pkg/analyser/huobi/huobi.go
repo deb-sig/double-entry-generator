@@ -1,10 +1,9 @@
 package huobi
 
 import (
-	"strings"
-
 	"github.com/gaocegege/double-entry-generator/pkg/config"
 	"github.com/gaocegege/double-entry-generator/pkg/ir"
+	"github.com/gaocegege/double-entry-generator/pkg/util"
 )
 
 type Huobi struct {
@@ -38,13 +37,13 @@ func (h Huobi) GetAccounts(o *ir.Order, cfg *config.Config, target, provider str
 			sep = *r.Seperator
 		}
 		if r.Type != nil {
-			match = SplitFindContains(*r.Type, o.TypeOriginal, sep, match)
+			match = util.SplitFindContains(*r.Type, o.TypeOriginal, sep, match)
 		}
 		if r.TxType != nil {
-			match = SplitFindContains(*r.TxType, o.TxTypeOriginal, sep, match)
+			match = util.SplitFindContains(*r.TxType, o.TxTypeOriginal, sep, match)
 		}
 		if r.Item != nil {
-			match = SplitFindContains(*r.Item, o.Item, sep, match)
+			match = util.SplitFindContains(*r.Item, o.Item, sep, match)
 		}
 
 		if match {
@@ -69,19 +68,4 @@ func (h Huobi) GetAccounts(o *ir.Order, cfg *config.Config, target, provider str
 		ir.CommissionAccount: commissionAccount,
 		ir.PnlAccount:        pnlAccount,
 	}
-}
-
-func SplitFindContains(str, target, sep string, match bool) bool {
-	ss := strings.Split(str, sep)
-	isContain := false
-	for _, s := range ss {
-		if strings.Contains(target, s) {
-			isContain = true
-			break
-		}
-	}
-	if !isContain {
-		return false
-	}
-	return match
 }

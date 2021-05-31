@@ -5,6 +5,7 @@ import (
 
 	"github.com/gaocegege/double-entry-generator/pkg/config"
 	"github.com/gaocegege/double-entry-generator/pkg/ir"
+	"github.com/gaocegege/double-entry-generator/pkg/util"
 )
 
 type Alipay struct {
@@ -41,15 +42,16 @@ func (a Alipay) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 
 	for _, r := range cfg.Alipay.Rules {
 		match := true
+		// get seperator
+		sep := ","
+		if r.Separator != nil {
+			sep = *r.Separator
+		}
 		if r.Peer != nil {
-			if !strings.Contains(o.Peer, *r.Peer) {
-				match = false
-			}
+			match = util.SplitFindContains(*r.Peer, o.Peer, sep, match)
 		}
 		if r.Item != nil {
-			if !strings.Contains(o.Item, *r.Item) {
-				match = false
-			}
+			match = util.SplitFindContains(*r.Item, o.Item, sep, match)
 		}
 		if r.StartTime != nil && r.EndTime != nil {
 			// TODO(gaocegege): Support it.

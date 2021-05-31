@@ -18,17 +18,18 @@ package wechat
 
 // Config is the configuration for Alipay.
 type Config struct {
-	Rules []Rule `yaml:"rules,omitempty"`
+	Rules []Rule `mapstructure:"rules,omitempty"`
 }
 
 // Rule is the type for match rules.
 type Rule struct {
-	Peer          *string `yaml:"peer,omitempty"`
-	Item          *string `yaml:"item,omitempty"`
-	Type          *string `yaml:"type,omitempty"`
-	Method        *string `yaml:"method,omitempty"`
-	StartTime     *string `yaml:"startTime,omitempty"`
-	EndTime       *string `yaml:"endTime,omitempty"`
-	MethodAccount *string `yaml:"methodAccount,omitempty"`
-	TargetAccount *string `yaml:"targetAccount,omitempty"`
+	Peer          *string `mapstructure:"peer,omitempty"`
+	Item          *string `mapstructure:"item,omitempty"`
+	Type          *string `mapstructure:"type,omitempty"`
+	Seperator     *string `mapstructure:"sep,omitempty"` // default: ,
+	Method        *string `mapstructure:"method,omitempty"`
+	StartTime     *string `mapstructure:"startTime,omitempty"`
+	EndTime       *string `mapstructure:"endTime,omitempty"`
+	MethodAccount *string `mapstructure:"methodAccount,omitempty"`
+	TargetAccount *string `mapstructure:"targetAccount,omitempty"`
 }
