@@ -14,9 +14,8 @@ wechat:
       item: /
       targetAccount: Assets:Digital:WeChat:Cash
 
-    - peer: 云膳过桥米线
-      targetAccount: Expenses:Food:Meal
-    - peer: 餐厅
+    - peer: 云膳过桥米线,餐厅
+      sep: ','
       targetAccount: Expenses:Food:Meal
 
     - peer: 房东

@@ -18,15 +18,16 @@ package alipay
 
 // Config is the configuration for Alipay.
 type Config struct {
-	Rules []Rule `yaml:"rules,omitempty"`
+	Rules []Rule `mapstructure:"rules,omitempty"`
 }
 
 // Rule is the type for match rules.
 type Rule struct {
-	Peer         *string `yaml:"peer,omitempty"`
-	Item         *string `yaml:"item,omitempty"`
-	StartTime    *string `yaml:"startTime,omitempty"`
-	EndTime      *string `yaml:"endTime,omitempty"`
-	MinusAccount *string `yaml:"minusAccount,omitempty"`
-	PlusAccount  *string `yaml:"plusAccount,omitempty"`
+	Peer         *string `mapstructure:"peer,omitempty"`
+	Item         *string `mapstructure:"item,omitempty"`
+	Separator    *string `mapstructure:"sep,omitempty"` // default: ,
+	StartTime    *string `mapstructure:"startTime,omitempty"`
+	EndTime      *string `mapstructure:"endTime,omitempty"`
+	MinusAccount *string `mapstructure:"minusAccount,omitempty"`
+	PlusAccount  *string `mapstructure:"plusAccount,omitempty"`
 }

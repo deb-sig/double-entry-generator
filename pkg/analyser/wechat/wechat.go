@@ -1,10 +1,9 @@
 package wechat
 
 import (
-	"strings"
-
 	"github.com/gaocegege/double-entry-generator/pkg/config"
 	"github.com/gaocegege/double-entry-generator/pkg/ir"
+	"github.com/gaocegege/double-entry-generator/pkg/util"
 )
 
 type Wechat struct {
@@ -43,32 +42,28 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 
 	for _, r := range cfg.Wechat.Rules {
 		match := true
+		// get seperator
+		sep := ","
+		if r.Seperator != nil {
+			sep = *r.Seperator
+		}
 		if r.Peer != nil {
-			if !strings.Contains(o.Peer, *r.Peer) {
-				match = false
-			}
+			match = util.SplitFindContains(*r.Peer, o.Peer, sep, match)
 		}
 		if r.Type != nil {
-			if !strings.Contains(o.TypeOriginal, *r.Type) {
-				match = false
-			}
+			match = util.SplitFindContains(*r.Type, o.TypeOriginal, sep, match)
 		}
 		if r.Method != nil {
-			if !strings.Contains(o.Method, *r.Method) {
-				match = false
-			}
+			match = util.SplitFindContains(*r.Method, o.Method, sep, match)
 		}
 		if r.Item != nil {
-			if !strings.Contains(o.Item, *r.Item) {
-				match = false
-			}
+			match = util.SplitFindContains(*r.Item, o.Item, sep, match)
 		}
 		if r.StartTime != nil && r.EndTime != nil {
 			// TODO(gaocegege): Support it.
 		}
 		if match {
 			// Support multiple matches, like one rule matches the minus accout, the other rule matches the plus account.
-			// FIXME(TripleZ): two-layer if... can u refact it?
 			if r.TargetAccount != nil {
 				if o.TxType == ir.TxTypeRecv {
 					resMinus = *r.TargetAccount
