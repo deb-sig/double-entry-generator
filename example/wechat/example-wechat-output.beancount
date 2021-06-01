@@ -1,32 +1,24 @@
 option "title" "测试"
 option "operating_currency" "CNY"
 
-1970-01-01 open Income:Wechat:RedPacket
 1970-01-01 open Assets:Digital:WeChat:Cash
 1970-01-01 open Income:Service
-1970-01-01 open Assets:Bank:CN:ICBC:Savings
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Assets:FIXME
+1970-01-01 open Assets:Bank:CN:BOC:Savings
+1970-01-01 open Income:Wechat:RedPacket
 1970-01-01 open Expenses:Food:Meal
 1970-01-01 open Expenses:Housing:Rent
 1970-01-01 open Assets:Digital:Wechat:Cash
-1970-01-01 open Assets:Bank:CN:BOC:Savings
-1970-01-01 open Expenses:FIXME
-1970-01-01 open Assets:FIXME
-
-2019-09-26 * "云膳过桥米线(传奇广场店)" "总共消费:28.16"
-	Expenses:Food:Meal 28.16 CNY
-	Assets:Bank:CN:BOC:Savings -28.16 CNY
+1970-01-01 open Assets:Bank:CN:ICBC:Savings
 
 2019-09-24 * "同性好友" "/"
 	Assets:Digital:Wechat:Cash 0.35 CNY
 	Income:Wechat:RedPacket -0.35 CNY
 
-2021-01-17 * "某餐厅" "收款方备注:二维码收款"
-	Expenses:Food:Meal 12.00 CNY
-	Assets:Digital:Wechat:Cash -12.00 CNY
-
-2021-01-22 * "房东" "转账备注:微信转账"
-	Expenses:Housing:Rent 500.00 CNY
-	Assets:Digital:Wechat:Cash -500.00 CNY
+2019-09-26 * "云膳过桥米线(传奇广场店)" "总共消费:28.16"
+	Expenses:Food:Meal 28.16 CNY
+	Assets:Bank:CN:BOC:Savings -28.16 CNY
 
 2020-11-27 * "用户A" "收款方备注:二维码收款"
 	Assets:Digital:Wechat:Cash 23.00 CNY
@@ -35,4 +27,12 @@ option "operating_currency" "CNY"
 2021-01-17 * "/" "/"
 	Assets:Digital:WeChat:Cash 2000.00 CNY
 	Assets:Bank:CN:ICBC:Savings -2000.00 CNY
+
+2021-01-17 * "某餐厅" "收款方备注:二维码收款"
+	Expenses:Food:Meal 12.00 CNY
+	Assets:Digital:Wechat:Cash -12.00 CNY
+
+2021-01-22 * "房东" "转账备注:微信转账"
+	Expenses:Housing:Rent 500.00 CNY
+	Assets:Digital:Wechat:Cash -500.00 CNY
 
