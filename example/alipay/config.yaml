@@ -10,5 +10,6 @@ alipay:
     - item: 收益
       plusAccount: Assets:Alipay
       minusAccount: Income:Earnings
+      pnlAccount: Income:Alipay:PnL
     - peer: 医院
       plusAccount: Expenses:Medical
