@@ -30,4 +30,5 @@ type Rule struct {
 	EndTime      *string `mapstructure:"endTime,omitempty"`
 	MinusAccount *string `mapstructure:"minusAccount,omitempty"`
 	PlusAccount  *string `mapstructure:"plusAccount,omitempty"`
+	PnlAccount   *string `mapstructure:"pnlAccount,omitempty"`
 }
