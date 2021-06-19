@@ -10,12 +10,13 @@ import (
 
 // translateToOrders translates csv file to []Order.
 // Copyright © 2019 Sean at Shanghai
+// Modified by TripleZ at Shenzhen(2021)
 func (a *Alipay) translateToOrders(array []string) error {
 	var err error
 	a.LineNum++
 
-	if len(array) != 17 {
-		return fmt.Errorf("Length mismatch: Expected 17, got %d", len(array))
+	if len(array) != 12 {
+		return fmt.Errorf("Length mismatch: Expected 12, got %d", len(array))
 	}
 
 	// Ignore the title row.
@@ -30,61 +31,37 @@ func (a *Alipay) translateToOrders(array []string) error {
 		array[idx] = a
 	}
 	var bill Order
-	bill.DealNo = array[0]
-	bill.OrderNo = array[1]
-	bill.CreateTime, err = time.Parse(LocalTimeFmt, array[2]+" +0800")
-	if err != nil {
-		log.Println("parse create time error:", array[2], err)
-		return err
-	}
-	if array[3] != "" {
-		bill.PayTime, err = time.Parse(LocalTimeFmt, array[3]+" +0800")
-		if err != nil {
-			log.Println("parse paytime error:", array[3], err, array)
-			return err
-		}
-	}
-	bill.LastUpdate, err = time.Parse(LocalTimeFmt, array[4]+" +0800")
-	if err != nil {
-		log.Println("parse last update error:", array[4], err)
-		return err
-	}
-	bill.DealSrc = array[5]
-	bill.Type = array[6]
-	bill.Peer = array[7]
-	bill.ItemName = array[8]
-	bill.Money, err = strconv.ParseFloat(array[9], 32)
-	if err != nil {
-		log.Println("parse money error:", array[9], err)
-		return err
-	}
-	bill.TxType = getTxType(array[10])
+	bill.TxType = getTxType(array[0])
 	if bill.TxType == TxTypeNil {
-		log.Println("get tx type error:", array[10], array)
-		return fmt.Errorf("Failed to get the tx type %s", array[10])
+		log.Println("get tx type error:", array[0], array)
+		return fmt.Errorf("Failed to get the tx type %s", array[0])
 	}
-	bill.Status = array[11]
+	bill.TxTypeOriginal = array[0]
+	bill.Peer = array[1]
+	bill.PeerAccount = array[2]
+	bill.ItemName = array[3]
+	bill.Method = array[4]
+	bill.Money, err = strconv.ParseFloat(array[5], 32)
+	if err != nil {
+		log.Println("parse money error:", array[5], err)
+		return err
+	}
+	bill.Status = array[6]
 	if bill.Status == "交易关闭" {
 		log.Printf("Line %d: There is a mole, The tx is canceled.", a.LineNum)
 	}
 	if bill.Status == "退款成功" {
 		log.Printf("Lind %d: There has a refund transaction.", a.LineNum)
 	}
-	bill.ServiceFee, err = strconv.ParseFloat(array[12], 32)
+	bill.Category = array[7]
+	bill.DealNo = array[8]
+	bill.MerchantId = array[9]
+	bill.PayTime, err = time.Parse(LocalTimeFmt, array[10]+" +0800")
 	if err != nil {
-		log.Println("parse service fee error:", array[12], err)
+		log.Println("parse create time error:", array[10], err)
 		return err
 	}
-	bill.Refund, err = strconv.ParseFloat(array[13], 32)
-	if err != nil {
-		log.Println("parse refund error:", array[13], err)
-		return err
-	}
-	bill.Comment = array[14]
-	bill.MoneyStatus = getMoneyStatus(array[15])
-	if bill.MoneyStatus == MoneyStatusNil {
-		return fmt.Errorf("Failed to get the money status: %s", array[15])
-	}
+
 	a.Orders = append(a.Orders, bill)
 	return nil
 }

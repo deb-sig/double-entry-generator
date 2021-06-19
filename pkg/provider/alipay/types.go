@@ -19,25 +19,22 @@ type Statistics struct {
 
 // Order is the single order.
 type Order struct {
-	DealNo      string          `json:"dealNo,omitempty"`      // 交易号
-	OrderNo     string          `json:"orderNo,omitempty"`     // 商家订单号
-	CreateTime  time.Time       `json:"createTime,omitempty"`  // 交易创建时间
-	PayTime     time.Time       `json:"payTime,omitempty"`     // 付款时间
-	LastUpdate  time.Time       `json:"lastUpdate,omitempty"`  // 最近修改时间
-	DealSrc     string          `json:"dealSrc,omitempty"`     // 交易来源地
-	Type        string          `json:"type,omitempty"`        // 类型
-	Peer        string          `json:"peer,omitempty"`        // 交易对方
-	ItemName    string          `json:"itemName,omitempty"`    // 商品名称
-	Money       float64         `json:"money,omitempty"`       // 金额
-	TxType      TxTypeType      `json:"txType,omitempty"`      // 收/支
-	Status      string          `json:"status,omitempty"`      // 交易状态
-	ServiceFee  float64         `json:"serviceFee,omitempty"`  // 服务费
-	Refund      float64         `json:"refund,omitempty"`      // 成功退款
-	Comment     string          `json:"comment,omitempty"`     // 备注
-	MoneyStatus MoneyStatusType `json:"moneyStatus,omitempty"` // 资金状态
+	TxType         TxTypeType `json:"txType,omitempty"` // 收/支
+	TxTypeOriginal string     `json:"txTypeOriginal,omitempty"`
+	Peer           string     `json:"peer,omitempty"`        // 交易对方
+	PeerAccount    string     `json:"peerAccount,omitempty"` // 对方账号
+	ItemName       string     `json:"itemName,omitempty"`    // 商品说明
+	Method         string     `json:"method,omitempty"`      // 收/付款方式
+	Money          float64    `json:"money,omitempty"`       // 金额
+	Status         string     `json:"status,omitempty"`      // 交易状态
+	Category       string     `json:"category,omitempty"`    // 交易分类
+	DealNo         string     `json:"dealNo,omitempty"`      // 交易订单号
+	MerchantId     string     `json:"merchantId,omitempty"`  // 商家订单号
+	PayTime        time.Time  `json:"payTime,omitempty"`     // 交易时间
+
 	// below is filled at runtime
-	MinusAccount string `json:"minusAccount,omitempty"`
-	PlusAccount  string `json:"plusAccount,omitempty"`
+	TargetAccount string `json:"targetAccount,omitempty"`
+	MethodAccount string `json:"methodAccount,omitempty"`
 }
 
 // LocalTimeFmt set time format to utc+8
@@ -47,20 +44,9 @@ const LocalTimeFmt = "2006-01-02 15:04:05 -0700"
 type TxTypeType string
 
 const (
-	TxTypeSend  TxTypeType = "支出"
-	TxTypeRecv  TxTypeType = "收入"
-	TxTypeEmpty TxTypeType = ""
-	TxTypeNil   TxTypeType = "未知"
-)
-
-// MoneyStatusType is the status for the transaction.
-type MoneyStatusType string
-
-const (
-	MoneySend      MoneyStatusType = "已支出"
-	MoneyRecv                      = "已收入"
-	MoneyTransfer                  = "资金转移"
-	MoneyFreeze                    = "冻结"
-	MoneyUnfreeze                  = "解冻"
-	MoneyStatusNil                 = "未知"
+	TxTypeSend   TxTypeType = "支出"
+	TxTypeRecv   TxTypeType = "收入"
+	TxTypeOthers TxTypeType = "其他"
+	TxTypeEmpty  TxTypeType = ""
+	TxTypeNil    TxTypeType = "未知"
 )

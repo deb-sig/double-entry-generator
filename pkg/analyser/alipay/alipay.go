@@ -21,11 +21,11 @@ func (a Alipay) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 	}
 
 	for _, r := range cfg.Alipay.Rules {
-		if r.MinusAccount != nil {
-			uniqMap[*r.MinusAccount] = true
+		if r.MethodAccount != nil {
+			uniqMap[*r.MethodAccount] = true
 		}
-		if r.PlusAccount != nil {
-			uniqMap[*r.PlusAccount] = true
+		if r.TargetAccount != nil {
+			uniqMap[*r.TargetAccount] = true
 		}
 	}
 	uniqMap[cfg.DefaultPlusAccount] = true
@@ -39,6 +39,9 @@ func (a Alipay) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 	if cfg.Alipay == nil || len(cfg.Alipay.Rules) == 0 {
 		return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount, nil
 	}
+	resMinus := cfg.DefaultMinusAccount
+	resPlus := cfg.DefaultPlusAccount
+	var extraAccounts map[ir.Account]string
 
 	for _, r := range cfg.Alipay.Rules {
 		match := true
@@ -50,22 +53,35 @@ func (a Alipay) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 		if r.Peer != nil {
 			match = util.SplitFindContains(*r.Peer, o.Peer, sep, match)
 		}
+		if r.Type != nil {
+			match = util.SplitFindContains(*r.Type, o.TxTypeOriginal, sep, match)
+		}
 		if r.Item != nil {
 			match = util.SplitFindContains(*r.Item, o.Item, sep, match)
+		}
+		if r.Method != nil {
+			match = util.SplitFindContains(*r.Method, o.Method, sep, match)
 		}
 		if r.StartTime != nil && r.EndTime != nil {
 			// TODO(gaocegege): Support it.
 		}
 		if match {
-			resMinus := cfg.DefaultMinusAccount
-			resPlus := cfg.DefaultPlusAccount
-			var extraAccounts map[ir.Account]string
 
-			if r.MinusAccount != nil {
-				resMinus = *r.MinusAccount
+			// Support multiple matches, like one rule matches the
+			// minus accout, the other rule matches the plus account.
+			if r.TargetAccount != nil {
+				if o.TxType == ir.TxTypeRecv {
+					resMinus = *r.TargetAccount
+				} else {
+					resPlus = *r.TargetAccount
+				}
 			}
-			if r.PlusAccount != nil {
-				resPlus = *r.PlusAccount
+			if r.MethodAccount != nil {
+				if o.TxType == ir.TxTypeRecv {
+					resPlus = *r.MethodAccount
+				} else {
+					resMinus = *r.MethodAccount
+				}
 			}
 			if r.PnlAccount != nil {
 				extraAccounts = map[ir.Account]string{
@@ -73,15 +89,11 @@ func (a Alipay) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 				}
 			}
 
-			if strings.HasPrefix(o.Item, "退款-") {
-				return resPlus, resMinus, extraAccounts
-			}
-			return resMinus, resPlus, extraAccounts
 		}
 	}
 
 	if strings.HasPrefix(o.Item, "退款-") {
-		return cfg.DefaultPlusAccount, cfg.DefaultMinusAccount, nil
+		return resPlus, resMinus, extraAccounts
 	}
-	return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount, nil
+	return resMinus, resPlus, extraAccounts
 }

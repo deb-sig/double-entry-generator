@@ -8,21 +8,19 @@ import (
 func (a *Alipay) convertToIR() *ir.IR {
 	i := ir.New()
 	for _, o := range a.Orders {
-		// Do not convert the freeze tx.
-		if o.MoneyStatus == MoneyUnfreeze || o.MoneyStatus == MoneyFreeze {
-			continue
-		}
 
 		irO := ir.Order{
-			Peer:    o.Peer,
-			Item:    o.ItemName,
-			PayTime: o.CreateTime,
-			Money:   o.Money,
-			OrderID: &o.DealNo,
-			TxType:  conevertType(o.TxType),
+			Peer:           o.Peer,
+			Item:           o.ItemName,
+			Method:         o.Method,
+			PayTime:        o.PayTime,
+			Money:          o.Money,
+			OrderID:        &o.DealNo,
+			TxType:         conevertType(o.TxType),
+			TxTypeOriginal: o.TxTypeOriginal,
 		}
-		if o.OrderNo != "" {
-			irO.MerchantOrderID = &o.OrderNo
+		if o.MerchantId != "" {
+			irO.MerchantOrderID = &o.MerchantId
 		}
 		i.Orders = append(i.Orders, irO)
 	}
