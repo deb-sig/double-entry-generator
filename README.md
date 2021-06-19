@@ -78,6 +78,10 @@ double-entry-generator translate --config ./example/huobi/config.yaml --provider
 
 #### 下载方式
 
+支付宝账单获取方式[见此](https://blog.triplez.cn/posts/bills-export-methods/#支付宝)。
+
+`v0.2.0` 及以下版本请使用如下方式获取账单：
+
 登录 PC 支付宝后，访问 [这里](https://consumeprod.alipay.com/record/standard.htm)，选择时间区间，下拉到页面底端，点击下载查询结果。
 
 注意：请下载查询结果，而非[收支明细](https://cshall.alipay.com/lab/help_detail.htm?help_id=212688)。
@@ -85,6 +89,8 @@ double-entry-generator translate --config ./example/huobi/config.yaml --provider
 #### 格式示例
 
 [example-alipay-records.csv](./example/alipay/example-alipay-records.csv)
+
+> 此示例为从「支付宝」APP 获取的账单格式。
 
 ### 微信
 
