@@ -171,9 +171,9 @@ alipay:
 
 `alipay` 是蚂蚁账单相关的配置。它提供基于规则的匹配。可以指定 type（收/支）、 method（支付方式）、peer（交易对方）和 item（商品名称）的包含匹配。匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` 覆盖默认定义。
 
-支付宝提供了“交易方式”字段来标识资金出入账户。这样就可以直接通过“交易方式”，并辅以“收/支”字段确认该账户为增加账户还是减少账户。而复式记账法每笔交易至少需要两个账户，另一个账户则可通过“交易对方”（peer）、“商品”（item）、“收/支”（type）以及“交易方式”（method）的多种包含匹配得出。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `methodAccount` 的正负关系，来覆盖默认定义的增减账户。
+支付宝提供了“交易方式”字段来标识资金出入账户。这样就可以直接通过“交易方式”，并辅以“收/支”字段确认该账户为增加账户还是减少账户。而复式记账法每笔交易至少需要两个账户，另一个账户则可通过“交易对方”（peer）、“商品”（item）、“收/支”（type）以及“交易方式”（method）的多种包含匹配得出。匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `methodAccount` 的正负关系，来覆盖默认定义的增减账户。
 
-`targetAccount` 与 `methodAccount` 的增减账户关系如下表
+`targetAccount` 与 `methodAccount` 的增减账户关系如下表：
 
 |收/支|methodAccount|targetAccount|
 |----|----|----|
