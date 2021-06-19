@@ -34,6 +34,7 @@ alipay:
       item: 卖出至余额宝
       targetAccount: Assets:Alipay
       methodAccount: Assets:Alipay:Invest
+      pnlAccount: Income:Alipay:Invest:PnL
     - type: 其他
       item: 余额宝-单次转入
       targetAccount: Assets:Alipay
