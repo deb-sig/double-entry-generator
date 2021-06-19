@@ -121,25 +121,55 @@ double-entry-generator translate --config ./example/huobi/config.yaml --provider
 ## 配置
 
 ### 支付宝
-```
-defaultMinusAccount: Liabilities:CreditCard:Test
-defaultPlusAccount: Expenses:Test
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
 defaultCurrency: CNY
 title: 测试
 alipay:
   rules:
-    - peer: 餐厅
-      plusAccount: Expenses:Food
-    - item: 收益
-      plusAccount: Assets:Alipay
-      minusAccount: Income:Earnings
+    - peer: 肯德基|麦当劳
+      sep: '|'
+      targetAccount: Expenses:Food
+    - peer: 滴露
+      targetAccount: Expenses:Groceries
+    - peer: 苏宁
+      targetAccount: Expenses:Electronics
+    - item: 相互宝
+      targetAccount: Expenses:Insurance
+
+    - method: 余额 # 余额/余额宝
+      methodAccount: Assets:Alipay
+    - method: 招商银行(9876)
+      methodAccount: Assets:Bank:CN:CMB-9876:Savings
+
+    # 交易类型为其他
+    - type: 其他
+      item: 收益发放
+      methodAccount: Income:Alipay:YuEBao:PnL
+      targetAccount: Assets:Alipay
+    - type: 其他
+      peer: 蚂蚁财富
+      item: 买入
+      targetAccount: Assets:Alipay:Invest
+      methodAccount: Assets:Alipay
+    - type: 其他
+      peer: 蚂蚁财富
+      item: 卖出至余额宝
+      targetAccount: Assets:Alipay
+      methodAccount: Assets:Alipay:Invest
+      pnlAccount: Income:Alipay:Invest:PnL
+    - type: 其他
+      item: 余额宝-单次转入
+      targetAccount: Assets:Alipay
+      methodAccount: Assets:Alipay
 ```
 
 `defaultMinusAccount`, `defaultPlusAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户。 `defaultCurrency` 是默认货币。
 
 `alipay` is the provider-specific configuration. Alipay provider has rules matching mechanism.
 
-`alipay` 是蚂蚁账单相关的配置。它提供基于规则的匹配。可以指定 peer（交易对方）和 item（商品名称）的包含匹配。匹配成功则使用规则中定义的 `plusAccount` 和 `minusAccount` 覆盖默认定义。
+`alipay` 是蚂蚁账单相关的配置。它提供基于规则的匹配。可以指定 type（收/支）、 method（支付方式）、peer（交易对方）和 item（商品名称）的包含匹配。匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` 覆盖默认定义。
 
 支付宝提供了“交易方式”字段来标识资金出入账户。这样就可以直接通过“交易方式”，并辅以“收/支”字段确认该账户为增加账户还是减少账户。而复式记账法每笔交易至少需要两个账户，另一个账户则可通过“交易对方”（peer）、“商品”（item）、“收/支”（type）以及“交易方式”（method）的多种包含匹配得出。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `methodAccount` 的正负关系，来覆盖默认定义的增减账户。
 
