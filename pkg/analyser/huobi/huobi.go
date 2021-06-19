@@ -10,8 +10,32 @@ type Huobi struct {
 }
 
 func (h Huobi) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
-	// TODO(TripleZ)
-	return nil
+	// uniqMap will be used to create the concepts.
+	uniqMap := make(map[string]bool)
+
+	if cfg.Huobi == nil || len(cfg.Huobi.Rules) == 0 {
+		return uniqMap
+	}
+
+	for _, r := range cfg.Huobi.Rules {
+		if r.CashAccount != nil {
+			uniqMap[*r.CashAccount] = true
+		}
+		if r.PositionAccount != nil {
+			uniqMap[*r.PositionAccount] = true
+		}
+		if r.PnlAccount != nil {
+			uniqMap[*r.PnlAccount] = true
+		}
+		if r.CommissionAccount != nil {
+			uniqMap[*r.CommissionAccount] = true
+		}
+	}
+	uniqMap[cfg.DefaultCashAccount] = true
+	uniqMap[cfg.DefaultPositionAccount] = true
+	uniqMap[cfg.DefaultCommissionAccount] = true
+	uniqMap[cfg.DefaultPnlAccount] = true
+	return uniqMap
 }
 
 func (h Huobi) GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string) {

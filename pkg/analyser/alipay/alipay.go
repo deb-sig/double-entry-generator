@@ -27,6 +27,9 @@ func (a Alipay) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 		if r.TargetAccount != nil {
 			uniqMap[*r.TargetAccount] = true
 		}
+		if r.PnlAccount != nil {
+			uniqMap[*r.PnlAccount] = true
+		}
 	}
 	uniqMap[cfg.DefaultPlusAccount] = true
 	uniqMap[cfg.DefaultMinusAccount] = true

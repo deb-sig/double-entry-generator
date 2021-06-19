@@ -1,16 +1,17 @@
 option "title" "测试"
 option "operating_currency" "CNY"
 
-1970-01-01 open Assets:Alipay:Invest
-1970-01-01 open Expenses:FIXME
-1970-01-01 open Expenses:Food
+1970-01-01 open Assets:FIXME
 1970-01-01 open Expenses:Groceries
-1970-01-01 open Expenses:Electronics
 1970-01-01 open Expenses:Insurance
+1970-01-01 open Assets:Bank:CN:CMB-9876:Savings
+1970-01-01 open Assets:Alipay:Invest
+1970-01-01 open Income:Alipay:Invest:PnL
+1970-01-01 open Expenses:Food
+1970-01-01 open Expenses:Electronics
 1970-01-01 open Assets:Alipay
 1970-01-01 open Income:Alipay:YuEBao:PnL
-1970-01-01 open Assets:FIXME
-1970-01-01 open Assets:Bank:CN:CMB-9876:Savings
+1970-01-01 open Expenses:FIXME
 
 2020-06-02 * "蚂蚁财富-蚂蚁（杭州）基金销售有限公司" "蚂蚁财富-ABCD-卖出至余额宝"
 	Assets:Alipay 15.40 CNY

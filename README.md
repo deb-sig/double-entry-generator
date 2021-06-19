@@ -92,15 +92,19 @@ double-entry-generator translate --config ./example/huobi/config.yaml --provider
 
 > 此示例为从「支付宝」APP 获取的账单格式。
 
+转换后的结果示例：[exmaple-alipay-output.beancount](./example/alipay/example-alipay-output.beancount).
+
 ### 微信
 
 #### 下载方式
 
-参考[百度经验](https://jingyan.baidu.com/article/1974b28941f977f4b0f7747b.html)。
+微信支付的下载方式[见此](https://blog.triplez.cn/posts/bills-export-methods/#微信支付)。
 
 #### 格式示例
 
 [example-wechat-records.csv](./example/wechat/example-wechat-records.csv)
+
+转换后的结果示例：[exmaple-wechat-output.beancount](./example/wechat/example-wechat-output.beancount).
 
 ### Huobi Global (Crypto)
 
@@ -116,7 +120,7 @@ double-entry-generator translate --config ./example/huobi/config.yaml --provider
 
 [exmaple-huobi-records.csv](./example/huobi/example-huobi-records.csv)
 
-转换后的结果示例：[exmaple-huobi-output.bean](./example/huobi/example-huobi-output.bean).
+转换后的结果示例：[exmaple-huobi-output.beancount](./example/huobi/example-huobi-output.beancount).
 
 ## 配置
 
