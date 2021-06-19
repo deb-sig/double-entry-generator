@@ -1,6 +1,8 @@
 package alipay
 
 import (
+	"fmt"
+
 	"github.com/gaocegege/double-entry-generator/pkg/ir"
 )
 
@@ -13,6 +15,7 @@ func (a *Alipay) convertToIR() *ir.IR {
 			Peer:           o.Peer,
 			Item:           o.ItemName,
 			Method:         o.Method,
+			Note:           fmt.Sprintf("%s-%s-%s", o.TxTypeOriginal, o.Status, o.Category),
 			PayTime:        o.PayTime,
 			Money:          o.Money,
 			OrderID:        &o.DealNo,

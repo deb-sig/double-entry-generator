@@ -159,6 +159,7 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 			PayTime:      o.PayTime,
 			Peer:         o.Peer,
 			Item:         o.Item,
+			Note:         o.Note,
 			Money:        o.Money,
 			PlusAccount:  o.PlusAccount,
 			MinusAccount: o.MinusAccount,
