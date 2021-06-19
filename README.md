@@ -23,8 +23,11 @@
 
 ## 安装
 
+在 [GitHub Release](https://github.com/gaocegege/double-entry-generator/releases) 页面中下载相应架构的二进制文件到本地即可。
+
+源码安装：
 ```bash
-go get github.com/gaocegege/double-entry-generator
+go get -u github.com/gaocegege/double-entry-generator
 ```
 
 ## 使用
