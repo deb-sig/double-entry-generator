@@ -1,6 +1,14 @@
 option "title" "测试"
 option "operating_currency" "CNY"
 
+1970-01-01 open Income:Huobi:PnL
+1970-01-01 open Assets:Rule1:Cash
+1970-01-01 open Assets:Rule1:Positions
+1970-01-01 open Income:Rule1:PnL
+1970-01-01 open Expenses:Rule1:Commission
+1970-01-01 open Assets:Huobi:Cash
+1970-01-01 open Assets:Huobi:Positions
+1970-01-01 open Expenses:Huobi:Commission
 
 2021-02-23 * "Huobi-币币交易" "买入-BTC/USDT"
 	Assets:Huobi:Cash -13.98369600 USDT

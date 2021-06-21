@@ -1,15 +1,41 @@
-defaultMinusAccount: Liabilities:CreditCard:Test
-defaultPlusAccount: Expenses:Test
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
 defaultCurrency: CNY
 title: 测试
 alipay:
   rules:
     - peer: 肯德基|麦当劳
       sep: '|'
-      plusAccount: Expenses:Food
-    - item: 收益
-      plusAccount: Assets:Alipay
-      minusAccount: Income:Earnings
-      pnlAccount: Income:Alipay:PnL
-    - peer: 医院
-      plusAccount: Expenses:Medical
+      targetAccount: Expenses:Food
+    - peer: 滴露
+      targetAccount: Expenses:Groceries
+    - peer: 苏宁
+      targetAccount: Expenses:Electronics
+    - item: 相互宝
+      targetAccount: Expenses:Insurance
+
+    - method: 余额 # 余额/余额宝
+      methodAccount: Assets:Alipay
+    - method: 招商银行(9876)
+      methodAccount: Assets:Bank:CN:CMB-9876:Savings
+
+    # 交易类型为其他
+    - type: 其他
+      item: 收益发放
+      methodAccount: Income:Alipay:YuEBao:PnL
+      targetAccount: Assets:Alipay
+    - type: 其他
+      peer: 蚂蚁财富
+      item: 买入
+      targetAccount: Assets:Alipay:Invest
+      methodAccount: Assets:Alipay
+    - type: 其他
+      peer: 蚂蚁财富
+      item: 卖出至余额宝
+      targetAccount: Assets:Alipay
+      methodAccount: Assets:Alipay:Invest
+      pnlAccount: Income:Alipay:Invest:PnL
+    - type: 其他
+      item: 余额宝-单次转入
+      targetAccount: Assets:Alipay
+      methodAccount: Assets:Alipay
