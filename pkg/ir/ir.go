@@ -34,6 +34,7 @@ type Order struct {
 	MerchantOrderID *string
 	OrderID         *string
 	Money           float64
+	Note            string
 	PayTime         time.Time
 	TxType          TxType // 方向，一般为 收/支
 	TxTypeOriginal  string
