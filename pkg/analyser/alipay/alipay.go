@@ -3,9 +3,9 @@ package alipay
 import (
 	"strings"
 
-	"github.com/gaocegege/double-entry-generator/pkg/config"
-	"github.com/gaocegege/double-entry-generator/pkg/ir"
-	"github.com/gaocegege/double-entry-generator/pkg/util"
+	"github.com/deb-sig/double-entry-generator/pkg/config"
+	"github.com/deb-sig/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/pkg/util"
 )
 
 type Alipay struct {

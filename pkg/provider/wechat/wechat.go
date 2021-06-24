@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/gaocegege/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/pkg/ir"
 )
 
 // Wechat is the provider for Wechat.

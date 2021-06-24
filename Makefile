@@ -6,7 +6,7 @@
 # Ref https://github.com/caicloud/golang-template-project/blob/master/Makefile
 
 # This repo's root import path (under GOPATH).
-ROOT := github.com/gaocegege/double-entry-generator
+ROOT := github.com/deb-sig/double-entry-generator
 
 # Target binaries. You can build multiple binaries for a single project.
 TARGETS := double-entry-generator

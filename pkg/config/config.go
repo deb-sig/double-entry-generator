@@ -1,9 +1,9 @@
 package config
 
 import (
-	"github.com/gaocegege/double-entry-generator/pkg/provider/alipay"
-	"github.com/gaocegege/double-entry-generator/pkg/provider/huobi"
-	"github.com/gaocegege/double-entry-generator/pkg/provider/wechat"
+	"github.com/deb-sig/double-entry-generator/pkg/provider/alipay"
+	"github.com/deb-sig/double-entry-generator/pkg/provider/huobi"
+	"github.com/deb-sig/double-entry-generator/pkg/provider/wechat"
 )
 
 // Config is the global configuration.

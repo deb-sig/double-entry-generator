@@ -1,7 +1,7 @@
 package wechat
 
 import (
-	"github.com/gaocegege/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/pkg/ir"
 )
 
 // convertToIR convert wechat bills to IR.
