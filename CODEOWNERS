@@ -1,0 +1,18 @@
+# ref to https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-code-owners
+
+/.github/ @gaocegege @Triple-Z
+
+/hack/ @gaocegege
+
+/doc/ @gaocegege
+
+Makefile @gaocegege @Triple-Z
+
+*.go @gaocegege @Triple-Z
+
+/pkg/ @gaocegege @Triple-Z
+/pkg/analyser/ @gaocegege @Triple-Z
+/pkg/cmd/ @gaocegege @Triple-Z
+/pkg/compiler/ @gaocegege @Triple-Z
+/pkg/ir/ @gaocegege @Triple-Z
+/pkg/provider/ @gaocegege @Triple-Z
