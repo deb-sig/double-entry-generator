@@ -3,12 +3,12 @@ package compiler
 import (
 	"fmt"
 
-	"github.com/gaocegege/double-entry-generator/pkg/analyser"
+	"github.com/deb-sig/double-entry-generator/pkg/analyser"
 
-	"github.com/gaocegege/double-entry-generator/pkg/compiler/beancount"
-	"github.com/gaocegege/double-entry-generator/pkg/config"
-	"github.com/gaocegege/double-entry-generator/pkg/consts"
-	"github.com/gaocegege/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/pkg/compiler/beancount"
+	"github.com/deb-sig/double-entry-generator/pkg/config"
+	"github.com/deb-sig/double-entry-generator/pkg/consts"
+	"github.com/deb-sig/double-entry-generator/pkg/ir"
 )
 
 // Interface is the type for the compiler.

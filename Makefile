@@ -6,7 +6,7 @@
 # Ref https://github.com/caicloud/golang-template-project/blob/master/Makefile
 
 # This repo's root import path (under GOPATH).
-ROOT := github.com/gaocegege/double-entry-generator
+ROOT := github.com/deb-sig/double-entry-generator
 
 # Target binaries. You can build multiple binaries for a single project.
 TARGETS := double-entry-generator
@@ -43,9 +43,12 @@ BIN_DIR := $(GOPATH)/bin
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 
 # All targets.
-.PHONY: lint test build container push
+.PHONY: lint test build container push help
 
-build: build-local
+help:  ## Display this help
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+build: build-local  ## Build the project
 
 build-local:
 	@for target in $(TARGETS); do                                                      \
@@ -56,6 +59,6 @@ build-local:
 	  $(CMD_DIR)/;                                                                     \
 	done
 
-install: build
+install: build  ## Install the double-entry-generator binary
 	@install ./bin/double-entry-generator /usr/local/bin
 	@echo "Installed double-entry-generator at /usr/local/bin/double-entry-generator !"

@@ -19,11 +19,11 @@ package provider
 import (
 	"fmt"
 
-	"github.com/gaocegege/double-entry-generator/pkg/consts"
-	"github.com/gaocegege/double-entry-generator/pkg/ir"
-	"github.com/gaocegege/double-entry-generator/pkg/provider/alipay"
-	"github.com/gaocegege/double-entry-generator/pkg/provider/huobi"
-	"github.com/gaocegege/double-entry-generator/pkg/provider/wechat"
+	"github.com/deb-sig/double-entry-generator/pkg/consts"
+	"github.com/deb-sig/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/pkg/provider/alipay"
+	"github.com/deb-sig/double-entry-generator/pkg/provider/huobi"
+	"github.com/deb-sig/double-entry-generator/pkg/provider/wechat"
 )
 
 // Interface is the interface for the provider.

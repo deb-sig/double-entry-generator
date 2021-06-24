@@ -9,10 +9,10 @@ import (
 	"sort"
 	"text/template"
 
-	"github.com/gaocegege/double-entry-generator/pkg/analyser"
+	"github.com/deb-sig/double-entry-generator/pkg/analyser"
 
-	"github.com/gaocegege/double-entry-generator/pkg/config"
-	"github.com/gaocegege/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/pkg/config"
+	"github.com/deb-sig/double-entry-generator/pkg/ir"
 )
 
 // BeanCount is the implementation.

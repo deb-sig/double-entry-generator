@@ -27,7 +27,7 @@ import (
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
 
-	"github.com/gaocegege/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/pkg/ir"
 )
 
 // Alipay is the provider for alipay.
