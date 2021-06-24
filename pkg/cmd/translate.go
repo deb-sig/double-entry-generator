@@ -24,10 +24,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/gaocegege/double-entry-generator/pkg/compiler"
-	"github.com/gaocegege/double-entry-generator/pkg/config"
-	"github.com/gaocegege/double-entry-generator/pkg/consts"
-	"github.com/gaocegege/double-entry-generator/pkg/provider"
+	"github.com/deb-sig/double-entry-generator/pkg/compiler"
+	"github.com/deb-sig/double-entry-generator/pkg/config"
+	"github.com/deb-sig/double-entry-generator/pkg/consts"
+	"github.com/deb-sig/double-entry-generator/pkg/provider"
 )
 
 var (

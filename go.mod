@@ -1,4 +1,4 @@
-module github.com/gaocegege/double-entry-generator
+module github.com/deb-sig/double-entry-generator
 
 go 1.12
 

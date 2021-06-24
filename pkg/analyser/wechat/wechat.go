@@ -1,9 +1,9 @@
 package wechat
 
 import (
-	"github.com/gaocegege/double-entry-generator/pkg/config"
-	"github.com/gaocegege/double-entry-generator/pkg/ir"
-	"github.com/gaocegege/double-entry-generator/pkg/util"
+	"github.com/deb-sig/double-entry-generator/pkg/config"
+	"github.com/deb-sig/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/pkg/util"
 )
 
 type Wechat struct {
