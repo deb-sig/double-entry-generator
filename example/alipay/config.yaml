@@ -19,6 +19,9 @@ alipay:
     - method: 招商银行(9876)
       methodAccount: Assets:Bank:CN:CMB-9876:Savings
 
+    - type: 收入 # 其他转账收款
+      targetAccount: Income:FIXME
+      methodAccount: Assets:Alipay
     - type: 收入 # 收款码收款
       item: 商品
       targetAccount: Income:Alipay:ShouKuanMa

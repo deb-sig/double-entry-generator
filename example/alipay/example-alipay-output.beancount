@@ -13,6 +13,7 @@ option "operating_currency" "CNY"
 1970-01-01 open Income:Alipay:Invest:PnL
 1970-01-01 open Income:Alipay:ShouKuanMa
 1970-01-01 open Income:Alipay:YuEBao:PnL
+1970-01-01 open Income:FIXME
 
 2020-06-02 * "蚂蚁财富-蚂蚁（杭州）基金销售有限公司" "蚂蚁财富-ABCD-卖出至余额宝"  ; 其他-交易成功-投资理财
 	Assets:Alipay 15.40 CNY
@@ -54,4 +55,8 @@ option "operating_currency" "CNY"
 2021-06-24 * "*三" "商品"  ; 收入-交易成功-收入
 	Assets:Alipay 10.00 CNY
 	Income:Alipay:ShouKuanMa -10.00 CNY
+
+2021-06-25 * "*三" "我就随便转着玩"  ; 收入-交易成功-转账红包
+	Assets:Alipay 42.00 CNY
+	Income:FIXME -42.00 CNY
 
