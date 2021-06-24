@@ -111,13 +111,13 @@ func (b *BeanCount) writeHeader(file *os.File) error {
 	}
 
 	accounts := b.GetAllCandidateAccounts(b.Config)
-    var sortedAccounts []string
-    for k := range accounts {
-        if k != "" {
-            sortedAccounts = append(sortedAccounts, k)
-        }
-    }
-    sort.Strings(sortedAccounts)
+	var sortedAccounts []string
+	for k := range accounts {
+		if k != "" {
+			sortedAccounts = append(sortedAccounts, k)
+		}
+	}
+	sort.Strings(sortedAccounts)
 
 	for _, k := range sortedAccounts {
 		_, err = io.WriteString(file, "1970-01-01 open "+k+"\n")
