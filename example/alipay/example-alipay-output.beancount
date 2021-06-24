@@ -1,17 +1,18 @@
 option "title" "测试"
 option "operating_currency" "CNY"
 
-1970-01-01 open Expenses:FIXME
-1970-01-01 open Assets:FIXME
-1970-01-01 open Assets:Alipay
-1970-01-01 open Assets:Bank:CN:CMB-9876:Savings
-1970-01-01 open Assets:Alipay:Invest
 1970-01-01 open Expenses:Insurance
+1970-01-01 open Assets:Alipay
+1970-01-01 open Income:Alipay:ShouKuanMa
 1970-01-01 open Income:Alipay:YuEBao:PnL
 1970-01-01 open Income:Alipay:Invest:PnL
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Assets:FIXME
 1970-01-01 open Expenses:Food
-1970-01-01 open Expenses:Groceries
 1970-01-01 open Expenses:Electronics
+1970-01-01 open Assets:Bank:CN:CMB-9876:Savings
+1970-01-01 open Assets:Alipay:Invest
+1970-01-01 open Expenses:Groceries
 
 2020-06-02 * "蚂蚁财富-蚂蚁（杭州）基金销售有限公司" "蚂蚁财富-ABCD-卖出至余额宝"  ; 其他-交易成功-投资理财
 	Assets:Alipay 15.40 CNY
@@ -49,4 +50,8 @@ option "operating_currency" "CNY"
 2021-06-14 * "蚂蚁会员（北京）网络技术服务有限公司" "相互宝分摊-6月第1期-*"  ; 支出-交易成功-互助保障
 	Expenses:Insurance 6.51 CNY
 	Assets:Bank:CN:CMB-9876:Savings -6.51 CNY
+	
+2021-06-24 * "*三" "商品"  ; 收入-交易成功-收入
+	Assets:Alipay 10.00 CNY
+	Income:Alipay:ShouKuanMa -10.00 CNY
 	
