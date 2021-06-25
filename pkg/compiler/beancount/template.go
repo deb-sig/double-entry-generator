@@ -9,7 +9,7 @@ import (
 var normalOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}" "{{ .Item }}"{{ if .Note }}  ; {{ .Note }}{{ end }}
 	{{ .PlusAccount }} {{ .Money | printf "%.2f" }} {{ .Currency }}
 	{{ .MinusAccount }} -{{ .Money | printf "%.2f" }} {{ .Currency }}
-	{{ if .PnlAccount }}{{ .PnlAccount }}{{ printf "\n" }}{{ end }}
+{{ if .PnlAccount }}	{{ .PnlAccount }}{{ printf "\n" }}{{ end }}
 `
 
 type NormalOrderVars struct {
