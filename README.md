@@ -39,40 +39,32 @@ go get -u github.com/deb-sig/double-entry-generator
 ### 支付宝
 
 ```bash
-double-entry-generator translate --config ./example/alipay/config.yaml ./example/alipay/example-alipay-records.csv
+double-entry-generator translate \
+  --config ./example/alipay/config.yaml \
+  --output ./example/alipay/example-alipay-output.beancount \
+  ./example/alipay/example-alipay-records.csv
 ```
 
-其中 `--config` 是配置文件，默认情况下，使用支付宝作为提供方，也可手动指定 `--provider`。具体参考[使用文档](doc/double-entry-generator_translate.md)。默认生成的文件是 `default_output.beancount`:
-
-```
-option "title" "测试"
-option "operating_currency" "CNY"
-
-1970-01-01 open Expenses:Food
-1970-01-01 open Income:Earnings
-1970-01-01 open Assets:Alipay
-1970-01-01 open Expenses:Test
-1970-01-01 open Liabilities:CreditCard:Test
-
-2019-09-30 * "肯德基(张江高科餐厅)" "张江高科餐厅"
-	Expenses:Food 27.00 CNY
-	Liabilities:CreditCard:Test -27.00 CNY
-
-2019-09-30 * "中欧基金管理有限公司" "余额宝-2019.09.29-收益发放"
-	Assets:Alipay 0.01 CNY
-	Income:Earnings -0.01 CNY
-```
+其中 `--config` 是配置文件，默认情况下，使用支付宝作为提供方，也可手动指定 `--provider`。具体参考[使用文档](doc/double-entry-generator_translate.md)。默认生成的文件是 `default_output.beancount`，若有 `--output` 或 `-o` 指定输出文件，则会输出到指定的文件中。如上述例子会将转换结果输出至 `./example/alipay/example-alipay-output.beancount` 文件中。
 
 ### 微信
 
 ```bash
-double-entry-generator translate --config ./example/wechat/config.yaml --provider wechat ./example/wechat/example-wechat-records.csv
+double-entry-generator translate \
+  --config ./example/wechat/config.yaml \
+  --provider wechat \
+  --output ./example/wechat/example-wechat-output.beancount \
+  ./example/wechat/example-wechat-records.csv
 ```
 
 ### Huobi Global (Crypto)
 
 ```bash
-double-entry-generator translate --config ./example/huobi/config.yaml --provider huobi ./example/huobi/example-huobi-records.csv
+double-entry-generator translate \
+  --config ./example/huobi/config.yaml \
+  --provider huobi \
+  --output ./example/huobi/example-huobi-output.beancount \
+  ./example/huobi/example-huobi-records.csv
 ```
 
 ## 账单下载与格式问题
