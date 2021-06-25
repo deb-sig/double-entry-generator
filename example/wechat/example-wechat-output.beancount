@@ -1,16 +1,16 @@
 option "title" "测试"
 option "operating_currency" "CNY"
 
-1970-01-01 open Assets:Digital:WeChat:Cash
-1970-01-01 open Income:Service
-1970-01-01 open Expenses:FIXME
-1970-01-01 open Assets:FIXME
 1970-01-01 open Assets:Bank:CN:BOC:Savings
-1970-01-01 open Income:Wechat:RedPacket
+1970-01-01 open Assets:Bank:CN:ICBC:Savings
+1970-01-01 open Assets:Digital:WeChat:Cash
+1970-01-01 open Assets:Digital:Wechat:Cash
+1970-01-01 open Assets:FIXME
+1970-01-01 open Expenses:FIXME
 1970-01-01 open Expenses:Food:Meal
 1970-01-01 open Expenses:Housing:Rent
-1970-01-01 open Assets:Digital:Wechat:Cash
-1970-01-01 open Assets:Bank:CN:ICBC:Savings
+1970-01-01 open Income:Service
+1970-01-01 open Income:Wechat:RedPacket
 
 2019-09-24 * "同性好友" "/"
 	Assets:Digital:Wechat:Cash 0.35 CNY
