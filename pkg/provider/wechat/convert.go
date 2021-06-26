@@ -18,6 +18,7 @@ func (w *Wechat) convertToIR() *ir.IR {
 			TypeOriginal: o.TypeOriginal,
 			Method:       o.Method,
 		}
+		irO.Metadata = getMetadata(o)
 		if o.MechantOrderID != "" {
 			irO.MerchantOrderID = &o.MechantOrderID
 		}
@@ -34,5 +35,44 @@ func conevertType(t OrderType) ir.TxType {
 		return ir.TxTypeRecv
 	default:
 		return ir.TxTypeUnknown
+	}
+}
+
+func getMetadata(o Order) map[string]string {
+	// FIXME(TripleZ): hard-coded, bad pattern
+	source := "微信支付"
+	var status, method, category, txType, orderId, merchantId, paytime string
+
+	paytime = o.PayTime.String()
+
+	if o.OrderID != "" {
+		orderId = o.OrderID
+	}
+
+	if o.MechantOrderID != "" {
+		merchantId = o.MechantOrderID
+	}
+
+	if o.TypeOriginal != "" {
+		txType = o.TypeOriginal
+	}
+
+	if o.Method != "" {
+		method = o.Method
+	}
+
+	if o.Status != "" {
+		status = o.Status
+	}
+
+	return map[string]string{
+		"source":     source,
+		"payTime":    paytime,
+		"orderId":    orderId,
+		"merchantId": merchantId,
+		"txType":     txType,
+		"category":   category,
+		"method":     method,
+		"status":     status,
 	}
 }

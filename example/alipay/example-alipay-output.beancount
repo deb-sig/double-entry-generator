@@ -15,48 +15,130 @@ option "operating_currency" "CNY"
 1970-01-01 open Income:Alipay:YuEBao:PnL
 1970-01-01 open Income:FIXME
 
-2020-06-02 * "蚂蚁财富-蚂蚁（杭州）基金销售有限公司" "蚂蚁财富-ABCD-卖出至余额宝"  ; 其他-交易成功-投资理财
+2020-06-02 * "蚂蚁财富-蚂蚁（杭州）基金销售有限公司" "蚂蚁财富-ABCD-卖出至余额宝"
 	Assets:Alipay 15.40 CNY
 	Assets:Alipay:Invest -15.40 CNY
 	Income:Alipay:Invest:PnL
+	category: "投资理财"
+	method: "余额宝"
+	orderId: "123456"
+	payTime: "2020-06-02 15:34:06 +0800 CST"
+	source: "支付宝"
+	status: "交易成功"
+	txType: "其他"
 
-2020-06-09 * "广发基金管理有限公司" "余额宝-2020.06.08-收益发放"  ; 其他-交易成功-投资理财
+2020-06-09 * "广发基金管理有限公司" "余额宝-2020.06.08-收益发放"
 	Assets:Alipay 0.11 CNY
 	Income:Alipay:YuEBao:PnL -0.11 CNY
+	category: "投资理财"
+	method: "余额宝"
+	orderId: "123456"
+	payTime: "2020-06-09 02:57:13 +0800 CST"
+	source: "支付宝"
+	status: "交易成功"
+	txType: "其他"
 
-2020-06-14 * "东莞肯德基有限公司" "KFCAPIDGB012345"  ; 支出-交易成功-餐饮美食
+2020-06-14 * "东莞肯德基有限公司" "KFCAPIDGB012345"
 	Expenses:Food 79.00 CNY
 	Assets:Alipay -79.00 CNY
+	category: "餐饮美食"
+	merchantId: "ABC9876"
+	method: "余额宝"
+	orderId: "123456"
+	payTime: "2020-06-14 12:43:26 +0800 CST"
+	source: "支付宝"
+	status: "交易成功"
+	txType: "支出"
 
-2021-05-19 * "蚂蚁财富-蚂蚁（杭州）基金销售有限公司" "蚂蚁财富-XZY指数C-买入"  ; 其他-交易成功-投资理财
+2021-05-19 * "蚂蚁财富-蚂蚁（杭州）基金销售有限公司" "蚂蚁财富-XZY指数C-买入"
 	Assets:Alipay:Invest 50.00 CNY
 	Assets:Alipay -50.00 CNY
+	category: "投资理财"
+	orderId: "123456"
+	payTime: "2021-05-19 09:42:54 +0800 CST"
+	source: "支付宝"
+	status: "交易成功"
+	txType: "其他"
 
-2021-05-20 * "苏宁易购官方旗舰店" "【礼遇价】三星128g内存卡microSD存储卡tf卡行车记录仪卡switch监控摄像头"  ; 支出-交易成功-数码电器
+2021-05-20 * "苏宁易购官方旗舰店" "【礼遇价】三星128g内存卡microSD存储卡tf卡行车记录仪卡switch监控摄像头"
 	Expenses:Electronics 87.90 CNY
 	Assets:Bank:CN:CMB-9876:Savings -87.90 CNY
+	category: "数码电器"
+	merchantId: "ABC9876"
+	method: "招商银行(9876)"
+	orderId: "123456"
+	payTime: "2021-05-20 12:34:34 +0800 CST"
+	source: "支付宝"
+	status: "交易成功"
+	txType: "支出"
 
-2021-05-30 * "广发基金管理有限公司" "余额宝-单次转入"  ; 其他-交易成功-投资理财
+2021-05-30 * "广发基金管理有限公司" "余额宝-单次转入"
 	Assets:Alipay 2.00 CNY
 	Assets:Alipay -2.00 CNY
+	category: "投资理财"
+	merchantId: "ABC9876"
+	method: "余额"
+	orderId: "123456"
+	payTime: "2021-05-30 23:43:37 +0800 CST"
+	source: "支付宝"
+	status: "交易成功"
+	txType: "其他"
 
-2021-06-01 * "dettol滴露官方旗舰店" "【直接下单付款】滴露消毒液1.2L*2家用杀菌消毒水衣物地板宠物"  ; 支出-交易关闭-日用百货
+2021-06-01 * "dettol滴露官方旗舰店" "【直接下单付款】滴露消毒液1.2L*2家用杀菌消毒水衣物地板宠物"
 	Expenses:Groceries 109.90 CNY
 	Assets:Bank:CN:CMB-9876:Savings -109.90 CNY
+	category: "日用百货"
+	merchantId: "ABC9876"
+	method: "招商银行(9876)"
+	orderId: "123456"
+	payTime: "2021-06-01 00:10:22 +0800 CST"
+	source: "支付宝"
+	status: "交易关闭"
+	txType: "支出"
 
-2021-06-01 * "dettol滴露官方旗舰店" "退款-【直接下单付款】滴露消毒液1.2L*2家用杀菌消毒水衣物地板宠物"  ; 其他-退款成功-退款
+2021-06-01 * "dettol滴露官方旗舰店" "退款-【直接下单付款】滴露消毒液1.2L*2家用杀菌消毒水衣物地板宠物"
 	Assets:Bank:CN:CMB-9876:Savings 109.90 CNY
 	Expenses:Groceries -109.90 CNY
+	category: "退款"
+	merchantId: "ABC9876"
+	method: "招商银行(9876)"
+	orderId: "123456"
+	payTime: "2021-06-01 00:13:56 +0800 CST"
+	source: "支付宝"
+	status: "退款成功"
+	txType: "其他"
 
-2021-06-14 * "蚂蚁会员（北京）网络技术服务有限公司" "相互宝分摊-6月第1期-*"  ; 支出-交易成功-互助保障
+2021-06-14 * "蚂蚁会员（北京）网络技术服务有限公司" "相互宝分摊-6月第1期-*"
 	Expenses:Insurance 6.51 CNY
 	Assets:Bank:CN:CMB-9876:Savings -6.51 CNY
+	category: "互助保障"
+	merchantId: "ABC9876"
+	method: "招商银行(9876)"
+	orderId: "123456"
+	payTime: "2021-06-14 14:00:38 +0800 CST"
+	source: "支付宝"
+	status: "交易成功"
+	txType: "支出"
 
-2021-06-24 * "*三" "商品"  ; 收入-交易成功-收入
+2021-06-24 * "*三" "商品"
 	Assets:Alipay 10.00 CNY
 	Income:Alipay:ShouKuanMa -10.00 CNY
+	category: "收入"
+	merchantId: "123456"
+	orderId: "123456"
+	payTime: "2021-06-24 00:00:00 +0800 CST"
+	source: "支付宝"
+	status: "交易成功"
+	txType: "收入"
 
-2021-06-25 * "*三" "我就随便转着玩"  ; 收入-交易成功-转账红包
+2021-06-25 * "*三" "我就随便转着玩"
 	Assets:Alipay 42.00 CNY
 	Income:FIXME -42.00 CNY
+	category: "转账红包"
+	method: "余额"
+	orderId: "123456"
+	payTime: "2021-06-25 00:00:00 +0800 CST"
+	source: "支付宝"
+	status: "交易成功"
+	txType: "收入"
 
