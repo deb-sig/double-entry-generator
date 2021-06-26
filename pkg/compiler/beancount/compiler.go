@@ -169,6 +169,7 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 			PlusAccount:  o.PlusAccount,
 			MinusAccount: o.MinusAccount,
 			PnlAccount:   o.ExtraAccounts[ir.PnlAccount],
+			Metadata:     o.Metadata,
 			Currency:     b.Config.DefaultCurrency,
 		})
 	case ir.OrderTypeHuobiTrade: // Huobi trades

@@ -1,8 +1,6 @@
 package alipay
 
 import (
-	"fmt"
-
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
 )
 
@@ -15,13 +13,13 @@ func (a *Alipay) convertToIR() *ir.IR {
 			Peer:           o.Peer,
 			Item:           o.ItemName,
 			Method:         o.Method,
-			Note:           fmt.Sprintf("%s-%s-%s", o.TxTypeOriginal, o.Status, o.Category),
 			PayTime:        o.PayTime,
 			Money:          o.Money,
 			OrderID:        &o.DealNo,
 			TxType:         conevertType(o.TxType),
 			TxTypeOriginal: o.TxTypeOriginal,
 		}
+		irO.Metadata = getMetadata(o)
 		if o.MerchantId != "" {
 			irO.MerchantOrderID = &o.MerchantId
 		}
@@ -38,5 +36,48 @@ func conevertType(t TxTypeType) ir.TxType {
 		return ir.TxTypeRecv
 	default:
 		return ir.TxTypeUnknown
+	}
+}
+
+func getMetadata(o Order) map[string]string {
+	// FIXME(TripleZ): hard-coded, bad pattern
+	source := "支付宝"
+	var status, method, category, txType, orderId, merchantId, paytime string
+
+	paytime = o.PayTime.String()
+
+	if o.DealNo != "" {
+		orderId = o.DealNo
+	}
+
+	if o.MerchantId != "" {
+		merchantId = o.MerchantId
+	}
+
+	if o.Category != "" {
+		category = o.Category
+	}
+
+	if o.TxTypeOriginal != "" {
+		txType = o.TxTypeOriginal
+	}
+
+	if o.Method != "" {
+		method = o.Method
+	}
+
+	if o.Status != "" {
+		status = o.Status
+	}
+
+	return map[string]string{
+		"source":     source,
+		"payTime":    paytime,
+		"orderId":    orderId,
+		"merchantId": merchantId,
+		"txType":     txType,
+		"category":   category,
+		"method":     method,
+		"status":     status,
 	}
 }
