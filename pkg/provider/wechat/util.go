@@ -34,6 +34,8 @@ func getTxType(tt string) TxType {
 		return TxTypeCash2Cash
 	} else if strings.Contains(tt, string(TxTypeIntoCash)) {
 		return TxTypeIntoCash
+	} else if strings.Contains(tt, string(TxTypeCashWithdraw)) {
+		return TxTypeCashWithdraw
 	} else {
 		return TxTypeUnknown
 	}

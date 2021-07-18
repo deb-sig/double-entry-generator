@@ -72,3 +72,39 @@ option "operating_currency" "CNY"
 	source: "微信支付"
 	txType: "支出"
 
+2021-07-11 * "招商银行()" "/"
+	Assets:Bank:CN:BOC:Savings 1000.10 CNY
+	Assets:Digital:WeChat:Cash -1000.10 CNY
+	Expenses:Wechat:Commission 1.00 CNY
+	Assets:Digital:WeChat:Cash -1.00 CNY
+	merchantId: "/"
+	method: "中国银行"
+	orderId: "207210711100077147832088993175"
+	payTime: "2021-07-11 14:17:52 +0800 CST"
+	source: "微信支付"
+	txType: "/"
+
+2021-07-14 * "招商银行()" "/"
+	Assets:Bank:CN:ICBC:Savings 10.00 CNY
+	Assets:Digital:WeChat:Cash -10.00 CNY
+	Expenses:Wechat:Commission 0.10 CNY
+	Assets:Digital:WeChat:Cash -0.10 CNY
+	merchantId: "/"
+	method: "工商银行"
+	orderId: "207210714100077147459276708175"
+	payTime: "2021-07-14 22:18:10 +0800 CST"
+	source: "微信支付"
+	txType: "/"
+
+2021-07-15 * "招商银行()" "/"
+	Assets:Bank:CN:ICBC:Savings 100.00 CNY
+	Assets:Digital:WeChat:Cash -100.00 CNY
+	Expenses:Wechat:Commission 0.10 CNY
+	Assets:Digital:WeChat:Cash -0.10 CNY
+	merchantId: "/"
+	method: "工商银行"
+	orderId: "207210715100077148235523883175"
+	payTime: "2021-07-15 16:29:37 +0800 CST"
+	source: "微信支付"
+	txType: "/"
+

@@ -23,13 +23,15 @@ type Config struct {
 
 // Rule is the type for match rules.
 type Rule struct {
-	Peer          *string `mapstructure:"peer,omitempty"`
-	Item          *string `mapstructure:"item,omitempty"`
-	Type          *string `mapstructure:"type,omitempty"`
-	Seperator     *string `mapstructure:"sep,omitempty"` // default: ,
-	Method        *string `mapstructure:"method,omitempty"`
-	StartTime     *string `mapstructure:"startTime,omitempty"`
-	EndTime       *string `mapstructure:"endTime,omitempty"`
-	MethodAccount *string `mapstructure:"methodAccount,omitempty"`
-	TargetAccount *string `mapstructure:"targetAccount,omitempty"`
+	Peer              *string `mapstructure:"peer,omitempty"`
+	Item              *string `mapstructure:"item,omitempty"`
+	Type              *string `mapstructure:"type,omitempty"`
+	TxType            *string `mapstructure:"txType,omitempty"`
+	Seperator         *string `mapstructure:"sep,omitempty"` // default: ,
+	Method            *string `mapstructure:"method,omitempty"`
+	StartTime         *string `mapstructure:"startTime,omitempty"`
+	EndTime           *string `mapstructure:"endTime,omitempty"`
+	MethodAccount     *string `mapstructure:"methodAccount,omitempty"`
+	TargetAccount     *string `mapstructure:"targetAccount,omitempty"`
+	CommissionAccount *string `mapstructure:"commissionAccount,omitempty"`
 }
