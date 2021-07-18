@@ -27,6 +27,9 @@ func (w Wechat) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 		if r.TargetAccount != nil {
 			uniqMap[*r.TargetAccount] = true
 		}
+		if r.CommissionAccount != nil {
+			uniqMap[*r.CommissionAccount] = true
+		}
 	}
 	uniqMap[cfg.DefaultPlusAccount] = true
 	uniqMap[cfg.DefaultMinusAccount] = true

@@ -14,10 +14,10 @@ wechat:
       txType: 转入零钱
       peer: /
       item: /
-      targetAccount: Assets:Digital:WeChat:Cash
+      targetAccount: Assets:Digital:Wechat:Cash
     - type: / # 零钱提现
       txType: 零钱提现
-      targetAccount: Assets:Digital:WeChat:Cash
+      targetAccount: Assets:Digital:Wechat:Cash
       commissionAccount: Expenses:Wechat:Commission
 
     - peer: 云膳过桥米线,餐厅
