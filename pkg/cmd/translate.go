@@ -73,22 +73,17 @@ func run(args []string) {
 	c := &config.Config{}
 	err := viper.Unmarshal(c)
 	logErrorIfNotNil(err)
-	// check financial trades by provider
-	isTrade := false
-	tradeProviders := map[string]bool{
-		consts.ProviderHuobi: true,
-	}
-	if tradeProviders[providerName] {
-		isTrade = true
-	}
 
-	if !isTrade {
+	switch providerName {
+	case consts.ProviderAlipay:
+		fallthrough
+	case consts.ProviderWechat:
 		if c.DefaultCurrency == "" ||
 			c.DefaultMinusAccount == "" ||
 			c.DefaultPlusAccount == "" {
 			log.Fatalf("Failed to get default options in config")
 		}
-	} else {
+	case consts.ProviderHuobi:
 		if c.DefaultCurrency == "" ||
 			c.DefaultCashAccount == "" ||
 			c.DefaultPositionAccount == "" ||

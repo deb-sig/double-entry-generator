@@ -161,16 +161,18 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 		fallthrough
 	case ir.OrderTypeNormal:
 		err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
-			PayTime:      o.PayTime,
-			Peer:         o.Peer,
-			Item:         o.Item,
-			Note:         o.Note,
-			Money:        o.Money,
-			PlusAccount:  o.PlusAccount,
-			MinusAccount: o.MinusAccount,
-			PnlAccount:   o.ExtraAccounts[ir.PnlAccount],
-			Metadata:     o.Metadata,
-			Currency:     b.Config.DefaultCurrency,
+			PayTime:           o.PayTime,
+			Peer:              o.Peer,
+			Item:              o.Item,
+			Note:              o.Note,
+			Money:             o.Money,
+			Commission:        o.Commission,
+			PlusAccount:       o.PlusAccount,
+			MinusAccount:      o.MinusAccount,
+			PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
+			CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
+			Metadata:          o.Metadata,
+			Currency:          b.Config.DefaultCurrency,
 		})
 	case ir.OrderTypeHuobiTrade: // Huobi trades
 		switch o.TxType {

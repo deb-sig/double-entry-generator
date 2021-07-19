@@ -9,14 +9,16 @@ func (w *Wechat) convertToIR() *ir.IR {
 	i := ir.New()
 	for _, o := range w.Orders {
 		irO := ir.Order{
-			Peer:         o.Peer,
-			Item:         o.Item,
-			PayTime:      o.PayTime,
-			Money:        o.Money,
-			OrderID:      &o.OrderID,
-			TxType:       conevertType(o.Type),
-			TypeOriginal: o.TypeOriginal,
-			Method:       o.Method,
+			Peer:           o.Peer,
+			Item:           o.Item,
+			PayTime:        o.PayTime,
+			Money:          o.Money,
+			OrderID:        &o.OrderID,
+			TxType:         conevertType(o.Type),
+			TxTypeOriginal: o.TypeOriginal,
+			TypeOriginal:   o.TxTypeOriginal,
+			Method:         o.Method,
+			Commission:     o.Commission,
 		}
 		irO.Metadata = getMetadata(o)
 		if o.MechantOrderID != "" {

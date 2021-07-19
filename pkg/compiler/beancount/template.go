@@ -9,20 +9,26 @@ import (
 var normalOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}" "{{ .Item }}"{{ if .Note }}  ; {{ .Note }}{{ end }}
 	{{ .PlusAccount }} {{ .Money | printf "%.2f" }} {{ .Currency }}
 	{{ .MinusAccount }} -{{ .Money | printf "%.2f" }} {{ .Currency }}
-{{ if .PnlAccount }}	{{ .PnlAccount }}{{ printf "\n" }}{{ end }}{{ range $key, $value := .Metadata }}{{ if $value }}	{{ $key }}: "{{ $value }}"{{ printf "\n" }}{{end}}{{end}}
+	{{- if .CommissionAccount }}{{ printf "\n" }}	{{ .CommissionAccount }} {{ .Commission | printf "%.2f" }} {{ .Currency }}{{ end }}
+	{{- if .CommissionAccount }}{{ printf "\n" }}	{{ .MinusAccount }} -{{ .Commission | printf "%.2f" }} {{ .Currency }}{{ end }}
+	{{- if .PnlAccount }}{{ printf "\n" }}	{{ .PnlAccount }}{{ end }}
+	{{- range $key, $value := .Metadata }}{{ if $value }}{{ printf "\n" }}	{{ $key }}: "{{ $value }}"{{end}}{{end}}
+
 `
 
 type NormalOrderVars struct {
-	PayTime      time.Time
-	Peer         string
-	Item         string
-	Note         string
-	Money        float64
-	PlusAccount  string
-	MinusAccount string
-	PnlAccount   string
-	Currency     string
-	Metadata     map[string]string // unordered metadata map
+	PayTime           time.Time
+	Peer              string
+	Item              string
+	Note              string
+	Money             float64
+	Commission        float64
+	PlusAccount       string
+	MinusAccount      string
+	PnlAccount        string
+	CommissionAccount string
+	Currency          string
+	Metadata          map[string]string // unordered metadata map
 }
 
 // 火币买入模版（手续费单位为购买单位货币）

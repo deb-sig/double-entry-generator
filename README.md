@@ -168,7 +168,13 @@ alipay:
 
 `alipay` is the provider-specific configuration. Alipay provider has rules matching mechanism.
 
-`alipay` 是蚂蚁账单相关的配置。它提供基于规则的匹配。可以指定 type（收/支）、 method（支付方式）、peer（交易对方）和 item（商品名称）的包含匹配。匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` 覆盖默认定义。
+`alipay` 蚂蚁账单相关的配置。它提供基于规则的匹配。可以指定：
+- peer（交易对方）的包含匹配。
+- item（商品说明）的包含匹配。
+- type（收/支）的包含匹配。
+- method（收/付款方式）的包含匹配。
+
+匹配成功则使用规则中定义的 `targetAccount` 、 `methodAccount` 等账户覆盖默认定义账户。
 
 支付宝提供了“交易方式”字段来标识资金出入账户。这样就可以直接通过“交易方式”，并辅以“收/支”字段确认该账户为增加账户还是减少账户。而复式记账法每笔交易至少需要两个账户，另一个账户则可通过“交易对方”（peer）、“商品”（item）、“收/支”（type）以及“交易方式”（method）的多种包含匹配得出。匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `methodAccount` 的正负关系，来覆盖默认定义的增减账户。
 
@@ -187,6 +193,7 @@ alipay:
 ```yaml
 defaultMinusAccount: Assets:FIXME
 defaultPlusAccount: Expenses:FIXME
+defaultCommissionAccount: Expenses:Commission:FIXME
 defaultCurrency: CNY
 title: Test WeChat bills config
 wechat:
@@ -196,9 +203,14 @@ wechat:
       item: /
       targetAccount: Income:Wechat:RedPacket
     - type: / # 转入零钱通
+      txType: 转入零钱
       peer: /
       item: /
       targetAccount: Assets:Digital:WeChat:Cash
+    - type: / # 零钱提现
+      txType: 零钱提现
+      targetAccount: Assets:Digital:WeChat:Cash
+      commissionAccount: Expenses:Wechat:Commission
 
     - peer: 滴滴
       targetAccount: Expenses:Transport:Taxi
@@ -219,7 +231,18 @@ wechat:
 
 `defaultMinusAccount`, `defaultPlusAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户。 `defaultCurrency` 是默认货币。
 
+> `defaultCommissionAccount` 是默认的服务费账户，若无服务费相关交易，则不需要填写。但笔者还是建议填写一个占位 FIXME 账户，否则遇到带服务费的交易，转换器会报错退出。
+
 `wechat` is the provider-specific configuration. WeChat provider has rules matching mechanism.
+
+`wechat` 是微信相关的配置。它提供基于规则的匹配。可以指定：
+- peer（交易对方）的包含匹配。
+- item（商品名称）的包含匹配。
+- type（收/支）的包含匹配。
+- txType（交易类型）的包含匹配。
+- method（支付方式）的包含匹配。
+
+匹配成功则使用规则中定义的 `targetAccount` 、 `methodAccount` 等账户覆盖默认定义账户。
 
 微信账单提供了“交易方式”字段来标识资金出入账户。这样就可以直接通过“交易方式”，并辅以“收/支”字段确认该账户为增加账户还是减少账户。而复式记账法每笔交易至少需要两个账户，另一个账户则可通过“交易对方”（peer）、“商品”（item）、“收/支”（type）以及“交易方式”（method）的多种包含匹配得出。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `methodAccount` 的正负关系，来覆盖默认定义的增减账户。
 
