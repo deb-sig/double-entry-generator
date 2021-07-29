@@ -43,7 +43,7 @@ func conevertType(t OrderType) ir.TxType {
 func getMetadata(o Order) map[string]string {
 	// FIXME(TripleZ): hard-coded, bad pattern
 	source := "微信支付"
-	var status, method, category, txType, orderId, merchantId, paytime string
+	var status, method, category, txType, typeOriginal, orderId, merchantId, paytime string
 
 	paytime = o.PayTime.String()
 
@@ -57,6 +57,10 @@ func getMetadata(o Order) map[string]string {
 
 	if o.TypeOriginal != "" {
 		txType = o.TypeOriginal
+	}
+
+	if o.TxTypeOriginal != "" {
+		typeOriginal = o.TxTypeOriginal
 	}
 
 	if o.Method != "" {
@@ -73,6 +77,7 @@ func getMetadata(o Order) map[string]string {
 		"orderId":    orderId,
 		"merchantId": merchantId,
 		"txType":     txType,
+		"type":       typeOriginal,
 		"category":   category,
 		"method":     method,
 		"status":     status,

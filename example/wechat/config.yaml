@@ -19,6 +19,12 @@ wechat:
       txType: 零钱提现
       targetAccount: Assets:Digital:Wechat:Cash
       commissionAccount: Expenses:Wechat:Commission
+    - type: / # 零钱充值
+      txType: 零钱充值
+      targetAccount: Assets:Digital:Wechat:Cash
+    - type: / # 零钱通转出-到工商银行(9876)
+      txType: 零钱通转出-到工商银行(9876)
+      targetAccount: Assets:Bank:CN:ICBC:Savings
 
     - peer: 云膳过桥米线,餐厅
       sep: ','
@@ -31,6 +37,14 @@ wechat:
     - peer: 用户
       type: 收入
       targetAccount: Income:Service
+
+    - peer: 理财通
+      type: /
+      targetAccount: Assets:Trade:Tencent:LiCaiTong
+
+    - peer: 建设银行
+      txType: 信用卡还款
+      targetAccount: Liabilities:Bank:CN:CCB
 
     - method: / # 一般为收入，存入零钱
       methodAccount: Assets:Digital:Wechat:Cash
