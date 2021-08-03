@@ -195,9 +195,10 @@ defaultMinusAccount: Assets:FIXME
 defaultPlusAccount: Expenses:FIXME
 defaultCommissionAccount: Expenses:Commission:FIXME
 defaultCurrency: CNY
-title: Test WeChat bills config
+title: 测试
 wechat:
   rules:
+    # type (additional condition)
     - type: 收入 # 微信红包
       method: /
       item: /
@@ -206,27 +207,47 @@ wechat:
       txType: 转入零钱
       peer: /
       item: /
-      targetAccount: Assets:Digital:WeChat:Cash
+      targetAccount: Assets:Digital:Wechat:Cash
     - type: / # 零钱提现
       txType: 零钱提现
-      targetAccount: Assets:Digital:WeChat:Cash
+      targetAccount: Assets:Digital:Wechat:Cash
       commissionAccount: Expenses:Wechat:Commission
+    - type: / # 零钱充值
+      txType: 零钱充值
+      targetAccount: Assets:Digital:Wechat:Cash
+    - type: / # 零钱通转出-到工商银行(9876)
+      txType: 零钱通转出-到工商银行(9876)
+      targetAccount: Assets:Bank:CN:ICBC:Savings
 
-    - peer: 滴滴
-      targetAccount: Expenses:Transport:Taxi
-    - peer: 公交
-      targetAccount: Expenses:Transport:Bus
-    - peer: 地铁
-      targetAccount: Expenses:Transport:Metro
-    - peer: 中国铁路
-      targetAccount: Expenses:Transport:Train
-    
+    - peer: 云膳过桥米线,餐厅
+      sep: ','
+      targetAccount: Expenses:Food:Meal
+
+    - peer: 房东
+      type: 支出
+      targetAccount: Expenses:Housing:Rent
+
+    - peer: 用户
+      type: 收入
+      targetAccount: Income:Service
+
+    - peer: 理财通
+      type: /
+      targetAccount: Assets:Trade:Tencent:LiCaiTong
+
+    - peer: 建设银行
+      txType: 信用卡还款
+      targetAccount: Liabilities:Bank:CN:CCB
+
     - method: / # 一般为收入，存入零钱
       methodAccount: Assets:Digital:Wechat:Cash
     - method: 零钱 # 零钱/零钱通
       methodAccount: Assets:Digital:Wechat:Cash
     - method: 工商银行
       methodAccount: Assets:Bank:CN:ICBC:Savings
+    - method: 中国银行
+      methodAccount: Assets:Bank:CN:BOC:Savings
+
 ```
 
 `defaultMinusAccount`, `defaultPlusAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户。 `defaultCurrency` 是默认货币。
