@@ -33,7 +33,7 @@ func (w *Wechat) translateToOrders(array []string) error {
 	switch bill.TxType {
 	case TxTypeCash2Cash:
 		fallthrough
-	case TxTypeCash2Cash_2:
+	case TxTypeCash2CashLooseChange:
 		log.Printf("Get an unusable tx type, ignore it: %s\n", bill.TxType)
 		return nil
 	case TxTypeUnknown:
