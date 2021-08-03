@@ -34,8 +34,18 @@ func getTxType(tt string) TxType {
 		return TxTypeCash2Cash
 	} else if strings.Contains(tt, string(TxTypeIntoCash)) {
 		return TxTypeIntoCash
+	} else if strings.Contains(tt, string(TxTypeCashIn)) {
+		return TxTypeCashIn
 	} else if strings.Contains(tt, string(TxTypeCashWithdraw)) {
 		return TxTypeCashWithdraw
+	} else if strings.Contains(tt, string(TxTypeCreditCardRefund)) {
+		return TxTypeCreditCardRefund
+	} else if strings.Contains(tt, string(TxTypeBuyLiCaiTong)) {
+		return TxTypeBuyLiCaiTong
+	} else if strings.Contains(tt, string(TxTypeCash2CashLooseChange)) {
+		return TxTypeCash2CashLooseChange
+	} else if strings.Contains(tt, string(TxTypeCash2Others)) {
+		return TxTypeCash2Others
 	} else {
 		return TxTypeUnknown
 	}
