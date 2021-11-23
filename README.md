@@ -73,13 +73,9 @@ double-entry-generator translate \
 
 #### 下载方式
 
-支付宝账单获取方式[见此](https://blog.triplez.cn/posts/bills-export-methods/#支付宝)。
+`v1.0.0` 及以上的版本请参考[此文章](https://blog.triplez.cn/posts/bills-export-methods/#支付宝)获取支付宝账单。
 
-`v0.2.0` 及以下版本请使用如下方式获取账单：
-
-登录 PC 支付宝后，访问 [这里](https://consumeprod.alipay.com/record/standard.htm)，选择时间区间，下拉到页面底端，点击下载查询结果。
-
-注意：请下载查询结果，而非[收支明细](https://cshall.alipay.com/lab/help_detail.htm?help_id=212688)。
+`v0.2.0` 及以下版本请使用此方式获取账单：登录 PC 支付宝后，访问 [这里](https://consumeprod.alipay.com/record/standard.htm)，选择时间区间，下拉到页面底端，点击下载查询结果。注意：请下载查询结果，而非[收支明细](https://cshall.alipay.com/lab/help_detail.htm?help_id=212688)。
 
 #### 格式示例
 
