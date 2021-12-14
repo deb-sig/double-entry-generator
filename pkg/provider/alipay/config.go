@@ -25,6 +25,9 @@ type Config struct {
 type Rule struct {
 	Peer          *string `mapstructure:"peer,omitempty"`
 	Item          *string `mapstructure:"item,omitempty"`
+//add by lance 20211214
+	Category      *string `mapstructure:"Category,omitempty"`
+//
 	Type          *string `mapstructure:"type,omitempty"`
 	Method        *string `mapstructure:"method,omitempty"`
 	Separator     *string `mapstructure:"sep,omitempty"` // default: ,
