@@ -67,5 +67,13 @@ clean: ## Clean all the temporary files
 	@rm -rf ./bin
 	@rm -rf ./test/output
 
+test: test-alipay test-wechat ## Run all tests
+
+test-alipay: ## Run tests for Alipay provider
+	@$(SHELL) ./test/alipay-test.sh
+
 test-wechat: ## Run tests for WeChat provider
 	@$(SHELL) ./test/wechat-test.sh
+
+format: ## Format code
+	@gofmt -s -w pkg
