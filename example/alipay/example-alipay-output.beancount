@@ -142,3 +142,27 @@ option "operating_currency" "CNY"
 	status: "交易成功"
 	txType: "收入"
 
+2021-12-09 * "好邻居连锁便利店" "好邻居订单"
+	Expenses:Groceries 7.50 CNY
+	Assets:Bank:CN:CMB-9876:Savings -7.50 CNY
+	category: "日用百货"
+	merchantId: "10000891202112098830044"
+	method: "招商银行(9876)"
+	orderId: "2021120922001468815735046417"
+	payTime: "2021-12-09 09:25:42 +0800 CST"
+	source: "支付宝"
+	status: "交易成功"
+	txType: "支出"
+
+2021-12-11 * "北京稻香村食品有限责任公司" "北京稻香村食品有限责任公司"
+	Expenses:Food 31.00 CNY
+	Assets:Bank:CN:CMB-9876:Savings -31.00 CNY
+	category: "餐饮美食"
+	merchantId: "322017092208872157020004030330000032112115225418"
+	method: "招商银行(9876)"
+	orderId: "2021121122001468815736847417"
+	payTime: "2021-12-11 16:53:51 +0800 CST"
+	source: "支付宝"
+	status: "交易成功"
+	txType: "支出"
+
