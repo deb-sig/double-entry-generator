@@ -65,11 +65,9 @@ func (a Alipay) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 		if r.Method != nil {
 			match = util.SplitFindContains(*r.Method, o.Method, sep, match)
 		}
-		//add by lance 20211214
 		if r.Category != nil {
 			match = util.SplitFindContains(*r.Category, o.Category, sep, match)
 		}
-		//
 		if r.StartTime != nil && r.EndTime != nil {
 			// TODO(gaocegege): Support it.
 		}

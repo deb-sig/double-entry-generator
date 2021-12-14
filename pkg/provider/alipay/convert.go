@@ -12,9 +12,7 @@ func (a *Alipay) convertToIR() *ir.IR {
 		irO := ir.Order{
 			Peer:           o.Peer,
 			Item:           o.ItemName,
-			//add by lance 2021/12/14
 			Category:       o.Category,
-			//
 			Method:         o.Method,
 			PayTime:        o.PayTime,
 			Money:          o.Money,
