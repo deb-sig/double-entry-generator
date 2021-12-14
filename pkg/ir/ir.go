@@ -31,6 +31,7 @@ type Order struct {
 	OrderType       OrderType
 	Peer            string
 	Item            string
+	Category        string
 	MerchantOrderID *string
 	OrderID         *string
 	Money           float64

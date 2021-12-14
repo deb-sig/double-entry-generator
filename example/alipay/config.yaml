@@ -4,6 +4,11 @@ defaultCurrency: CNY
 title: 测试
 alipay:
   rules:
+    - category: 日用百货
+      targetAccount: Expenses:Groceries
+    - category: 餐饮美食
+      targetAccount: Expenses:Food
+
     - peer: 肯德基|麦当劳
       sep: '|'
       targetAccount: Expenses:Food
