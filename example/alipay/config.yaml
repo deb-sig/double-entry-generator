@@ -4,45 +4,21 @@ defaultCurrency: CNY
 title: 测试
 alipay:
   rules:
-  
-    - category: 日用百货
+    - peer: 肯德基|麦当劳
+      sep: '|'
+      targetAccount: Expenses:Food
+    - peer: 滴露
       targetAccount: Expenses:Groceries
-    - category: 餐饮美食
-      targetAccount: Expenses:Food:DailyMeal
-    - category: 交通出行
-      targetAccount: Expenses:Transport
-    - category: 爱车养车 
-      targetAccount: Expenses:Car
-    - category: 医疗健康 
-      targetAccount: Expenses:Medical
-    - category: 服饰装扮
-      targetAccount: Expenses:Cloth
-    - category: 运动户外
-      targetAccount: Expenses:Leisure:Outdoor      
-    - category: 充值缴费
-      targetAccount: Expenses:Housing:Bills
-    - category: 文化休闲
-      targetAccount: Expenses:Leisure:Shopping
-    - category: 酒店旅游
-      targetAccount: Expenses:Leisure:Travel  
+    - peer: 苏宁
+      targetAccount: Expenses:Electronics
+    - item: 相互宝
+      targetAccount: Expenses:Insurance
 
-
-    - peer: 房东
-      type: 支出
-      targetAccount: Expenses:Housing:Rent
-    - peer: 自来水,燃气,电力,电费
-      sep: ','
-      targetAccount: Expenses:Housing:Bills 
-
-   
-      
     - method: 余额 # 余额/余额宝
       methodAccount: Assets:Alipay
-    - method: 招商银行储蓄卡(4802)
-      methodAccount: Assets:Bank:CN:CMB-4802:Savings
-    - method: 招商银行信用卡(8214)
-      methodAccount: Liabilities:CreditCard:CN:CMB-8214:Creditcard
-      
+    - method: 招商银行(9876)
+      methodAccount: Assets:Bank:CN:CMB-9876:Savings
+
     - type: 收入 # 其他转账收款
       targetAccount: Income:FIXME
       methodAccount: Assets:Alipay
