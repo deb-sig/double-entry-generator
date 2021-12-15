@@ -9,6 +9,7 @@ option "operating_currency" "CNY"
 1970-01-01 open Expenses:FIXME
 1970-01-01 open Expenses:Food:Meal:Dinner
 1970-01-01 open Expenses:Food:Meal:Lunch
+1970-01-01 open Expenses:Food:Meal:MidNight
 1970-01-01 open Expenses:Housing:Rent
 1970-01-01 open Expenses:Wechat:Commission
 1970-01-01 open Income:Service
@@ -174,4 +175,26 @@ option "operating_currency" "CNY"
 	source: "微信支付"
 	txType: "/"
 	type: "零钱提现"
+
+2021-12-15 * "某餐厅" "测试 T+1"
+	Expenses:Food:Meal:MidNight 12.00 CNY
+	Assets:Digital:Wechat:Cash -12.00 CNY
+	merchantId: "129847129"
+	method: "零钱通"
+	orderId: "3985734"
+	payTime: "2021-12-15 00:06:35 +0800 CST"
+	source: "微信支付"
+	txType: "支出"
+	type: "扫二维码付款"
+
+2021-12-15 * "某餐厅" "测试 T-1"
+	Expenses:Food:Meal:MidNight 12.00 CNY
+	Assets:Digital:Wechat:Cash -12.00 CNY
+	merchantId: "129847129"
+	method: "零钱通"
+	orderId: "3985734"
+	payTime: "2021-12-15 23:51:35 +0800 CST"
+	source: "微信支付"
+	txType: "支出"
+	type: "扫二维码付款"
 
