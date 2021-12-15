@@ -116,6 +116,12 @@ double-entry-generator translate \
 ## 配置
 
 ### 支付宝
+
+<details>
+<summary>
+  支付宝配置文件示例
+</summary>
+
 ```yaml
 defaultMinusAccount: Assets:FIXME
 defaultPlusAccount: Expenses:FIXME
@@ -123,6 +129,11 @@ defaultCurrency: CNY
 title: 测试
 alipay:
   rules:
+    - category: 日用百货
+      targetAccount: Expenses:Groceries
+    - category: 餐饮美食
+      targetAccount: Expenses:Food
+
     - peer: 肯德基|麦当劳
       sep: '|'
       targetAccount: Expenses:Food
@@ -138,42 +149,66 @@ alipay:
     - method: 招商银行(9876)
       methodAccount: Assets:Bank:CN:CMB-9876:Savings
 
+    - type: 收入 # 其他转账收款
+      targetAccount: Income:FIXME
+      methodAccount: Assets:Alipay
+    - type: 收入 # 收款码收款
+      item: 商品
+      targetAccount: Income:Alipay:ShouKuanMa
+      methodAccount: Assets:Alipay
+
     # 交易类型为其他
     - type: 其他
       item: 收益发放
       methodAccount: Income:Alipay:YuEBao:PnL
       targetAccount: Assets:Alipay
     - type: 其他
-      peer: 蚂蚁财富
-      item: 买入
-      targetAccount: Assets:Alipay:Invest
-      methodAccount: Assets:Alipay
-    - type: 其他
-      peer: 蚂蚁财富
-      item: 卖出至余额宝
-      targetAccount: Assets:Alipay
-      methodAccount: Assets:Alipay:Invest
-      pnlAccount: Income:Alipay:Invest:PnL
-    - type: 其他
       item: 余额宝-单次转入
       targetAccount: Assets:Alipay
       methodAccount: Assets:Alipay
+
+    - peer: 基金
+      type: 其他
+      item: 黄金-买入
+      methodAccount: Assets:Alipay
+      targetAccount: Assets:Alipay:Invest:Gold
+    - peer: 基金
+      type: 其他
+      item: 黄金-卖出
+      methodAccount: Assets:Alipay:Invest:Gold
+      targetAccount: Assets:Alipay
+      pnlAccount: Income:Alipay:Invest:PnL
+    - peer: 基金
+      type: 其他
+      item: 买入
+      methodAccount: Assets:Alipay
+      targetAccount: Assets:Alipay:Invest:Fund
+    - peer: 基金
+      type: 其他
+      item: 卖出
+      methodAccount: Assets:Alipay:Invest:Fund
+      targetAccount: Assets:Alipay
+      pnlAccount: Income:Alipay:Invest:PnL
 ```
+
+</details></br>
 
 `defaultMinusAccount`, `defaultPlusAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户。 `defaultCurrency` 是默认货币。
 
 `alipay` is the provider-specific configuration. Alipay provider has rules matching mechanism.
 
 `alipay` 蚂蚁账单相关的配置。它提供基于规则的匹配。可以指定：
-- peer（交易对方）的包含匹配。
-- item（商品说明）的包含匹配。
-- type（收/支）的包含匹配。
-- method（收/付款方式）的包含匹配。
-- category（交易分类）的包含匹配。
+- `peer`（交易对方）的包含匹配。
+- `item`（商品说明）的包含匹配。
+- `type`（收/支）的包含匹配。
+- `method`（收/付款方式）的包含匹配。
+- `category`（交易分类）的包含匹配。
 
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
 
 匹配成功则使用规则中定义的 `targetAccount` 、 `methodAccount` 等账户覆盖默认定义账户。
+
+规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
 
 支付宝提供了“交易方式”字段来标识资金出入账户。这样就可以直接通过“交易方式”，并辅以“收/支”字段确认该账户为增加账户还是减少账户。而复式记账法每笔交易至少需要两个账户，另一个账户则可通过“交易对方”（peer）、“商品”（item）、“收/支”（type）以及“交易方式”（method）的多种包含匹配得出。匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `methodAccount` 的正负关系，来覆盖默认定义的增减账户。
 
@@ -188,6 +223,11 @@ alipay:
 > 当交易类型为「其他」时，需要自行手动定义借贷账户。此时本软件会认为 `methodAccount` 是贷账户，`targetAccount` 是借账户。
 
 ### 微信
+
+<details>
+<summary>
+  微信配置文件示例
+</summary>
 
 ```yaml
 defaultMinusAccount: Assets:FIXME
@@ -249,6 +289,8 @@ wechat:
 
 ```
 
+</details></br>
+
 `defaultMinusAccount`, `defaultPlusAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户。 `defaultCurrency` 是默认货币。
 
 > `defaultCommissionAccount` 是默认的服务费账户，若无服务费相关交易，则不需要填写。但笔者还是建议填写一个占位 FIXME 账户，否则遇到带服务费的交易，转换器会报错退出。
@@ -256,15 +298,17 @@ wechat:
 `wechat` is the provider-specific configuration. WeChat provider has rules matching mechanism.
 
 `wechat` 是微信相关的配置。它提供基于规则的匹配。可以指定：
-- peer（交易对方）的包含匹配。
-- item（商品名称）的包含匹配。
-- type（收/支）的包含匹配。
-- txType（交易类型）的包含匹配。
-- method（支付方式）的包含匹配。
+- `peer`（交易对方）的包含匹配。
+- `item`（商品名称）的包含匹配。
+- `type`（收/支）的包含匹配。
+- `txType`（交易类型）的包含匹配。
+- `method`（支付方式）的包含匹配。
 
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
 
 匹配成功则使用规则中定义的 `targetAccount` 、 `methodAccount` 等账户覆盖默认定义账户。
+
+规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
 
 微信账单提供了“交易方式”字段来标识资金出入账户。这样就可以直接通过“交易方式”，并辅以“收/支”字段确认该账户为增加账户还是减少账户。而复式记账法每笔交易至少需要两个账户，另一个账户则可通过“交易对方”（peer）、“商品”（item）、“收/支”（type）以及“交易方式”（method）的多种包含匹配得出。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `methodAccount` 的正负关系，来覆盖默认定义的增减账户。
 
@@ -276,6 +320,11 @@ wechat:
 |支出|minusAccount|plusAccount|
 
 ### Huobi Global (Crypto)
+
+<details>
+<summary>
+  火币-币币交易配置文件示例
+</summary>
 
 ```yaml
 defaultCashAccount: Assets:Huobi:Cash
@@ -296,18 +345,22 @@ huobi:
       pnlAccount: Income:Rule1:PnL
 ```
 
+</details></br>
+
 `defaultCashAccount`, `defaultPositionAccount`, `defaultCommissionAccount`, `defaultPnlAccount` 和 `defaultCurrency` 是全局的必填默认值。
 
 `huobi` is the provider-specific configuration. Huobi provider has rules matching mechanism.
 
 `huobi` 是火币相关的配置。它提供基于规则的匹配。可以指定：
-- item（交易对）的包含匹配。
-- type（交易类型）的包含匹配。
-- txType（交易方向）的包含匹配。
+- `item`（交易对）的包含匹配。
+- `type`（交易类型）的包含匹配。
+- `txType`（交易方向）的包含匹配。
 
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
 
 匹配成功则使用规则中定义的 `cashAccount`, `positionAccount`, `commissionAccount` 和 `pnlAccount` 覆盖默认定义。
+
+规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
 
 其中：
 - `defaultCashAccount` 是默认资本账户，一般用于存储 USDT。

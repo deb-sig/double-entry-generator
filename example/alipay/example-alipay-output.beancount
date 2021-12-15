@@ -2,7 +2,8 @@ option "title" "测试"
 option "operating_currency" "CNY"
 
 1970-01-01 open Assets:Alipay
-1970-01-01 open Assets:Alipay:Invest
+1970-01-01 open Assets:Alipay:Invest:Fund
+1970-01-01 open Assets:Alipay:Invest:Gold
 1970-01-01 open Assets:Bank:CN:CMB-9876:Savings
 1970-01-01 open Assets:FIXME
 1970-01-01 open Expenses:Electronics
@@ -17,7 +18,7 @@ option "operating_currency" "CNY"
 
 2020-06-02 * "蚂蚁财富-蚂蚁（杭州）基金销售有限公司" "蚂蚁财富-ABCD-卖出至余额宝"
 	Assets:Alipay 15.40 CNY
-	Assets:Alipay:Invest -15.40 CNY
+	Assets:Alipay:Invest:Fund -15.40 CNY
 	Income:Alipay:Invest:PnL
 	category: "投资理财"
 	method: "余额宝"
@@ -51,7 +52,7 @@ option "operating_currency" "CNY"
 	txType: "支出"
 
 2021-05-19 * "蚂蚁财富-蚂蚁（杭州）基金销售有限公司" "蚂蚁财富-XZY指数C-买入"
-	Assets:Alipay:Invest 50.00 CNY
+	Assets:Alipay:Invest:Fund 50.00 CNY
 	Assets:Alipay -50.00 CNY
 	category: "投资理财"
 	orderId: "123456"
@@ -141,6 +142,26 @@ option "operating_currency" "CNY"
 	source: "支付宝"
 	status: "交易成功"
 	txType: "收入"
+
+2021-09-29 * "蚂蚁财富-蚂蚁（杭州）基金销售有限公司" "蚂蚁财富-财通资管鸿达纯债债券E-买入"
+	Assets:Alipay:Invest:Fund 20.00 CNY
+	Assets:Alipay -20.00 CNY
+	category: "投资理财"
+	orderId: "2021092900108"
+	payTime: "2021-09-29 09:35:12 +0800 CST"
+	source: "支付宝"
+	status: "交易成功"
+	txType: "其他"
+
+2021-09-29 * "易方达黄金-蚂蚁（杭州）基金销售有限公司" "易方达黄金-买入"
+	Assets:Alipay:Invest:Fund 3000.00 CNY
+	Assets:Alipay -3000.00 CNY
+	category: "投资理财"
+	orderId: "2021092900108"
+	payTime: "2021-09-29 10:31:41 +0800 CST"
+	source: "支付宝"
+	status: "交易成功"
+	txType: "其他"
 
 2021-12-09 * "好邻居连锁便利店" "好邻居订单"
 	Expenses:Groceries 7.50 CNY
