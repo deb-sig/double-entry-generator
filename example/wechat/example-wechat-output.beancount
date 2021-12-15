@@ -7,7 +7,8 @@ option "operating_currency" "CNY"
 1970-01-01 open Assets:FIXME
 1970-01-01 open Assets:Trade:Tencent:LiCaiTong
 1970-01-01 open Expenses:FIXME
-1970-01-01 open Expenses:Food:Meal
+1970-01-01 open Expenses:Food:Meal:Dinner
+1970-01-01 open Expenses:Food:Meal:Lunch
 1970-01-01 open Expenses:Housing:Rent
 1970-01-01 open Expenses:Wechat:Commission
 1970-01-01 open Income:Service
@@ -48,7 +49,7 @@ option "operating_currency" "CNY"
 	type: "微信红包"
 
 2019-09-26 * "云膳过桥米线(传奇广场店)" "总共消费:28.16"
-	Expenses:Food:Meal 28.16 CNY
+	Expenses:Food:Meal:Lunch 28.16 CNY
 	Assets:Bank:CN:BOC:Savings -28.16 CNY
 	merchantId: "129847129"
 	method: "中国银行(1234)"
@@ -114,7 +115,7 @@ option "operating_currency" "CNY"
 	type: "转入零钱通-来自工商银行(9876)"
 
 2021-01-17 * "某餐厅" "收款方备注:二维码收款"
-	Expenses:Food:Meal 12.00 CNY
+	Expenses:Food:Meal:Dinner 12.00 CNY
 	Assets:Digital:Wechat:Cash -12.00 CNY
 	merchantId: "129847129"
 	method: "零钱通"
