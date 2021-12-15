@@ -36,6 +36,8 @@ func TestSplitFindTimeIntervalPositiveCases(t *testing.T) {
 
 		{"23:00-01:00", time.Date(2021, 12, 15, 23, 55, 05, 0, time.UTC), true, true},
 		{"23:00-01:00", time.Date(2021, 12, 15, 0, 34, 05, 0, time.UTC), true, true},
+		{"23:00-01:00:05", time.Date(2021, 12, 15, 23, 55, 05, 0, time.UTC), true, true},
+		{"23:00:05-01:00:00", time.Date(2021, 12, 15, 0, 34, 05, 0, time.UTC), true, true},
 	}
 
 	for _, test := range tests {
@@ -57,6 +59,7 @@ func TestSplitFindTimeIntervalNegativeCases(t *testing.T) {
 		{"23:00-24:00", time.Date(2021, 12, 15, 12, 34, 05, 0, time.UTC), false},
 		{"24:00-13:00", time.Date(2021, 12, 15, 12, 34, 05, 0, time.UTC), true},
 		{"13:00-14:60", time.Date(2021, 12, 15, 12, 34, 05, 0, time.UTC), true},
+		{"13:00-14:00:60", time.Date(2021, 12, 15, 12, 34, 05, 0, time.UTC), true},
 		{"abc-def", time.Date(2021, 12, 15, 12, 34, 05, 0, time.UTC), false},
 	}
 
