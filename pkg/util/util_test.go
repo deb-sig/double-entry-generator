@@ -23,7 +23,7 @@ func TestSplitFindContains(t *testing.T) {
 	}
 }
 
-func TestSplitFindTimeInterval(t *testing.T) {
+func TestSplitFindTimeIntervalPositiveCases(t *testing.T) {
 	tests := []struct {
 		timeStr         string
 		targetTime      time.Time
@@ -44,6 +44,25 @@ func TestSplitFindTimeInterval(t *testing.T) {
 				t.Error(err.Error())
 			}
 			t.Errorf("Output %v not equal to expected %v", output, test.expected)
+		}
+	}
+}
+
+func TestSplitFindTimeIntervalNegativeCases(t *testing.T) {
+	tests := []struct {
+		timeStr    string
+		targetTime time.Time
+		match      bool
+	}{
+		{"23:00-24:00", time.Date(2021, 12, 15, 12, 34, 05, 0, time.UTC), false},
+		{"24:00-13:00", time.Date(2021, 12, 15, 12, 34, 05, 0, time.UTC), true},
+		{"13:00-14:60", time.Date(2021, 12, 15, 12, 34, 05, 0, time.UTC), true},
+		{"abc-def", time.Date(2021, 12, 15, 12, 34, 05, 0, time.UTC), false},
+	}
+
+	for _, test := range tests {
+		if _, err := SplitFindTimeInterval(test.timeStr, test.targetTime, test.match); err == nil {
+			t.Errorf("Function should throw an error. Input time string: `%s`", test.timeStr)
 		}
 	}
 }

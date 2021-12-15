@@ -54,6 +54,11 @@ func SplitFindTimeInterval(timeStr string, targetTime time.Time, match bool) (bo
 			return match, fmt.Errorf("fail to parse the start time second `%s`", startTimeStrs[2])
 		}
 	}
+	if startTimeHour < 0 || startTimeHour >= 24 ||
+		startTimeMinute < 0 || startTimeMinute >= 60 ||
+		startTimeSecond < 0 || startTimeSecond >= 60 {
+		return match, fmt.Errorf("fail to parse the start time, hour:[0,23], minute:[0,59], second:[0,59]")
+	}
 
 	endTimeHour, err := strconv.Atoi(endTimeStrs[0])
 	if err != nil {
@@ -69,6 +74,11 @@ func SplitFindTimeInterval(timeStr string, targetTime time.Time, match bool) (bo
 		if err != nil {
 			return match, fmt.Errorf("fail to parse the end time second `%s`", endTimeStrs[2])
 		}
+	}
+	if endTimeHour < 0 || endTimeHour >= 24 ||
+		endTimeMinute < 0 || endTimeMinute >= 60 ||
+		endTimeSecond < 0 || endTimeSecond >= 60 {
+		return match, fmt.Errorf("fail to parse the end time, hour:[0,23], minute:[0,59], second:[0,59]")
 	}
 
 	var startTime, endTime time.Time
