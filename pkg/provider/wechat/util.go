@@ -46,6 +46,8 @@ func getTxType(tt string) TxType {
 		return TxTypeCash2CashLooseChange
 	} else if strings.Contains(tt, string(TxTypeCash2Others)) {
 		return TxTypeCash2Others
+	} else if strings.Contains(tt, string(TxTypeFamilyCard)) {
+		return TxTypeFamilyCard
 	} else {
 		return TxTypeUnknown
 	}
