@@ -1,9 +1,7 @@
 name: Go Test
-
 on:
   - push
   - pull_request
-
 jobs:
   test:
     name: Test
@@ -13,7 +11,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ env.GOPATH }}/src/github.com/deb-sig/double-entry-generator
-   steps:
+    steps:
       - name: Check out code
         uses: actions/checkout@v2
         with:
