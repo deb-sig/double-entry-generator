@@ -1,6 +1,8 @@
 package huobi
 
 import (
+	"log"
+
 	"github.com/deb-sig/double-entry-generator/pkg/config"
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
 	"github.com/deb-sig/double-entry-generator/pkg/util"
@@ -53,6 +55,7 @@ func (h Huobi) GetAccounts(o *ir.Order, cfg *config.Config, target, provider str
 	commissionAccount := cfg.DefaultCommissionAccount
 	pnlAccount := cfg.DefaultPnlAccount
 
+	var err error
 	for _, r := range cfg.Huobi.Rules {
 		match := true
 		// get seperator
@@ -68,6 +71,12 @@ func (h Huobi) GetAccounts(o *ir.Order, cfg *config.Config, target, provider str
 		}
 		if r.Item != nil {
 			match = util.SplitFindContains(*r.Item, o.Item, sep, match)
+		}
+		if r.Time != nil {
+			match, err = util.SplitFindTimeInterval(*r.Time, o.PayTime, match)
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
 		}
 
 		if match {
