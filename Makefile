@@ -67,7 +67,10 @@ clean: ## Clean all the temporary files
 	@rm -rf ./bin
 	@rm -rf ./test/output
 
-test: test-alipay test-wechat ## Run all tests
+test: test-alipay test-wechat test-go ## Run all tests
+
+test-go: ## Run Golang tests
+	go test ./...
 
 test-alipay: ## Run tests for Alipay provider
 	@$(SHELL) ./test/alipay-test.sh
