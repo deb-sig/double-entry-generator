@@ -39,17 +39,29 @@ alipay:
       methodAccount: Income:Alipay:YuEBao:PnL
       targetAccount: Assets:Alipay
     - type: 其他
-      peer: 蚂蚁财富
-      item: 买入
-      targetAccount: Assets:Alipay:Invest
-      methodAccount: Assets:Alipay
-    - type: 其他
-      peer: 蚂蚁财富
-      item: 卖出至余额宝
-      targetAccount: Assets:Alipay
-      methodAccount: Assets:Alipay:Invest
-      pnlAccount: Income:Alipay:Invest:PnL
-    - type: 其他
       item: 余额宝-单次转入
       targetAccount: Assets:Alipay
       methodAccount: Assets:Alipay
+
+    - peer: 基金
+      type: 其他
+      item: 黄金-买入
+      methodAccount: Assets:Alipay
+      targetAccount: Assets:Alipay:Invest:Gold
+    - peer: 基金
+      type: 其他
+      item: 黄金-卖出
+      methodAccount: Assets:Alipay:Invest:Gold
+      targetAccount: Assets:Alipay
+      pnlAccount: Income:Alipay:Invest:PnL
+    - peer: 基金
+      type: 其他
+      item: 买入
+      methodAccount: Assets:Alipay
+      targetAccount: Assets:Alipay:Invest:Fund
+    - peer: 基金
+      type: 其他
+      item: 卖出
+      methodAccount: Assets:Alipay:Invest:Fund
+      targetAccount: Assets:Alipay
+      pnlAccount: Income:Alipay:Invest:PnL
