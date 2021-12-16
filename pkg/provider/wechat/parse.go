@@ -24,7 +24,7 @@ func (w *Wechat) translateToOrders(array []string) error {
 	}
 	var bill Order
 	var err error
-	bill.PayTime, err = time.Parse(LocalTimeFmt, array[0]+" +0800")
+	bill.PayTime, err = time.Parse(localTimeFmt, array[0]+" +0800 CST")
 	if err != nil {
 		return fmt.Errorf("parse create time %s error: %v", array[0], err)
 	}

@@ -40,12 +40,14 @@ func conevertType(t TxTypeType) ir.TxType {
 	}
 }
 
+// getMetadata get the metadata (e.g. status, method, category and so on.)
+//  from order.
 func getMetadata(o Order) map[string]string {
 	// FIXME(TripleZ): hard-coded, bad pattern
 	source := "支付宝"
 	var status, method, category, txType, orderId, merchantId, paytime string
 
-	paytime = o.PayTime.String()
+	paytime = o.PayTime.Format(localTimeFmt)
 
 	if o.DealNo != "" {
 		orderId = o.DealNo
