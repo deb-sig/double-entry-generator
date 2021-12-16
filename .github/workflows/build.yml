@@ -28,7 +28,7 @@ jobs:
           git diff --cached --exit-code || (echo 'Please run "go mod tidy" to sync Go modules' && exit 1);
       - name: Verify gofmt
         run: |
-          make format && git add pkg cmd
+          make check-format && git add pkg cmd
           git diff --cached --exit-code || (echo 'Please run "make format" to verify gofmt' && exit 1);
       - name: Run Go test
         run: make test

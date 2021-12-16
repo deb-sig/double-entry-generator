@@ -43,7 +43,7 @@ BIN_DIR := $(GOPATH)/bin
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 
 # All targets.
-.PHONY: lint test build container push help clean test-go test-wechat test-alipay format
+.PHONY: lint test build container push help clean test-go test-wechat test-alipay format check-format
 
 help:  ## Display this help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
@@ -70,7 +70,7 @@ clean: ## Clean all the temporary files
 test: test-go test-alipay test-wechat ## Run all tests
 
 test-go: ## Run Golang tests
-	go test ./...
+	@go test ./...
 
 test-alipay: ## Run tests for Alipay provider
 	@$(SHELL) ./test/alipay-test.sh
@@ -80,3 +80,6 @@ test-wechat: ## Run tests for WeChat provider
 
 format: ## Format code
 	@gofmt -s -w pkg
+
+check-format: ## Check if the format looks good.
+	@go fmt ./...
