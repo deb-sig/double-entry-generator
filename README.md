@@ -132,11 +132,12 @@ alipay:
     - category: 日用百货
       targetAccount: Expenses:Groceries
     - category: 餐饮美食
-      targetAccount: Expenses:Food
+      time: 11:00-14:00
+      targetAccount: Expenses:Food:Lunch
+    - category: 餐饮美食
+      time: 16:00-22:00
+      targetAccount: Expenses:Food:Dinner
 
-    - peer: 肯德基|麦当劳
-      sep: '|'
-      targetAccount: Expenses:Food
     - peer: 滴露
       targetAccount: Expenses:Groceries
     - peer: 苏宁
@@ -203,6 +204,11 @@ alipay:
 - `type`（收/支）的包含匹配。
 - `method`（收/付款方式）的包含匹配。
 - `category`（交易分类）的包含匹配。
+- `time`（交易时间）的区间匹配。
+  > 交易时间可写为以下两种形式：
+  > - `11:00-13:00`
+  > - `11:00:00-13:00:00`
+  > 24 小时制，起始时间和终止之间之间使用 `-` 分隔。
 
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
 
@@ -260,7 +266,12 @@ wechat:
 
     - peer: 云膳过桥米线,餐厅
       sep: ','
-      targetAccount: Expenses:Food:Meal
+      time: 11:00-15:00
+      targetAccount: Expenses:Food:Meal:Lunch
+    - peer: 云膳过桥米线,餐厅
+      sep: ','
+      time: 16:30-21:30
+      targetAccount: Expenses:Food:Meal:Dinner
 
     - peer: 房东
       type: 支出
@@ -303,6 +314,11 @@ wechat:
 - `type`（收/支）的包含匹配。
 - `txType`（交易类型）的包含匹配。
 - `method`（支付方式）的包含匹配。
+- `time`（交易时间）的区间匹配。
+  > 交易时间可写为以下两种形式：
+  > - `11:00-13:00`
+  > - `11:00:00-13:00:00`
+  > 24 小时制，起始时间和终止之间之间使用 `-` 分隔。
 
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
 
@@ -355,6 +371,11 @@ huobi:
 - `item`（交易对）的包含匹配。
 - `type`（交易类型）的包含匹配。
 - `txType`（交易方向）的包含匹配。
+- `time`（交易时间）的区间匹配。
+  > 交易时间可写为以下两种形式：
+  > - `11:00-13:00`
+  > - `11:00:00-13:00:00`
+  > 24 小时制，起始时间和终止之间之间使用 `-` 分隔。
 
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
 

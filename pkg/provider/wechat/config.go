@@ -29,8 +29,7 @@ type Rule struct {
 	TxType            *string `mapstructure:"txType,omitempty"`
 	Seperator         *string `mapstructure:"sep,omitempty"` // default: ,
 	Method            *string `mapstructure:"method,omitempty"`
-	StartTime         *string `mapstructure:"startTime,omitempty"`
-	EndTime           *string `mapstructure:"endTime,omitempty"`
+	Time              *string `mapstructure:"time,omitempty"`
 	MethodAccount     *string `mapstructure:"methodAccount,omitempty"`
 	TargetAccount     *string `mapstructure:"targetAccount,omitempty"`
 	CommissionAccount *string `mapstructure:"commissionAccount,omitempty"`
