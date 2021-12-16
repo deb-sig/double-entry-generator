@@ -57,6 +57,7 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 	resMinus := cfg.DefaultMinusAccount
 	resPlus := cfg.DefaultPlusAccount
 
+	var err error
 	for _, r := range cfg.Wechat.Rules {
 		match := true
 		// get seperator
@@ -79,8 +80,11 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 		if r.Item != nil {
 			match = util.SplitFindContains(*r.Item, o.Item, sep, match)
 		}
-		if r.StartTime != nil && r.EndTime != nil {
-			// TODO(gaocegege): Support it.
+		if r.Time != nil {
+			match, err = util.SplitFindTimeInterval(*r.Time, o.PayTime, match)
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
 		}
 		if match {
 			// Support multiple matches, like one rule matches the minus accout, the other rule matches the plus account.

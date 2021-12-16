@@ -1,6 +1,7 @@
 package alipay
 
 import (
+	"log"
 	"strings"
 
 	"github.com/deb-sig/double-entry-generator/pkg/config"
@@ -46,6 +47,7 @@ func (a Alipay) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 	resPlus := cfg.DefaultPlusAccount
 	var extraAccounts map[ir.Account]string
 
+	var err error
 	for _, r := range cfg.Alipay.Rules {
 		match := true
 		// get seperator
@@ -68,11 +70,13 @@ func (a Alipay) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 		if r.Category != nil {
 			match = util.SplitFindContains(*r.Category, o.Category, sep, match)
 		}
-		if r.StartTime != nil && r.EndTime != nil {
-			// TODO(gaocegege): Support it.
+		if r.Time != nil {
+			match, err = util.SplitFindTimeInterval(*r.Time, o.PayTime, match)
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
 		}
 		if match {
-
 			// Support multiple matches, like one rule matches the
 			// minus accout, the other rule matches the plus account.
 			if r.TargetAccount != nil {

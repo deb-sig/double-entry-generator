@@ -7,7 +7,8 @@ option "operating_currency" "CNY"
 1970-01-01 open Assets:FIXME
 1970-01-01 open Expenses:Electronics
 1970-01-01 open Expenses:FIXME
-1970-01-01 open Expenses:Food
+1970-01-01 open Expenses:Food:Dinner
+1970-01-01 open Expenses:Food:Lunch
 1970-01-01 open Expenses:Groceries
 1970-01-01 open Expenses:Insurance
 1970-01-01 open Income:Alipay:Invest:PnL
@@ -39,7 +40,7 @@ option "operating_currency" "CNY"
 	txType: "其他"
 
 2020-06-14 * "东莞肯德基有限公司" "KFCAPIDGB012345"
-	Expenses:Food 79.00 CNY
+	Expenses:Food:Lunch 79.00 CNY
 	Assets:Alipay -79.00 CNY
 	category: "餐饮美食"
 	merchantId: "ABC9876"
@@ -155,7 +156,7 @@ option "operating_currency" "CNY"
 	txType: "支出"
 
 2021-12-11 * "北京稻香村食品有限责任公司" "北京稻香村食品有限责任公司"
-	Expenses:Food 31.00 CNY
+	Expenses:Food:Dinner 31.00 CNY
 	Assets:Bank:CN:CMB-9876:Savings -31.00 CNY
 	category: "餐饮美食"
 	merchantId: "322017092208872157020004030330000032112115225418"

@@ -25,12 +25,11 @@ type Config struct {
 type Rule struct {
 	Peer          *string `mapstructure:"peer,omitempty"`
 	Item          *string `mapstructure:"item,omitempty"`
-	Category      *string `mapstructure:"Category,omitempty"`
+	Category      *string `mapstructure:"category,omitempty"`
 	Type          *string `mapstructure:"type,omitempty"`
 	Method        *string `mapstructure:"method,omitempty"`
 	Separator     *string `mapstructure:"sep,omitempty"` // default: ,
-	StartTime     *string `mapstructure:"startTime,omitempty"`
-	EndTime       *string `mapstructure:"endTime,omitempty"`
+	Time          *string `mapstructure:"time,omitempty"`
 	MethodAccount *string `mapstructure:"methodAccount,omitempty"`
 	TargetAccount *string `mapstructure:"targetAccount,omitempty"`
 	PnlAccount    *string `mapstructure:"pnlAccount,omitempty"`
