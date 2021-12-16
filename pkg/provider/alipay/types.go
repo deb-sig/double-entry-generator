@@ -4,6 +4,11 @@ package alipay
 
 import "time"
 
+const (
+	// localTimeFmt set time format to utc+8
+	localTimeFmt = "2006-01-02 15:04:05 -0700 CST"
+)
+
 // Statistics is the Statistics of the bill file.
 type Statistics struct {
 	UserID          string    `json:"user_id,omitempty"`
@@ -36,9 +41,6 @@ type Order struct {
 	TargetAccount string `json:"targetAccount,omitempty"`
 	MethodAccount string `json:"methodAccount,omitempty"`
 }
-
-// LocalTimeFmt set time format to utc+8
-const LocalTimeFmt = "2006-01-02 15:04:05 -0700"
 
 // TxTypeType is transanction type defined by alipay.
 type TxTypeType string

@@ -56,7 +56,7 @@ func (a *Alipay) translateToOrders(array []string) error {
 	bill.Category = array[7]
 	bill.DealNo = array[8]
 	bill.MerchantId = array[9]
-	bill.PayTime, err = time.Parse(LocalTimeFmt, array[10]+" +0800")
+	bill.PayTime, err = time.Parse(localTimeFmt, array[10]+" +0800 CST")
 	if err != nil {
 		log.Println("parse create time error:", array[10], err)
 		return err

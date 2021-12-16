@@ -2,6 +2,11 @@ package wechat
 
 import "time"
 
+const (
+	// localTimeFmt set time format to utc+8
+	localTimeFmt = "2006-01-02 15:04:05 -0700 CST"
+)
+
 // Statistics is the Statistics of the bill file.
 type Statistics struct {
 	UserID          string    `json:"user_id,omitempty"`
@@ -31,9 +36,6 @@ type Order struct {
 	Method         string  // 支付方式
 	Commission     float64 // 服务费
 }
-
-// LocalTimeFmt set time format to utc+8
-const LocalTimeFmt = "2006-01-02 15:04:05 -0700"
 
 // OrderType is the type of the order.
 type OrderType string
