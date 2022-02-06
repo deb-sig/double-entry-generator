@@ -279,6 +279,12 @@ wechat:
       sep: ','
       time: 16:30-21:30
       targetAccount: Expenses:Food:Meal:Dinner
+    - peer: 餐厅
+      time: 23:55-00:10 # test T+1
+      targetAccount: Expenses:Food:Meal:MidNight
+    - peer: 餐厅
+      time: 23:50-00:05 # test T-1
+      targetAccount: Expenses:Food:Meal:MidNight
 
     - peer: 房东
       type: 支出
