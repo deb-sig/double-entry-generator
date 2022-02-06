@@ -362,11 +362,11 @@ wechat:
 </summary>
 
 ```yaml
-defaultCashAccount: Assets:Huobi:Cash
-defaultPositionAccount: Assets:Huobi:Positions
-defaultCommissionAccount: Expenses:Huobi:Commission
-defaultPnlAccount: Income:Huobi:PnL
-defaultCurrency: USDT
+defaultCashAccount: Assets:FIXME
+defaultPositionAccount: Assets:Position:FIXME
+defaultCommissionAccount: Expenses:Commission:FIXME
+defaultPnlAccount: Income:FIXME
+defaultCurrency: CNY
 title: 测试
 huobi:
   rules:

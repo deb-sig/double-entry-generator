@@ -1,7 +1,7 @@
-defaultCashAccount: Assets:Huobi:Cash
-defaultPositionAccount: Assets:Huobi:Positions
-defaultCommissionAccount: Expenses:Huobi:Commission
-defaultPnlAccount: Income:Huobi:PnL
+defaultCashAccount: Assets:FIXME
+defaultPositionAccount: Assets:Position:FIXME
+defaultCommissionAccount: Expenses:Commission:FIXME
+defaultPnlAccount: Income:FIXME
 defaultCurrency: CNY
 title: 测试
 huobi:
