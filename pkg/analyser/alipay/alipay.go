@@ -55,20 +55,26 @@ func (a Alipay) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 		if r.Separator != nil {
 			sep = *r.Separator
 		}
+
+		matchFunc := util.SplitFindContains
+		if r.FullMatch {
+			matchFunc = util.SplitFindEquals
+		}
+
 		if r.Peer != nil {
-			match = util.SplitFindContains(*r.Peer, o.Peer, sep, match)
+			match = matchFunc(*r.Peer, o.Peer, sep, match)
 		}
 		if r.Type != nil {
-			match = util.SplitFindContains(*r.Type, o.TxTypeOriginal, sep, match)
+			match = matchFunc(*r.Type, o.TxTypeOriginal, sep, match)
 		}
 		if r.Item != nil {
-			match = util.SplitFindContains(*r.Item, o.Item, sep, match)
+			match = matchFunc(*r.Item, o.Item, sep, match)
 		}
 		if r.Method != nil {
-			match = util.SplitFindContains(*r.Method, o.Method, sep, match)
+			match = matchFunc(*r.Method, o.Method, sep, match)
 		}
 		if r.Category != nil {
-			match = util.SplitFindContains(*r.Category, o.Category, sep, match)
+			match = matchFunc(*r.Category, o.Category, sep, match)
 		}
 		if r.Time != nil {
 			match, err = util.SplitFindTimeInterval(*r.Time, o.PayTime, match)
