@@ -1,13 +1,13 @@
 option "title" "测试"
 option "operating_currency" "CNY"
 
-1970-01-01 open Assets:FIXME
-1970-01-01 open Assets:Position:FIXME
+1970-01-01 open Assets:Huobi:Cash
+1970-01-01 open Assets:Huobi:Positions
 1970-01-01 open Assets:Rule1:Cash
 1970-01-01 open Assets:Rule1:Positions
-1970-01-01 open Expenses:Commission:FIXME
+1970-01-01 open Expenses:Huobi:Commission
 1970-01-01 open Expenses:Rule1:Commission
-1970-01-01 open Income:FIXME
+1970-01-01 open Income:Huobi:PnL
 1970-01-01 open Income:Rule1:PnL
 
 2021-02-23 * "Huobi-币币交易" "买入-BTC/USDT"
@@ -23,9 +23,9 @@ option "operating_currency" "CNY"
 	Expenses:Rule1:Commission 0.00915201 BTC1S @ 1.22520000 USDT
 
 2021-02-24 * "Huobi-币币交易" "卖出-BTC/USDT"
-	Assets:Position:FIXME -0.00010800 BTC {} @ 49850.00000000 USDT
-	Assets:FIXME 5.38380000 USDT
-	Assets:FIXME -0.01076760 USDT
-	Expenses:Commission:FIXME 0.01076760 USDT
-	Income:FIXME
+	Assets:Huobi:Positions -0.00010800 BTC {} @ 49850.00000000 USDT
+	Assets:Huobi:Cash 5.38380000 USDT
+	Assets:Huobi:Cash -0.01076760 USDT
+	Expenses:Huobi:Commission 0.01076760 USDT
+	Income:Huobi:PnL
 
