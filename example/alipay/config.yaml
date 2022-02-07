@@ -20,9 +20,14 @@ alipay:
     - item: 相互宝
       targetAccount: Expenses:Insurance
 
-    - method: 余额 # 余额/余额宝
+    - method: 余额
+      fullMatch: true
+      methodAccount: Assets:Alipay
+    - method: 余额宝
+      fullMatch: true
       methodAccount: Assets:Alipay
     - method: 招商银行(9876)
+      fullMatch: true
       methodAccount: Assets:Bank:CN:CMB-9876:Savings
 
     - type: 收入 # 其他转账收款

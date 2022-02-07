@@ -33,4 +33,5 @@ type Rule struct {
 	MethodAccount *string `mapstructure:"methodAccount,omitempty"`
 	TargetAccount *string `mapstructure:"targetAccount,omitempty"`
 	PnlAccount    *string `mapstructure:"pnlAccount,omitempty"`
+	FullMatch     bool    `mapstructure:"fullMatch,omitempty"`
 }

@@ -63,14 +63,20 @@ func (h Huobi) GetAccounts(o *ir.Order, cfg *config.Config, target, provider str
 		if r.Seperator != nil {
 			sep = *r.Seperator
 		}
+
+		matchFunc := util.SplitFindContains
+		if r.FullMatch {
+			matchFunc = util.SplitFindEquals
+		}
+
 		if r.Type != nil {
-			match = util.SplitFindContains(*r.Type, o.TypeOriginal, sep, match)
+			match = matchFunc(*r.Type, o.TypeOriginal, sep, match)
 		}
 		if r.TxType != nil {
-			match = util.SplitFindContains(*r.TxType, o.TxTypeOriginal, sep, match)
+			match = matchFunc(*r.TxType, o.TxTypeOriginal, sep, match)
 		}
 		if r.Item != nil {
-			match = util.SplitFindContains(*r.Item, o.Item, sep, match)
+			match = matchFunc(*r.Item, o.Item, sep, match)
 		}
 		if r.Time != nil {
 			match, err = util.SplitFindTimeInterval(*r.Time, o.PayTime, match)

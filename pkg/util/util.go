@@ -20,6 +20,19 @@ func SplitFindContains(str, target, sep string, match bool) bool {
 	return isContain && match
 }
 
+func SplitFindEquals(str, target, sep string, match bool) bool {
+	ss := strings.Split(str, sep)
+	isEqual := false
+	for _, s := range ss {
+		if target == s {
+			isEqual = true
+			break
+		}
+	}
+
+	return isEqual && match
+}
+
 func SplitFindTimeInterval(timeStr string, targetTime time.Time, match bool) (bool, error) {
 	isContain := false
 

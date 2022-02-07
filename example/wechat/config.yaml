@@ -59,7 +59,11 @@ wechat:
 
     - method: / # 一般为收入，存入零钱
       methodAccount: Assets:Digital:Wechat:Cash
-    - method: 零钱 # 零钱/零钱通
+    - method: 零钱
+      fullMatch: true
+      methodAccount: Assets:Digital:Wechat:Cash
+    - method: 零钱通
+      fullMatch: true
       methodAccount: Assets:Digital:Wechat:Cash
     - method: 工商银行
       methodAccount: Assets:Bank:CN:ICBC:Savings
