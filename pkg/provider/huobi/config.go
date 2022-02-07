@@ -15,4 +15,5 @@ type Rule struct {
 	PositionAccount   *string `mapstructure:"positionAccount,omitempty"`
 	CommissionAccount *string `mapstructure:"commissionAccount,omitempty"`
 	PnlAccount        *string `mapstructure:"pnlAccount,omitempty"`
+	FullMatch         bool    `mapstructure:"fullMatch,omitempty"`
 }

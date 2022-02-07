@@ -145,9 +145,14 @@ alipay:
     - item: 相互宝
       targetAccount: Expenses:Insurance
 
-    - method: 余额 # 余额/余额宝
+    - method: 余额
+      fullMatch: true
+      methodAccount: Assets:Alipay
+    - method: 余额宝
+      fullMatch: true
       methodAccount: Assets:Alipay
     - method: 招商银行(9876)
+      fullMatch: true
       methodAccount: Assets:Bank:CN:CMB-9876:Savings
 
     - type: 收入 # 其他转账收款
@@ -199,11 +204,11 @@ alipay:
 `alipay` is the provider-specific configuration. Alipay provider has rules matching mechanism.
 
 `alipay` 蚂蚁账单相关的配置。它提供基于规则的匹配。可以指定：
-- `peer`（交易对方）的包含匹配。
-- `item`（商品说明）的包含匹配。
-- `type`（收/支）的包含匹配。
-- `method`（收/付款方式）的包含匹配。
-- `category`（交易分类）的包含匹配。
+- `peer`（交易对方）的完全/包含匹配。
+- `item`（商品说明）的完全/包含匹配。
+- `type`（收/支）的完全/包含匹配。
+- `method`（收/付款方式）的完全/包含匹配。
+- `category`（交易分类）的完全/包含匹配。
 - `time`（交易时间）的区间匹配。
   > 交易时间可写为以下两种形式：
   > - `11:00-13:00`
@@ -211,6 +216,8 @@ alipay:
   > 24 小时制，起始时间和终止之间之间使用 `-` 分隔。
 
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
+
+在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
 
 匹配成功则使用规则中定义的 `targetAccount` 、 `methodAccount` 等账户覆盖默认定义账户。
 
@@ -272,6 +279,12 @@ wechat:
       sep: ','
       time: 16:30-21:30
       targetAccount: Expenses:Food:Meal:Dinner
+    - peer: 餐厅
+      time: 23:55-00:10 # test T+1
+      targetAccount: Expenses:Food:Meal:MidNight
+    - peer: 餐厅
+      time: 23:50-00:05 # test T-1
+      targetAccount: Expenses:Food:Meal:MidNight
 
     - peer: 房东
       type: 支出
@@ -291,7 +304,11 @@ wechat:
 
     - method: / # 一般为收入，存入零钱
       methodAccount: Assets:Digital:Wechat:Cash
-    - method: 零钱 # 零钱/零钱通
+    - method: 零钱
+      fullMatch: true
+      methodAccount: Assets:Digital:Wechat:Cash
+    - method: 零钱通
+      fullMatch: true
       methodAccount: Assets:Digital:Wechat:Cash
     - method: 工商银行
       methodAccount: Assets:Bank:CN:ICBC:Savings
@@ -309,11 +326,11 @@ wechat:
 `wechat` is the provider-specific configuration. WeChat provider has rules matching mechanism.
 
 `wechat` 是微信相关的配置。它提供基于规则的匹配。可以指定：
-- `peer`（交易对方）的包含匹配。
-- `item`（商品名称）的包含匹配。
-- `type`（收/支）的包含匹配。
-- `txType`（交易类型）的包含匹配。
-- `method`（支付方式）的包含匹配。
+- `peer`（交易对方）的完全/包含匹配。
+- `item`（商品名称）的完全/包含匹配。
+- `type`（收/支）的完全/包含匹配。
+- `txType`（交易类型）的完全/包含匹配。
+- `method`（支付方式）的完全/包含匹配。
 - `time`（交易时间）的区间匹配。
   > 交易时间可写为以下两种形式：
   > - `11:00-13:00`
@@ -321,6 +338,8 @@ wechat:
   > 24 小时制，起始时间和终止之间之间使用 `-` 分隔。
 
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
+
+在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
 
 匹配成功则使用规则中定义的 `targetAccount` 、 `methodAccount` 等账户覆盖默认定义账户。
 
@@ -354,6 +373,7 @@ huobi:
     - item: BTC/USDT,BTC1S/USDT  # multiple keywords with separator
       type: 币币交易
       txType: 买入
+      fullMatch: true
       sep: ','  # define separator as a comma
       cashAccount: Assets:Rule1:Cash
       positionAccount: Assets:Rule1:Positions
@@ -368,9 +388,9 @@ huobi:
 `huobi` is the provider-specific configuration. Huobi provider has rules matching mechanism.
 
 `huobi` 是火币相关的配置。它提供基于规则的匹配。可以指定：
-- `item`（交易对）的包含匹配。
-- `type`（交易类型）的包含匹配。
-- `txType`（交易方向）的包含匹配。
+- `item`（交易对）的完全/包含匹配。
+- `type`（交易类型）的完全/包含匹配。
+- `txType`（交易方向）的完全/包含匹配。
 - `time`（交易时间）的区间匹配。
   > 交易时间可写为以下两种形式：
   > - `11:00-13:00`
@@ -378,6 +398,8 @@ huobi:
   > 24 小时制，起始时间和终止之间之间使用 `-` 分隔。
 
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
+
+在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
 
 匹配成功则使用规则中定义的 `cashAccount`, `positionAccount`, `commissionAccount` 和 `pnlAccount` 覆盖默认定义。
 
