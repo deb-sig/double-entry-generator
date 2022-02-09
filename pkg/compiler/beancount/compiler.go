@@ -162,6 +162,7 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 	case ir.OrderTypeNormal:
 		err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
 			PayTime:           o.PayTime,
+			Pending:           o.Pending,
 			Peer:              o.Peer,
 			Item:              o.Item,
 			Note:              o.Note,
@@ -171,8 +172,8 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 			MinusAccount:      o.MinusAccount,
 			PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
 			CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
-			Metadata:          o.Metadata,
 			Currency:          b.Config.DefaultCurrency,
+			Metadata:          o.Metadata,
 		})
 	case ir.OrderTypeHuobiTrade: // Huobi trades
 		switch o.TxType {

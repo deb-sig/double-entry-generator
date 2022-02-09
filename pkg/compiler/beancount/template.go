@@ -6,7 +6,7 @@ import (
 )
 
 // 普通账单的模版（消费账）
-var normalOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}" "{{ .Item }}"{{ if .Note }}  ; {{ .Note }}{{ end }}
+var normalOrder = `{{ .PayTime.Format "2006-01-02" }} {{ if .Pending }}!{{ else }}*{{ end }} "{{ .Peer }}" "{{ .Item }}"{{ if .Note }}  ; {{ .Note }}{{ end }}
 	{{ .PlusAccount }} {{ .Money | printf "%.2f" }} {{ .Currency }}
 	{{ .MinusAccount }} -{{ .Money | printf "%.2f" }} {{ .Currency }}
 	{{- if .CommissionAccount }}{{ printf "\n" }}	{{ .CommissionAccount }} {{ .Commission | printf "%.2f" }} {{ .Currency }}{{ end }}
@@ -17,7 +17,9 @@ var normalOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}" "{{ .Item 
 `
 
 type NormalOrderVars struct {
-	PayTime           time.Time
+	PayTime time.Time
+	// 未入账标记
+	Pending           bool
 	Peer              string
 	Item              string
 	Note              string

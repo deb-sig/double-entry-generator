@@ -13,12 +13,13 @@ func (a *Alipay) convertToIR() *ir.IR {
 			Peer:           o.Peer,
 			Item:           o.ItemName,
 			Category:       o.Category,
-			Method:         o.Method,
-			PayTime:        o.PayTime,
-			Money:          o.Money,
+			Pending:        o.Status == "交易关闭",
 			OrderID:        &o.DealNo,
+			Money:          o.Money,
+			PayTime:        o.PayTime,
 			TxType:         conevertType(o.TxType),
 			TxTypeOriginal: o.TxTypeOriginal,
+			Method:         o.Method,
 		}
 		irO.Metadata = getMetadata(o)
 		if o.MerchantId != "" {

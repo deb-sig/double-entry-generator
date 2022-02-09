@@ -28,10 +28,12 @@ type IR struct {
 
 // Order is the intermediate representation for the order.
 type Order struct {
-	OrderType       OrderType
-	Peer            string
-	Item            string
-	Category        string
+	OrderType OrderType
+	Peer      string
+	Item      string
+	Category  string
+	// 是否未入账
+	Pending         bool
 	MerchantOrderID *string
 	OrderID         *string
 	Money           float64
