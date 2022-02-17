@@ -1,0 +1,15 @@
+defaultCashAccount: Assets:Htsec:Cash
+defaultPositionAccount: Assets:Htsec:Positions
+defaultCommissionAccount: Expenses:Htsec:Commission
+defaultPnlAccount: Income:Htsec:PnL
+defaultCurrency: CNY
+title: 测试
+htsec:
+  rules:
+    - item: 兴业转债
+      txType: 卖
+      sep: ','
+      cashAccount: Assets:Rule1:Cash
+      positionAccount: Assets:Rule1:Positions
+      CommissionAccount: Expenses:Rule1:Commission
+      pnlAccount: Income:Rule1:PnL

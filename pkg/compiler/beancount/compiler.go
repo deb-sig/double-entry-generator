@@ -65,7 +65,14 @@ func (b *BeanCount) initTemplates() error {
 	if err != nil {
 		return fmt.Errorf("Failed to init the tradeSellOrder template. %v", err)
 	}
-
+	htsecTradeBuyOrderTemplate, err = template.New("httradeBuyOrder").Parse(htsecTradeBuyOrder)
+	if err != nil {
+		return fmt.Errorf("Failed to init the httradeBuyOrder template. %v", err)
+	}
+	htsecTradeSellOrderTemplate, err = template.New("httradeSellOrder").Parse(htsecTradeSellOrder)
+	if err != nil {
+		return fmt.Errorf("Failed to init the httradeSellOrder template. %v", err)
+	}
 	return nil
 }
 
@@ -252,7 +259,51 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 		default:
 			err = fmt.Errorf("Failed to get the TxType.")
 		}
-
+	case ir.OrderTypeSecurityTrade:
+		switch o.TxType {
+		case ir.TxTypeSend: // buy
+			err = htsecTradeBuyOrderTemplate.Execute(&buf, &HtsecTradeBuyOrderVars{
+				PayTime:           o.PayTime,
+				Peer:              o.Peer,
+				TypeOriginal:      o.TypeOriginal,
+				TxTypeOriginal:    o.TxTypeOriginal,
+				Item:              o.Item,
+				Amount:            o.Amount,
+				Money:             o.Money,
+				Commission:        o.Commission,
+				Price:             o.Price,
+				CashAccount:       o.ExtraAccounts[ir.CashAccount],
+				PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
+				CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
+				PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
+				BaseUnit:          o.Units[ir.BaseUnit],
+				TargetUnit:        o.Units[ir.TargetUnit],
+				CommissionUnit:    o.Units[ir.CommissionUnit],
+				Currency:          b.Config.DefaultCurrency,
+			})
+		case ir.TxTypeRecv: // sell
+			err = htsecTradeSellOrderTemplate.Execute(&buf, &HtsecTradeSellOrderVars{
+				PayTime:           o.PayTime,
+				Peer:              o.Peer,
+				TypeOriginal:      o.TypeOriginal,
+				TxTypeOriginal:    o.TxTypeOriginal,
+				Item:              o.Item,
+				Amount:            o.Amount,
+				Money:             o.Money,
+				Commission:        o.Commission,
+				Price:             o.Price,
+				CashAccount:       o.ExtraAccounts[ir.CashAccount],
+				PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
+				CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
+				PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
+				BaseUnit:          o.Units[ir.BaseUnit],
+				TargetUnit:        o.Units[ir.TargetUnit],
+				CommissionUnit:    o.Units[ir.CommissionUnit],
+				Currency:          b.Config.DefaultCurrency,
+			})
+		default:
+			err = fmt.Errorf("Failed to get the TxType.")
+		}
 	}
 	if err != nil {
 		return err

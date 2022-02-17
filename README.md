@@ -67,6 +67,16 @@ double-entry-generator translate \
   ./example/huobi/example-huobi-records.csv
 ```
 
+### 海通证券
+
+```bash
+double-entry-generator translate \
+  --config ./example/htsec/config.yaml \
+  --provider htsec \
+  --output ./example/htsec/example-htsec-output.beancount \
+  ./example/htsec/example-htsec-records.xlsx
+```
+
 ## 账单下载与格式问题
 
 ### 支付宝
@@ -112,6 +122,19 @@ double-entry-generator translate \
 [exmaple-huobi-records.csv](./example/huobi/example-huobi-records.csv)
 
 转换后的结果示例：[exmaple-huobi-output.beancount](./example/huobi/example-huobi-output.beancount).
+
+### 海通证券
+
+#### 下载方式
+
+登录e海通财PC独立交易版PC客户端，左侧导航栏选择查询-交割单，右侧点击查询按钮导出交割单excel文件。
+
+#### 格式示例
+
+[example-htsec-records.csv](./example/htsec/example-htsec-records.xlsx)
+
+转换后的结果示例：[exmaple-htsec-output.beancount](./example/htsec/example-htsec-output.beancount).
+
 
 ## 配置
 
