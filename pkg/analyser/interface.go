@@ -2,8 +2,8 @@ package analyser
 
 import (
 	"fmt"
-
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/alipay"
+	"github.com/deb-sig/double-entry-generator/pkg/analyser/htsec"
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/huobi"
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/wechat"
 	"github.com/deb-sig/double-entry-generator/pkg/config"
@@ -26,6 +26,8 @@ func New(providerName string) (Interface, error) {
 		return wechat.Wechat{}, nil
 	case consts.ProviderHuobi:
 		return huobi.Huobi{}, nil
+	case consts.ProviderHtsec:
+		return htsec.Htsec{}, nil
 	default:
 		return nil, fmt.Errorf("Fail to create the analyser for the given name %s", providerName)
 	}
