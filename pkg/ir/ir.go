@@ -84,9 +84,9 @@ const (
 type OrderType string // 为 IR 设置的交易类别
 
 const (
-	OrderTypeNormal        OrderType = "Normal"        // 流水交易
-	OrderTypeHuobiTrade              = "HuobiTrade"    //  火币交易
-	OrderTypeSecurityTrade           = "SecurityTrade" // 证券交易
+	OrderTypeNormal          OrderType = "Normal"          // 流水交易
+	OrderTypeHuobiTrade                = "HuobiTrade"      //  火币交易
+	OrderTypeSecuritiesTrade           = "SecuritiesTrade" // 证券交易
 )
 
 // New creates a new IR.

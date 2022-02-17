@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# E2E test for huobi provider.
+# E2E test for htsec provider.
 
 # set -x # debug
 set -eo errexit

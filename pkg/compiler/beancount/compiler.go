@@ -259,7 +259,7 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 		default:
 			err = fmt.Errorf("Failed to get the TxType.")
 		}
-	case ir.OrderTypeSecurityTrade:
+	case ir.OrderTypeSecuritiesTrade:
 		switch o.TxType {
 		case ir.TxTypeSend: // buy
 			err = htsecTradeBuyOrderTemplate.Execute(&buf, &HtsecTradeBuyOrderVars{

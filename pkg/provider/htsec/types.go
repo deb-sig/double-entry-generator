@@ -15,11 +15,11 @@ type Statistics struct {
 }
 
 type Order struct {
-	SecurityName      string    // 证券代码+证券名称
+	SecuritiesName    string    // 证券代码+证券名称
 	TransactionTime   time.Time // 成交时间
 	Volume            int64     // 成交数量
 	Price             float64   // 成交价格
-	TransactionAmount float64   //成交金额
+	TransactionAmount float64   // 成交金额
 	OccurAmount       float64   // 发生金额
 	TxType            TxType    // 方向
 	OrderID           string    // 合同号

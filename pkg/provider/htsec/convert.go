@@ -6,13 +6,13 @@ func (h *Htsec) convertToIR() *ir.IR {
 	i := ir.New()
 	for _, o := range h.Orders {
 		irO := ir.Order{
-			OrderType:      ir.OrderTypeSecurityTrade,
+			OrderType:      ir.OrderTypeSecuritiesTrade,
 			Peer:           "htsec",
 			PayTime:        o.TransactionTime,
 			TypeOriginal:   o.TypeOriginal,
 			TxType:         convertType(o.TxType),
 			TxTypeOriginal: string(o.TxType),
-			Item:           o.SecurityName,
+			Item:           o.SecuritiesName,
 			Money:          o.TransactionAmount,
 			Amount:         float64(o.Volume),
 			Price:          o.Price,

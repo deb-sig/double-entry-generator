@@ -30,7 +30,7 @@ func (h *Htsec) translateToOrders(arr []string) error {
 	} else {
 		bill.TypeOriginal = "SZ" + code
 	}
-	bill.SecurityName = code + "-" + arr[1]
+	bill.SecuritiesName = code + "-" + arr[1]
 	if len(arr[3]) == 0 {
 		arr[3] = "00:00:00"
 	}
