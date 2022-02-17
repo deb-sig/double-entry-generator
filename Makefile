@@ -67,7 +67,7 @@ clean: ## Clean all the temporary files
 	@rm -rf ./bin
 	@rm -rf ./test/output
 
-test: test-go test-alipay test-wechat ## Run all tests
+test: test-go test-alipay test-wechat test-htsec ## Run all tests
 
 test-go: ## Run Golang tests
 	@go test ./...
