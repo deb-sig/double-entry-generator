@@ -96,9 +96,69 @@ type HuobiTradeSellOrderVars struct {
 	CommissionUnit    string
 }
 
+// 海通买入模版
+var htsecTradeBuyOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}" "{{ .TxTypeOriginal }}-{{ .Item }}"
+	{{ .CashAccount }} -{{ .Money | printf "%.2f" }} {{ .Currency }}
+	{{ .PositionAccount }} {{ .Amount | printf "%.2f" }} {{ .TypeOriginal }} { {{- .Price | printf "%.3f" }} {{ .Currency }}} @@ {{ .Money | printf "%.2f" }} {{ .Currency }}
+	{{ .CashAccount }} -{{ .Commission | printf "%.2f" }} {{ .Currency }}
+	{{ .CommissionAccount }} {{ .Commission | printf "%.2f" }} {{ .Currency }}
+
+`
+
+type HtsecTradeBuyOrderVars struct {
+	PayTime           time.Time
+	Peer              string
+	TypeOriginal      string
+	TxTypeOriginal    string
+	Item              string
+	CashAccount       string
+	PositionAccount   string
+	CommissionAccount string
+	PnlAccount        string
+	Amount            float64
+	Money             float64
+	Commission        float64
+	Price             float64
+	BaseUnit          string
+	TargetUnit        string
+	CommissionUnit    string
+	Currency          string
+}
+
+var htsecTradeSellOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}" "{{ .TxTypeOriginal }}-{{ .Item }}"
+	{{ .PositionAccount }} -{{ .Amount | printf "%.2f" }} {{ .TypeOriginal }} {} @ {{ .Price | printf "%.3f" }} {{ .Currency }}
+	{{ .CashAccount }} {{ .Money | printf "%.2f" }} {{ .Currency }}
+	{{ .CashAccount }} -{{ .Commission | printf "%.2f" }} {{ .Currency }}
+	{{ .CommissionAccount }} {{ .Commission | printf "%.2f" }} {{ .Currency }}
+	{{ .PnlAccount }}
+
+`
+
+type HtsecTradeSellOrderVars struct {
+	PayTime           time.Time
+	Peer              string
+	TypeOriginal      string
+	TxTypeOriginal    string
+	Item              string
+	CashAccount       string
+	PositionAccount   string
+	CommissionAccount string
+	PnlAccount        string
+	Amount            float64
+	Money             float64
+	Commission        float64
+	Price             float64
+	BaseUnit          string
+	TargetUnit        string
+	CommissionUnit    string
+	Currency          string
+}
+
 var (
 	normalOrderTemplate                          *template.Template
 	huobiTradeBuyOrderTemplate                   *template.Template
 	huobiTradeBuyOrderDiffCommissionUnitTemplate *template.Template
 	huobiTradeSellOrderTemplate                  *template.Template
+	htsecTradeBuyOrderTemplate                   *template.Template
+	htsecTradeSellOrderTemplate                  *template.Template
 )

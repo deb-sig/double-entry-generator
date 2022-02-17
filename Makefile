@@ -67,7 +67,7 @@ clean: ## Clean all the temporary files
 	@rm -rf ./bin
 	@rm -rf ./test/output
 
-test: test-go test-alipay test-wechat ## Run all tests
+test: test-go test-alipay test-wechat test-htsec ## Run all tests
 
 test-go: ## Run Golang tests
 	@go test ./...
@@ -77,6 +77,9 @@ test-alipay: ## Run tests for Alipay provider
 
 test-wechat: ## Run tests for WeChat provider
 	@$(SHELL) ./test/wechat-test.sh
+
+test-htsec: ## Run tests for htsec provider
+	@$(SHELL) ./test/htsec-test.sh
 
 format: ## Format code
 	@gofmt -s -w pkg

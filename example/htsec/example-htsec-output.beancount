@@ -1,0 +1,64 @@
+option "title" "测试"
+option "operating_currency" "CNY"
+
+1970-01-01 open Assets:Htsec:Cash
+1970-01-01 open Assets:Htsec:Positions
+1970-01-01 open Assets:Rule1:Cash
+1970-01-01 open Assets:Rule1:Positions
+1970-01-01 open Expenses:Htsec:Commission
+1970-01-01 open Expenses:Rule1:Commission
+1970-01-01 open Income:Htsec:PnL
+1970-01-01 open Income:Rule1:PnL
+
+2022-01-12 * "htsec" "卖-513050-中概互联"
+	Assets:Htsec:Positions -13000.00 SH513050 {} @ 1.300 CNY
+	Assets:Htsec:Cash 16900.00 CNY
+	Assets:Htsec:Cash -0.85 CNY
+	Expenses:Htsec:Commission 0.85 CNY
+	Income:Htsec:PnL
+
+2022-01-13 * "htsec" "买-002304-洋河股份"
+	Assets:Htsec:Cash -16011.00 CNY
+	Assets:Htsec:Positions 100.00 SZ002304 {160.110 CNY} @@ 16011.00 CNY
+	Assets:Htsec:Cash -1.60 CNY
+	Expenses:Htsec:Commission 1.60 CNY
+
+2022-01-19 * "htsec" "卖-519888-添富快线"
+	Assets:Htsec:Positions -128.00 SH519888 {} @ 0.010 CNY
+	Assets:Htsec:Cash 1.28 CNY
+	Assets:Htsec:Cash -0.00 CNY
+	Expenses:Htsec:Commission 0.00 CNY
+	Income:Htsec:PnL
+
+2022-01-19 * "htsec" "买-159938-医药卫生ETF"
+	Assets:Htsec:Cash -760.80 CNY
+	Assets:Htsec:Positions 400.00 SZ159938 {1.902 CNY} @@ 760.80 CNY
+	Assets:Htsec:Cash -0.04 CNY
+	Expenses:Htsec:Commission 0.04 CNY
+
+2022-01-21 * "htsec" "卖-113052-兴业转债"
+	Assets:Rule1:Positions -10.00 SH113052 {} @ 116.250 CNY
+	Assets:Rule1:Cash 1162.50 CNY
+	Assets:Rule1:Cash -0.20 CNY
+	Expenses:Rule1:Commission 0.20 CNY
+	Income:Rule1:PnL
+
+2022-01-21 * "htsec" "卖-002027-分众传媒"
+	Assets:Htsec:Positions -500.00 SZ002027 {} @ 8.040 CNY
+	Assets:Htsec:Cash 4020.00 CNY
+	Assets:Htsec:Cash -4.42 CNY
+	Expenses:Htsec:Commission 4.42 CNY
+	Income:Htsec:PnL
+
+2022-01-21 * "htsec" "买-159938-医药卫生ETF"
+	Assets:Htsec:Cash -5269.30 CNY
+	Assets:Htsec:Positions 2900.00 SZ159938 {1.817 CNY} @@ 5269.30 CNY
+	Assets:Htsec:Cash -0.26 CNY
+	Expenses:Htsec:Commission 0.26 CNY
+
+2022-01-27 * "htsec" "买-072988-豪美发债"
+	Assets:Htsec:Cash -1000.00 CNY
+	Assets:Htsec:Positions 10.00 SZ072988 {100.000 CNY} @@ 1000.00 CNY
+	Assets:Htsec:Cash -0.00 CNY
+	Expenses:Htsec:Commission 0.00 CNY
+

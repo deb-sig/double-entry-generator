@@ -5,6 +5,7 @@
 - 支付宝
 - 微信
 - 火币-币币交易
+- 海通证券
 
 目前记账语言支持：
 
@@ -67,6 +68,16 @@ double-entry-generator translate \
   ./example/huobi/example-huobi-records.csv
 ```
 
+### 海通证券
+
+```bash
+double-entry-generator translate \
+  --config ./example/htsec/config.yaml \
+  --provider htsec \
+  --output ./example/htsec/example-htsec-output.beancount \
+  ./example/htsec/example-htsec-records.xlsx
+```
+
 ## 账单下载与格式问题
 
 ### 支付宝
@@ -112,6 +123,19 @@ double-entry-generator translate \
 [exmaple-huobi-records.csv](./example/huobi/example-huobi-records.csv)
 
 转换后的结果示例：[exmaple-huobi-output.beancount](./example/huobi/example-huobi-output.beancount).
+
+### 海通证券
+
+#### 下载方式
+
+登录e海通财PC独立交易版PC客户端，左侧导航栏选择查询-交割单，右侧点击查询按钮导出交割单excel文件。
+
+#### 格式示例
+
+[example-htsec-records.csv](./example/htsec/example-htsec-records.xlsx)
+
+转换后的结果示例：[exmaple-htsec-output.beancount](./example/htsec/example-htsec-output.beancount).
+
 
 ## 配置
 
@@ -407,6 +431,61 @@ huobi:
 
 其中：
 - `defaultCashAccount` 是默认资本账户，一般用于存储 USDT。
+- `defaultPositionAccount` 是默认持仓账户。
+- `defaultCommissionAccount` 是默认手续费账户。
+- `defaultPnlAccount` 是默认损益账户。
+- `defaultCurrency` 是默认货币。
+
+### 海通证券
+
+<details>
+<summary>
+  海通证券交割单配置文件示例
+</summary>
+
+```yaml
+defaultCashAccount: Assets:Htsec:Cash
+defaultPositionAccount: Assets:Htsec:Positions
+defaultCommissionAccount: Expenses:Htsec:Commission
+defaultPnlAccount: Income:Htsec:PnL
+defaultCurrency: CNY
+title: 测试
+htsec:
+  rules:
+    - item: 兴业转债
+      txType: 卖
+      sep: ','
+      cashAccount: Assets:Rule1:Cash
+      positionAccount: Assets:Rule1:Positions
+      CommissionAccount: Expenses:Rule1:Commission
+      pnlAccount: Income:Rule1:PnL
+```
+
+</details></br>
+
+`defaultCashAccount`, `defaultPositionAccount`, `defaultCommissionAccount`, `defaultPnlAccount` 和 `defaultCurrency` 是全局的必填默认值。
+
+`htsec` is the provider-specific configuration. Htsec provider has rules matching mechanism.
+
+`htsec` 是海通证券相关的配置。它提供基于规则的匹配。可以指定：
+- `item`（交易方向-证券编码-证券市值）的完全/包含匹配。
+- `txType`（交易方向）的完全/包含匹配。
+- `time`（交易时间）的区间匹配。
+  > 交易时间可写为以下两种形式：
+  > - `11:00-13:00`
+  > - `11:00:00-13:00:00`
+      > 24 小时制，起始时间和终止之间之间使用 `-` 分隔。
+
+在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
+
+在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
+
+匹配成功则使用规则中定义的 `cashAccount`, `positionAccount`, `commissionAccount` 和 `pnlAccount` 覆盖默认定义。
+
+规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
+
+其中：
+- `defaultCashAccount` 是默认资本账户，一般用于存储证券账户可用资金。
 - `defaultPositionAccount` 是默认持仓账户。
 - `defaultCommissionAccount` 是默认手续费账户。
 - `defaultPnlAccount` 是默认损益账户。

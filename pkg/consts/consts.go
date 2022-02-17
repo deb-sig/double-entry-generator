@@ -26,4 +26,6 @@ const (
 	ProviderWechat = "wechat"
 	// ProviderHuobi is the name for huobi provider.
 	ProviderHuobi = "huobi"
+	// ProviderHtsec is the name for htsec provider
+	ProviderHtsec = "htsec"
 )
