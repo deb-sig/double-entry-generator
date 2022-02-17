@@ -78,7 +78,7 @@ test-alipay: ## Run tests for Alipay provider
 test-wechat: ## Run tests for WeChat provider
 	@$(SHELL) ./test/wechat-test.sh
 
-test-htsec: ## Run tests for WeChat provider
+test-htsec: ## Run tests for htsec provider
 	@$(SHELL) ./test/htsec-test.sh
 
 format: ## Format code
