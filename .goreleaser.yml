@@ -6,10 +6,13 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
+    binary: double-entry-generator
     goos:
       - linux
       - windows
       - darwin
+    ldflags:
+      - -s -w -X github.com/deb-sig/double-entry-generator/pkg/version.VERSION={{.Version}} -X github.com/deb-sig/double-entry-generator/pkg/version.REPOROOT=github.com/deb-sig/double-entry-generator -X github.com/deb-sig/double-entry-generator/pkg/version.COMMIT={{.ShortCommit}}
 archives:
   - replacements:
       darwin: Darwin
@@ -20,7 +23,7 @@ archives:
 checksum:
   name_template: 'checksums.txt'
 snapshot:
-  name_template: "{{ .Tag }}-next"
+  name_template: "{{ .Version }}-SNAPSHOT"
 changelog:
   sort: asc
   filters:
