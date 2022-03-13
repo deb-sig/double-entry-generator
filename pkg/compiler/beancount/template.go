@@ -13,6 +13,7 @@ var normalOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ EscapeString .Peer }
 	{{- if .CommissionAccount }}{{ printf "\n" }}	{{ .CommissionAccount }} {{ .Commission | printf "%.2f" }} {{ .Currency }}{{ end }}
 	{{- if .CommissionAccount }}{{ printf "\n" }}	{{ .MinusAccount }} -{{ .Commission | printf "%.2f" }} {{ .Currency }}{{ end }}
 	{{- if .PnlAccount }}{{ printf "\n" }}	{{ .PnlAccount }}{{ end }}
+
 `
 
 type NormalOrderVars struct {
