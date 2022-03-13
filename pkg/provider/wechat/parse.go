@@ -57,6 +57,7 @@ func (w *Wechat) translateToOrders(array []string) error {
 		return fmt.Errorf("parse money %s error: %v", array[5], err)
 	}
 	bill.Method = array[6]
+	bill.Status = array[7]
 	bill.OrderID = array[8]
 	bill.MechantOrderID = array[9]
 	note := array[10]
