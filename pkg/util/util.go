@@ -117,3 +117,8 @@ func SplitFindTimeInterval(timeStr string, targetTime time.Time, match bool) (bo
 
 	return isContain && match, nil
 }
+
+func EscapeString(str string) string {
+	str1 := strings.ReplaceAll(str, "\\", "\\'")
+	return strings.ReplaceAll(str1, `"`, `\"`)
+}
