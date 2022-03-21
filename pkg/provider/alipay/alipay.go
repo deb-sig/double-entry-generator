@@ -61,6 +61,7 @@ func (a *Alipay) Translate(filename string) (*ir.IR, error) {
 
 	reader := csv.NewReader(transform.NewReader(bufio.NewReader(csvFile),
 		simplifiedchinese.GBK.NewDecoder()))
+	reader.LazyQuotes = true
 	// If FieldsPerRecord is negative, no check is made and records
 	// may have a variable number of fields.
 	reader.FieldsPerRecord = -1
