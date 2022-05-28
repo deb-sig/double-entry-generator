@@ -23,8 +23,8 @@ option "operating_currency" "CNY"
 	payTime: "2017-10-20 18:36:44 +0800 CST"
 	source: "微信支付"
 	status: "支付成功"
-	txType: "/"
-	type: "信用卡还款"
+	txType: "信用卡还款"
+	type: "/"
 	Liabilities:Bank:CN:CCB 548.58 CNY
 	Assets:Digital:Wechat:Cash -548.58 CNY
 
@@ -35,8 +35,8 @@ option "operating_currency" "CNY"
 	payTime: "2019-04-16 10:28:55 +0800 CST"
 	source: "微信支付"
 	status: "充值完成"
-	txType: "/"
-	type: "零钱充值"
+	txType: "零钱充值"
+	type: "/"
 	Assets:Digital:Wechat:Cash 1300.00 CNY
 	Assets:Bank:CN:ICBC:Savings -1300.00 CNY
 
@@ -47,8 +47,8 @@ option "operating_currency" "CNY"
 	payTime: "2019-09-24 10:10:11 +0800 CST"
 	source: "微信支付"
 	status: "已存入零钱"
-	txType: "收入"
-	type: "微信红包"
+	txType: "微信红包"
+	type: "收入"
 	Assets:Digital:Wechat:Cash 0.35 CNY
 	Income:Wechat:RedPacket -0.35 CNY
 
@@ -59,8 +59,8 @@ option "operating_currency" "CNY"
 	payTime: "2019-09-26 12:45:27 +0800 CST"
 	source: "微信支付"
 	status: "支付成功"
-	txType: "支出"
-	type: "商户消费"
+	txType: "商户消费"
+	type: "支出"
 	Expenses:Food:Meal:Lunch 28.16 CNY
 	Assets:Bank:CN:BOC:Savings -28.16 CNY
 
@@ -71,8 +71,8 @@ option "operating_currency" "CNY"
 	payTime: "2020-02-14 01:24:33 +0800 CST"
 	source: "微信支付"
 	status: "支付成功"
-	txType: "/"
-	type: "购买理财通"
+	txType: "购买理财通"
+	type: "/"
 	Assets:Trade:Tencent:LiCaiTong 3000.00 CNY
 	Assets:Bank:CN:ICBC:Savings -3000.00 CNY
 
@@ -83,8 +83,8 @@ option "operating_currency" "CNY"
 	payTime: "2020-02-14 01:32:14 +0800 CST"
 	source: "微信支付"
 	status: "支付成功"
-	txType: "/"
-	type: "购买理财通"
+	txType: "购买理财通"
+	type: "/"
 	Assets:Trade:Tencent:LiCaiTong 10000.00 CNY
 	Assets:Bank:CN:ICBC:Savings -10000.00 CNY
 
@@ -95,8 +95,8 @@ option "operating_currency" "CNY"
 	payTime: "2020-07-06 14:54:38 +0800 CST"
 	source: "微信支付"
 	status: "支付成功"
-	txType: "/"
-	type: "零钱通转出-到工商银行(9876)"
+	txType: "零钱通转出-到工商银行(9876)"
+	type: "/"
 	Assets:Bank:CN:ICBC:Savings 5505.00 CNY
 	Assets:Digital:Wechat:Cash -5505.00 CNY
 
@@ -107,8 +107,8 @@ option "operating_currency" "CNY"
 	payTime: "2020-11-27 19:29:00 +0800 CST"
 	source: "微信支付"
 	status: "已收钱"
-	txType: "收入"
-	type: "二维码收款"
+	txType: "二维码收款"
+	type: "收入"
 	Assets:Digital:Wechat:Cash 23.00 CNY
 	Income:Service -23.00 CNY
 
@@ -119,8 +119,8 @@ option "operating_currency" "CNY"
 	payTime: "2021-01-17 10:07:31 +0800 CST"
 	source: "微信支付"
 	status: "支付成功"
-	txType: "/"
-	type: "转入零钱通-来自工商银行(9876)"
+	txType: "转入零钱通-来自工商银行(9876)"
+	type: "/"
 	Assets:Digital:Wechat:Cash 2000.00 CNY
 	Assets:Bank:CN:ICBC:Savings -2000.00 CNY
 
@@ -131,8 +131,8 @@ option "operating_currency" "CNY"
 	payTime: "2021-01-17 18:03:35 +0800 CST"
 	source: "微信支付"
 	status: "已转账"
-	txType: "支出"
-	type: "扫二维码付款"
+	txType: "扫二维码付款"
+	type: "支出"
 	Expenses:Food:Meal:Dinner 12.00 CNY
 	Assets:Digital:Wechat:Cash -12.00 CNY
 
@@ -143,8 +143,8 @@ option "operating_currency" "CNY"
 	payTime: "2021-01-22 12:34:56 +0800 CST"
 	source: "微信支付"
 	status: "朋友已收钱"
-	txType: "支出"
-	type: "转账"
+	txType: "转账"
+	type: "支出"
 	Expenses:Housing:Rent 500.00 CNY
 	Assets:Digital:Wechat:Cash -500.00 CNY
 
@@ -155,8 +155,8 @@ option "operating_currency" "CNY"
 	payTime: "2021-07-11 14:17:52 +0800 CST"
 	source: "微信支付"
 	status: "提现已到账"
-	txType: "/"
-	type: "零钱提现"
+	txType: "零钱提现"
+	type: "/"
 	Assets:Bank:CN:BOC:Savings 1000.10 CNY
 	Assets:Digital:Wechat:Cash -1000.10 CNY
 	Expenses:Wechat:Commission 1.00 CNY
@@ -169,8 +169,8 @@ option "operating_currency" "CNY"
 	payTime: "2021-07-14 22:18:10 +0800 CST"
 	source: "微信支付"
 	status: "提现已到账"
-	txType: "/"
-	type: "零钱提现"
+	txType: "零钱提现"
+	type: "/"
 	Assets:Bank:CN:ICBC:Savings 10.00 CNY
 	Assets:Digital:Wechat:Cash -10.00 CNY
 	Expenses:Wechat:Commission 0.10 CNY
@@ -183,8 +183,8 @@ option "operating_currency" "CNY"
 	payTime: "2021-07-15 16:29:37 +0800 CST"
 	source: "微信支付"
 	status: "提现已到账"
-	txType: "/"
-	type: "零钱提现"
+	txType: "零钱提现"
+	type: "/"
 	Assets:Bank:CN:ICBC:Savings 100.00 CNY
 	Assets:Digital:Wechat:Cash -100.00 CNY
 	Expenses:Wechat:Commission 0.10 CNY
@@ -197,8 +197,8 @@ option "operating_currency" "CNY"
 	payTime: "2021-07-18 10:48:09 +0800 CST"
 	source: "微信支付"
 	status: "充值成功"
-	txType: "收入"
-	type: "商户消费"
+	txType: "商户消费"
+	type: "收入"
 	Assets:Digital:Wechat:Cash 0.07 CNY
 	Income:Wechat:RedPacket -0.07 CNY
 
@@ -209,8 +209,8 @@ option "operating_currency" "CNY"
 	payTime: "2021-10-19 16:08:00 +0800 CST"
 	source: "微信支付"
 	status: "支付成功"
-	txType: "支出"
-	type: "亲属卡交易"
+	txType: "亲属卡交易"
+	type: "支出"
 	Expenses:FIXME 2243.46 CNY
 	Assets:Digital:Wechat:Cash -2243.46 CNY
 
@@ -221,8 +221,8 @@ option "operating_currency" "CNY"
 	payTime: "2021-12-15 00:06:35 +0800 CST"
 	source: "微信支付"
 	status: "已转账"
-	txType: "支出"
-	type: "扫二维码付款"
+	txType: "扫二维码付款"
+	type: "支出"
 	Expenses:Food:Meal:MidNight 12.00 CNY
 	Assets:Digital:Wechat:Cash -12.00 CNY
 
@@ -233,8 +233,8 @@ option "operating_currency" "CNY"
 	payTime: "2021-12-15 23:51:35 +0800 CST"
 	source: "微信支付"
 	status: "已转账"
-	txType: "支出"
-	type: "扫二维码付款"
+	txType: "扫二维码付款"
+	type: "支出"
 	Expenses:Food:Meal:MidNight 12.00 CNY
 	Assets:Digital:Wechat:Cash -12.00 CNY
 
