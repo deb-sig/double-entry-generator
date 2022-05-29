@@ -59,11 +59,11 @@ func getMetadata(o Order) map[string]string {
 	}
 
 	if o.TypeOriginal != "" {
-		txType = o.TypeOriginal
+		typeOriginal = o.TypeOriginal
 	}
 
 	if o.TxTypeOriginal != "" {
-		typeOriginal = o.TxTypeOriginal
+		txType = o.TxTypeOriginal
 	}
 
 	if o.Method != "" {
