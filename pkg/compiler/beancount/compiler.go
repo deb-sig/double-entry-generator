@@ -121,7 +121,20 @@ func (b *BeanCount) writeHeader(file *os.File) error {
 	if err != nil {
 		return fmt.Errorf("write option currency error: %v", err)
 	}
+	if !b.Config.CloseOpenAccount {
+		err := b.autoOpenAccount(file)
+		if err != nil {
+			return err
+		}
+	}
+	_, err = io.WriteString(file, "\n")
+	if err != nil {
+		return fmt.Errorf("write extra enter error: %v", err)
+	}
+	return nil
+}
 
+func (b *BeanCount) autoOpenAccount(file *os.File) error {
 	accounts := b.GetAllCandidateAccounts(b.Config)
 	var sortedAccounts []string
 	for k := range accounts {
@@ -132,14 +145,10 @@ func (b *BeanCount) writeHeader(file *os.File) error {
 	sort.Strings(sortedAccounts)
 
 	for _, k := range sortedAccounts {
-		_, err = io.WriteString(file, "1970-01-01 open "+k+"\n")
+		_, err := io.WriteString(file, "1970-01-01 open "+k+"\n")
 		if err != nil {
 			return fmt.Errorf("write open account error: %v", err)
 		}
-	}
-	_, err = io.WriteString(file, "\n")
-	if err != nil {
-		return fmt.Errorf("write extra enter error: %v", err)
 	}
 	return nil
 }
