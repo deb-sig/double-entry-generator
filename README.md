@@ -24,9 +24,20 @@
 
 ## 安装
 
+### Homebrew
+
+使用 Homebrew 安装：
+
+```bash
+$ brew install deb-sig/tap/double-entry-generator
+```
+
+### 二进制安装
+
 在 [GitHub Release](https://github.com/deb-sig/double-entry-generator/releases) 页面中下载相应架构的二进制文件到本地即可。
 
-源码安装：
+### 源码安装
+
 ```bash
 go get -u github.com/deb-sig/double-entry-generator
 ```
