@@ -4,17 +4,34 @@ before:
   hooks:
     - go mod tidy
 builds:
-  - env:
+  - 
+    id: double-entry-generator
+    env:
       - CGO_ENABLED=0
     binary: double-entry-generator
     goos:
       - linux
       - windows
       - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm64
+    # List of combinations of GOOS + GOARCH + GOARM to ignore.
+    ignore:
+      - goos: darwin
+        goarch: 386
+      - goos: windows
+        goarch: arm64
     ldflags:
-      - -s -w -X github.com/deb-sig/double-entry-generator/pkg/version.VERSION={{.Version}} -X github.com/deb-sig/double-entry-generator/pkg/version.REPOROOT=github.com/deb-sig/double-entry-generator -X github.com/deb-sig/double-entry-generator/pkg/version.COMMIT={{.ShortCommit}}
+      - -s -w 
+      - -X github.com/deb-sig/double-entry-generator/pkg/version.VERSION={{.Version}} 
+      - -X github.com/deb-sig/double-entry-generator/pkg/version.REPOROOT=github.com/deb-sig/double-entry-generator 
+      - -X github.com/deb-sig/double-entry-generator/pkg/version.COMMIT={{.ShortCommit}}
 archives:
-  - replacements:
+  - 
+    id: double-entry-generator
+    replacements:
       darwin: Darwin
       linux: Linux
       windows: Windows
@@ -30,3 +47,26 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+universal_binaries:
+  - replace: true
+brews:
+  - 
+    name: double-entry-generator
+    ids:
+      - double-entry-generator
+    tap:
+      owner: deb-sig
+      name: homebrew-tap
+      branch: main
+    commit_author:
+      name: TripleZ
+      email: me@triplez.cn
+    folder: Formula
+    homepage: https://github.com/deb-sig/double-entry-generator
+    description: Rule-based double-entry bookkeeping importer (from Alipay/WeChat/Huobi to Beancount).
+    license: Apache-2.0
+    # skip_upload: auto
+    caveats: |
+      Please run `double-entry-generator help` for more help.
+    test: |
+      system "#{bin}/double-entry-generator version"

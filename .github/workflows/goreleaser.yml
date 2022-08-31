@@ -11,8 +11,18 @@ permissions:
 
 jobs:
   goreleaser:
+    permissions:
+      id-token: write
+      contents: write
     runs-on: ubuntu-latest
     steps:
+      - name: Create GitHub App Installation Token
+        uses: jnwng/github-app-installation-token-action@v2
+        id: installationToken
+        with: 
+          appId: 233273
+          installationId: 28742230
+          privateKey: ${{ secrets.GH_APP_PRIVATE_KEY }}
       -
         name: Checkout
         uses: actions/checkout@v2
@@ -25,9 +35,10 @@ jobs:
           go-version: 1.16
       -
         name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
+        uses: goreleaser/goreleaser-action@v3
         with:
+          distribution: goreleaser
           version: latest
           args: release --rm-dist
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.installationToken.outputs.token }}
