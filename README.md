@@ -29,7 +29,13 @@
 使用 Homebrew 安装：
 
 ```bash
-$ brew install deb-sig/tap/double-entry-generator
+brew install deb-sig/tap/double-entry-generator
+```
+
+使用 Homebrew 更新软件：
+
+```bash
+brew upgrade deb-sig/tap/double-entry-generator
 ```
 
 ### 二进制安装
