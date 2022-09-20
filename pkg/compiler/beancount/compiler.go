@@ -87,10 +87,11 @@ func (b *BeanCount) Compile() error {
 	log.Printf("Getting the expected account for the bills")
 	for index, o := range b.IR.Orders {
 		// Get the expected accounts according to the configuration.
-		minusAccount, plusAccount, extraAccounts := b.GetAccounts(&o, b.Config, b.Provider, b.Target)
+		minusAccount, plusAccount, extraAccounts, tags := b.GetAccountsAndTags(&o, b.Config, b.Provider, b.Target)
 		b.IR.Orders[index].MinusAccount = minusAccount
 		b.IR.Orders[index].PlusAccount = plusAccount
 		b.IR.Orders[index].ExtraAccounts = extraAccounts
+		b.IR.Orders[index].Tags = tags
 	}
 
 	log.Printf("Writing to %s", b.Output)
@@ -185,6 +186,7 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 			CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
 			Metadata:          o.Metadata,
 			Currency:          b.Config.DefaultCurrency,
+			Tags:              o.Tags,
 		})
 	case ir.OrderTypeHuobiTrade: // Huobi trades
 		switch o.TxType {

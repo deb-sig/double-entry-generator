@@ -2,6 +2,7 @@ package wechat
 
 import (
 	"log"
+	"strings"
 
 	"github.com/deb-sig/double-entry-generator/pkg/config"
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
@@ -37,8 +38,10 @@ func (w Wechat) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 }
 
 // GetAccounts returns minus and plus account.
-func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string) {
+func (w Wechat) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string, []string) {
 	var resCommission string
+	var tags = make([]string, 0)
+
 	// check this tx whether has commission
 	if o.Commission != 0 {
 		if cfg.DefaultCommissionAccount == "" {
@@ -51,7 +54,7 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 	if cfg.Wechat == nil || len(cfg.Wechat.Rules) == 0 {
 		return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount, map[ir.Account]string{
 			ir.CommissionAccount: resCommission,
-		}
+		}, nil
 	}
 
 	resMinus := cfg.DefaultMinusAccount
@@ -62,6 +65,7 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 		match := true
 		// get seperator
 		sep := ","
+
 		if r.Seperator != nil {
 			sep = *r.Seperator
 		}
@@ -111,11 +115,16 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 			if r.CommissionAccount != nil {
 				resCommission = *r.CommissionAccount
 			}
+
+			if r.Tags != nil {
+				tags = strings.Split(*r.Tags, sep)
+			}
+
 		}
 
 	}
 
 	return resMinus, resPlus, map[ir.Account]string{
 		ir.CommissionAccount: resCommission,
-	}
+	}, tags
 }
