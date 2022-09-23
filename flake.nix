@@ -27,6 +27,19 @@
       in rec {
         # `nix develop`
         devShell = pkgs.mkShell {buildInputs = devDeps;};
+        checks = {
+          format =
+            pkgs.runCommand "check-format"
+            {
+              buildInputs = with pkgs; [
+                nixpkgs-fmt
+                golangci-lint
+              ];
+            } ''
+              ${pkgs.nixpkgs-fmt}/bin/nixpkgs-fmt ${./.}
+              ${pkgs.golangci-lint}/bin/golangci-lint run --fix --timeout 10m ${./.}
+            '';
+        };
       }
     );
 }
