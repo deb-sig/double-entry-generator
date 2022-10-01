@@ -122,3 +122,33 @@ func EscapeString(str string) string {
 	str1 := strings.ReplaceAll(str, "\\", "\\'")
 	return strings.ReplaceAll(str1, `"`, `\"`)
 }
+
+func SplitFindTimeStampInterval(timeRangeStr string, targetTime time.Time, match bool) (bool, error) {
+	isContain := false
+
+	timeRangeStrs := strings.Split(timeRangeStr, "-")
+	if len(timeRangeStrs) != 2 {
+		return match, fmt.Errorf("fail to parse the time condition `%s`", timeRangeStr)
+	}
+
+	startTimeInt, err := strconv.ParseInt(timeRangeStrs[0], 10, 64)
+	if err != nil {
+		return match, fmt.Errorf("fail to parse the start timestamp `%s`", timeRangeStrs[0])
+	}
+	startTime := time.Unix(startTimeInt, 0)
+
+	endTimeInt, err := strconv.ParseInt(timeRangeStrs[1], 10, 64)
+	if err != nil {
+		return match, fmt.Errorf("fail to parse the end timestamp `%s`", timeRangeStrs[1])
+	}
+	endTime := time.Unix(endTimeInt, 0)
+
+	if targetTime.After(startTime) && targetTime.Before(endTime) {
+		isContain = true
+	}
+	if match {
+		println("start time", startTime.String(), endTime.String(), targetTime.String())
+	}
+
+	return isContain && match, nil
+}

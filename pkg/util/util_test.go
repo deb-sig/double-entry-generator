@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"testing"
 	"time"
 )
@@ -66,6 +67,43 @@ func TestSplitFindTimeIntervalNegativeCases(t *testing.T) {
 	for _, test := range tests {
 		if _, err := SplitFindTimeInterval(test.timeStr, test.targetTime, test.match); err == nil {
 			t.Errorf("Function should throw an error. Input time string: `%s`", test.timeStr)
+		}
+	}
+}
+
+func TestSplitFindTimeStampInterval(t *testing.T) {
+
+	targetTime := time.Now()
+
+	tests := []struct {
+		timeRangeStr string
+		wantError    bool
+		match        bool
+		except       bool
+	}{
+
+		{fmt.Sprintf("%d-%d", targetTime.Unix()-1, targetTime.Unix()+1), false, true, true},   // hit range with match
+		{fmt.Sprintf("%d-%d", targetTime.Unix()-1, targetTime.Unix()+1), false, false, false}, // hit range with not match
+
+		{fmt.Sprintf("%d-%d", targetTime.Unix()+1, targetTime.Unix()-1), false, false, false}, // out of range
+
+		{"xxd-123", true, false, false},           // not valid
+		{"this is not right", true, false, false}, // not valid
+	}
+
+	for _, test := range tests {
+		match, err := SplitFindTimeStampInterval(test.timeRangeStr, targetTime, test.match)
+		if test.wantError && err == nil {
+			t.Errorf("Function should throw an error. Input time string: `%s`", test.timeRangeStr)
+
+		}
+
+		if !test.wantError && err != nil {
+			t.Errorf("this case should not return error %s", err.Error())
+		}
+
+		if match != test.except {
+			t.Errorf("time range %v not equal to expected %v", test.timeRangeStr, test.match)
 		}
 	}
 }

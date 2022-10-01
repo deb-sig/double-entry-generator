@@ -92,6 +92,13 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 				log.Fatalf(err.Error())
 			}
 		}
+		if r.TimestampRange != nil {
+			match, err = util.SplitFindTimeStampInterval(*r.TimestampRange, o.PayTime, match)
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+		}
+
 		if match {
 			// Support multiple matches, like one rule matches the minus accout, the other rule matches the plus account.
 			if r.TargetAccount != nil {
