@@ -10,6 +10,7 @@ type Rule struct {
 	Type              *string `mapstructure:"type,omitempty"`   // "币币交易"
 	TxType            *string `mapstructure:"txType,omitempty"` // "买入"、"卖出"
 	Time              *string `mapstructure:"time,omitempty"`
+	TimestampRange    *string `mapstructure:"timestamp_range,omitempty"`
 	Seperator         *string `mapstructure:"sep,omitempty"` // default: ,
 	CashAccount       *string `mapstructure:"cashAccount,omitempty"`
 	PositionAccount   *string `mapstructure:"positionAccount,omitempty"`
