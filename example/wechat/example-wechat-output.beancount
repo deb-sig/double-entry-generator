@@ -13,6 +13,7 @@ option "operating_currency" "CNY"
 1970-01-01 open Expenses:Housing:Rent
 1970-01-01 open Expenses:Travel
 1970-01-01 open Expenses:Wechat:Commission
+1970-01-01 open Expenses:Wechat:Sponsor
 1970-01-01 open Income:Service
 1970-01-01 open Income:Wechat:RedPacket
 1970-01-01 open Liabilities:Bank:CN:CCB
@@ -250,4 +251,16 @@ option "operating_currency" "CNY"
 	type: "收入"
 	Assets:Digital:Wechat:Cash 0.07 CNY
 	Expenses:Travel -0.07 CNY
+
+2022-09-24 * "YingDev" "/"
+	merchantId: "1000108101202209241820542253348"
+	method: "零钱"
+	orderId: "100010810122092400064222561891707533"
+	payTime: "2022-09-24 02:24:20 +0800 CST"
+	source: "微信支付"
+	status: "朋友已收钱"
+	txType: "赞赏码"
+	type: "支出"
+	Expenses:Wechat:Sponsor 36.99 CNY
+	Assets:Digital:Wechat:Cash -36.99 CNY
 
