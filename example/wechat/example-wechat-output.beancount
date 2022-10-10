@@ -11,6 +11,7 @@ option "operating_currency" "CNY"
 1970-01-01 open Expenses:Food:Meal:Lunch
 1970-01-01 open Expenses:Food:Meal:MidNight
 1970-01-01 open Expenses:Housing:Rent
+1970-01-01 open Expenses:Travel
 1970-01-01 open Expenses:Wechat:Commission
 1970-01-01 open Income:Service
 1970-01-01 open Income:Wechat:RedPacket
@@ -237,4 +238,16 @@ option "operating_currency" "CNY"
 	type: "支出"
 	Expenses:Food:Meal:MidNight 12.00 CNY
 	Assets:Digital:Wechat:Cash -12.00 CNY
+
+2022-07-18 * "测试时间戳，点击底部\"多多视频\"" "/"
+	merchantId: "10101265586742107189275763431049"
+	method: "/"
+	orderId: "160572459521071810106004542906137497131422938"
+	payTime: "2022-07-18 10:48:09 +0800 CST"
+	source: "微信支付"
+	status: "充值成功"
+	txType: "商户消费"
+	type: "收入"
+	Assets:Digital:Wechat:Cash 0.07 CNY
+	Expenses:Travel -0.07 CNY
 

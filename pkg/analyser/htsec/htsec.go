@@ -81,6 +81,12 @@ func (h Htsec) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provi
 				log.Fatalf(err.Error())
 			}
 		}
+		if r.TimestampRange != nil {
+			match, err = util.SplitFindTimeStampInterval(*r.TimestampRange, o.PayTime, match)
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+		}
 
 		if match {
 			if r.CashAccount != nil {

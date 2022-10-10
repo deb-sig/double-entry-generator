@@ -30,6 +30,7 @@ type Rule struct {
 	Seperator         *string `mapstructure:"sep,omitempty"` // default: ,
 	Method            *string `mapstructure:"method,omitempty"`
 	Time              *string `mapstructure:"time,omitempty"`
+	TimestampRange    *string `mapstructure:"timestamp_range,omitempty"`
 	MethodAccount     *string `mapstructure:"methodAccount,omitempty"`
 	TargetAccount     *string `mapstructure:"targetAccount,omitempty"`
 	CommissionAccount *string `mapstructure:"commissionAccount,omitempty"`
