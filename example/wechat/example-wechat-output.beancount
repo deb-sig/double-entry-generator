@@ -239,7 +239,7 @@ option "operating_currency" "CNY"
 	Expenses:Food:Meal:MidNight 12.00 CNY
 	Assets:Digital:Wechat:Cash -12.00 CNY
 
-2022-07-18 * "测试时间戳，点击底部\"多多视频\"" "/"
+2022-07-18 * "测试时间戳，点击底部\"多多视频\"" "/" 
 	merchantId: "10101265586742107189275763431049"
 	method: "/"
 	orderId: "160572459521071810106004542906137497131422938"
