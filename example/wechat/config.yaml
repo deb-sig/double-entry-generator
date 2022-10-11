@@ -25,6 +25,9 @@ wechat:
     - type: / # 零钱通转出-到工商银行(9876)
       txType: 零钱通转出-到工商银行(9876)
       targetAccount: Assets:Bank:CN:ICBC:Savings
+    - type: 支出
+      txType: 赞赏码
+      targetAccount: Expenses:Wechat:Sponsor
 
     - peer: 云膳过桥米线,餐厅
       sep: ","
