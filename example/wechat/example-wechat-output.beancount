@@ -17,7 +17,7 @@ option "operating_currency" "CNY"
 1970-01-01 open Income:Wechat:RedPacket
 1970-01-01 open Liabilities:Bank:CN:CCB
 
-2017-10-20 * "建设银行信用卡还款" "/" 
+2017-10-20 * "建设银行信用卡还款" "/"
 	merchantId: "1000019741201710201961089024"
 	method: "零钱"
 	orderId: "4200000069201710299246843141"
@@ -29,7 +29,7 @@ option "operating_currency" "CNY"
 	Liabilities:Bank:CN:CCB 548.58 CNY
 	Assets:Digital:Wechat:Cash -548.58 CNY
 
-2019-04-16 * "工商银行(9876)" "/" 
+2019-04-16 * "工商银行(9876)" "/"
 	merchantId: "/"
 	method: "工商银行(9876)"
 	orderId: "110190416100031243293946287587"
@@ -41,7 +41,7 @@ option "operating_currency" "CNY"
 	Assets:Digital:Wechat:Cash 1300.00 CNY
 	Assets:Bank:CN:ICBC:Savings -1300.00 CNY
 
-2019-09-24 * "同性好友" "/" 
+2019-09-24 * "同性好友" "/"
 	merchantId: "129847129"
 	method: "/"
 	orderId: "3985734"
@@ -53,7 +53,7 @@ option "operating_currency" "CNY"
 	Assets:Digital:Wechat:Cash 0.35 CNY
 	Income:Wechat:RedPacket -0.35 CNY
 
-2019-09-26 * "云膳过桥米线(传奇广场店)" "总共消费:28.16" 
+2019-09-26 * "云膳过桥米线(传奇广场店)" "总共消费:28.16"
 	merchantId: "129847129"
 	method: "中国银行(1234)"
 	orderId: "3985734"
@@ -65,7 +65,7 @@ option "operating_currency" "CNY"
 	Expenses:Food:Meal:Lunch 28.16 CNY
 	Assets:Bank:CN:BOC:Savings -28.16 CNY
 
-2020-02-14 * "理财通" "中欧医疗健康混合C(003096)" 
+2020-02-14 * "理财通" "中欧医疗健康混合C(003096)"
 	merchantId: "1800007030102002143310679508"
 	method: "工商银行"
 	orderId: "1800045030312002144223548046"
@@ -77,7 +77,7 @@ option "operating_currency" "CNY"
 	Assets:Trade:Tencent:LiCaiTong 3000.00 CNY
 	Assets:Bank:CN:ICBC:Savings -3000.00 CNY
 
-2020-02-14 * "理财通" "鹏华增值宝(000569)" 
+2020-02-14 * "理财通" "鹏华增值宝(000569)"
 	merchantId: "1800007308102002143430655989"
 	method: "工商银行"
 	orderId: "1800007367312002141165262215"
@@ -89,7 +89,7 @@ option "operating_currency" "CNY"
 	Assets:Trade:Tencent:LiCaiTong 10000.00 CNY
 	Assets:Bank:CN:ICBC:Savings -10000.00 CNY
 
-2020-07-06 * "/" "/" 
+2020-07-06 * "/" "/"
 	merchantId: "/"
 	method: "零钱通"
 	orderId: "18000070282007060048243102923587"
@@ -101,7 +101,7 @@ option "operating_currency" "CNY"
 	Assets:Bank:CN:ICBC:Savings 5505.00 CNY
 	Assets:Digital:Wechat:Cash -5505.00 CNY
 
-2020-11-27 * "用户A" "收款方备注:二维码收款" #income 
+2020-11-27 * "用户A" "收款方备注:二维码收款" #income
 	merchantId: "/"
 	method: "零钱"
 	orderId: "3985734"
@@ -113,7 +113,7 @@ option "operating_currency" "CNY"
 	Assets:Digital:Wechat:Cash 23.00 CNY
 	Income:Service -23.00 CNY
 
-2021-01-17 * "/" "/" 
+2021-01-17 * "/" "/"
 	merchantId: "129847129"
 	method: "工商银行(9876)"
 	orderId: "3985734"
@@ -125,7 +125,7 @@ option "operating_currency" "CNY"
 	Assets:Digital:Wechat:Cash 2000.00 CNY
 	Assets:Bank:CN:ICBC:Savings -2000.00 CNY
 
-2021-01-17 * "某餐厅" "收款方备注:二维码收款" 
+2021-01-17 * "某餐厅" "收款方备注:二维码收款"
 	merchantId: "129847129"
 	method: "零钱通"
 	orderId: "3985734"
@@ -137,7 +137,7 @@ option "operating_currency" "CNY"
 	Expenses:Food:Meal:Dinner 12.00 CNY
 	Assets:Digital:Wechat:Cash -12.00 CNY
 
-2021-01-22 * "房东" "转账备注:微信转账" 
+2021-01-22 * "房东" "转账备注:微信转账"
 	merchantId: "129847129"
 	method: "零钱通"
 	orderId: "3985734"
@@ -149,7 +149,7 @@ option "operating_currency" "CNY"
 	Expenses:Housing:Rent 500.00 CNY
 	Assets:Digital:Wechat:Cash -500.00 CNY
 
-2021-07-11 * "招商银行()" "/" 
+2021-07-11 * "招商银行()" "/"
 	merchantId: "/"
 	method: "中国银行"
 	orderId: "207210711100077147832088993175"
@@ -163,7 +163,7 @@ option "operating_currency" "CNY"
 	Expenses:Wechat:Commission 1.00 CNY
 	Assets:Digital:Wechat:Cash -1.00 CNY
 
-2021-07-14 * "招商银行()" "/" 
+2021-07-14 * "招商银行()" "/"
 	merchantId: "/"
 	method: "工商银行"
 	orderId: "207210714100077147459276708175"
@@ -177,7 +177,7 @@ option "operating_currency" "CNY"
 	Expenses:Wechat:Commission 0.10 CNY
 	Assets:Digital:Wechat:Cash -0.10 CNY
 
-2021-07-15 * "招商银行()" "/" 
+2021-07-15 * "招商银行()" "/"
 	merchantId: "/"
 	method: "工商银行"
 	orderId: "207210715100077148235523883175"
@@ -191,7 +191,7 @@ option "operating_currency" "CNY"
 	Expenses:Wechat:Commission 0.10 CNY
 	Assets:Digital:Wechat:Cash -0.10 CNY
 
-2021-07-18 * "打开拼多多，点击底部\"多多视频\"" "/" 
+2021-07-18 * "打开拼多多，点击底部\"多多视频\"" "/"
 	merchantId: "10101265586742107189275763431048"
 	method: "/"
 	orderId: "160572459521071810106004542906137497131422937"
@@ -203,7 +203,7 @@ option "operating_currency" "CNY"
 	Assets:Digital:Wechat:Cash 0.07 CNY
 	Income:Wechat:RedPacket -0.07 CNY
 
-2021-10-19 * "哈哈" "亲属卡" 
+2021-10-19 * "哈哈" "亲属卡"
 	merchantId: "XSFF-SD2021101916055813620"
 	method: "零钱通"
 	orderId: "42000011202110191201583411"
@@ -215,7 +215,7 @@ option "operating_currency" "CNY"
 	Expenses:FIXME 2243.46 CNY
 	Assets:Digital:Wechat:Cash -2243.46 CNY
 
-2021-12-15 * "某餐厅" "测试 T+1" 
+2021-12-15 * "某餐厅" "测试 T+1"
 	merchantId: "129847129"
 	method: "零钱通"
 	orderId: "3985734"
@@ -227,7 +227,7 @@ option "operating_currency" "CNY"
 	Expenses:Food:Meal:MidNight 12.00 CNY
 	Assets:Digital:Wechat:Cash -12.00 CNY
 
-2021-12-15 * "某餐厅" "测试 T-1" 
+2021-12-15 * "某餐厅" "测试 T-1"
 	merchantId: "129847129"
 	method: "零钱通"
 	orderId: "3985734"
@@ -239,7 +239,7 @@ option "operating_currency" "CNY"
 	Expenses:Food:Meal:MidNight 12.00 CNY
 	Assets:Digital:Wechat:Cash -12.00 CNY
 
-2022-07-18 * "测试时间戳，点击底部\"多多视频\"" "/" 
+2022-07-18 * "测试时间戳，点击底部\"多多视频\"" "/"
 	merchantId: "10101265586742107189275763431049"
 	method: "/"
 	orderId: "160572459521071810106004542906137497131422938"
