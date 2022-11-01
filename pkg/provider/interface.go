@@ -18,6 +18,7 @@ package provider
 
 import (
 	"fmt"
+
 	"github.com/deb-sig/double-entry-generator/pkg/consts"
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/alipay"
