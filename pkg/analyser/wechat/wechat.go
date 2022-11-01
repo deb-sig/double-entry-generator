@@ -123,8 +123,8 @@ func (w Wechat) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 				resCommission = *r.CommissionAccount
 			}
 
-			if r.Tags != nil {
-				tags = strings.Split(*r.Tags, sep)
+			if r.Tag != nil {
+				tags = strings.Split(*r.Tag, sep)
 			}
 
 		}
