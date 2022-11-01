@@ -2,6 +2,7 @@ package analyser
 
 import (
 	"fmt"
+
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/alipay"
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/htsec"
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/huobi"
@@ -14,7 +15,7 @@ import (
 // Interface is the interface of analyser.
 type Interface interface {
 	GetAllCandidateAccounts(cfg *config.Config) map[string]bool
-	GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string)
+	GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string, []string)
 }
 
 // New creates a new analyser.

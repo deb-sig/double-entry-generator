@@ -51,6 +51,7 @@ wechat:
     - peer: 用户
       type: 收入
       targetAccount: Income:Service
+      tag: income,service
 
     - peer: 理财通
       type: /

@@ -40,14 +40,14 @@ func (h Huobi) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 	return uniqMap
 }
 
-func (h Huobi) GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string) {
+func (h Huobi) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string, []string) {
 	if cfg.Huobi == nil || len(cfg.Huobi.Rules) == 0 {
 		return "", "", map[ir.Account]string{
 			ir.CashAccount:       cfg.DefaultCashAccount,
 			ir.PositionAccount:   cfg.DefaultPositionAccount,
 			ir.CommissionAccount: cfg.DefaultCommissionAccount,
 			ir.PnlAccount:        cfg.DefaultPnlAccount,
-		}
+		}, nil
 	}
 
 	cashAccount := cfg.DefaultCashAccount
@@ -111,5 +111,5 @@ func (h Huobi) GetAccounts(o *ir.Order, cfg *config.Config, target, provider str
 		ir.PositionAccount:   positionAccount,
 		ir.CommissionAccount: commissionAccount,
 		ir.PnlAccount:        pnlAccount,
-	}
+	}, nil
 }

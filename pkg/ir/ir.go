@@ -49,6 +49,7 @@ type Order struct {
 	MinusAccount    string
 	PlusAccount     string
 	Metadata        map[string]string
+	Tags            []string
 }
 
 // Unit is the key commodity names
