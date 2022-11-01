@@ -2,9 +2,10 @@ package htsec
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
 	"github.com/xuri/excelize/v2"
-	"log"
 )
 
 type Htsec struct {
@@ -52,7 +53,7 @@ func (h *Htsec) Translate(filename string) (*ir.IR, error) {
 
 		if o.Price != 0 && o.Volume != 0 && o.TransactionAmount == 0 {
 			for ti, tar := range h.Orders {
-				if o.TypeOriginal == tar.TypeOriginal && tar.TransactionAmount != 0 && tar.Price == 0 && tar.Volume == 0 {
+				if o.TxTypeOriginal == tar.TxTypeOriginal && tar.TransactionAmount != 0 && tar.Price == 0 && tar.Volume == 0 {
 					h.Orders[index].TransactionAmount = tar.TransactionAmount
 					h.Orders[index].OccurAmount = tar.OccurAmount
 

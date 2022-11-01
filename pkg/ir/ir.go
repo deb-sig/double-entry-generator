@@ -37,9 +37,9 @@ type Order struct {
 	Money           float64
 	Note            string
 	PayTime         time.Time
-	TxType          TxType // 方向，一般为 收/支
-	TxTypeOriginal  string
+	Type            Type // 方向，一般为 收/支
 	TypeOriginal    string
+	TxTypeOriginal  string // 交易类型
 	Method          string
 	Amount          float64
 	Price           float64
@@ -73,13 +73,13 @@ const (
 	MinusAccount              = "MinusAccount"
 )
 
-// TxType is transanction type defined by alipay.
-type TxType string
+// Type is transaction type defined by alipay.
+type Type string
 
 const (
-	TxTypeSend    TxType = "Send"
-	TxTypeRecv           = "Recv"
-	TxTypeUnknown        = "Unknwon"
+	TypeSend    Type = "Send"
+	TypeRecv         = "Recv"
+	TypeUnknown      = "Unknwon"
 )
 
 type OrderType string // 为 IR 设置的交易类别

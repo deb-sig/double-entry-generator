@@ -58,10 +58,10 @@ func (h Htsec) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provi
 	var err error
 	for _, r := range cfg.Htsec.Rules {
 		match := true
-		// get seperator
+		// get separator
 		sep := ","
-		if r.Seperator != nil {
-			sep = *r.Seperator
+		if r.Separator != nil {
+			sep = *r.Separator
 		}
 
 		matchFunc := util.SplitFindContains
@@ -69,8 +69,8 @@ func (h Htsec) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provi
 			matchFunc = util.SplitFindEquals
 		}
 
-		if r.TxType != nil {
-			match = matchFunc(*r.TxType, o.TxTypeOriginal, sep, match)
+		if r.Type != nil {
+			match = matchFunc(*r.Type, o.TypeOriginal, sep, match)
 		}
 		if r.Item != nil {
 			match = matchFunc(*r.Item, o.Item, sep, match)

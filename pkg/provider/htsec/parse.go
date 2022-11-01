@@ -32,9 +32,9 @@ func (h *Htsec) translateToOrders(arr []string) error {
 	}
 
 	if strings.HasPrefix(arr[17], "A") {
-		bill.TypeOriginal = "SH" + code
+		bill.TxTypeOriginal = "SH" + code
 	} else {
-		bill.TypeOriginal = "SZ" + code
+		bill.TxTypeOriginal = "SZ" + code
 	}
 	bill.SecuritiesName = code + "-" + arr[1]
 	if len(arr[3]) == 0 {
@@ -65,8 +65,8 @@ func (h *Htsec) translateToOrders(arr []string) error {
 		return fmt.Errorf("parse OccurAmount %s error: %v", arr[7], err)
 	}
 
-	bill.TxType = getTxType(arr[8])
-	if bill.TxType == TxTypeNil {
+	bill.Type = getTxType(arr[8])
+	if bill.Type == TxTypeNil {
 		return fmt.Errorf("Failed to get the tx type: %s: %v", arr[8], err)
 	}
 
