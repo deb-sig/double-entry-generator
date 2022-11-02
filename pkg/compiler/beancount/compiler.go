@@ -189,8 +189,8 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 			Tags:              o.Tags,
 		})
 	case ir.OrderTypeHuobiTrade: // Huobi trades
-		switch o.TxType {
-		case ir.TxTypeSend: // buy
+		switch o.Type {
+		case ir.TypeSend: // buy
 			isDiffCommissionUnit := false
 			commissionUnit, ok := o.Units[ir.CommissionUnit]
 			if !ok {
@@ -209,8 +209,8 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 				err = huobiTradeBuyOrderDiffCommissionUnitTemplate.Execute(&buf, &HuobiTradeBuyOrderVars{
 					PayTime:           o.PayTime,
 					Peer:              o.Peer,
-					TypeOriginal:      o.TypeOriginal,
 					TxTypeOriginal:    o.TxTypeOriginal,
+					TypeOriginal:      o.TypeOriginal,
 					Item:              o.Item,
 					Amount:            o.Amount,
 					Money:             o.Money,
@@ -228,8 +228,8 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 				err = huobiTradeBuyOrderTemplate.Execute(&buf, &HuobiTradeBuyOrderVars{
 					PayTime:           o.PayTime,
 					Peer:              o.Peer,
-					TypeOriginal:      o.TypeOriginal,
 					TxTypeOriginal:    o.TxTypeOriginal,
+					TypeOriginal:      o.TypeOriginal,
 					Item:              o.Item,
 					Amount:            o.Amount,
 					Money:             o.Money,
@@ -244,12 +244,12 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 					CommissionUnit:    o.Units[ir.CommissionUnit],
 				})
 			}
-		case ir.TxTypeRecv: // sell
+		case ir.TypeRecv: // sell
 			err = huobiTradeSellOrderTemplate.Execute(&buf, &HuobiTradeSellOrderVars{
 				PayTime:           o.PayTime,
 				Peer:              o.Peer,
-				TypeOriginal:      o.TypeOriginal,
 				TxTypeOriginal:    o.TxTypeOriginal,
+				TypeOriginal:      o.TypeOriginal,
 				Item:              o.Item,
 				Amount:            o.Amount,
 				Money:             o.Money,
@@ -267,13 +267,13 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 			err = fmt.Errorf("Failed to get the TxType.")
 		}
 	case ir.OrderTypeSecuritiesTrade:
-		switch o.TxType {
-		case ir.TxTypeSend: // buy
+		switch o.Type {
+		case ir.TypeSend: // buy
 			err = htsecTradeBuyOrderTemplate.Execute(&buf, &HtsecTradeBuyOrderVars{
 				PayTime:           o.PayTime,
 				Peer:              o.Peer,
-				TypeOriginal:      o.TypeOriginal,
 				TxTypeOriginal:    o.TxTypeOriginal,
+				TypeOriginal:      o.TypeOriginal,
 				Item:              o.Item,
 				Amount:            o.Amount,
 				Money:             o.Money,
@@ -288,12 +288,12 @@ func (b *BeanCount) writeBill(file *os.File, index int) error {
 				CommissionUnit:    o.Units[ir.CommissionUnit],
 				Currency:          b.Config.DefaultCurrency,
 			})
-		case ir.TxTypeRecv: // sell
+		case ir.TypeRecv: // sell
 			err = htsecTradeSellOrderTemplate.Execute(&buf, &HtsecTradeSellOrderVars{
 				PayTime:           o.PayTime,
 				Peer:              o.Peer,
-				TypeOriginal:      o.TypeOriginal,
 				TxTypeOriginal:    o.TxTypeOriginal,
+				TypeOriginal:      o.TypeOriginal,
 				Item:              o.Item,
 				Amount:            o.Amount,
 				Money:             o.Money,

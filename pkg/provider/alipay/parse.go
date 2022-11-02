@@ -31,12 +31,12 @@ func (a *Alipay) translateToOrders(array []string) error {
 		array[idx] = a
 	}
 	var bill Order
-	bill.TxType = getTxType(array[0])
-	if bill.TxType == TxTypeNil {
+	bill.Type = getTxType(array[0])
+	if bill.Type == TypeNil {
 		log.Println("get tx type error:", array[0], array)
 		return fmt.Errorf("Failed to get the tx type %s", array[0])
 	}
-	bill.TxTypeOriginal = array[0]
+	bill.TypeOriginal = array[0]
 	bill.Peer = array[1]
 	bill.PeerAccount = array[2]
 	bill.ItemName = array[3]

@@ -58,10 +58,10 @@ func (h Huobi) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provi
 	var err error
 	for _, r := range cfg.Huobi.Rules {
 		match := true
-		// get seperator
+		// get separator
 		sep := ","
-		if r.Seperator != nil {
-			sep = *r.Seperator
+		if r.Separator != nil {
+			sep = *r.Separator
 		}
 
 		matchFunc := util.SplitFindContains
