@@ -51,7 +51,7 @@ func (a Alipay) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 	var err error
 	for _, r := range cfg.Alipay.Rules {
 		match := true
-		// get seperator
+		// get separator
 		sep := ","
 		if r.Separator != nil {
 			sep = *r.Separator
@@ -66,7 +66,7 @@ func (a Alipay) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 			match = matchFunc(*r.Peer, o.Peer, sep, match)
 		}
 		if r.Type != nil {
-			match = matchFunc(*r.Type, o.TxTypeOriginal, sep, match)
+			match = matchFunc(*r.Type, o.TypeOriginal, sep, match)
 		}
 		if r.Item != nil {
 			match = matchFunc(*r.Item, o.Item, sep, match)
@@ -94,14 +94,14 @@ func (a Alipay) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 			// Support multiple matches, like one rule matches the
 			// minus account, the other rule matches the plus account.
 			if r.TargetAccount != nil {
-				if o.TxType == ir.TxTypeRecv {
+				if o.Type == ir.TypeRecv {
 					resMinus = *r.TargetAccount
 				} else {
 					resPlus = *r.TargetAccount
 				}
 			}
 			if r.MethodAccount != nil {
-				if o.TxType == ir.TxTypeRecv {
+				if o.Type == ir.TypeRecv {
 					resPlus = *r.MethodAccount
 				} else {
 					resMinus = *r.MethodAccount

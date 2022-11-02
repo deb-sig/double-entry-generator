@@ -21,7 +21,7 @@ type Order struct {
 	Price             float64   // 成交价格
 	TransactionAmount float64   // 成交金额
 	OccurAmount       float64   // 发生金额
-	TxType            TxType    // 方向
+	Type              OrderType // 方向
 	OrderID           string    // 合同号
 	TransactionID     string    // 成交号
 	Commission        float64   // 手续费
@@ -30,7 +30,7 @@ type Order struct {
 	OtherFee          float64   // 其他费
 	RemainAmount      float64   // 资金余额
 	RemainShare       int64     // 份额余额
-	TypeOriginal      string    // 市场+证券代码
+	TxTypeOriginal    string    // 市场+证券代码
 	Useless           bool      // 需删除数据
 }
 
@@ -41,16 +41,7 @@ const LocalTimeFmt = "2006-01-02 15:04:05 -0700"
 type OrderType string
 
 const (
-	OrderTypeBuy     OrderType = "买"
-	OrderTypeSell    OrderType = "卖"
-	OrderTypeUnknown           = "未知"
-	// TODO(TripleZ): add more order types.
-)
-
-type TxType string
-
-const (
-	TxTypeBuy  TxType = "买"
-	TxTypeSell TxType = "卖"
-	TxTypeNil  TxType = "未知"
+	TxTypeBuy  OrderType = "买"
+	TxTypeSell OrderType = "卖"
+	TxTypeNil  OrderType = "未知"
 )

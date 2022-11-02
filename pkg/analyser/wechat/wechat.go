@@ -63,11 +63,10 @@ func (w Wechat) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 	var err error
 	for _, r := range cfg.Wechat.Rules {
 		match := true
-		// get seperator
+		// get separator
 		sep := ","
-
-		if r.Seperator != nil {
-			sep = *r.Seperator
+		if r.Separator != nil {
+			sep = *r.Separator
 		}
 
 		matchFunc := util.SplitFindContains
@@ -79,10 +78,10 @@ func (w Wechat) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 			match = matchFunc(*r.Peer, o.Peer, sep, match)
 		}
 		if r.Type != nil {
-			match = matchFunc(*r.Type, o.TxTypeOriginal, sep, match)
+			match = matchFunc(*r.Type, o.TypeOriginal, sep, match)
 		}
 		if r.TxType != nil {
-			match = matchFunc(*r.TxType, o.TypeOriginal, sep, match)
+			match = matchFunc(*r.TxType, o.TxTypeOriginal, sep, match)
 		}
 		if r.Method != nil {
 			match = matchFunc(*r.Method, o.Method, sep, match)
@@ -106,14 +105,14 @@ func (w Wechat) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 		if match {
 			// Support multiple matches, like one rule matches the minus accout, the other rule matches the plus account.
 			if r.TargetAccount != nil {
-				if o.TxType == ir.TxTypeRecv {
+				if o.Type == ir.TypeRecv {
 					resMinus = *r.TargetAccount
 				} else {
 					resPlus = *r.TargetAccount
 				}
 			}
 			if r.MethodAccount != nil {
-				if o.TxType == ir.TxTypeRecv {
+				if o.Type == ir.TypeRecv {
 					resPlus = *r.MethodAccount
 				} else {
 					resMinus = *r.MethodAccount

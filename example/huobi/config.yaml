@@ -7,8 +7,8 @@ title: 测试
 huobi:
   rules:
     - item: BTC/USDT,BTC1S/USDT
-      type: 币币交易
-      txType: 买入
+      type: 买入
+      txType: 币币交易
       fullMatch: true
       sep: ','
       cashAccount: Assets:Rule1:Cash

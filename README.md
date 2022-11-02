@@ -414,8 +414,8 @@ title: 测试
 huobi:
   rules:
     - item: BTC/USDT,BTC1S/USDT  # multiple keywords with separator
-      type: 币币交易
-      txType: 买入
+      type: 买入
+      txType: 币币交易
       fullMatch: true
       sep: ','  # define separator as a comma
       cashAccount: Assets:Rule1:Cash
@@ -432,8 +432,8 @@ huobi:
 
 `huobi` 是火币相关的配置。它提供基于规则的匹配。可以指定：
 - `item`（交易对）的完全/包含匹配。
-- `type`（交易类型）的完全/包含匹配。
-- `txType`（交易方向）的完全/包含匹配。
+- `type`（交易方向）的完全/包含匹配。
+- `txType`（交易类型）的完全/包含匹配。
 - `time`（交易时间）的区间匹配。
   > 交易时间可写为以下两种形式：
   > - `11:00-13:00`
@@ -472,7 +472,7 @@ title: 测试
 htsec:
   rules:
     - item: 兴业转债
-      txType: 卖
+      type: 卖
       sep: ','
       cashAccount: Assets:Rule1:Cash
       positionAccount: Assets:Rule1:Positions
@@ -488,7 +488,7 @@ htsec:
 
 `htsec` 是海通证券相关的配置。它提供基于规则的匹配。可以指定：
 - `item`（交易方向-证券编码-证券市值）的完全/包含匹配。
-- `txType`（交易方向）的完全/包含匹配。
+- `type`（交易方向）的完全/包含匹配。
 - `time`（交易时间）的区间匹配。
   > 交易时间可写为以下两种形式：
   > - `11:00-13:00`
