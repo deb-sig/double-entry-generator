@@ -19,6 +19,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"runtime"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -68,7 +69,7 @@ func initConfig() {
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
-	} else {
+	} else if runtime.GOARCH != "wasm" {
 		// Find home directory.
 		home, err := homedir.Dir()
 		if err != nil {
