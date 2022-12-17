@@ -2,10 +2,15 @@ package util
 
 import (
 	"fmt"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
 )
+
+func IsWasm() bool {
+	return runtime.GOARCH == "wasm"
+}
 
 func SplitFindContains(str, target, sep string, match bool) bool {
 	ss := strings.Split(str, sep)

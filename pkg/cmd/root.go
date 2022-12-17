@@ -17,10 +17,11 @@ limitations under the License.
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"os"
-	"runtime"
 
+	"github.com/deb-sig/double-entry-generator/pkg/util"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -62,14 +63,29 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	fmt.Println("init done")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+	if util.IsWasm() {
+		if cfgFile != "" {
+			fmt.Println("cfgFile = ", cfgFile)
+			viper.AutomaticEnv()
+			viper.SetConfigType("yaml")
+			viper.ReadConfig(bytes.NewBuffer([]byte(cfgFile)))
+			fmt.Println("viper.Get(\"title\") = ", viper.Get("title"))
+		} else {
+			fmt.Println("[ERROR] Can't get config from args!")
+		}
+		return
+	}
+
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
-	} else if runtime.GOARCH != "wasm" {
+	} else {
 		// Find home directory.
 		home, err := homedir.Dir()
 		if err != nil {

@@ -28,6 +28,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/pkg/config"
 	"github.com/deb-sig/double-entry-generator/pkg/consts"
 	"github.com/deb-sig/double-entry-generator/pkg/provider"
+	"github.com/deb-sig/double-entry-generator/pkg/util"
 )
 
 var (
@@ -47,6 +48,10 @@ var translateCmd = &cobra.Command{
 		} else if len(args) > 1 {
 			// TODO(gaocegege): support it.
 			return fmt.Errorf("Failed to translate: Do not support multi-file now")
+		}
+
+		if util.IsWasm() {
+			return nil
 		}
 
 		_, err := os.Stat(args[0])
@@ -96,6 +101,7 @@ func run(args []string) {
 	p, err := provider.New(providerName)
 	logErrorIfNotNil(err)
 
+	fmt.Println("p.Translate")
 	i, err := p.Translate(args[0])
 	logErrorIfNotNil(err)
 

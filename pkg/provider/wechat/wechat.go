@@ -2,6 +2,7 @@ package wechat
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -9,6 +10,7 @@ import (
 	"os"
 
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/pkg/util"
 )
 
 // Wechat is the provider for Wechat.
@@ -18,7 +20,7 @@ type Wechat struct {
 	Orders     []Order    `json:"orders,omitempty"`
 }
 
-// New creates a new Alipay provider.
+// New creates a new wechat provider.
 func New() *Wechat {
 	return &Wechat{
 		Statistics: Statistics{},
@@ -31,12 +33,18 @@ func New() *Wechat {
 func (w *Wechat) Translate(filename string) (*ir.IR, error) {
 	log.SetPrefix("[Provider-Wechat] ")
 
-	csvFile, err := os.Open(filename)
-	if err != nil {
-		return nil, err
+	var reader *csv.Reader
+	if util.IsWasm() {
+		fmt.Println("filename = ", filename)
+		reader = csv.NewReader(bufio.NewReader(bytes.NewBuffer([]byte(filename))))
+	} else {
+		csvFile, err := os.Open(filename)
+		if err != nil {
+			return nil, err
+		}
+		reader = csv.NewReader(bufio.NewReader(csvFile))
 	}
 
-	reader := csv.NewReader(bufio.NewReader(csvFile))
 	reader.LazyQuotes = true
 	// If FieldsPerRecord is negative, no check is made and records
 	// may have a variable number of fields.
@@ -44,6 +52,7 @@ func (w *Wechat) Translate(filename string) (*ir.IR, error) {
 
 	for {
 		line, err := reader.Read()
+		fmt.Println("line = ", line)
 
 		if err == io.EOF {
 			break

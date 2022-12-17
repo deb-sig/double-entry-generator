@@ -1,113 +1,147 @@
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>double-entry-generator WebAssembly demo</title>
-	<style>
-		.light, .light input { background-color: #fff;     color: #252525; }
-		.dark,  .dark  input { background-color: #252525;  color: #fff; }
-		.sepia, .sepia input { background-color: #f4ecd8;; color: #5b4636;; }
-
-		input         { flex-grow: 1; }
-		input, button { font: 16px monospace; border: 1px solid #666; }
-		input:focus   { box-shadow: 0px 0px .2em #6262fd;; }
-		p             { font: 14px sans-serif; margin-top: 1em; }
-		div           { display: flex; }
-	</style>
+    <meta charset="utf-8">
 </head>
-<body class="light">
-	<pre id="output"></pre>
-	<div><span>$ double-entry-generator&nbsp;</span><input id="input" disabled placeholder="Loading WebAssembly binary..."></div>
-	<p>double-entry-generator WebAssembly demo</p>
-    <p>Credit: <a href="https://github.com/arp242/uni" target="_blank">arp242/uni</a></p>
-
-	<p>
-		<button class="light">Light</button>
-		<button class="dark">Dark</button>
-		<button class="sepia">Sepia</button>
-		· <button class="permalink">Permalink to last command</button>
-		· Up/down arrows to cycle history, ^L to clear the screen.</p>
-
-	<script src="wasm_exec.js"></script>
-	<script src="term.js"></script>
-	<script>
-		(function() {
-			if (!('WebAssembly' in window)) {
-				document.body.innerText = 'Sorry, you need a browser with WebAssembly support';
-				return;
-			}
-
-			set_output(window.output);
-
-			fetch('double-entry-generator.wasm').then(response => response.arrayBuffer()).then(function(bin) {
-				window.input.placeholder = 'Ready!';
-				window.input.disabled = false;
-
-				readline('double-entry-generator', window.output, window.input, function(cmd) {
-					window.input.placeholder = '';
-					const go = new Go();
-					go.argv = cmd;
-					go.exit = (code) => {
-						if (code > 0)
-							output.innerText += 'Exit ' + code + '\n';
-					};
-
-					WebAssembly.instantiate(bin, go.importObject).then((result) => {
-						go.run(result.instance);
-					});
-				});
-			});
-		})();
-	</script>
-
-	<script>
-		if (location.hash !== '') {
-			location.hash.substr(1).split(',').forEach((i) => {
-				i = decodeURIComponent(i)
-				if (i.indexOf('color:') === 0)
-					return document.body.className = i.substr(6)
-				if (i.indexOf('run:') === 0) {
-					input.value = i.substr(4)
-
-					var event = document.createEvent('KeyboardEvent')
-					event.initKeyboardEvent('keydown', true, true, window, false, false, false, false, 13, 0)
-					// Keep trying until everything is loaded and the event is actually handled
-					var t = setInterval(function() {
-						if (!input.dispatchEvent(event))  // Returns false when handled, not an error (loljs)
-							clearInterval(t)
-					}, 10)
-				}
-			})
-			if (document.body.className !== '')
-				location.hash = 'color:' + document.body.className
+<body>
+    <script src="wasm_exec.js"></script>
+    <script>
+        if (!WebAssembly.instantiateStreaming) { // polyfill
+			WebAssembly.instantiateStreaming = async (resp, importObject) => {
+				const source = await (await resp).arrayBuffer();
+				return await WebAssembly.instantiate(source, importObject);
+			};
 		}
 
-		document.querySelectorAll('button').forEach((elem) => {
-			elem.addEventListener('click', (e) => {
-				e.preventDefault()
+        const go = new Go();
+        let wechatConfig = `defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCommissionAccount: Expenses:Commission:FIXME
+defaultCurrency: CNY
+title: 测试
+wechat:
+    rules:
+    # type (additional condition)
+    - type: 收入 # 微信红包
+      method: /
+      item: /
+      targetAccount: Income:Wechat:RedPacket
+    - type: / # 转入零钱通
+      txType: 转入零钱
+      peer: /
+      item: /
+      targetAccount: Assets:Digital:Wechat:Cash
+    - type: / # 零钱提现
+      txType: 零钱提现
+      targetAccount: Assets:Digital:Wechat:Cash
+      commissionAccount: Expenses:Wechat:Commission
+    - type: / # 零钱充值
+      txType: 零钱充值
+      targetAccount: Assets:Digital:Wechat:Cash
+    - type: / # 零钱通转出-到工商银行(9876)
+      txType: 零钱通转出-到工商银行(9876)
+      targetAccount: Assets:Bank:CN:ICBC:Savings
+    - type: 支出
+      txType: 赞赏码
+      targetAccount: Expenses:Wechat:Sponsor
 
-				if (elem.className == 'permalink') {
-					var event = document.createEvent('KeyboardEvent')
-					event.initKeyboardEvent('keydown', true, true, window, false, false, false, false, 38, 0)
-					input.dispatchEvent(event)
-					var cmd = input.value
+    - peer: 云膳过桥米线,餐厅
+      sep: ","
+      time: 11:00-15:00
+      targetAccount: Expenses:Food:Meal:Lunch
+    - peer: 云膳过桥米线,餐厅
+      sep: ","
+      time: 16:30-21:30
+      targetAccount: Expenses:Food:Meal:Dinner
+    - peer: 餐厅
+      time: 23:55-00:10 # test T+1
+      targetAccount: Expenses:Food:Meal:MidNight
+    - peer: 餐厅
+      time: 23:50-00:05 # test T-1
+      targetAccount: Expenses:Food:Meal:MidNight
 
-					var event = document.createEvent('KeyboardEvent')
-					event.initKeyboardEvent('keydown', true, true, window, false, false, false, false, 40, 0)
-					input.dispatchEvent(event)
+    - peer: 房东
+      type: 支出
+      targetAccount: Expenses:Housing:Rent
 
-					if (cmd === '')
-						return alert('No command yet')
+    - peer: 用户
+      type: 收入
+      targetAccount: Income:Service
+      tag: income,service
 
-					var loc = location + ''
-					alert(loc + (location.hash.length > 1 ? ',' : '#') + encodeURIComponent('run:' + cmd))
-					return input.focus()
-				}
+    - peer: 理财通
+      type: /
+      targetAccount: Assets:Trade:Tencent:LiCaiTong
 
-				document.body.className = elem.className
-				location.hash = 'color:' + elem.className
-				input.focus()
-			})
-		});
-	</script>
+    - peer: 建设银行
+      txType: 信用卡还款
+      targetAccount: Liabilities:Bank:CN:CCB
+
+    - method: / # 一般为收入，存入零钱
+      methodAccount: Assets:Digital:Wechat:Cash
+    - method: 零钱
+      fullMatch: true
+      methodAccount: Assets:Digital:Wechat:Cash
+    - method: 零钱通
+      fullMatch: true
+      methodAccount: Assets:Digital:Wechat:Cash
+    - method: 工商银行
+      methodAccount: Assets:Bank:CN:ICBC:Savings
+    - method: 中国银行
+      methodAccount: Assets:Bank:CN:BOC:Savings
+
+    - peer: 测试时间戳
+      timestamp_range: 1658112487-1658112490 # order_time= 2022-07-18 10:48:09 ts=1658112489
+      targetAccount: Expenses:Travel
+`;
+
+        let testFile = `微信支付账单明细,,,,,,,,,,
+微信昵称：[测试],,,,,,,,,,
+起始时间：[2019-08-01 00:00:00] 终止时间：[2019-09-30 23:59:59],,,,,,,,,,
+导出类型：[全部],,,,,,,,,,
+导出时间：[2019-10-09 16:05:22],,,,,,,,,,
+,,,,,,,,,,
+共43笔记录,,,,,,,,,,
+收入：1笔 0.35元,,,,,,,,,,
+支出：1笔 28.16元,,,,,,,,,,
+中性交易：0笔 0.00元,,,,,,,,,,
+注：,,,,,,,,,,
+1. 充值/提现/理财通购买/零钱通存取/信用卡还款等交易，将计入中性交易,,,,,,,,,,
+2. 本明细仅展示当前账单中的交易，不包括已删除的记录,,,,,,,,,,
+3. 本明细仅供个人对账使用,,,,,,,,,,
+,,,,,,,,,,
+----------------------微信支付账单明细列表--------------------,,,,,,,,,,
+交易时间,交易类型,交易对方,商品,收/支,金额(元),支付方式,当前状态,交易单号,商户单号,备注
+2019-09-26 12:45:27,商户消费,云膳过桥米线(传奇广场店),总共消费:28.16,支出,¥28.16,中国银行(1234),支付成功,3985734	,129847129	,/
+2019-09-24 10:10:11,微信红包,同性好友,/,收入,¥0.35,/,已存入零钱,3985734	,129847129	,/
+2021-01-17 18:03:35,扫二维码付款,某餐厅,收款方备注:二维码收款,支出,¥12.00,零钱通,已转账,3985734,129847129,/
+2021-01-22 12:34:56,转账,房东,转账备注:微信转账,支出,¥500.00,零钱通,朋友已收钱,3985734,129847129,/
+2020-11-27 19:29:00,二维码收款,用户A,收款方备注:二维码收款,收入,¥23.00,零钱,已收钱,3985734,/	,/
+2021-01-17 10:07:31,转入零钱通-来自工商银行(9876),/,/,/,¥2000.00,工商银行(9876),支付成功,3985734,129847129,/
+2021-07-15 16:29:37,零钱提现,招商银行(),"/",/,¥100.10,工商银行,提现已到账,207210715100077148235523883175	,/	,"服务费¥0.10"
+2021-07-14 22:18:10,零钱提现,招商银行(),"/",/,¥10.10,工商银行,提现已到账,207210714100077147459276708175	,/	,"服务费¥0.10"
+2021-07-11 14:17:52,零钱提现,招商银行(),"/",/,¥1001.10,中国银行,提现已到账,207210711100077147832088993175	,/	,"服务费¥1.00"
+2017-10-20 18:36:44,信用卡还款,建设银行信用卡还款,"/",/,¥548.58,零钱,支付成功,4200000069201710299246843141	,1000019741201710201961089024	,"/"
+2020-02-14 01:32:14,购买理财通,理财通,"鹏华增值宝(000569)",/,¥10000.00,工商银行,支付成功,1800007367312002141165262215	,1800007308102002143430655989	,"/"
+2020-02-14 01:24:33,购买理财通,理财通,"中欧医疗健康混合C(003096)",/,¥3000.00,工商银行,支付成功,1800045030312002144223548046	,1800007030102002143310679508	,"/"
+2020-02-14 01:19:39,零钱通转出-到零钱,/,"/",/,¥2634.78,零钱通,支付成功,18000070012002140012244807617587	,/	,"/"
+2020-07-06 14:54:38,零钱通转出-到工商银行(9876),/,"/",/,¥5505.00,零钱通,支付成功,18000070282007060048243102923587	,/	,"/"
+2019-04-16 10:28:55,零钱充值,工商银行(9876),"/",/,¥1300.00,工商银行(9876),充值完成,110190416100031243293946287587	,/	,"/"
+2021-10-19 16:08:00,亲属卡交易,哈哈,"亲属卡",支出,¥2243.46,零钱通,支付成功,42000011202110191201583411 ,XSFF-SD2021101916055813620 ,"/"
+2021-12-15 00:06:35,扫二维码付款,某餐厅,测试 T+1,支出,¥12.00,零钱通,已转账,3985734,129847129,/
+2021-12-15 23:51:35,扫二维码付款,某餐厅,测试 T-1,支出,¥12.00,零钱通,已转账,3985734,129847129,/
+2021-07-18 10:48:09,商户消费,打开拼多多，点击底部"多多视频","/",收入,¥0.07,/,充值成功,160572459521071810106004542906137497131422937 ,10101265586742107189275763431048   ,"/"
+2022-07-18 10:48:09,商户消费,测试时间戳，点击底部"多多视频","/",收入,¥0.07,/,充值成功,160572459521071810106004542906137497131422938 ,10101265586742107189275763431049   ,"/"
+2022-09-24 02:24:20,赞赏码,YingDev,"/",支出,¥36.99,零钱,朋友已收钱,100010810122092400064222561891707533 ,1000108101202209241820542253348 ,"/"        
+`;
+        WebAssembly.instantiateStreaming(fetch("double-entry-generator.wasm"), go.importObject).then((result) => {
+            go.argv = ['double-entry-generator', 'translate', '--provider', 'wechat', '--config', wechatConfig, testFile]
+            go.run(result.instance);
+        }).catch((err) => {
+            console.error(err);
+        });
+    </script>
+    <textarea id="input" placeholder="Paste your csv file content here..."></textarea>
+    <textarea id="config" placeholder="Paste the config here..."></textarea>
+    <textarea id="output" readonly cols="120" rows="100"></textarea>
 </body>
 </html>

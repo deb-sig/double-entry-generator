@@ -128,5 +128,5 @@ build-wasm: clean-wasm ## Build WebAssembly's version
 
 run-wasm-server: ## Run WebAssembly in browser
 	@cd wasm-dist
-	@$(BROWSER) http://127.0.0.1:2000
+	# @$(BROWSER) http://127.0.0.1:2000
 	@python -m http.server --directory wasm-dist --bind 127.0.0.1 2000

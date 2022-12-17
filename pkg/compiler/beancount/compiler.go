@@ -7,8 +7,10 @@ import (
 	"log"
 	"os"
 	"sort"
+	"syscall/js"
 	"text/template"
 
+	"github.com/deb-sig/double-entry-generator/pkg"
 	"github.com/deb-sig/double-entry-generator/pkg/analyser"
 	"github.com/deb-sig/double-entry-generator/pkg/config"
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
@@ -94,6 +96,19 @@ func (b *BeanCount) Compile() error {
 		b.IR.Orders[index].Tags = tags
 	}
 
+	if util.IsWasm() {
+
+		outputArea := js.Global().Get("document").Call("getElementById", "output")
+		wasmWriter := (*pkg.WasmWriter)(&outputArea)
+
+		if !b.AppendMode {
+			if err := b.writeHeader(wasmWriter); err != nil {
+				return err
+			}
+		}
+		return b.writeBills(wasmWriter)
+	}
+
 	log.Printf("Writing to %s", b.Output)
 	file, err := os.Create(b.Output)
 	if err != nil {
@@ -112,7 +127,7 @@ func (b *BeanCount) Compile() error {
 }
 
 // writeHeader writes the acounts and title into the file.
-func (b *BeanCount) writeHeader(file *os.File) error {
+func (b *BeanCount) writeHeader(file io.Writer) error {
 	_, err := io.WriteString(file, "option \"title\" \""+b.Config.Title+"\"\n")
 	if err != nil {
 		return fmt.Errorf("write option title error: %v", err)
@@ -146,7 +161,7 @@ func (b *BeanCount) writeHeader(file *os.File) error {
 }
 
 // writeBills writes bills to the file.
-func (b *BeanCount) writeBills(file *os.File) error {
+func (b *BeanCount) writeBills(file io.Writer) error {
 	// Sort the bills from earliest to lastest.
 	// If the bills are the same day, the tx which has lower
 	// line number is considered happened earlier than the tx
@@ -163,7 +178,7 @@ func (b *BeanCount) writeBills(file *os.File) error {
 	return nil
 }
 
-func (b *BeanCount) writeBill(file *os.File, index int) error {
+func (b *BeanCount) writeBill(file io.Writer, index int) error {
 	o := b.IR.Orders[index]
 
 	var buf bytes.Buffer
