@@ -42,7 +42,6 @@ func (w *Wechat) Translate(filename string) (*ir.IR, error) {
 
 	for {
 		line, err := csvReader.Read()
-		fmt.Println("line = ", line)
 
 		if err == io.EOF {
 			break

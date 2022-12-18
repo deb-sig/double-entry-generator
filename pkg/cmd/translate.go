@@ -17,7 +17,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/deb-sig/double-entry-generator/pkg/cmd/validator"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -84,7 +83,6 @@ func run(args []string) {
 	p, err := provider.New(providerName)
 	logErrorIfNotNil(err)
 
-	fmt.Println("p.Translate")
 	i, err := p.Translate(args[0])
 	logErrorIfNotNil(err)
 
