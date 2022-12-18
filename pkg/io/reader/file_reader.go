@@ -4,6 +4,8 @@
 package reader
 
 import (
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 	"io"
 	"os"
 )
@@ -14,4 +16,14 @@ func GetReader(filename string) (io.Reader, error) {
 		return nil, err
 	}
 	return csvFile, nil
+}
+
+func GetGBKReader(filename string) (io.Reader, error) {
+	csvFile, err := GetReader(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	gbkReader := transform.NewReader(csvFile, simplifiedchinese.GBK.NewDecoder())
+	return gbkReader, nil
 }

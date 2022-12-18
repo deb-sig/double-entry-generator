@@ -1,14 +1,12 @@
 package huobi
 
 import (
-	"bufio"
 	"encoding/csv"
 	"fmt"
+	"github.com/deb-sig/double-entry-generator/pkg/io/reader"
+	"github.com/deb-sig/double-entry-generator/pkg/ir"
 	"io"
 	"log"
-	"os"
-
-	"github.com/deb-sig/double-entry-generator/pkg/ir"
 )
 
 type Huobi struct {
@@ -28,19 +26,19 @@ func New() *Huobi {
 func (h *Huobi) Translate(filename string) (*ir.IR, error) {
 	log.SetPrefix("[Provider-Huobi] ")
 
-	csvFile, err := os.Open(filename)
+	billReader, err := reader.GetReader(filename)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("can't get bill reader, err: %v", err)
 	}
 
-	reader := csv.NewReader(bufio.NewReader(csvFile))
-	reader.LazyQuotes = true
+	csvReader := csv.NewReader(billReader)
+	csvReader.LazyQuotes = true
 	// If FieldsPerRecord is negative, no check is made and records
 	// may have a variable number of fields.
-	reader.FieldsPerRecord = -1
+	csvReader.FieldsPerRecord = -1
 
 	for {
-		line, err := reader.Read()
+		line, err := csvReader.Read()
 
 		if err == io.EOF {
 			break

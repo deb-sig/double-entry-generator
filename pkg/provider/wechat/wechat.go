@@ -33,8 +33,8 @@ func (w *Wechat) Translate(filename string) (*ir.IR, error) {
 	if err != nil {
 		return nil, fmt.Errorf("can't get bill reader, err: %v", err)
 	}
-	csvReader := csv.NewReader(billReader)
 
+	csvReader := csv.NewReader(billReader)
 	csvReader.LazyQuotes = true
 	// If FieldsPerRecord is negative, no check is made and records
 	// may have a variable number of fields.
