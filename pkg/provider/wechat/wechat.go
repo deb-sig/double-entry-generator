@@ -1,16 +1,12 @@
 package wechat
 
 import (
-	"bufio"
-	"bytes"
 	"encoding/csv"
 	"fmt"
+	"github.com/deb-sig/double-entry-generator/pkg/io/reader"
+	"github.com/deb-sig/double-entry-generator/pkg/ir"
 	"io"
 	"log"
-	"os"
-
-	"github.com/deb-sig/double-entry-generator/pkg/ir"
-	"github.com/deb-sig/double-entry-generator/pkg/util"
 )
 
 // Wechat is the provider for Wechat.
@@ -33,25 +29,19 @@ func New() *Wechat {
 func (w *Wechat) Translate(filename string) (*ir.IR, error) {
 	log.SetPrefix("[Provider-Wechat] ")
 
-	var reader *csv.Reader
-	if util.IsWasm() {
-		fmt.Println("filename = ", filename)
-		reader = csv.NewReader(bufio.NewReader(bytes.NewBuffer([]byte(filename))))
-	} else {
-		csvFile, err := os.Open(filename)
-		if err != nil {
-			return nil, err
-		}
-		reader = csv.NewReader(bufio.NewReader(csvFile))
+	billReader, err := reader.GetReader(filename)
+	if err != nil {
+		return nil, fmt.Errorf("can't get bill reader, err: %v", err)
 	}
+	csvReader := csv.NewReader(billReader)
 
-	reader.LazyQuotes = true
+	csvReader.LazyQuotes = true
 	// If FieldsPerRecord is negative, no check is made and records
 	// may have a variable number of fields.
-	reader.FieldsPerRecord = -1
+	csvReader.FieldsPerRecord = -1
 
 	for {
-		line, err := reader.Read()
+		line, err := csvReader.Read()
 		fmt.Println("line = ", line)
 
 		if err == io.EOF {

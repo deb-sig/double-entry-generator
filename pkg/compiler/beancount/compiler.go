@@ -5,14 +5,12 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os"
 	"sort"
-	"syscall/js"
 	"text/template"
 
-	"github.com/deb-sig/double-entry-generator/pkg"
 	"github.com/deb-sig/double-entry-generator/pkg/analyser"
 	"github.com/deb-sig/double-entry-generator/pkg/config"
+	"github.com/deb-sig/double-entry-generator/pkg/io/writer"
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
 	"github.com/deb-sig/double-entry-generator/pkg/util"
 )
@@ -96,34 +94,25 @@ func (b *BeanCount) Compile() error {
 		b.IR.Orders[index].Tags = tags
 	}
 
-	if util.IsWasm() {
-
-		outputArea := js.Global().Get("document").Call("getElementById", "output")
-		wasmWriter := (*pkg.WasmWriter)(&outputArea)
-
-		if !b.AppendMode {
-			if err := b.writeHeader(wasmWriter); err != nil {
-				return err
-			}
-		}
-		return b.writeBills(wasmWriter)
-	}
-
-	log.Printf("Writing to %s", b.Output)
-	file, err := os.Create(b.Output)
+	outputWriter, err := writer.GetWriter(b.Output)
 	if err != nil {
-		return fmt.Errorf("create output file  %s error: %v", b.Output, err)
+		return fmt.Errorf("can't get output writer, err: %v", err)
 	}
-	defer file.Close()
+	defer func(outputWriter writer.OutputWriter) {
+		err := outputWriter.Close()
+		if err != nil {
+			log.Printf("output writer close err: %v\n", err)
+		}
+	}(outputWriter)
 
 	if !b.AppendMode {
-		if err := b.writeHeader(file); err != nil {
+		if err := b.writeHeader(outputWriter); err != nil {
 			return err
 		}
 	}
 
 	log.Printf("Finished to write to %s", b.Output)
-	return b.writeBills(file)
+	return b.writeBills(outputWriter)
 }
 
 // writeHeader writes the acounts and title into the file.

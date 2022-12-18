@@ -18,17 +18,15 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"os"
-
+	"github.com/deb-sig/double-entry-generator/pkg/cmd/validator"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"log"
 
 	"github.com/deb-sig/double-entry-generator/pkg/compiler"
 	"github.com/deb-sig/double-entry-generator/pkg/config"
 	"github.com/deb-sig/double-entry-generator/pkg/consts"
 	"github.com/deb-sig/double-entry-generator/pkg/provider"
-	"github.com/deb-sig/double-entry-generator/pkg/util"
 )
 
 var (
@@ -43,22 +41,7 @@ var translateCmd = &cobra.Command{
 	Short: "Translate the bills to a given format",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return fmt.Errorf("Failed to translate: Require the bill file")
-		} else if len(args) > 1 {
-			// TODO(gaocegege): support it.
-			return fmt.Errorf("Failed to translate: Do not support multi-file now")
-		}
-
-		if util.IsWasm() {
-			return nil
-		}
-
-		_, err := os.Stat(args[0])
-		if err == nil {
-			return nil
-		}
-		return fmt.Errorf("Failed to translate: %v", err)
+		return validator.TranslateArgs(args)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		run(args)
