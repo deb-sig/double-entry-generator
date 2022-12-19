@@ -35,5 +35,7 @@ func GetWriter(fileName string) (OutputWriter, error) {
 	if !outputArea.Truthy() {
 		return nil, fmt.Errorf("can't get `output` element from document object")
 	}
+	// flush the output
+	outputArea.Set("textContent", "")
 	return (*WasmWriter)(&outputArea), nil
 }
