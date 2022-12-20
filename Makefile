@@ -111,6 +111,9 @@ format: ## Format code
 	@gofmt -s -w pkg
 	@goimports -w pkg
 
+lint: ## Lint GO code
+	@golangci-lint run
+
 check-format: ## Check if the format looks good.
 	@go fmt ./...
 

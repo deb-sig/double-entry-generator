@@ -37,7 +37,7 @@ type TxType string
 
 const (
 	TxTypeCoin    TxType = "币币交易"
-	TxTypeUnknown        = "未知"
+	TxTypeUnknown TxType = "未知"
 	// TODO(TripleZ): add more order types.
 )
 

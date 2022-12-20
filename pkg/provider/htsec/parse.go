@@ -17,9 +17,7 @@ func (h *Htsec) translateToOrders(arr []string) error {
 	var bill Order
 	var err error
 
-	var code string
-
-	code = fmt.Sprintf("%06s", arr[0])
+	code := fmt.Sprintf("%06s", arr[0])
 
 	// 打新中签时，实际证券份额会以新增证券的名称添加到持仓中，因为新股缴款时已经导入过这部分，因此直接忽略
 	// 已知问题，打新缴款时的证券代码跟新股实际证券交易编码不是一个，因此后续生成的交割单跟打新时初始生成的证券代码需要手动修改
