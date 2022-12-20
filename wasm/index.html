@@ -52,12 +52,12 @@
             let inputText = input.value;
 
             if (provider === 'alipay') {
-                inputText = inputText.slice(25);  // in case of error CLI param
+                inputText = inputText.slice(25);  // reduce the total length
                 let last = inputText.indexOf('------------------------------------------------------------------------------------');
                 inputText = inputText.slice(0, last); // workaround for exceed CLI length limit
             }
 
-            go.argv = ['double-entry-generator', 'translate', '--provider', provider, '--config', configText, inputText];
+            go.argv = ['double-entry-generator', 'translate', '--provider', provider, '--config', configText, '--', inputText];
             // console.log(go.argv)
             go.exit = (code) => {
                 if (code > 0) {
