@@ -10,8 +10,8 @@ import (
 
 type Htsec struct {
 	Statistics Statistics `json:"statistics,omitempty"`
-	LineNum    int        `json:"line_num,omitempty`
-	Orders     []Order    `json:"orders,omitempty`
+	LineNum    int        `json:"line_num,omitempty"`
+	Orders     []Order    `json:"orders,omitempty"`
 }
 
 func New() *Htsec {

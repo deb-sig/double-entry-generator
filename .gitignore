@@ -13,6 +13,7 @@
 
 .vscode/
 bin/
+wasm-dist/
 
 # Alipay records
 alipay_records_*.csv

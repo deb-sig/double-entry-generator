@@ -17,16 +17,12 @@ limitations under the License.
 package alipay
 
 import (
-	"bufio"
 	"encoding/csv"
 	"fmt"
 	"io"
 	"log"
-	"os"
 
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
-
+	"github.com/deb-sig/double-entry-generator/pkg/io/reader"
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
 )
 
@@ -54,20 +50,19 @@ func New() *Alipay {
 func (a *Alipay) Translate(filename string) (*ir.IR, error) {
 	log.SetPrefix("[Provider-Alipay] ")
 
-	csvFile, err := os.Open(filename)
+	billReader, err := reader.GetGBKReader(filename)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("can't get bill reader, err: %v", err)
 	}
 
-	reader := csv.NewReader(transform.NewReader(bufio.NewReader(csvFile),
-		simplifiedchinese.GBK.NewDecoder()))
-	reader.LazyQuotes = true
+	csvReader := csv.NewReader(billReader)
+	csvReader.LazyQuotes = true
 	// If FieldsPerRecord is negative, no check is made and records
 	// may have a variable number of fields.
-	reader.FieldsPerRecord = -1
+	csvReader.FieldsPerRecord = -1
 
 	for {
-		line, err := reader.Read()
+		line, err := csvReader.Read()
 
 		if err == io.EOF {
 			break

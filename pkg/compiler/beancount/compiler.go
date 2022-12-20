@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os"
 	"sort"
 	"text/template"
 
 	"github.com/deb-sig/double-entry-generator/pkg/analyser"
 	"github.com/deb-sig/double-entry-generator/pkg/config"
+	"github.com/deb-sig/double-entry-generator/pkg/io/writer"
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
 	"github.com/deb-sig/double-entry-generator/pkg/util"
 )
@@ -94,25 +94,29 @@ func (b *BeanCount) Compile() error {
 		b.IR.Orders[index].Tags = tags
 	}
 
-	log.Printf("Writing to %s", b.Output)
-	file, err := os.Create(b.Output)
+	outputWriter, err := writer.GetWriter(b.Output)
 	if err != nil {
-		return fmt.Errorf("create output file  %s error: %v", b.Output, err)
+		return fmt.Errorf("can't get output writer, err: %v", err)
 	}
-	defer file.Close()
+	defer func(outputWriter writer.OutputWriter) {
+		err := outputWriter.Close()
+		if err != nil {
+			log.Printf("output writer close err: %v\n", err)
+		}
+	}(outputWriter)
 
 	if !b.AppendMode {
-		if err := b.writeHeader(file); err != nil {
+		if err := b.writeHeader(outputWriter); err != nil {
 			return err
 		}
 	}
 
 	log.Printf("Finished to write to %s", b.Output)
-	return b.writeBills(file)
+	return b.writeBills(outputWriter)
 }
 
 // writeHeader writes the acounts and title into the file.
-func (b *BeanCount) writeHeader(file *os.File) error {
+func (b *BeanCount) writeHeader(file io.Writer) error {
 	_, err := io.WriteString(file, "option \"title\" \""+b.Config.Title+"\"\n")
 	if err != nil {
 		return fmt.Errorf("write option title error: %v", err)
@@ -146,7 +150,7 @@ func (b *BeanCount) writeHeader(file *os.File) error {
 }
 
 // writeBills writes bills to the file.
-func (b *BeanCount) writeBills(file *os.File) error {
+func (b *BeanCount) writeBills(file io.Writer) error {
 	// Sort the bills from earliest to lastest.
 	// If the bills are the same day, the tx which has lower
 	// line number is considered happened earlier than the tx
@@ -163,7 +167,7 @@ func (b *BeanCount) writeBills(file *os.File) error {
 	return nil
 }
 
-func (b *BeanCount) writeBill(file *os.File, index int) error {
+func (b *BeanCount) writeBill(file io.Writer, index int) error {
 	o := b.IR.Orders[index]
 
 	var buf bytes.Buffer
