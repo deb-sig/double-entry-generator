@@ -17,11 +17,12 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/deb-sig/double-entry-generator/pkg/cmd/validator"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"log"
 
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
+	"github.com/deb-sig/double-entry-generator/pkg/cmd/validator"
 	"github.com/deb-sig/double-entry-generator/pkg/compiler"
 	"github.com/deb-sig/double-entry-generator/pkg/config"
 	"github.com/deb-sig/double-entry-generator/pkg/consts"

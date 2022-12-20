@@ -109,6 +109,7 @@ test-htsec: ## Run tests for htsec provider
 
 format: ## Format code
 	@gofmt -s -w pkg
+	@goimports -w pkg
 
 check-format: ## Check if the format looks good.
 	@go fmt ./...

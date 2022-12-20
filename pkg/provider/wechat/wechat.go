@@ -3,10 +3,11 @@ package wechat
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/deb-sig/double-entry-generator/pkg/io/reader"
-	"github.com/deb-sig/double-entry-generator/pkg/ir"
 	"io"
 	"log"
+
+	"github.com/deb-sig/double-entry-generator/pkg/io/reader"
+	"github.com/deb-sig/double-entry-generator/pkg/ir"
 )
 
 // Wechat is the provider for Wechat.

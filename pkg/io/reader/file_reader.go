@@ -4,10 +4,11 @@
 package reader
 
 import (
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
 	"io"
 	"os"
+
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 )
 
 func GetReader(filename string) (io.Reader, error) {

@@ -17,8 +17,8 @@
         }
 
         let wasmBin;
-        fetch('double-entry-generator.wasm').then(response => response.arrayBuffer()).then((bin) => {
-            console.log("get wasm bin")
+        const wasmPromise = fetch('double-entry-generator.wasm').then(response => response.arrayBuffer()).then((bin) => {
+            console.log("get wasm binary");
             wasmBin = bin;
             document.getElementById('run').removeAttribute('disabled')
         });
@@ -71,12 +71,14 @@
                 }
             };
 
-            WebAssembly.instantiate(wasmBin, go.importObject).then((result) => {
-                go.run(result.instance)
-                    .catch((err) => {
-                        console.log(err)
-                        alert('转换出现错误！\n\n' + err)
-                    });
+            wasmPromise.then(() => {
+                WebAssembly.instantiate(wasmBin, go.importObject).then((result) => {
+                    go.run(result.instance)
+                        .catch((err) => {
+                            console.log(err)
+                            alert('转换出现错误！\n\n' + err)
+                        });
+                });
             });
         }
 
@@ -91,9 +93,8 @@
             }
         };
 
-        // FIXME: fetch binary again...
-        fetch('double-entry-generator.wasm').then(response => response.arrayBuffer()).then(function(bin) {
-            WebAssembly.instantiate(bin, go.importObject).then((result) => {
+        wasmPromise.then(() => {
+            WebAssembly.instantiate(wasmBin, go.importObject).then((result) => {
                 let outputBuf = '';
                 const decoder = new TextDecoder("utf-8");
                 let originalWriteSync = globalThis.fs.writeSync
@@ -108,7 +109,7 @@
                         alert('无法获取 double-entry-generator 版本信息！\n\n' + err)
                     });
                 globalThis.fs.writeSync = originalWriteSync
-            })
+            });
         });
     </script>
     </body>
