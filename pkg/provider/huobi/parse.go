@@ -53,7 +53,7 @@ func (h *Huobi) translateToOrders(arr []string) error {
 		return fmt.Errorf("parse money %s error: %v", arr[6], err)
 	}
 
-	co, err := regexp.Compile("([.\\d]*)(\\w+)")
+	co, err := regexp.Compile(`([.\d]*)(\w+)`)
 	if err != nil {
 		return fmt.Errorf("Failed to compile the regex")
 	}

@@ -42,6 +42,23 @@ GOPATH ?= $(shell go env GOPATH)
 BIN_DIR := $(GOPATH)/bin
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 
+# https://stackoverflow.com/a/14777895
+ifeq ($(OS),Windows_NT)     # is Windows_NT on XP, 2000, 7, Vista, 10...
+    detected_OS := Windows
+else
+    detected_OS := $(shell uname)  # same as "uname -s"
+endif
+
+ifeq ($(detected_OS), Windows)
+    BROWSER := start
+else 
+	ifeq (,$(findstring Drawin,$(detected_OS)))  # Mac OS X
+    	BROWSER := open
+	else  # consider as Linux or others
+		BROWSER := xdg-open
+	endif
+endif
+
 # All targets.
 .PHONY: lint test build container push help clean test-go test-wechat test-alipay test-huobi test-htsec format check-format goreleaser-build-test
 
@@ -50,12 +67,15 @@ help:  ## Display this help
 
 build: build-local  ## Build the project
 
+LD_FLAGS := -ldflags "-s -w
+LD_FLAGS += -X $(ROOT)/pkg/version.VERSION=$(VERSION)
+LD_FLAGS += -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)
+LD_FLAGS += -X $(ROOT)/pkg/version.COMMIT=$(GIT_COMMIT)"
+
 build-local:
 	@for target in $(TARGETS); do                                                      \
 	  go build -v -o $(OUTPUT_DIR)/$${target}                                       \
-	  -ldflags "-s -w -X $(ROOT)/pkg/version.VERSION=$(VERSION)                        \
-	    -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)                                        \
-		-X $(ROOT)/pkg/version.COMMIT=$(GIT_COMMIT)"                                   \
+	  $(LD_FLAGS)                        \
 	  $(CMD_DIR)/;                                                                     \
 	done
 
@@ -68,6 +88,7 @@ clean: ## Clean all the temporary files
 	@rm -rf ./dist
 	@rm -rf ./test/output
 	@rm -rf ./double-entry-generator
+	@rm -rf ./wasm-dist
 
 test: test-go test-alipay test-wechat test-huobi test-htsec ## Run all tests
 
@@ -88,9 +109,28 @@ test-htsec: ## Run tests for htsec provider
 
 format: ## Format code
 	@gofmt -s -w pkg
+	@goimports -w pkg
+
+lint: ## Lint GO code
+	@golangci-lint run
 
 check-format: ## Check if the format looks good.
 	@go fmt ./...
 
 goreleaser-build-test: ## Goreleaser build for testing
 	goreleaser build --single-target --snapshot --rm-dist
+
+clean-wasm: ## Clean wasm-dist dir
+	@rm -rf ./wasm-dist
+
+build-wasm: clean-wasm ## Build WebAssembly's version
+	@mkdir -p wasm-dist
+	GOOS=js GOARCH=wasm go build -o wasm-dist/double-entry-generator.wasm $(LD_FLAGS) $(CMD_DIR)/
+	@cp "$$(go env GOROOT)/misc/wasm/wasm_exec.js" wasm-dist/
+	@cp wasm/* wasm-dist/
+	@echo "Build wasm completed! Type \`make run-wasm-server\` to run wasm."
+
+run-wasm-server: ## Run WebAssembly in browser
+	@cd wasm-dist
+	# @$(BROWSER) http://127.0.0.1:2000
+	@python -m http.server --directory wasm-dist --bind 127.0.0.1 2000

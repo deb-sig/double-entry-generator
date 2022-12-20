@@ -57,8 +57,8 @@ type Unit string
 
 const (
 	BaseUnit       Unit = "BaseUnit"
-	TargetUnit          = "TargetUnit"
-	CommissionUnit      = "CommissionUnit"
+	TargetUnit     Unit = "TargetUnit"
+	CommissionUnit Unit = "CommissionUnit"
 )
 
 // Account is the key for account names
@@ -66,11 +66,11 @@ type Account string
 
 const (
 	CashAccount       Account = "CashAccount"
-	PositionAccount           = "PositionAccount"
-	CommissionAccount         = "CommissionAccount"
-	PnlAccount                = "PnlAccount"
-	PlusAccount               = "PlusAccount"
-	MinusAccount              = "MinusAccount"
+	PositionAccount   Account = "PositionAccount"
+	CommissionAccount Account = "CommissionAccount"
+	PnlAccount        Account = "PnlAccount"
+	PlusAccount       Account = "PlusAccount"
+	MinusAccount      Account = "MinusAccount"
 )
 
 // Type is transaction type defined by alipay.
@@ -78,16 +78,16 @@ type Type string
 
 const (
 	TypeSend    Type = "Send"
-	TypeRecv         = "Recv"
-	TypeUnknown      = "Unknwon"
+	TypeRecv    Type = "Recv"
+	TypeUnknown Type = "Unknwon"
 )
 
 type OrderType string // 为 IR 设置的交易类别
 
 const (
 	OrderTypeNormal          OrderType = "Normal"          // 流水交易
-	OrderTypeHuobiTrade                = "HuobiTrade"      //  火币交易
-	OrderTypeSecuritiesTrade           = "SecuritiesTrade" // 证券交易
+	OrderTypeHuobiTrade      OrderType = "HuobiTrade"      //  火币交易
+	OrderTypeSecuritiesTrade OrderType = "SecuritiesTrade" // 证券交易
 )
 
 // New creates a new IR.

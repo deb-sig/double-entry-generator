@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+    <head>
+        <title>double-entry-generator WASM Demo</title>
+        <meta charset="utf-8">
+    </head>
+<body>
+    <script src="wasm_exec.js"></script>
+    <script>
+        if (!('WebAssembly' in window)) {
+            document.body.innerText = '对不起，此应用需要浏览器支持 WebAssembly 能力。';
+        }
+
+        if (!WebAssembly.instantiateStreaming) { // polyfill
+            WebAssembly.instantiateStreaming = async (resp, importObject) => {
+                const source = await (await resp).arrayBuffer();
+                return await WebAssembly.instantiate(source, importObject);
+            };
+        }
+
+        let wasmBin;
+        const wasmPromise = fetch('double-entry-generator.wasm').then(response => response.arrayBuffer()).then((bin) => {
+            console.log("get wasm binary");
+            wasmBin = bin;
+            document.getElementById('run').removeAttribute('disabled')
+        });
+    </script>
+
+    <p id="version"></p><br>
+    <input type="radio" name="provider" id="provider-wechat" value="wechat" autofocus checked> <label>微信支付</label>
+    <input type="radio" name="provider" id="provider-alipay" value="alipay"> <label>支付宝</label>
+    <input type="radio" name="provider" id="provider-huobi" value="huobi"> <label>火币-币币交易</label>
+    <br>
+    <!--    htsec is not supported for now -->
+    <!--    <input type="radio" name="provider" id="provider-htsec" value="htsec"> <label>HaiTong Sec</label>-->
+    <textarea id="input" placeholder="请将账单文件内容粘贴于此..." cols="100" rows="10"></textarea>
+    <textarea id="config" placeholder="请将配置文件内容粘贴于此..." cols="100" rows="10"></textarea>
+    <button type="button" id="run" disabled>运行转换</button>
+    <textarea id="output" readonly placeholder="转换后的账单输出于此..." cols="100" rows="100"></textarea>
+
+    <script>
+        const version = document.getElementById('version');
+        const runButton = document.getElementById('run');
+        const input = document.getElementById('input');
+        const config = document.getElementById('config');
+        const output = document.getElementById('output');
+
+        function runTranslate() {
+            if (output.textContent.length > 0) {
+                let r = confirm("运行转换将会将上次运行输出结果清空！是否继续运行？")
+                if (!r) {
+                    return
+                }
+            }
+
+            const go = new Go();
+            const provider = document.querySelector('input[name="provider"]:checked').value;
+            let configText = config.value;
+            let inputText = input.value;
+
+            if (provider === 'alipay') {
+                inputText = inputText.slice(25);  // reduce the total length
+                let last = inputText.indexOf('------------------------------------------------------------------------------------');
+                inputText = inputText.slice(0, last); // workaround for exceed CLI length limit
+            }
+
+            go.argv = ['double-entry-generator', 'translate', '--provider', provider, '--config', configText, '--output', 'output', '--', inputText];
+            // console.log(go.argv)
+            go.exit = (code) => {
+                if (code > 0) {
+                    console.log('Exit ' + code);
+                    alert('转换出现错误！错误详情请见控制台。')
+                }
+            };
+
+            wasmPromise.then(() => {
+                WebAssembly.instantiate(wasmBin, go.importObject).then((result) => {
+                    go.run(result.instance)
+                        .catch((err) => {
+                            console.log(err)
+                            alert('转换出现错误！\n\n' + err)
+                        });
+                });
+            });
+        }
+
+        runButton.addEventListener('click', runTranslate)
+
+        const go = new Go();
+        go.argv = ['double-entry-generator', 'version'];
+        go.exit = (code) => {
+            if (code > 0) {
+                console.log('Exit ' + code);
+                alert('无法获取 double-entry-generator 版本信息！错误详情请见控制台。')
+            }
+        };
+
+        wasmPromise.then(() => {
+            WebAssembly.instantiate(wasmBin, go.importObject).then((result) => {
+                let outputBuf = '';
+                const decoder = new TextDecoder("utf-8");
+                let originalWriteSync = globalThis.fs.writeSync
+                globalThis.fs.writeSync = (fd, buf) => {
+                    outputBuf = decoder.decode(buf);
+                    version.textContent = outputBuf;
+                    return buf.length;
+                };
+                go.run(result.instance)
+                    .catch((err) => {
+                        console.log(err)
+                        alert('无法获取 double-entry-generator 版本信息！\n\n' + err)
+                    });
+                globalThis.fs.writeSync = originalWriteSync
+            });
+        });
+    </script>
+    </body>
+</html>
