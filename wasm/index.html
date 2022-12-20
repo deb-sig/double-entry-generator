@@ -62,7 +62,7 @@
                 inputText = inputText.slice(0, last); // workaround for exceed CLI length limit
             }
 
-            go.argv = ['double-entry-generator', 'translate', '--provider', provider, '--config', configText, '--', inputText];
+            go.argv = ['double-entry-generator', 'translate', '--provider', provider, '--config', configText, '--output', 'output', '--', inputText];
             // console.log(go.argv)
             go.exit = (code) => {
                 if (code > 0) {

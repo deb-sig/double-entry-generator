@@ -31,9 +31,9 @@ func (d WasmWriter) Close() error {
 }
 
 func GetWriter(fileName string) (OutputWriter, error) {
-	outputArea := document.Call("getElementById", "output")
+	outputArea := document.Call("getElementById", fileName)
 	if !outputArea.Truthy() {
-		return nil, fmt.Errorf("can't get `output` element from document object")
+		return nil, fmt.Errorf("can't get `%v` element from document object", fileName)
 	}
 	// flush the output
 	outputArea.Set("textContent", "")
