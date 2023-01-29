@@ -106,7 +106,7 @@ option "operating_currency" "CNY"
 	payTime: "2021-06-01 00:13:56 +0800 CST"
 	source: "支付宝"
 	status: "退款成功"
-	txType: "收入"
+	txType: "其他"
 	Assets:Bank:CN:CMB-9876:Savings 109.90 CNY
 	Expenses:Groceries -109.90 CNY
 
@@ -118,7 +118,7 @@ option "operating_currency" "CNY"
 	payTime: "2021-06-01 00:13:56 +0800 CST"
 	source: "支付宝"
 	status: "退款成功"
-	txType: "其他"
+	txType: "收入"
 	Assets:Bank:CN:CMB-9876:Savings 109.90 CNY
 	Expenses:Groceries -109.90 CNY
 
