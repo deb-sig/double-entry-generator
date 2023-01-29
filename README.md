@@ -268,11 +268,13 @@ alipay:
 
 `targetAccount` 与 `methodAccount` 的增减账户关系如下表：
 
-|收/支|methodAccount|targetAccount|
-|----|----|----|
-|收入|plusAccount|minusAccount|
-|支出|minusAccount|plusAccount|
-|其他|minusAccount|plusAccount|
+|收/支|交易分类|methodAccount|targetAccount|
+|----|----|----|----|
+|收入|*|plusAccount|minusAccount|
+|收入|退款|plusAccount|minusAccount|
+|支出|*|minusAccount|plusAccount|
+|其他|*|minusAccount|plusAccount|
+|其他|退款|plusAccount|minusAccount|
 
 > 当交易类型为「其他」时，需要自行手动定义借贷账户。此时本软件会认为 `methodAccount` 是贷账户，`targetAccount` 是借账户。
 
