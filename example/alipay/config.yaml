@@ -4,6 +4,16 @@ defaultCurrency: CNY
 title: 测试
 alipay:
   rules:
+    # 泛匹配结果应当放在前面
+    - type: 收入 # 其他转账收款
+      targetAccount: Income:FIXME
+      methodAccount: Assets:Alipay
+
+    - type: 收入 # 收款码收款
+      item: 商品
+      targetAccount: Income:Alipay:ShouKuanMa
+      methodAccount: Assets:Alipay
+
     - category: 日用百货
       targetAccount: Expenses:Groceries
     - category: 餐饮美食
@@ -29,14 +39,6 @@ alipay:
     - method: 招商银行(9876)
       fullMatch: true
       methodAccount: Assets:Bank:CN:CMB-9876:Savings
-
-    - type: 收入 # 其他转账收款
-      targetAccount: Income:FIXME
-      methodAccount: Assets:Alipay
-    - type: 收入 # 收款码收款
-      item: 商品
-      targetAccount: Income:Alipay:ShouKuanMa
-      methodAccount: Assets:Alipay
 
     # 交易类型为其他
     - type: 其他
