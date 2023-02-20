@@ -36,9 +36,9 @@ alipay:
     - method: 余额宝
       fullMatch: true
       methodAccount: Assets:Alipay
-    - method: 招商银行(9876)
+    - method: 交通银行信用卡(7449)
       fullMatch: true
-      methodAccount: Assets:Bank:CN:CMB-9876:Savings
+      methodAccount: Liabilities:CC:COMM:7449
 
     # 交易类型为其他
     - type: 其他

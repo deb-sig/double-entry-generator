@@ -70,9 +70,9 @@ func (a *Alipay) Translate(filename string) (*ir.IR, error) {
 			return nil, err
 		}
 
-		if len(line) != 12 {
-			// TODO(gaocegege): Support statistics.
-			a.LineNum++
+		a.LineNum++
+		if a.LineNum <= 23 {
+			// bypass the useless
 			continue
 		}
 

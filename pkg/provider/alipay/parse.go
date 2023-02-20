@@ -13,17 +13,6 @@ import (
 // Modified by TripleZ at Shenzhen(2021)
 func (a *Alipay) translateToOrders(array []string) error {
 	var err error
-	a.LineNum++
-
-	if len(array) != 12 {
-		return fmt.Errorf("Length mismatch: Expected 12, got %d", len(array))
-	}
-
-	// Ignore the title row.
-	if !a.TitleParsed {
-		a.TitleParsed = true
-		return nil
-	}
 
 	for idx, a := range array {
 		a = strings.Trim(a, " ")
@@ -31,34 +20,34 @@ func (a *Alipay) translateToOrders(array []string) error {
 		array[idx] = a
 	}
 	var bill Order
-	bill.Type = getTxType(array[0])
+	bill.Type = getTxType(array[5])
 	if bill.Type == TypeNil {
 		log.Println("get tx type error:", array[0], array)
 		return fmt.Errorf("Failed to get the tx type %s", array[0])
 	}
-	bill.TypeOriginal = array[0]
-	bill.Peer = array[1]
-	bill.PeerAccount = array[2]
-	bill.ItemName = array[3]
-	bill.Method = array[4]
-	bill.Money, err = strconv.ParseFloat(array[5], 32)
+	bill.TypeOriginal = array[5]
+	bill.Peer = array[2]
+	bill.PeerAccount = array[3]
+	bill.ItemName = array[4]
+	bill.Method = array[7]
+	bill.Money, err = strconv.ParseFloat(array[6], 32)
 	if err != nil {
-		log.Println("parse money error:", array[5], err)
+		log.Println("parse money error:", array[6], err)
 		return err
 	}
-	bill.Status = array[6]
+	bill.Status = array[8]
 	if bill.Status == "交易关闭" {
 		log.Printf("Line %d: There is a mole, The tx is canceled.", a.LineNum)
 	}
 	if bill.Status == "退款成功" {
 		log.Printf("Lind %d: There has a refund transaction.", a.LineNum)
 	}
-	bill.Category = array[7]
-	bill.DealNo = array[8]
-	bill.MerchantId = array[9]
-	bill.PayTime, err = time.Parse(localTimeFmt, array[10]+" +0800 CST")
+	bill.Category = array[1]
+	bill.DealNo = array[9]
+	bill.MerchantId = array[10]
+	bill.PayTime, err = time.Parse(localTimeFmt, array[0]+" +0800 CST")
 	if err != nil {
-		log.Println("parse create time error:", array[10], err)
+		log.Println("parse create time error:", array[0], err)
 		return err
 	}
 
