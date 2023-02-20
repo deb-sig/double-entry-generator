@@ -25,13 +25,16 @@ wechat:
     - type: / # 零钱通转出-到工商银行(9876)
       txType: 零钱通转出-到工商银行(9876)
       targetAccount: Assets:Bank:CN:ICBC:Savings
+    - type: 支出
+      txType: 赞赏码
+      targetAccount: Expenses:Wechat:Sponsor
 
     - peer: 云膳过桥米线,餐厅
-      sep: ','
+      sep: ","
       time: 11:00-15:00
       targetAccount: Expenses:Food:Meal:Lunch
     - peer: 云膳过桥米线,餐厅
-      sep: ','
+      sep: ","
       time: 16:30-21:30
       targetAccount: Expenses:Food:Meal:Dinner
     - peer: 餐厅
@@ -48,6 +51,7 @@ wechat:
     - peer: 用户
       type: 收入
       targetAccount: Income:Service
+      tag: income,service
 
     - peer: 理财通
       type: /
@@ -69,3 +73,7 @@ wechat:
       methodAccount: Assets:Bank:CN:ICBC:Savings
     - method: 中国银行
       methodAccount: Assets:Bank:CN:BOC:Savings
+
+    - peer: 测试时间戳
+      timestamp_range: 1658112487-1658112490 # order_time= 2022-07-18 10:48:09 ts=1658112489
+      targetAccount: Expenses:Travel

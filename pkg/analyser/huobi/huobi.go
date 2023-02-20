@@ -40,14 +40,14 @@ func (h Huobi) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 	return uniqMap
 }
 
-func (h Huobi) GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string) {
+func (h Huobi) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string, []string) {
 	if cfg.Huobi == nil || len(cfg.Huobi.Rules) == 0 {
 		return "", "", map[ir.Account]string{
 			ir.CashAccount:       cfg.DefaultCashAccount,
 			ir.PositionAccount:   cfg.DefaultPositionAccount,
 			ir.CommissionAccount: cfg.DefaultCommissionAccount,
 			ir.PnlAccount:        cfg.DefaultPnlAccount,
-		}
+		}, nil
 	}
 
 	cashAccount := cfg.DefaultCashAccount
@@ -58,10 +58,10 @@ func (h Huobi) GetAccounts(o *ir.Order, cfg *config.Config, target, provider str
 	var err error
 	for _, r := range cfg.Huobi.Rules {
 		match := true
-		// get seperator
+		// get separator
 		sep := ","
-		if r.Seperator != nil {
-			sep = *r.Seperator
+		if r.Separator != nil {
+			sep = *r.Separator
 		}
 
 		matchFunc := util.SplitFindContains
@@ -84,7 +84,12 @@ func (h Huobi) GetAccounts(o *ir.Order, cfg *config.Config, target, provider str
 				log.Fatalf(err.Error())
 			}
 		}
-
+		if r.TimestampRange != nil {
+			match, err = util.SplitFindTimeStampInterval(*r.TimestampRange, o.PayTime, match)
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+		}
 		if match {
 			if r.CashAccount != nil {
 				cashAccount = *r.CashAccount
@@ -106,5 +111,5 @@ func (h Huobi) GetAccounts(o *ir.Order, cfg *config.Config, target, provider str
 		ir.PositionAccount:   positionAccount,
 		ir.CommissionAccount: commissionAccount,
 		ir.PnlAccount:        pnlAccount,
-	}
+	}, nil
 }

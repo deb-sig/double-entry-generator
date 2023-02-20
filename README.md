@@ -24,9 +24,26 @@
 
 ## 安装
 
+### Homebrew
+
+使用 Homebrew 安装：
+
+```bash
+brew install deb-sig/tap/double-entry-generator
+```
+
+使用 Homebrew 更新软件：
+
+```bash
+brew upgrade deb-sig/tap/double-entry-generator
+```
+
+### 二进制安装
+
 在 [GitHub Release](https://github.com/deb-sig/double-entry-generator/releases) 页面中下载相应架构的二进制文件到本地即可。
 
-源码安装：
+### 源码安装
+
 ```bash
 go get -u github.com/deb-sig/double-entry-generator
 ```
@@ -251,11 +268,13 @@ alipay:
 
 `targetAccount` 与 `methodAccount` 的增减账户关系如下表：
 
-|收/支|methodAccount|targetAccount|
-|----|----|----|
-|收入|plusAccount|minusAccount|
-|支出|minusAccount|plusAccount|
-|其他|minusAccount|plusAccount|
+|收/支|交易分类|methodAccount|targetAccount|
+|----|----|----|----|
+|收入|*|plusAccount|minusAccount|
+|收入|退款|plusAccount|minusAccount|
+|支出|*|minusAccount|plusAccount|
+|其他|*|minusAccount|plusAccount|
+|其他|退款|plusAccount|minusAccount|
 
 > 当交易类型为「其他」时，需要自行手动定义借贷账户。此时本软件会认为 `methodAccount` 是贷账户，`targetAccount` 是借账户。
 
@@ -365,6 +384,8 @@ wechat:
 
 在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
 
+在单条规则中可以使用 `tag` 来设置流水的 [Tag](https://beancount.github.io/docs/beancount_language_syntax.html#tags)，使用 `sep` 作为分隔符。
+
 匹配成功则使用规则中定义的 `targetAccount` 、 `methodAccount` 等账户覆盖默认定义账户。
 
 规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
@@ -395,8 +416,8 @@ title: 测试
 huobi:
   rules:
     - item: BTC/USDT,BTC1S/USDT  # multiple keywords with separator
-      type: 币币交易
-      txType: 买入
+      type: 买入
+      txType: 币币交易
       fullMatch: true
       sep: ','  # define separator as a comma
       cashAccount: Assets:Rule1:Cash
@@ -413,8 +434,8 @@ huobi:
 
 `huobi` 是火币相关的配置。它提供基于规则的匹配。可以指定：
 - `item`（交易对）的完全/包含匹配。
-- `type`（交易类型）的完全/包含匹配。
-- `txType`（交易方向）的完全/包含匹配。
+- `type`（交易方向）的完全/包含匹配。
+- `txType`（交易类型）的完全/包含匹配。
 - `time`（交易时间）的区间匹配。
   > 交易时间可写为以下两种形式：
   > - `11:00-13:00`
@@ -453,7 +474,7 @@ title: 测试
 htsec:
   rules:
     - item: 兴业转债
-      txType: 卖
+      type: 卖
       sep: ','
       cashAccount: Assets:Rule1:Cash
       positionAccount: Assets:Rule1:Positions
@@ -469,7 +490,7 @@ htsec:
 
 `htsec` 是海通证券相关的配置。它提供基于规则的匹配。可以指定：
 - `item`（交易方向-证券编码-证券市值）的完全/包含匹配。
-- `txType`（交易方向）的完全/包含匹配。
+- `type`（交易方向）的完全/包含匹配。
 - `time`（交易时间）的区间匹配。
   > 交易时间可写为以下两种形式：
   > - `11:00-13:00`

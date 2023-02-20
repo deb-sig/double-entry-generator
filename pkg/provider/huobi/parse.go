@@ -22,11 +22,11 @@ func (h *Huobi) translateToOrders(arr []string) error {
 		return fmt.Errorf("parse create time %s error: %v", arr[0], err)
 	}
 
-	bill.Type = getOrderType(arr[1])
-	if bill.Type == OrderTypeUnknown {
+	bill.TxType = getTxType(arr[1])
+	if bill.TxType == TxTypeUnknown {
 		return fmt.Errorf("Failed to get the order type %s: %v", arr[1], err)
 	}
-	bill.TypeOriginal = arr[1]
+	bill.TxTypeOriginal = arr[1]
 
 	bill.Item = arr[2]
 	units := strings.Split(arr[2], "/")
@@ -36,8 +36,8 @@ func (h *Huobi) translateToOrders(arr []string) error {
 	bill.BaseUnit = units[1]
 	bill.TargetUnit = units[0]
 
-	bill.TxType = getTxType(arr[3])
-	if bill.TxType == TxTypeNil {
+	bill.Type = getOrderType(arr[3])
+	if bill.Type == TypeNil {
 		return fmt.Errorf("Failed to get the tx type: %s: %v", arr[3], err)
 	}
 	bill.Price, err = strconv.ParseFloat(arr[4], 64)
@@ -53,7 +53,7 @@ func (h *Huobi) translateToOrders(arr []string) error {
 		return fmt.Errorf("parse money %s error: %v", arr[6], err)
 	}
 
-	co, err := regexp.Compile("([.\\d]*)(\\w+)")
+	co, err := regexp.Compile(`([.\d]*)(\w+)`)
 	if err != nil {
 		return fmt.Errorf("Failed to compile the regex")
 	}

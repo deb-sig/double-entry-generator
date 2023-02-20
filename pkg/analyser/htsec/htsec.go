@@ -40,14 +40,14 @@ func (h Htsec) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 	return uniqMap
 }
 
-func (h Htsec) GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string) {
+func (h Htsec) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string, []string) {
 	if cfg.Htsec == nil || len(cfg.Htsec.Rules) == 0 {
 		return "", "", map[ir.Account]string{
 			ir.CashAccount:       cfg.DefaultCashAccount,
 			ir.PositionAccount:   cfg.DefaultPositionAccount,
 			ir.CommissionAccount: cfg.DefaultCommissionAccount,
 			ir.PnlAccount:        cfg.DefaultPnlAccount,
-		}
+		}, nil
 	}
 
 	cashAccount := cfg.DefaultCashAccount
@@ -58,10 +58,10 @@ func (h Htsec) GetAccounts(o *ir.Order, cfg *config.Config, target, provider str
 	var err error
 	for _, r := range cfg.Htsec.Rules {
 		match := true
-		// get seperator
+		// get separator
 		sep := ","
-		if r.Seperator != nil {
-			sep = *r.Seperator
+		if r.Separator != nil {
+			sep = *r.Separator
 		}
 
 		matchFunc := util.SplitFindContains
@@ -69,14 +69,20 @@ func (h Htsec) GetAccounts(o *ir.Order, cfg *config.Config, target, provider str
 			matchFunc = util.SplitFindEquals
 		}
 
-		if r.TxType != nil {
-			match = matchFunc(*r.TxType, o.TxTypeOriginal, sep, match)
+		if r.Type != nil {
+			match = matchFunc(*r.Type, o.TypeOriginal, sep, match)
 		}
 		if r.Item != nil {
 			match = matchFunc(*r.Item, o.Item, sep, match)
 		}
 		if r.Time != nil {
 			match, err = util.SplitFindTimeInterval(*r.Time, o.PayTime, match)
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+		}
+		if r.TimestampRange != nil {
+			match, err = util.SplitFindTimeStampInterval(*r.TimestampRange, o.PayTime, match)
 			if err != nil {
 				log.Fatalf(err.Error())
 			}
@@ -95,6 +101,7 @@ func (h Htsec) GetAccounts(o *ir.Order, cfg *config.Config, target, provider str
 			if r.PnlAccount != nil {
 				pnlAccount = *r.PnlAccount
 			}
+
 		}
 	}
 
@@ -103,5 +110,5 @@ func (h Htsec) GetAccounts(o *ir.Order, cfg *config.Config, target, provider str
 		ir.PositionAccount:   positionAccount,
 		ir.CommissionAccount: commissionAccount,
 		ir.PnlAccount:        pnlAccount,
-	}
+	}, nil
 }

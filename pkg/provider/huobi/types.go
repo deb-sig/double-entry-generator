@@ -16,10 +16,10 @@ type Statistics struct {
 
 type Order struct {
 	PayTime        time.Time // 付款时间
-	Type           OrderType // 类型
-	TypeOriginal   string    // 原始类型
+	TxType         TxType    // 类型
+	TxTypeOriginal string    // 原始类型
 	Item           string    // 交易对
-	TxType         TxType    // 方向
+	Type           OrderType // 方向
 	Price          float64   // 价格
 	Amount         float64   // 数量
 	Money          float64   // 成交额
@@ -32,19 +32,19 @@ type Order struct {
 // LocalTimeFmt set time format to utc+8
 const LocalTimeFmt = "2006-01-02 15:04:05 -0700"
 
-// OrderType is the type of the order.
-type OrderType string
-
-const (
-	OrderTypeCoin    OrderType = "币币交易"
-	OrderTypeUnknown           = "未知"
-	// TODO(TripleZ): add more order types.
-)
-
+// TxType is the type of the order.
 type TxType string
 
 const (
-	TxTypeBuy  TxType = "买入"
-	TxTypeSell TxType = "卖出"
-	TxTypeNil  TxType = "未知"
+	TxTypeCoin    TxType = "币币交易"
+	TxTypeUnknown TxType = "未知"
+	// TODO(TripleZ): add more order types.
+)
+
+type OrderType string
+
+const (
+	TypeBuy  OrderType = "买入"
+	TypeSell OrderType = "卖出"
+	TypeNil  OrderType = "未知"
 )

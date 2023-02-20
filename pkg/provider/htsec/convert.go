@@ -9,9 +9,9 @@ func (h *Htsec) convertToIR() *ir.IR {
 			OrderType:      ir.OrderTypeSecuritiesTrade,
 			Peer:           "htsec",
 			PayTime:        o.TransactionTime,
-			TypeOriginal:   o.TypeOriginal,
-			TxType:         convertType(o.TxType),
-			TxTypeOriginal: string(o.TxType),
+			TxTypeOriginal: o.TxTypeOriginal,
+			Type:           convertType(o.Type),
+			TypeOriginal:   string(o.Type),
 			Item:           o.SecuritiesName,
 			Money:          o.TransactionAmount,
 			Amount:         float64(o.Volume),
@@ -23,13 +23,13 @@ func (h *Htsec) convertToIR() *ir.IR {
 	return i
 }
 
-func convertType(t TxType) ir.TxType {
+func convertType(t OrderType) ir.Type {
 	switch t {
 	case TxTypeBuy:
-		return ir.TxTypeSend
+		return ir.TypeSend
 	case TxTypeSell:
-		return ir.TxTypeRecv
+		return ir.TypeRecv
 	default:
-		return ir.TxTypeUnknown
+		return ir.TypeUnknown
 	}
 }

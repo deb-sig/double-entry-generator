@@ -2,6 +2,7 @@ package wechat
 
 import (
 	"log"
+	"strings"
 
 	"github.com/deb-sig/double-entry-generator/pkg/config"
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
@@ -37,8 +38,10 @@ func (w Wechat) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 }
 
 // GetAccounts returns minus and plus account.
-func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string) {
+func (w Wechat) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string, []string) {
 	var resCommission string
+	var tags = make([]string, 0)
+
 	// check this tx whether has commission
 	if o.Commission != 0 {
 		if cfg.DefaultCommissionAccount == "" {
@@ -51,7 +54,7 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 	if cfg.Wechat == nil || len(cfg.Wechat.Rules) == 0 {
 		return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount, map[ir.Account]string{
 			ir.CommissionAccount: resCommission,
-		}
+		}, nil
 	}
 
 	resMinus := cfg.DefaultMinusAccount
@@ -60,10 +63,10 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 	var err error
 	for _, r := range cfg.Wechat.Rules {
 		match := true
-		// get seperator
+		// get separator
 		sep := ","
-		if r.Seperator != nil {
-			sep = *r.Seperator
+		if r.Separator != nil {
+			sep = *r.Separator
 		}
 
 		matchFunc := util.SplitFindContains
@@ -75,10 +78,10 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 			match = matchFunc(*r.Peer, o.Peer, sep, match)
 		}
 		if r.Type != nil {
-			match = matchFunc(*r.Type, o.TxTypeOriginal, sep, match)
+			match = matchFunc(*r.Type, o.TypeOriginal, sep, match)
 		}
 		if r.TxType != nil {
-			match = matchFunc(*r.TxType, o.TypeOriginal, sep, match)
+			match = matchFunc(*r.TxType, o.TxTypeOriginal, sep, match)
 		}
 		if r.Method != nil {
 			match = matchFunc(*r.Method, o.Method, sep, match)
@@ -92,17 +95,24 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 				log.Fatalf(err.Error())
 			}
 		}
+		if r.TimestampRange != nil {
+			match, err = util.SplitFindTimeStampInterval(*r.TimestampRange, o.PayTime, match)
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+		}
+
 		if match {
 			// Support multiple matches, like one rule matches the minus accout, the other rule matches the plus account.
 			if r.TargetAccount != nil {
-				if o.TxType == ir.TxTypeRecv {
+				if o.Type == ir.TypeRecv {
 					resMinus = *r.TargetAccount
 				} else {
 					resPlus = *r.TargetAccount
 				}
 			}
 			if r.MethodAccount != nil {
-				if o.TxType == ir.TxTypeRecv {
+				if o.Type == ir.TypeRecv {
 					resPlus = *r.MethodAccount
 				} else {
 					resMinus = *r.MethodAccount
@@ -111,11 +121,16 @@ func (w Wechat) GetAccounts(o *ir.Order, cfg *config.Config, target, provider st
 			if r.CommissionAccount != nil {
 				resCommission = *r.CommissionAccount
 			}
+
+			if r.Tag != nil {
+				tags = strings.Split(*r.Tag, sep)
+			}
+
 		}
 
 	}
 
 	return resMinus, resPlus, map[ir.Account]string{
 		ir.CommissionAccount: resCommission,
-	}
+	}, tags
 }

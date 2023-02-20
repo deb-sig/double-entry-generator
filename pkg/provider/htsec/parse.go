@@ -17,9 +17,7 @@ func (h *Htsec) translateToOrders(arr []string) error {
 	var bill Order
 	var err error
 
-	var code string
-
-	code = fmt.Sprintf("%06s", arr[0])
+	code := fmt.Sprintf("%06s", arr[0])
 
 	// 打新中签时，实际证券份额会以新增证券的名称添加到持仓中，因为新股缴款时已经导入过这部分，因此直接忽略
 	// 已知问题，打新缴款时的证券代码跟新股实际证券交易编码不是一个，因此后续生成的交割单跟打新时初始生成的证券代码需要手动修改
@@ -32,9 +30,9 @@ func (h *Htsec) translateToOrders(arr []string) error {
 	}
 
 	if strings.HasPrefix(arr[17], "A") {
-		bill.TypeOriginal = "SH" + code
+		bill.TxTypeOriginal = "SH" + code
 	} else {
-		bill.TypeOriginal = "SZ" + code
+		bill.TxTypeOriginal = "SZ" + code
 	}
 	bill.SecuritiesName = code + "-" + arr[1]
 	if len(arr[3]) == 0 {
@@ -65,8 +63,8 @@ func (h *Htsec) translateToOrders(arr []string) error {
 		return fmt.Errorf("parse OccurAmount %s error: %v", arr[7], err)
 	}
 
-	bill.TxType = getTxType(arr[8])
-	if bill.TxType == TxTypeNil {
+	bill.Type = getTxType(arr[8])
+	if bill.Type == TxTypeNil {
 		return fmt.Errorf("Failed to get the tx type: %s: %v", arr[8], err)
 	}
 

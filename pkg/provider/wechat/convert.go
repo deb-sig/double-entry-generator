@@ -14,9 +14,9 @@ func (w *Wechat) convertToIR() *ir.IR {
 			PayTime:        o.PayTime,
 			Money:          o.Money,
 			OrderID:        &o.OrderID,
-			TxType:         conevertType(o.Type),
-			TxTypeOriginal: o.TypeOriginal,
-			TypeOriginal:   o.TxTypeOriginal,
+			Type:           conevertType(o.Type),
+			TypeOriginal:   o.TypeOriginal,
+			TxTypeOriginal: o.TxTypeOriginal,
 			Method:         o.Method,
 			Commission:     o.Commission,
 		}
@@ -29,14 +29,14 @@ func (w *Wechat) convertToIR() *ir.IR {
 	return i
 }
 
-func conevertType(t OrderType) ir.TxType {
+func conevertType(t OrderType) ir.Type {
 	switch t {
 	case OrderTypeSend:
-		return ir.TxTypeSend
+		return ir.TypeSend
 	case OrderTypeRecv:
-		return ir.TxTypeRecv
+		return ir.TypeRecv
 	default:
-		return ir.TxTypeUnknown
+		return ir.TypeUnknown
 	}
 }
 
@@ -59,11 +59,11 @@ func getMetadata(o Order) map[string]string {
 	}
 
 	if o.TypeOriginal != "" {
-		txType = o.TypeOriginal
+		typeOriginal = o.TypeOriginal
 	}
 
 	if o.TxTypeOriginal != "" {
-		typeOriginal = o.TxTypeOriginal
+		txType = o.TxTypeOriginal
 	}
 
 	if o.Method != "" {

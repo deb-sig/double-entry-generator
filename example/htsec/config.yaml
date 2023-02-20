@@ -7,7 +7,7 @@ title: 测试
 htsec:
   rules:
     - item: 兴业转债
-      txType: 卖
+      type: 卖
       sep: ','
       cashAccount: Assets:Rule1:Cash
       positionAccount: Assets:Rule1:Positions

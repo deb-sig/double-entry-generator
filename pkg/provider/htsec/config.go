@@ -6,10 +6,11 @@ type Config struct {
 
 type Rule struct {
 	// Peer              *string `mapstructure:"peer,omitempty"`
-	Item              *string `mapstructure:"item,omitempty"`   // "513050-中概互联"
-	TxType            *string `mapstructure:"txType,omitempty"` // "买"、"卖"
+	Item              *string `mapstructure:"item,omitempty"` // "513050-中概互联"
+	Type              *string `mapstructure:"type,omitempty"` // "买"、"卖"
 	Time              *string `mapstructure:"time,omitempty"`
-	Seperator         *string `mapstructure:"sep,omitempty"` // default: ,
+	TimestampRange    *string `mapstructure:"timestamp_range,omitempty"`
+	Separator         *string `mapstructure:"sep,omitempty"` // default: ,
 	CashAccount       *string `mapstructure:"cashAccount,omitempty"`
 	PositionAccount   *string `mapstructure:"positionAccount,omitempty"`
 	CommissionAccount *string `mapstructure:"commissionAccount,omitempty"`

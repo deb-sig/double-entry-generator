@@ -24,31 +24,31 @@ type Statistics struct {
 
 // Order is the single order.
 type Order struct {
-	TxType         TxTypeType `json:"txType,omitempty"` // 收/支
-	TxTypeOriginal string     `json:"txTypeOriginal,omitempty"`
-	Peer           string     `json:"peer,omitempty"`        // 交易对方
-	PeerAccount    string     `json:"peerAccount,omitempty"` // 对方账号
-	ItemName       string     `json:"itemName,omitempty"`    // 商品说明
-	Method         string     `json:"method,omitempty"`      // 收/付款方式
-	Money          float64    `json:"money,omitempty"`       // 金额
-	Status         string     `json:"status,omitempty"`      // 交易状态
-	Category       string     `json:"category,omitempty"`    // 交易分类
-	DealNo         string     `json:"dealNo,omitempty"`      // 交易订单号
-	MerchantId     string     `json:"merchantId,omitempty"`  // 商家订单号
-	PayTime        time.Time  `json:"payTime,omitempty"`     // 交易时间
+	Type         Type      `json:"type,omitempty"` // 收/支
+	TypeOriginal string    `json:"typeOriginal,omitempty"`
+	Peer         string    `json:"peer,omitempty"`        // 交易对方
+	PeerAccount  string    `json:"peerAccount,omitempty"` // 对方账号
+	ItemName     string    `json:"itemName,omitempty"`    // 商品说明
+	Method       string    `json:"method,omitempty"`      // 收/付款方式
+	Money        float64   `json:"money,omitempty"`       // 金额
+	Status       string    `json:"status,omitempty"`      // 交易状态
+	Category     string    `json:"category,omitempty"`    // 交易分类
+	DealNo       string    `json:"dealNo,omitempty"`      // 交易订单号
+	MerchantId   string    `json:"merchantId,omitempty"`  // 商家订单号
+	PayTime      time.Time `json:"payTime,omitempty"`     // 交易时间
 
 	// below is filled at runtime
 	TargetAccount string `json:"targetAccount,omitempty"`
 	MethodAccount string `json:"methodAccount,omitempty"`
 }
 
-// TxTypeType is transanction type defined by alipay.
-type TxTypeType string
+// Type is transanction type defined by alipay.
+type Type string
 
 const (
-	TxTypeSend   TxTypeType = "支出"
-	TxTypeRecv   TxTypeType = "收入"
-	TxTypeOthers TxTypeType = "其他"
-	TxTypeEmpty  TxTypeType = ""
-	TxTypeNil    TxTypeType = "未知"
+	TypeSend   Type = "支出"
+	TypeRecv   Type = "收入"
+	TypeOthers Type = "其他"
+	TypeEmpty  Type = ""
+	TypeNil    Type = "未知"
 )
