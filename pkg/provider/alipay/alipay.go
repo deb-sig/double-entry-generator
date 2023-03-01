@@ -19,11 +19,11 @@ package alipay
 import (
 	"encoding/csv"
 	"fmt"
-	"io"
-	"log"
-
 	"github.com/deb-sig/double-entry-generator/pkg/io/reader"
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
+	"io"
+	"log"
+	"strings"
 )
 
 // Alipay is the provider for alipay.
@@ -70,9 +70,14 @@ func (a *Alipay) Translate(filename string) (*ir.IR, error) {
 			return nil, err
 		}
 
-		if len(line) != 12 {
-			// TODO(gaocegege): Support statistics.
-			a.LineNum++
+		if a.LineNum == 0 && strings.Contains(line[0], "支付宝") {
+			return nil, fmt.Errorf("可能为支付宝老版本 csv 账单，请使用 1.7.0 及之前的版本尝试转换")
+		}
+
+		a.LineNum++
+
+		if a.LineNum <= 23 {
+			// bypass the useless
 			continue
 		}
 

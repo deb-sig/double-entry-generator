@@ -48,7 +48,7 @@ type Type string
 const (
 	TypeSend   Type = "支出"
 	TypeRecv   Type = "收入"
-	TypeOthers Type = "其他"
+	TypeOthers Type = "不计收支"
 	TypeEmpty  Type = ""
 	TypeNil    Type = "未知"
 )
