@@ -1,11 +1,11 @@
 defaultMinusAccount: Assets:FIXME
 defaultPlusAccount: Expenses:FIXME
-defaultMethodAccount: Liabilities:Bank:CN:ICBC
+defaultCashAccount: Liabilities:Bank:CN:ICBC
 defaultCurrency: CNY
 title: 测试
 icbc:
   rules:
-    - peer: 财付通-,支付宝-
+    - peer: 财付通,支付宝
       ignore: true
     - peer: 广东联合电子收费股份
       targetAccount: Expenses:Transport:Highway

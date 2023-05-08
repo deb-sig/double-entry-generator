@@ -36,4 +36,5 @@ type Rule struct {
 	CommissionAccount *string `mapstructure:"commissionAccount,omitempty"`
 	FullMatch         bool    `mapstructure:"fullMatch,omitempty"`
 	Tag               *string `mapstructure:"tag,omitempty"`
+	Ignore            bool    `mapstructure:"ignore,omitempty"` // default: false
 }

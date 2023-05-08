@@ -17,7 +17,6 @@ type Config struct {
 	DefaultPositionAccount   string         `yaml:"defaultPositionAccount,omitempty"`
 	DefaultCommissionAccount string         `yaml:"defaultCommissionAccount,omitempty"`
 	DefaultPnlAccount        string         `yaml:"defaultPnlAccount,omitempty"`
-	DefaultMethodAccount     string         `yaml:"defaultMethodAccount,omitempty"`
 	DefaultCurrency          string         `yaml:"defaultCurrency,omitempty"`
 	Alipay                   *alipay.Config `yaml:"alipay,omitempty"`
 	Wechat                   *wechat.Config `yaml:"wechat,omitempty"`
