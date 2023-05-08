@@ -90,7 +90,7 @@ clean: ## Clean all the temporary files
 	@rm -rf ./double-entry-generator
 	@rm -rf ./wasm-dist
 
-test: test-go test-alipay test-wechat test-huobi test-htsec ## Run all tests
+test: test-go test-alipay test-wechat test-huobi test-htsec test-icbc ## Run all tests
 
 test-go: ## Run Golang tests
 	@go test ./...
@@ -106,6 +106,9 @@ test-huobi: ## Run tests for huobi provider
 
 test-htsec: ## Run tests for htsec provider
 	@$(SHELL) ./test/htsec-test.sh
+
+test-icbc: ## Run tests for ICBC provider
+	@$(SHELL) ./test/icbc-test.sh
 
 format: ## Format code
 	@gofmt -s -w pkg

@@ -20,6 +20,8 @@
                   alipay               beancount      alipay
                   wechat                              wechat
                   huobi                               huobi
+                  htsec                               htsec
+                  icbc                                icbc
 ```
 
 ## 安装

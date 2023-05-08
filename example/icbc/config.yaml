@@ -1,0 +1,19 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultMethodAccount: Liabilities:Bank:CN:ICBC
+defaultCurrency: CNY
+title: 测试
+icbc:
+  rules:
+    - peer: 财付通-,支付宝-
+      ignore: true
+    - peer: 广东联合电子收费股份
+      targetAccount: Expenses:Transport:Highway
+    - txType: 人民币自动转帐还款
+      targetAccount: Assets:Bank:CN:ICBC:Savings
+    - peer: XX旗舰店
+      targetAccount: Expenses:Joy
+
+
+# 交易日期,记账日期,摘要,交易场所,交易国家或地区简称,交易金额(收入),交易金额(支出),交易币种,记账金额(收入),记账金额(支出),记账币种,余额,对方户名
+#               txType,peer                                                      , money      , money      , currency
