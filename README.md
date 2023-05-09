@@ -6,6 +6,7 @@
 - 微信
 - 火币-币币交易
 - 海通证券
+- 中国工商银行
 
 目前记账语言支持：
 
@@ -97,13 +98,23 @@ double-entry-generator translate \
   ./example/htsec/example-htsec-records.xlsx
 ```
 
+### 中国工商银行
+
+```bash
+double-entry-generator translate \
+  --config ./example/icbc/config.yaml \
+  --provider icbc \
+  --output ./example/icbc/example-icbc-output.beancount \
+  ./example/icbc/example-icbc-records.csv
+```
+
 ## 账单下载与格式问题
 
 ### 支付宝
 
 #### 下载方式
 
-`v1.0.0` 及以上的版本请参考[此文章](https://blog.triplez.cn/posts/bills-export-methods/#支付宝)获取支付宝账单。
+`v1.0.0` 及以上的版本请参考[此文章](https://blog.triplez.cn/posts/bills-export-methods/#%e6%94%af%e4%bb%98%e5%ae%9d)获取支付宝账单。
 
 `v0.2.0` 及以下版本请使用此方式获取账单：登录 PC 支付宝后，访问 [这里](https://consumeprod.alipay.com/record/standard.htm)，选择时间区间，下拉到页面底端，点击下载查询结果。注意：请下载查询结果，而非[收支明细](https://cshall.alipay.com/lab/help_detail.htm?help_id=212688)。
 
@@ -119,7 +130,7 @@ double-entry-generator translate \
 
 #### 下载方式
 
-微信支付的下载方式[见此](https://blog.triplez.cn/posts/bills-export-methods/#微信支付)。
+微信支付的下载方式[见此](https://blog.triplez.cn/posts/bills-export-methods/#%e5%be%ae%e4%bf%a1%e6%94%af%e4%bb%98)。
 
 #### 格式示例
 
@@ -155,6 +166,17 @@ double-entry-generator translate \
 
 转换后的结果示例：[exmaple-htsec-output.beancount](./example/htsec/example-htsec-output.beancount).
 
+### 中国工商银行
+
+#### 下载方式
+
+中国工商银行账单的下载方式[见此](https://blog.triplez.cn/posts/bills-export-methods/#%e4%b8%ad%e5%9b%bd%e5%b7%a5%e5%95%86%e9%93%b6%e8%a1%8c)。
+
+#### 格式示例
+
+[example-icbc-records.csv](./example/icbc/example-icbc-records.csv)
+
+转换后的结果示例：[exmaple-icbc-output.beancount](./example/icbc/example-icbc-output.beancount).
 
 ## 配置
 
@@ -261,6 +283,10 @@ alipay:
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
 
 在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
+
+在单条规则中可以使用 `tag` 来设置流水的 [Tag](https://beancount.github.io/docs/beancount_language_syntax.html#tags)，使用 `sep` 作为分隔符。
+
+在单条规则中可以使用 `ignore` 来设置是否忽略匹配上该规则的交易，`true` 表示忽略匹配上该规则的交易，`fasle` 则为不忽略，缺省为 `false` 。
 
 匹配成功则使用规则中定义的 `targetAccount` 、 `methodAccount` 等账户覆盖默认定义账户。
 
@@ -388,6 +414,8 @@ wechat:
 
 在单条规则中可以使用 `tag` 来设置流水的 [Tag](https://beancount.github.io/docs/beancount_language_syntax.html#tags)，使用 `sep` 作为分隔符。
 
+在单条规则中可以使用 `ignore` 来设置是否忽略匹配上该规则的交易，`true` 表示忽略匹配上该规则的交易，`fasle` 则为不忽略，缺省为 `false` 。
+
 匹配成功则使用规则中定义的 `targetAccount` 、 `methodAccount` 等账户覆盖默认定义账户。
 
 规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
@@ -448,6 +476,8 @@ huobi:
 
 在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
 
+在单条规则中可以使用 `ignore` 来设置是否忽略匹配上该规则的交易，`true` 表示忽略匹配上该规则的交易，`fasle` 则为不忽略，缺省为 `false` 。
+
 匹配成功则使用规则中定义的 `cashAccount`, `positionAccount`, `commissionAccount` 和 `pnlAccount` 覆盖默认定义。
 
 规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
@@ -503,6 +533,8 @@ htsec:
 
 在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
 
+在单条规则中可以使用 `ignore` 来设置是否忽略匹配上该规则的交易，`true` 表示忽略匹配上该规则的交易，`fasle` 则为不忽略，缺省为 `false` 。
+
 匹配成功则使用规则中定义的 `cashAccount`, `positionAccount`, `commissionAccount` 和 `pnlAccount` 覆盖默认定义。
 
 规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
@@ -513,6 +545,62 @@ htsec:
 - `defaultCommissionAccount` 是默认手续费账户。
 - `defaultPnlAccount` 是默认损益账户。
 - `defaultCurrency` 是默认货币。
+
+### 中国工商银行
+
+<details>
+<summary>
+  中国工商银行配置文件示例
+</summary>
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Liabilities:Bank:CN:ICBC
+defaultCurrency: CNY
+title: 测试
+icbc:
+  rules:
+    - peer: 财付通,支付宝
+      ignore: true
+    - peer: 广东联合电子收费股份
+      targetAccount: Expenses:Transport:Highway
+    - txType: 人民币自动转帐还款
+      targetAccount: Assets:Bank:CN:ICBC:Savings
+    - peer: XX旗舰店
+      targetAccount: Expenses:Joy
+```
+
+</details></br>
+
+`defaultMinusAccount`, `defaultPlusAccount`, `defaultCashAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户， `defaultCashAccount` 是该配置中默认使用的银行卡账户（等同于支付宝/微信中的 `methodAccount` ）。 `defaultCurrency` 是默认货币。
+
+`icbc` 是中国工商银行相关的配置。它提供基于规则的匹配。可以指定：
+- `peer`（交易对方）的完全/包含匹配。
+- `type`（收/支）的完全/包含匹配。
+- `txType`（交易类型）的完全/包含匹配。
+
+在单条规则中可以使用分隔符 `sep` 填写多个关键字，在同一对象中，每个关键字之间是或的关系。
+
+在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
+
+在单条规则中可以使用 `tag` 来设置流水的 [Tag](https://beancount.github.io/docs/beancount_language_syntax.html#tags)，使用 `sep` 作为分隔符。
+
+在单条规则中可以使用 `ignore` 来设置是否忽略匹配上该规则的交易，`true` 表示忽略匹配上该规则的交易，`fasle` 则为不忽略，缺省为 `false` 。
+
+匹配成功则使用规则中定义的 `targetAccount` 账户覆盖默认定义账户。
+
+规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
+
+中国工商银行账单中的记账金额中存在收入/支出之分，通过这个机制就可以判断银行卡账户在交易中的正负关系。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和全局值 `defaultCashAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `defaultCashAccount` 的正负关系，来覆盖默认定义的增减账户。
+
+`targetAccount` 与 `defaultCashAccount` 的增减账户关系如下表：
+
+|收/支|defaultCashAccount|targetAccount|
+|----|----|----|
+|收入|plusAccount|minusAccount|
+|支出|minusAccount|plusAccount|
+
 
 ## Special Thanks
 

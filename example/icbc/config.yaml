@@ -13,7 +13,3 @@ icbc:
       targetAccount: Assets:Bank:CN:ICBC:Savings
     - peer: XX旗舰店
       targetAccount: Expenses:Joy
-
-
-# 交易日期,记账日期,摘要,交易场所,交易国家或地区简称,交易金额(收入),交易金额(支出),交易币种,记账金额(收入),记账金额(支出),记账币种,余额,对方户名
-#               txType,peer                                                      , money      , money      , currency
