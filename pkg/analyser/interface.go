@@ -2,6 +2,7 @@ package analyser
 
 import (
 	"fmt"
+
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/icbc"
 
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/alipay"

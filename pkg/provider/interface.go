@@ -18,6 +18,7 @@ package provider
 
 import (
 	"fmt"
+
 	"github.com/deb-sig/double-entry-generator/pkg/provider/icbc"
 
 	"github.com/deb-sig/double-entry-generator/pkg/consts"

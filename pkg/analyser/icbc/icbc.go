@@ -1,10 +1,11 @@
 package icbc
 
 import (
+	"strings"
+
 	"github.com/deb-sig/double-entry-generator/pkg/config"
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
 	"github.com/deb-sig/double-entry-generator/pkg/util"
-	"strings"
 )
 
 type Icbc struct {

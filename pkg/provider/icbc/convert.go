@@ -1,8 +1,9 @@
 package icbc
 
 import (
-	"github.com/deb-sig/double-entry-generator/pkg/ir"
 	"strconv"
+
+	"github.com/deb-sig/double-entry-generator/pkg/ir"
 )
 
 // convertToIR convert ICBC bills to IR.
