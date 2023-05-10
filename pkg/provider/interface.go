@@ -19,6 +19,8 @@ package provider
 import (
 	"fmt"
 
+	"github.com/deb-sig/double-entry-generator/pkg/provider/icbc"
+
 	"github.com/deb-sig/double-entry-generator/pkg/consts"
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/alipay"
@@ -43,6 +45,8 @@ func New(name string) (Interface, error) {
 		return huobi.New(), nil
 	case consts.ProviderHtsec:
 		return htsec.New(), nil
+	case consts.ProviderIcbc:
+		return icbc.New(), nil
 	default:
 		return nil, fmt.Errorf("Fail to create the provider for the given name %s", name)
 	}

@@ -17,7 +17,7 @@ func (a *Alipay) convertToIR() *ir.IR {
 			PayTime:      o.PayTime,
 			Money:        o.Money,
 			OrderID:      &o.DealNo,
-			Type:         conevertType(o.Type),
+			Type:         convertType(o.Type),
 			TypeOriginal: o.TypeOriginal,
 		}
 		irO.Metadata = getMetadata(o)
@@ -29,7 +29,7 @@ func (a *Alipay) convertToIR() *ir.IR {
 	return i
 }
 
-func conevertType(t Type) ir.Type {
+func convertType(t Type) ir.Type {
 	switch t {
 	case TypeSend:
 		return ir.TypeSend

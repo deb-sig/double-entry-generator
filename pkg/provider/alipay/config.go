@@ -36,4 +36,5 @@ type Rule struct {
 	PnlAccount     *string `mapstructure:"pnlAccount,omitempty"`
 	FullMatch      bool    `mapstructure:"fullMatch,omitempty"`
 	Tags           *string `mapstructure:"tags,omitempty"`
+	Ignore         bool    `mapstructure:"ignore,omitempty"` // default: false
 }

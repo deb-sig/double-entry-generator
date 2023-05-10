@@ -38,10 +38,11 @@ func (a Alipay) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 }
 
 // GetAccounts returns minus and plus account.
-func (a Alipay) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string, []string) {
+func (a Alipay) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (bool, string, string, map[ir.Account]string, []string) {
+	ignore := false
 
 	if cfg.Alipay == nil || len(cfg.Alipay.Rules) == 0 {
-		return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount, nil, nil
+		return ignore, cfg.DefaultMinusAccount, cfg.DefaultPlusAccount, nil, nil
 	}
 	resMinus := cfg.DefaultMinusAccount
 	resPlus := cfg.DefaultPlusAccount
@@ -91,6 +92,11 @@ func (a Alipay) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 		}
 
 		if match {
+			if r.Ignore {
+				ignore = true
+				break
+			}
+
 			// Support multiple matches, like one rule matches the
 			// minus account, the other rule matches the plus account.
 			if r.TargetAccount != nil {
@@ -121,7 +127,7 @@ func (a Alipay) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 	}
 
 	if strings.HasPrefix(o.Item, "退款-") && ir.TypeRecv != o.Type {
-		return resPlus, resMinus, extraAccounts, tags
+		return ignore, resPlus, resMinus, extraAccounts, tags
 	}
-	return resMinus, resPlus, extraAccounts, tags
+	return ignore, resMinus, resPlus, extraAccounts, tags
 }
