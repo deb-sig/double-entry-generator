@@ -40,9 +40,10 @@ func (h Htsec) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 	return uniqMap
 }
 
-func (h Htsec) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string, []string) {
+func (h Htsec) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (bool, string, string, map[ir.Account]string, []string) {
+	ignore := false
 	if cfg.Htsec == nil || len(cfg.Htsec.Rules) == 0 {
-		return "", "", map[ir.Account]string{
+		return ignore, "", "", map[ir.Account]string{
 			ir.CashAccount:       cfg.DefaultCashAccount,
 			ir.PositionAccount:   cfg.DefaultPositionAccount,
 			ir.CommissionAccount: cfg.DefaultCommissionAccount,
@@ -89,6 +90,10 @@ func (h Htsec) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provi
 		}
 
 		if match {
+			if r.Ignore {
+				ignore = true
+				break
+			}
 			if r.CashAccount != nil {
 				cashAccount = *r.CashAccount
 			}
@@ -105,7 +110,7 @@ func (h Htsec) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provi
 		}
 	}
 
-	return "", "", map[ir.Account]string{
+	return ignore, "", "", map[ir.Account]string{
 		ir.CashAccount:       cashAccount,
 		ir.PositionAccount:   positionAccount,
 		ir.CommissionAccount: commissionAccount,

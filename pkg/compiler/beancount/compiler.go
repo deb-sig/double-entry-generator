@@ -85,14 +85,21 @@ func (b *BeanCount) initTemplates() error {
 func (b *BeanCount) Compile() error {
 	log.SetPrefix("[Compiler-BeanCount] ")
 	log.Printf("Getting the expected account for the bills")
-	for index, o := range b.IR.Orders {
+	var orders []ir.Order
+	for _, o := range b.IR.Orders {
 		// Get the expected accounts according to the configuration.
-		minusAccount, plusAccount, extraAccounts, tags := b.GetAccountsAndTags(&o, b.Config, b.Provider, b.Target)
-		b.IR.Orders[index].MinusAccount = minusAccount
-		b.IR.Orders[index].PlusAccount = plusAccount
-		b.IR.Orders[index].ExtraAccounts = extraAccounts
-		b.IR.Orders[index].Tags = tags
+		ignore, minusAccount, plusAccount, extraAccounts, tags := b.GetAccountsAndTags(&o, b.Config, b.Provider, b.Target)
+		if ignore {
+			continue
+		}
+		o.MinusAccount = minusAccount
+		o.PlusAccount = plusAccount
+		o.ExtraAccounts = extraAccounts
+		o.Tags = tags
+		orders = append(orders, o)
 	}
+
+	b.IR.Orders = orders
 
 	outputWriter, err := writer.GetWriter(b.Output)
 	if err != nil {

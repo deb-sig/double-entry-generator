@@ -38,11 +38,12 @@ func (w Wechat) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 }
 
 // GetAccounts returns minus and plus account.
-func (w Wechat) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (string, string, map[ir.Account]string, []string) {
+func (w Wechat) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (bool, string, string, map[ir.Account]string, []string) {
 	var resCommission string
 	var tags = make([]string, 0)
+	ignore := false
 
-	// check this tx whether has commission
+	// check this tx whether it has commission
 	if o.Commission != 0 {
 		if cfg.DefaultCommissionAccount == "" {
 			log.Fatalf("Found a tx with commission, but not setting the `defaultCommissionAccount` in config file!")
@@ -52,7 +53,7 @@ func (w Wechat) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 	}
 
 	if cfg.Wechat == nil || len(cfg.Wechat.Rules) == 0 {
-		return cfg.DefaultMinusAccount, cfg.DefaultPlusAccount, map[ir.Account]string{
+		return ignore, cfg.DefaultMinusAccount, cfg.DefaultPlusAccount, map[ir.Account]string{
 			ir.CommissionAccount: resCommission,
 		}, nil
 	}
@@ -103,6 +104,11 @@ func (w Wechat) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 		}
 
 		if match {
+			if r.Ignore {
+				ignore = true
+				break
+			}
+
 			// Support multiple matches, like one rule matches the minus accout, the other rule matches the plus account.
 			if r.TargetAccount != nil {
 				if o.Type == ir.TypeRecv {
@@ -130,7 +136,7 @@ func (w Wechat) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 
 	}
 
-	return resMinus, resPlus, map[ir.Account]string{
+	return ignore, resMinus, resPlus, map[ir.Account]string{
 		ir.CommissionAccount: resCommission,
 	}, tags
 }
