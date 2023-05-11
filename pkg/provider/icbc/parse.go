@@ -2,6 +2,7 @@ package icbc
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -10,23 +11,28 @@ import (
 // translateToOrders translates csv file to []Order.
 func (icbc *Icbc) translateToOrders(array []string) error {
 	for idx, a := range array {
-		a = strings.Trim(a, " ")
-		a = strings.Trim(a, "\t")
+		a = strings.TrimSpace(a)
 		array[idx] = a
 	}
+
+	if len(array) < 13 {
+		log.Printf("ignore the invalid csv line: %+v\n", array)
+		return nil
+	}
+
 	var bill Order
 	var err error
-	bill.PayTime, err = time.Parse(localTimeFmt, strings.TrimSpace(array[1])+" +0800 CST")
+	bill.PayTime, err = time.Parse(localTimeFmt, array[1]+" +0800 CST")
 	if err != nil {
 		return fmt.Errorf("parse create time %s error: %v", array[1], err)
 	}
 
-	bill.TxTypeOriginal = strings.TrimSpace(array[2])
-	bill.Peer = strings.TrimSpace(array[3])
-	bill.Region = strings.TrimSpace(array[4])
+	bill.TxTypeOriginal = array[2]
+	bill.Peer = array[3]
+	bill.Region = array[4]
 
-	a8 := strings.ReplaceAll(strings.TrimSpace(array[8]), ",", "")
-	a9 := strings.ReplaceAll(strings.TrimSpace(array[9]), ",", "")
+	a8 := strings.ReplaceAll(array[8], ",", "")
+	a9 := strings.ReplaceAll(array[9], ",", "")
 	if a8 == "" && a9 == "" {
 		bill.Type = OrderTypeUnknown
 	} else if a9 == "" {
@@ -40,9 +46,9 @@ func (icbc *Icbc) translateToOrders(array []string) error {
 		return fmt.Errorf("parse money %s error: %v", array[5], err)
 	}
 
-	bill.Currency = strings.TrimSpace(array[10])
-	bill.Balances, _ = strconv.ParseFloat(strings.ReplaceAll(strings.TrimSpace(array[11]), ",", ""), 64)
-	bill.PeerAccountName = strings.TrimSpace(array[12])
+	bill.Currency = array[10]
+	bill.Balances, _ = strconv.ParseFloat(strings.ReplaceAll(array[11], ",", ""), 64)
+	bill.PeerAccountName = array[12]
 
 	icbc.Orders = append(icbc.Orders, bill)
 	return nil
