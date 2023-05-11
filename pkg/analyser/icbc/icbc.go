@@ -74,7 +74,7 @@ func (i Icbc) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provid
 			match = matchFunc(*r.Peer, o.Peer, sep, match)
 		}
 		if r.Type != nil {
-			match = matchFunc(*r.Type, string(o.Type), sep, match)
+			match = matchFunc(*r.Type, o.TypeOriginal, sep, match)
 		}
 		if r.TxType != nil {
 			match = matchFunc(*r.TxType, o.TxTypeOriginal, sep, match)
