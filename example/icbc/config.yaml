@@ -11,5 +11,3 @@ icbc:
       targetAccount: Expenses:Transport:Highway
     - txType: 人民币自动转帐还款
       targetAccount: Assets:Bank:CN:ICBC:Savings
-    - peer: XX旗舰店
-      targetAccount: Expenses:Joy
