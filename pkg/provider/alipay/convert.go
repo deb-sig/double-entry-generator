@@ -45,7 +45,7 @@ func convertType(t Type) ir.Type {
 func getMetadata(o Order) map[string]string {
 	// FIXME(TripleZ): hard-coded, bad pattern
 	source := "支付宝"
-	var status, method, category, txType, orderId, merchantId, paytime string
+	var status, method, category, typeOriginal, orderId, merchantId, paytime string
 
 	paytime = o.PayTime.Format(localTimeFmt)
 
@@ -62,7 +62,7 @@ func getMetadata(o Order) map[string]string {
 	}
 
 	if o.TypeOriginal != "" {
-		txType = o.TypeOriginal
+		typeOriginal = o.TypeOriginal
 	}
 
 	if o.Method != "" {
@@ -78,7 +78,7 @@ func getMetadata(o Order) map[string]string {
 		"payTime":    paytime,
 		"orderId":    orderId,
 		"merchantId": merchantId,
-		"txType":     txType,
+		"type":       typeOriginal,
 		"category":   category,
 		"method":     method,
 		"status":     status,

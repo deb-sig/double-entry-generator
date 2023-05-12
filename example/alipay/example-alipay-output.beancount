@@ -24,7 +24,7 @@ option "operating_currency" "CNY"
 	payTime: "2023-01-18 10:17:29 +0800 CST"
 	source: "支付宝"
 	status: "交易成功"
-	txType: "收入"
+	type: "收入"
 	Assets:Alipay 222228.50 CNY
 	Income:FIXME -222228.50 CNY
 
@@ -35,7 +35,7 @@ option "operating_currency" "CNY"
 	payTime: "2023-02-02 15:24:35 +0800 CST"
 	source: "支付宝"
 	status: "交易成功"
-	txType: "不计收支"
+	type: "不计收支"
 	Expenses:FIXME 99.34 CNY
 	Assets:Alipay -99.34 CNY
 
@@ -47,7 +47,7 @@ option "operating_currency" "CNY"
 	payTime: "2023-02-04 18:21:04 +0800 CST"
 	source: "支付宝"
 	status: "退款成功"
-	txType: "不计收支"
+	type: "不计收支"
 	Liabilities:CC:COMM:7449 16.03 CNY
 	Expenses:FIXME -16.03 CNY
 
@@ -59,7 +59,7 @@ option "operating_currency" "CNY"
 	payTime: "2023-02-08 14:16:52 +0800 CST"
 	source: "支付宝"
 	status: "等待确认收货"
-	txType: "支出"
+	type: "支出"
 	Expenses:Groceries 20.00 CNY
 	Assets:Alipay -20.00 CNY
 
@@ -71,7 +71,7 @@ option "operating_currency" "CNY"
 	payTime: "2023-02-12 21:32:14 +0800 CST"
 	source: "支付宝"
 	status: "交易成功"
-	txType: "支出"
+	type: "支出"
 	Expenses:FIXME 49.74 CNY
 	Liabilities:CC:COMM:7449 -49.74 CNY
 
