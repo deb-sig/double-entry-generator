@@ -104,8 +104,8 @@ double-entry-generator translate \
 double-entry-generator translate \
   --config ./example/icbc/config.yaml \
   --provider icbc \
-  --output ./example/icbc/example-icbc-output.beancount \
-  ./example/icbc/example-icbc-records.csv
+  --output ./example/icbc/example-icbc-credit-output.beancount \
+  ./example/icbc/example-icbc-credit-records.csv
 ```
 
 ## 账单下载与格式问题
@@ -174,9 +174,15 @@ double-entry-generator translate \
 
 #### 格式示例
 
-[example-icbc-records.csv](./example/icbc/example-icbc-records.csv)
+> `double-entry-generator` 能够自动识别出中国工商银行的账单类型（借记卡/信用卡）。
 
-转换后的结果示例：[exmaple-icbc-output.beancount](./example/icbc/example-icbc-output.beancount).
+借记卡账单示例： [example-icbc-debit-records.csv](example/icbc/debit/example-icbc-debit-records.csv)
+
+借记卡账单转换后的结果示例：[example-icbc-debit-output.beancount](example/icbc/debit/example-icbc-debit-output.beancount).
+
+信用卡账单示例： [example-icbc-credit-records.csv](example/icbc/credit/example-icbc-credit-records.csv)
+
+信用卡账单转换后的结果示例：[example-icbc-credit-output.beancount](example/icbc/credit/example-icbc-credit-output.beancount).
 
 ## 配置
 

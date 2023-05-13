@@ -15,9 +15,10 @@ func (icbc *Icbc) convertToIR() *ir.IR {
 			Money:          o.Money,
 			PayTime:        o.PayTime,
 			Type:           convertType(o.Type),
+			TypeOriginal:   string(o.Type),
 			TxTypeOriginal: o.TxTypeOriginal,
 		}
-		irO.Metadata = getMetadata(o)
+		irO.Metadata = icbc.getMetadata(o)
 		i.Orders = append(i.Orders, irO)
 	}
 	return i
@@ -36,7 +37,7 @@ func convertType(t OrderType) ir.Type {
 
 // getMetadata get the metadata (e.g. status, method, category and so on.)
 //  from order.
-func getMetadata(o Order) map[string]string {
+func (icbc *Icbc) getMetadata(o Order) map[string]string {
 	// FIXME(TripleZ): hard-coded, bad pattern
 	source := "中国工商银行"
 	var txTypeOriginal, guessedType, currency, balances, peerAccount string
@@ -61,7 +62,7 @@ func getMetadata(o Order) map[string]string {
 		peerAccount = o.PeerAccountName
 	}
 
-	return map[string]string{
+	metadata := map[string]string{
 		"source":      source,
 		"txType":      txTypeOriginal,
 		"type":        guessedType,
@@ -69,4 +70,10 @@ func getMetadata(o Order) map[string]string {
 		"balances":    balances,
 		"peerAccount": peerAccount,
 	}
+
+	if icbc.CardName != "" {
+		metadata["cardName"] = icbc.CardName
+	}
+
+	return metadata
 }

@@ -30,6 +30,9 @@ func (a *Alipay) translateToOrders(array []string) error {
 	bill.PeerAccount = array[3]
 	bill.ItemName = array[4]
 	bill.Method = array[7]
+	bill.Category = array[1]
+	bill.DealNo = array[9]
+	bill.MerchantId = array[10]
 	bill.Money, err = strconv.ParseFloat(array[6], 32)
 	if err != nil {
 		log.Println("parse money error:", array[6], err)
@@ -37,14 +40,11 @@ func (a *Alipay) translateToOrders(array []string) error {
 	}
 	bill.Status = array[8]
 	if bill.Status == "交易关闭" {
-		log.Printf("Line %d: There is a mole, The tx is canceled.", a.LineNum)
+		log.Printf("[orderId %s ] There is a mole, The tx is canceled.", bill.DealNo)
 	}
 	if bill.Status == "退款成功" {
-		log.Printf("Lind %d: There has a refund transaction.", a.LineNum)
+		log.Printf("[orderId %s ] There has a refund transaction.", bill.DealNo)
 	}
-	bill.Category = array[1]
-	bill.DealNo = array[9]
-	bill.MerchantId = array[10]
 	bill.PayTime, err = time.Parse(localTimeFmt, array[0]+" +0800 CST")
 	if err != nil {
 		log.Println("parse create time error:", array[0], err)
