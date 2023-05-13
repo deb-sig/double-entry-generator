@@ -38,3 +38,10 @@ const (
 	OrderTypeRecv    OrderType = "收入"
 	OrderTypeUnknown OrderType = "Unknown"
 )
+
+type CardMode string
+
+const (
+	DebitMode  CardMode = "Debit"
+	CreditMode CardMode = "Credit"
+)

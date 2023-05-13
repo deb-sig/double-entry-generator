@@ -49,6 +49,13 @@ func (i Icbc) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provid
 	resPlus := cfg.DefaultPlusAccount
 	cashAccount := cfg.DefaultCashAccount
 
+	// method account (bank card account)
+	if o.Type == ir.TypeRecv {
+		resPlus = cashAccount
+	} else {
+		resMinus = cashAccount
+	}
+
 	//var err error
 	for _, r := range cfg.Icbc.Rules {
 		match := true
@@ -67,7 +74,7 @@ func (i Icbc) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provid
 			match = matchFunc(*r.Peer, o.Peer, sep, match)
 		}
 		if r.Type != nil {
-			match = matchFunc(*r.Type, string(o.Type), sep, match)
+			match = matchFunc(*r.Type, o.TypeOriginal, sep, match)
 		}
 		if r.TxType != nil {
 			match = matchFunc(*r.TxType, o.TxTypeOriginal, sep, match)
@@ -85,13 +92,6 @@ func (i Icbc) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provid
 				} else {
 					resPlus = *r.TargetAccount
 				}
-			}
-
-			// method account (bank card account)
-			if o.Type == ir.TypeRecv {
-				resPlus = cashAccount
-			} else {
-				resMinus = cashAccount
 			}
 
 			if r.Tag != nil {
