@@ -19,6 +19,8 @@ package consts
 const (
 	// CompilerBeanCount is the name for beancount backend.
 	CompilerBeanCount = "beancount"
+	// CompilerLedger is the name for ledger backend.
+	CompilerLedger = "ledger"
 
 	// ProviderAlipay is the name for alipay provider.
 	ProviderAlipay = "alipay"
