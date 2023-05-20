@@ -114,7 +114,7 @@ func (ledger *Ledger) writeHeader(file io.Writer) error {
 	}
 	sort.Strings(sortedAccounts)
 
-	_, err = io.WriteString(file, "1970-01-01 * Open Balance")
+	_, err = io.WriteString(file, "1970-01-01 * Open Balance\n")
 	if err != nil {
 		return fmt.Errorf("write open account error: %v", err)
 	}
@@ -165,7 +165,7 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 			Peer:              order.Peer,
 			Item:              order.Item,
 			Note:              order.Note,
-			Amout:             order.Money,
+			Amount:            order.Money,
 			Commission:        order.Commission,
 			PlusAccount:       order.PlusAccount,
 			MinusAccount:      order.MinusAccount,

@@ -32,7 +32,7 @@ type NormalOrderVars struct {
 	Peer              string            // 交易对手
 	Item              string            // 交易商品
 	Note              string            // 说明
-	Amout             float64           // 金额
+	Amount            float64           // 金额
 	Commission        float64           // 手续费
 	PlusAccount       string            // 入账账户
 	MinusAccount      string            // 支出账户
