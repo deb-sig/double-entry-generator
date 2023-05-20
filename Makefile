@@ -90,25 +90,31 @@ clean: ## Clean all the temporary files
 	@rm -rf ./double-entry-generator
 	@rm -rf ./wasm-dist
 
-test: test-go test-alipay test-wechat test-huobi test-htsec test-icbc ## Run all tests
+test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-htsec-beancount test-icbc-beancount test-icbc-ledger ## Run all tests
 
 test-go: ## Run Golang tests
 	@go test ./...
 
-test-alipay: ## Run tests for Alipay provider
-	@$(SHELL) ./test/alipay-test.sh
+test-alipay-beancount: ## Run tests for Alipay provider against beancount compiler
+	@$(SHELL) ./test/alipay-test-beancount.sh
+test-alipay-ledger: ## Run tests for Alipay provider against ledger compiler
+	@$(SHELL) ./test/alipay-test-ledger.sh
 
-test-wechat: ## Run tests for WeChat provider
-	@$(SHELL) ./test/wechat-test.sh
+test-wechat-beancount: ## Run tests for WeChat provider against beancount compiler
+	@$(SHELL) ./test/wechat-test-beancount.sh
+test-wechat-ledger: ## Run tests for WeChat provider against ledger compiler
+	@$(SHELL) ./test/wechat-test-ledger.sh
 
-test-huobi: ## Run tests for huobi provider
-	@$(SHELL) ./test/huobi-test.sh
+test-huobi-beancount: ## Run tests for huobi provider against beancount compiler
+	@$(SHELL) ./test/huobi-test-beancount.sh
 
-test-htsec: ## Run tests for htsec provider
-	@$(SHELL) ./test/htsec-test.sh
+test-htsec-beancount: ## Run tests for htsec provider against beancount compiler
+	@$(SHELL) ./test/htsec-test-beancount.sh
 
-test-icbc: ## Run tests for ICBC provider
-	@$(SHELL) ./test/icbc-test.sh
+test-icbc-beancount: ## Run tests for ICBC provider against beancount compiler
+	@$(SHELL) ./test/icbc-test-beancount.sh
+test-icbc-ledger: ## Run tests for ICBC provider against ledger compiler
+	@$(SHELL) ./test/icbc-test-ledger.sh
 
 format: ## Format code
 	@gofmt -s -w pkg

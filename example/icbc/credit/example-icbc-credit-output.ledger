@@ -1,0 +1,42 @@
+1970-01-01 * Open Balance
+    Assets:Bank:CN:ICBC:Savings     0 CNY
+    Assets:FIXME     0 CNY
+    Expenses:FIXME     0 CNY
+    Expenses:Transport:Highway     0 CNY
+    Equity:Opening Balances 
+2023-03-20 * 广东联合电子收费股份
+    ; balances: "-16042.73"
+    ; currency: "人民币"
+    ; source: "中国工商银行"
+    ; txType: "********************"
+    ; type: "支出"
+    Expenses:Transport:Highway      29.45 CNY
+    Liabilities:Bank:CN:ICBC   - 29.45 CNY
+
+2023-04-22 * XX旗舰店
+    ; balances: "-6086.11"
+    ; currency: "人民币"
+    ; source: "中国工商银行"
+    ; txType: "银联在线支付"
+    ; type: "支出"
+    Expenses:FIXME      0.01 CNY
+    Liabilities:Bank:CN:ICBC   - 0.01 CNY
+
+2023-04-25 * XX分行银行卡中心
+    ; balances: "-1971.63"
+    ; currency: "人民币"
+    ; source: "中国工商银行"
+    ; txType: "人民币自动转帐还款"
+    ; type: "收入"
+    Liabilities:Bank:CN:ICBC      4621.01 CNY
+    Assets:Bank:CN:ICBC:Savings   - 4621.01 CNY
+
+2023-05-04 * 广东联合电子收费股份
+    ; balances: "-3684.62"
+    ; currency: "人民币"
+    ; source: "中国工商银行"
+    ; txType: "ETC"
+    ; type: "支出"
+    Expenses:Transport:Highway      12.35 CNY
+    Liabilities:Bank:CN:ICBC   - 12.35 CNY
+
