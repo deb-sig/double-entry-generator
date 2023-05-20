@@ -96,19 +96,22 @@ test-go: ## Run Golang tests
 	@go test ./...
 
 test-alipay: ## Run tests for Alipay provider
-	@$(SHELL) ./test/alipay-test.sh
+	@$(SHELL) ./test/alipay-test-beancount.sh
+	@$(SHELL) ./test/alipay-test-ledger.sh
 
 test-wechat: ## Run tests for WeChat provider
-	@$(SHELL) ./test/wechat-test.sh
+	@$(SHELL) ./test/wechat-test-beancount.sh
+	@$(SHELL) ./test/wechat-test-ledger.sh
 
 test-huobi: ## Run tests for huobi provider
-	@$(SHELL) ./test/huobi-test.sh
+	@$(SHELL) ./test/huobi-test-beancount.sh
 
 test-htsec: ## Run tests for htsec provider
-	@$(SHELL) ./test/htsec-test.sh
+	@$(SHELL) ./test/htsec-test-beancount.sh
 
 test-icbc: ## Run tests for ICBC provider
-	@$(SHELL) ./test/icbc-test.sh
+	@$(SHELL) ./test/icbc-test-beancount.sh
+	@$(SHELL) ./test/icbc-test-ledger.sh
 
 format: ## Format code
 	@gofmt -s -w pkg
