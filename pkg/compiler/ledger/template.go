@@ -35,7 +35,7 @@ type NormalOrderVars struct {
 	Amount            float64           // 金额
 	Commission        float64           // 手续费
 	PlusAccount       string            // 入账账户
-	MinusAccount      string            // 支出账户
+	MinusAccount      string            // 出账账户
 	PnlAccount        string            //
 	CommissionAccount string            // 佣金账户
 	Metadata          map[string]string // 元数据
