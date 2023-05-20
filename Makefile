@@ -90,8 +90,7 @@ clean: ## Clean all the temporary files
 	@rm -rf ./double-entry-generator
 	@rm -rf ./wasm-dist
 
-test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger \
-	  test-huobi-beancount test-htsec-beancount test-icbc-beancount test-icbc-ledger ## Run all tests
+test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-htsec-beancount test-icbc-beancount test-icbc-ledger ## Run all tests
 
 test-go: ## Run Golang tests
 	@go test ./...
