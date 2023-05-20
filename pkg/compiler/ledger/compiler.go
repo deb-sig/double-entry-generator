@@ -65,17 +65,17 @@ func (ledger *Ledger) Compile() error {
 	log.SetPrefix("[Compiler-Ledger] ")
 	log.Printf("Getting the expected account for the bills")
 	var orders []ir.Order
-	for _, o := range ledger.IR.Orders {
+	for _, order := range ledger.IR.Orders {
 		// Get the expected accounts according to the configuration.
-		ignore, minusAccount, plusAccount, extraAccounts, tags := ledger.GetAccountsAndTags(&o, ledger.Config, ledger.Provider, ledger.Target)
+		ignore, minusAccount, plusAccount, extraAccounts, tags := ledger.GetAccountsAndTags(&order, ledger.Config, ledger.Provider, ledger.Target)
 		if ignore {
 			continue
 		}
-		o.MinusAccount = minusAccount
-		o.PlusAccount = plusAccount
-		o.ExtraAccounts = extraAccounts
-		o.Tags = tags
-		orders = append(orders, o)
+		order.MinusAccount = minusAccount
+		order.PlusAccount = plusAccount
+		order.ExtraAccounts = extraAccounts
+		order.Tags = tags
+		orders = append(orders, order)
 	}
 
 	ledger.IR.Orders = orders
