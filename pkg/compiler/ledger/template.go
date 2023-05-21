@@ -9,7 +9,7 @@ import (
 // - https://ledger-cli.org/doc/ledger3.html
 // - https://devhints.io/ledger
 /*
-2013/01/03 * Rent for January
+2013/01/03 * Rent for January (ledger 支持中文和空格，不需要给交易商品增加双引号)
   ; comment
   Expenses:Rent   $600.00
   Assets:Savings
@@ -71,7 +71,7 @@ ledger 支持单价 * 数量, 如
 **/
 
 // 火币的货币中可能包含数字, 如BTC1S, ledger 包含数字的货币解析成金额，然后报错，因此需要使用双引号 "BTC1S"
-var huobiTradeBuyOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}-{{ .TxTypeOriginal }}" "{{ .TypeOriginal }}-{{ .Item }}"
+var huobiTradeBuyOrder = `{{ .PayTime.Format "2006-01-02" }} * {{ .Peer }}-{{ .TxTypeOriginal }}-{{ .TypeOriginal }}-{{ .Item }}
     {{ .CashAccount }}     -{{ .Money | printf "%.8f" }} "{{ .BaseUnit }}"
     {{ .PositionAccount }}     {{ .Amount | printf "%.8f" }} "{{ .TargetUnit }}" @@ {{ .Money | printf "%.8f" }} "{{ .BaseUnit }}" ; { {{- .Price | printf "%.8f" }} "{{ .BaseUnit -}}" } 
     {{ .CashAccount }}     -{{ .Commission | printf "%.8f" }} "{{ .TargetUnit }}" @ {{ .Price | printf "%.8f" }} "{{ .BaseUnit }}"
@@ -99,7 +99,7 @@ type HuobiTradeBuyOrderVars struct {
 }
 
 // 火币买入模版 2（手续费为特定货币）
-var huobiTradeBuyOrderDiffCommissionUnit = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}-{{ .TxTypeOriginal }}" "{{ .TypeOriginal }}-{{ .Item }}"
+var huobiTradeBuyOrderDiffCommissionUnit = `{{ .PayTime.Format "2006-01-02" }} * {{ .Peer }}-{{ .TxTypeOriginal }}-{{ .TypeOriginal }}-{{ .Item }}
     {{ .CashAccount }}     -{{ .Money | printf "%.8f" }} "{{ .BaseUnit }}"
     {{ .PositionAccount }}     {{ .Amount | printf "%.8f" }} "{{ .TargetUnit }}" @@ {{ .Money | printf "%.8f" }} "{{ .BaseUnit }}"; { {{- .Price | printf "%.4f" }} {{ .BaseUnit -}} }
     {{ .PositionAccount }}     -{{ .Commission | printf "%.8f" }} "{{ .CommissionUnit }}"
@@ -108,7 +108,7 @@ var huobiTradeBuyOrderDiffCommissionUnit = `{{ .PayTime.Format "2006-01-02" }} *
 `
 
 // 火币卖出模版
-var huobiTradeSellOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}-{{ .TxTypeOriginal }}" "{{ .TypeOriginal }}-{{ .Item }}"
+var huobiTradeSellOrder = `{{ .PayTime.Format "2006-01-02" }} * {{ .Peer }}-{{ .TxTypeOriginal }}-{{ .TypeOriginal }}-{{ .Item }}
     {{ .PositionAccount }}     -{{ .Amount | printf "%.8f" }} "{{ .TargetUnit }}" @ {{ .Price | printf "%.8f" }} "{{ .BaseUnit }}"
     {{ .CashAccount }}     {{ .Money | printf "%.8f" }} "{{ .BaseUnit }}"
     {{ .CashAccount }}     -{{ .Commission | printf "%.8f" }} "{{ .CommissionUnit }}"
