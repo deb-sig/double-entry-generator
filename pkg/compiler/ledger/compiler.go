@@ -292,9 +292,6 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 				PositionAccount:   order.ExtraAccounts[ir.PositionAccount],
 				CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
 				PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
-				BaseUnit:          order.Units[ir.BaseUnit],
-				TargetUnit:        order.Units[ir.TargetUnit],
-				CommissionUnit:    order.Units[ir.CommissionUnit],
 				Currency:          ledger.Config.DefaultCurrency,
 			})
 		case ir.TypeRecv: // sell
@@ -312,9 +309,6 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 				PositionAccount:   order.ExtraAccounts[ir.PositionAccount],
 				CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
 				PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
-				BaseUnit:          order.Units[ir.BaseUnit],
-				TargetUnit:        order.Units[ir.TargetUnit],
-				CommissionUnit:    order.Units[ir.CommissionUnit],
 				Currency:          ledger.Config.DefaultCurrency,
 			})
 		default:
