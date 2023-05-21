@@ -165,7 +165,7 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 			Peer:              order.Peer,
 			Item:              order.Item,
 			Note:              order.Note,
-			Amount:            order.Money,
+			Money:             order.Money,
 			Commission:        order.Commission,
 			PlusAccount:       order.PlusAccount,
 			MinusAccount:      order.MinusAccount,

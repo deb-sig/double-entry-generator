@@ -19,8 +19,8 @@ import (
 var normalOrder = `{{ .PayTime.Format "2006-01-02" }} * {{ EscapeString .Peer }} {{- if .Item }} - {{ EscapeString .Item }} {{ end }}
     {{- if .Note}}; {{ .Note }}{{ end }}
     {{- range $key, $value := .Metadata }}{{ if $value }}{{ printf "\n" }}    ; {{ $key }}: "{{ $value }}"{{end}}{{end}}
-    {{ .PlusAccount }}      {{ .Amount | printf "%.2f" }} {{ .Currency }}
-    {{ .MinusAccount }}   - {{ .Amount | printf "%.2f" }} {{ .Currency }}
+    {{ .PlusAccount }}      {{ .Money | printf "%.2f" }} {{ .Currency }}
+    {{ .MinusAccount }}   - {{ .Money | printf "%.2f" }} {{ .Currency }}
     {{- if .CommissionAccount }}{{ printf "\n" }}    {{ .CommissionAccount }}      {{ .Commission | printf "%.2f" }} {{ .Currency }}{{ end }}
     {{- if .CommissionAccount }}{{ printf "\n" }}    {{ .MinusAccount }}   - {{ .Commission | printf "%.2f" }} {{ .Currency }}{{ end }}
     {{- if .PnlAccount }}{{ printf "\n" }}	{{ .PnlAccount }}{{ end }}
@@ -32,7 +32,7 @@ type NormalOrderVars struct {
 	Peer              string            // 交易对手
 	Item              string            // 交易商品
 	Note              string            // 说明
-	Amount            float64           // 金额
+	Money             float64           // 金额
 	Commission        float64           // 手续费
 	PlusAccount       string            // 入账账户
 	MinusAccount      string            // 出账账户
