@@ -57,6 +57,20 @@ func (ledger *Ledger) initTemplates() error {
 	if err != nil {
 		return fmt.Errorf("Failed to init the normalOrder Template. %v", err)
 	}
+
+	huobiTradeBuyOrderTemplate, err = template.New("tradeBuyOrder").Funcs(funcMap).Parse((huobiTradeBuyOrder))
+	if err != nil {
+		return fmt.Errorf("Failed to init the tradeBuyOrder template. %v", err)
+	}
+	huobiTradeBuyOrderDiffCommissionUnitTemplate, err = template.New("tradeBuyOrderDiffCommissionUnit").Funcs(funcMap).Parse(huobiTradeBuyOrderDiffCommissionUnit)
+	if err != nil {
+		return fmt.Errorf("Failed to init the tradeBuyOrderDiffCommissionUnit template. %v", err)
+	}
+	huobiTradeSellOrderTemplate, err = template.New("tradeSellOrder").Funcs(funcMap).Parse(huobiTradeSellOrder)
+	if err != nil {
+		return fmt.Errorf("Failed to init the tradeSellOrder template. %v", err)
+	}
+
 	return nil
 }
 
@@ -165,7 +179,7 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 			Peer:              order.Peer,
 			Item:              order.Item,
 			Note:              order.Note,
-			Amount:            order.Money,
+			Money:             order.Money,
 			Commission:        order.Commission,
 			PlusAccount:       order.PlusAccount,
 			MinusAccount:      order.MinusAccount,
@@ -174,6 +188,84 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 			Metadata:          order.Metadata,
 			Currency:          ledger.Config.DefaultCurrency,
 		})
+	case ir.OrderTypeHuobiTrade: // Huobi trades
+		switch order.Type {
+		case ir.TypeSend: // buy
+			isDiffCommissionUnit := false
+			commissionUnit, ok := order.Units[ir.CommissionUnit]
+			if !ok {
+				isDiffCommissionUnit = true
+			}
+			targetUnit, ok := order.Units[ir.TargetUnit]
+			if !ok {
+				isDiffCommissionUnit = true
+			}
+			if commissionUnit != targetUnit {
+				// for example, using HT for commission fee.
+				isDiffCommissionUnit = true
+			}
+
+			if isDiffCommissionUnit {
+				err = huobiTradeBuyOrderDiffCommissionUnitTemplate.Execute(&buf, &HuobiTradeBuyOrderVars{
+					PayTime:           order.PayTime,
+					Peer:              order.Peer,
+					TxTypeOriginal:    order.TxTypeOriginal,
+					TypeOriginal:      order.TypeOriginal,
+					Item:              order.Item,
+					Amount:            order.Amount,
+					Money:             order.Money,
+					Commission:        order.Commission,
+					Price:             order.Price,
+					CashAccount:       order.ExtraAccounts[ir.CashAccount],
+					PositionAccount:   order.ExtraAccounts[ir.PositionAccount],
+					CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
+					PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
+					BaseUnit:          order.Units[ir.BaseUnit],
+					TargetUnit:        order.Units[ir.TargetUnit],
+					CommissionUnit:    order.Units[ir.CommissionUnit],
+				})
+			} else {
+				err = huobiTradeBuyOrderTemplate.Execute(&buf, &HuobiTradeBuyOrderVars{
+					PayTime:           order.PayTime,
+					Peer:              order.Peer,
+					TxTypeOriginal:    order.TxTypeOriginal,
+					TypeOriginal:      order.TypeOriginal,
+					Item:              order.Item,
+					Amount:            order.Amount,
+					Money:             order.Money,
+					Commission:        order.Commission,
+					Price:             order.Price,
+					CashAccount:       order.ExtraAccounts[ir.CashAccount],
+					PositionAccount:   order.ExtraAccounts[ir.PositionAccount],
+					CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
+					PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
+					BaseUnit:          order.Units[ir.BaseUnit],
+					TargetUnit:        order.Units[ir.TargetUnit],
+					CommissionUnit:    order.Units[ir.CommissionUnit],
+				})
+			}
+		case ir.TypeRecv: // sell
+			err = huobiTradeSellOrderTemplate.Execute(&buf, &HuobiTradeSellOrderVars{
+				PayTime:           order.PayTime,
+				Peer:              order.Peer,
+				TxTypeOriginal:    order.TxTypeOriginal,
+				TypeOriginal:      order.TypeOriginal,
+				Item:              order.Item,
+				Amount:            order.Amount,
+				Money:             order.Money,
+				Commission:        order.Commission,
+				Price:             order.Price,
+				CashAccount:       order.ExtraAccounts[ir.CashAccount],
+				PositionAccount:   order.ExtraAccounts[ir.PositionAccount],
+				CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
+				PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
+				BaseUnit:          order.Units[ir.BaseUnit],
+				TargetUnit:        order.Units[ir.TargetUnit],
+				CommissionUnit:    order.Units[ir.CommissionUnit],
+			})
+		default:
+			err = fmt.Errorf("Failed to get the TxType.")
+		}
 	}
 	if err != nil {
 		return err
