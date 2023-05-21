@@ -11,6 +11,7 @@
 目前记账语言支持：
 
 - BeanCount
+- Ledger
 
 架构支持扩展，如需支持新的账单（如银行账单等），可添加 [provider](pkg/provider)。如需支持新的记账语言，可添加 [compiler](pkg/compiler)。
 
@@ -19,7 +20,7 @@
 │ translate │->│ provider │->│ IR │->│ compiler │->│ analyser │
 └───────────┘  └──────────┘  └────┘  └──────────┘  └──────────┘
                   alipay               beancount      alipay
-                  wechat                              wechat
+                  wechat               ledger         wechat
                   huobi                               huobi
                   htsec                               htsec
                   icbc                                icbc
@@ -57,7 +58,9 @@ go get -u github.com/deb-sig/double-entry-generator
 
 ## 示例
 
-### 支付宝
+### Beancount
+
+#### 支付宝
 
 ```bash
 double-entry-generator translate \
@@ -68,7 +71,7 @@ double-entry-generator translate \
 
 其中 `--config` 是配置文件，默认情况下，使用支付宝作为提供方，也可手动指定 `--provider`。具体参考[使用文档](doc/double-entry-generator_translate.md)。默认生成的文件是 `default_output.beancount`，若有 `--output` 或 `-o` 指定输出文件，则会输出到指定的文件中。如上述例子会将转换结果输出至 `./example/alipay/example-alipay-output.beancount` 文件中。
 
-### 微信
+#### 微信
 
 ```bash
 double-entry-generator translate \
@@ -78,7 +81,7 @@ double-entry-generator translate \
   ./example/wechat/example-wechat-records.csv
 ```
 
-### Huobi Global (Crypto)
+#### Huobi Global (Crypto)
 
 ```bash
 double-entry-generator translate \
@@ -88,7 +91,7 @@ double-entry-generator translate \
   ./example/huobi/example-huobi-records.csv
 ```
 
-### 海通证券
+#### 海通证券
 
 ```bash
 double-entry-generator translate \
@@ -98,13 +101,69 @@ double-entry-generator translate \
   ./example/htsec/example-htsec-records.xlsx
 ```
 
-### 中国工商银行
+#### 中国工商银行
 
 ```bash
 double-entry-generator translate \
   --config ./example/icbc/config.yaml \
   --provider icbc \
   --output ./example/icbc/example-icbc-credit-output.beancount \
+  ./example/icbc/example-icbc-credit-records.csv
+```
+
+### Ledger
+
+#### 支付宝
+
+```bash
+double-entry-generator translate \
+  --config ./example/alipay/config.yaml \
+  --target ledger \
+  --output ./example/alipay/example-alipay-output.ledger \
+  ./example/alipay/example-alipay-records.csv
+```
+
+#### 微信
+
+```bash
+double-entry-generator translate \
+  --config ./example/wechat/config.yaml \
+  --provider wechat \
+  --target ledger \
+  --output ./example/wechat/example-wechat-output.ledger \
+  ./example/wechat/example-wechat-records.csv
+```
+
+#### Huobi Global (Crypto)
+
+```bash
+double-entry-generator translate \
+  --config ./example/huobi/config.yaml \
+  --provider huobi \
+  --target ledger \
+  --output ./example/huobi/example-huobi-output.ledger \
+  ./example/huobi/example-huobi-records.csv
+```
+
+#### 海通证券
+
+```bash
+double-entry-generator translate \
+  --config ./example/htsec/config.yaml \
+  --provider htsec \
+  --target ledger \
+  --output ./example/htsec/example-htsec-output.ledger \
+  ./example/htsec/example-htsec-records.xlsx
+```
+
+#### 中国工商银行
+
+```bash
+double-entry-generator translate \
+  --config ./example/icbc/config.yaml \
+  --provider icbc \
+  --target ledger \
+  --output ./example/icbc/example-icbc-credit-output.ledger \
   ./example/icbc/example-icbc-credit-records.csv
 ```
 
@@ -302,13 +361,13 @@ alipay:
 
 `targetAccount` 与 `methodAccount` 的增减账户关系如下表：
 
-|收/支|交易分类|methodAccount|targetAccount|
-|----|----|----|----|
-|收入|*|plusAccount|minusAccount|
-|收入|退款|plusAccount|minusAccount|
-|支出|*|minusAccount|plusAccount|
-|其他|*|minusAccount|plusAccount|
-|其他|退款|plusAccount|minusAccount|
+| 收/支 | 交易分类 | methodAccount | targetAccount |
+| ----- | -------- | ------------- | ------------- |
+| 收入  | *        | plusAccount   | minusAccount  |
+| 收入  | 退款     | plusAccount   | minusAccount  |
+| 支出  | *        | minusAccount  | plusAccount   |
+| 其他  | *        | minusAccount  | plusAccount   |
+| 其他  | 退款     | plusAccount   | minusAccount  |
 
 > 当交易类型为「其他」时，需要自行手动定义借贷账户。此时本软件会认为 `methodAccount` 是贷账户，`targetAccount` 是借账户。
 
@@ -430,10 +489,10 @@ wechat:
 
 `targetAccount` 与 `methodAccount` 的增减账户关系如下表：
 
-|收/支|methodAccount|targetAccount|
-|----|----|----|
-|收入|plusAccount|minusAccount|
-|支出|minusAccount|plusAccount|
+| 收/支 | methodAccount | targetAccount |
+| ----- | ------------- | ------------- |
+| 收入  | plusAccount   | minusAccount  |
+| 支出  | minusAccount  | plusAccount   |
 
 ### Huobi Global (Crypto)
 
@@ -602,10 +661,10 @@ icbc:
 
 `targetAccount` 与 `defaultCashAccount` 的增减账户关系如下表：
 
-|收/支|defaultCashAccount|targetAccount|
-|----|----|----|
-|收入|plusAccount|minusAccount|
-|支出|minusAccount|plusAccount|
+| 收/支 | defaultCashAccount | targetAccount |
+| ----- | ------------------ | ------------- |
+| 收入  | plusAccount        | minusAccount  |
+| 支出  | minusAccount       | plusAccount   |
 
 
 ## Special Thanks
