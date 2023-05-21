@@ -149,22 +149,19 @@ var htsecTradeBuyOrder = `{{ .PayTime.Format "2006-01-02" }} * {{ .Peer }}-{{ .T
 `
 
 type HtsecTradeBuyOrderVars struct {
-	PayTime           time.Time
-	Peer              string
-	TxTypeOriginal    string
-	TypeOriginal      string
-	Item              string
-	CashAccount       string
+	PayTime           time.Time // 交易时间
+	Peer              string    // 交易对手
+	TxTypeOriginal    string    // 交易类型
+	TypeOriginal      string    // 操作类型
+	Item              string    // 交易商品
+	CashAccount       string    // 现金账号
 	PositionAccount   string
-	CommissionAccount string
+	CommissionAccount string // 手续费账号
 	PnlAccount        string
-	Amount            float64
-	Money             float64
-	Commission        float64
-	Price             float64
-	BaseUnit          string
-	TargetUnit        string
-	CommissionUnit    string
+	Amount            float64 // 数量
+	Money             float64 // 金额
+	Commission        float64 // 手续费
+	Price             float64 // 单价
 	Currency          string
 }
 
@@ -179,22 +176,19 @@ var htsecTradeSellOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}" "{
 `
 
 type HtsecTradeSellOrderVars struct {
-	PayTime           time.Time
-	Peer              string
-	TxTypeOriginal    string
-	TypeOriginal      string
-	Item              string
-	CashAccount       string
+	PayTime           time.Time // 交易时间
+	Peer              string    // 交易对手
+	TxTypeOriginal    string    // 交易类型
+	TypeOriginal      string    // 操作类型
+	Item              string    // 交易商品
+	CashAccount       string    // 现金账号
 	PositionAccount   string
-	CommissionAccount string
+	CommissionAccount string // 手续费账号
 	PnlAccount        string
-	Amount            float64
-	Money             float64
-	Commission        float64
-	Price             float64
-	BaseUnit          string
-	TargetUnit        string
-	CommissionUnit    string
+	Amount            float64 // 数量
+	Money             float64 // 金额
+	Commission        float64 // 手续费
+	Price             float64 // 单价
 	Currency          string
 }
 

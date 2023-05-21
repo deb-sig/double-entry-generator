@@ -294,9 +294,6 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 				PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
 				CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
 				PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
-				BaseUnit:          o.Units[ir.BaseUnit],
-				TargetUnit:        o.Units[ir.TargetUnit],
-				CommissionUnit:    o.Units[ir.CommissionUnit],
 				Currency:          b.Config.DefaultCurrency,
 			})
 		case ir.TypeRecv: // sell
@@ -314,9 +311,6 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 				PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
 				CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
 				PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
-				BaseUnit:          o.Units[ir.BaseUnit],
-				TargetUnit:        o.Units[ir.TargetUnit],
-				CommissionUnit:    o.Units[ir.CommissionUnit],
 				Currency:          b.Config.DefaultCurrency,
 			})
 		default:

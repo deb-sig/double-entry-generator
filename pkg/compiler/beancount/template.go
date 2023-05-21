@@ -121,9 +121,6 @@ type HtsecTradeBuyOrderVars struct {
 	Money             float64
 	Commission        float64
 	Price             float64
-	BaseUnit          string
-	TargetUnit        string
-	CommissionUnit    string
 	Currency          string
 }
 
@@ -150,9 +147,6 @@ type HtsecTradeSellOrderVars struct {
 	Money             float64
 	Commission        float64
 	Price             float64
-	BaseUnit          string
-	TargetUnit        string
-	CommissionUnit    string
 	Currency          string
 }
 
