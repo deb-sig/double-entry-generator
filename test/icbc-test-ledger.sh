@@ -13,7 +13,7 @@ DEBIT_OUTPUT="$ROOT_DIR/test/output/test-icbc-debit-output.ledger"
 make -f "$ROOT_DIR/Makefile" build
 mkdir -p "$ROOT_DIR/test/output"
 
-# generate icbc credit bills output in beancount format
+# generate icbc credit bills output in ledger format
 "$ROOT_DIR/bin/double-entry-generator" translate \
     --provider icbc \
     --target ledger \
