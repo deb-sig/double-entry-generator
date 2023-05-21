@@ -12,7 +12,7 @@ make -f "$ROOT_DIR/Makefile" build
 mkdir -p "$ROOT_DIR/test/output"
 OUTPUT="$ROOT_DIR/test/output/test-alipay-output.ledger"
 
-# generate alipay bills output in beancount format
+# generate alipay bills output in ledger format
 "$ROOT_DIR/bin/double-entry-generator" translate \
     --provider alipay \
     --target ledger \

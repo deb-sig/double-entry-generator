@@ -70,6 +70,14 @@ func (ledger *Ledger) initTemplates() error {
 	if err != nil {
 		return fmt.Errorf("Failed to init the tradeSellOrder template. %v", err)
 	}
+	htsecTradeBuyOrderTemplate, err = template.New("httradeBuyOrder").Funcs(funcMap).Parse(htsecTradeBuyOrder)
+	if err != nil {
+		return fmt.Errorf("Failed to init the httradeBuyOrder template. %v", err)
+	}
+	htsecTradeSellOrderTemplate, err = template.New("httradeSellOrder").Funcs(funcMap).Parse(htsecTradeSellOrder)
+	if err != nil {
+		return fmt.Errorf("Failed to init the httradeSellOrder template. %v", err)
+	}
 
 	return nil
 }
@@ -262,6 +270,52 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 				BaseUnit:          order.Units[ir.BaseUnit],
 				TargetUnit:        order.Units[ir.TargetUnit],
 				CommissionUnit:    order.Units[ir.CommissionUnit],
+			})
+		default:
+			err = fmt.Errorf("Failed to get the TxType.")
+		}
+
+	case ir.OrderTypeSecuritiesTrade:
+		switch order.Type {
+		case ir.TypeSend: // buy
+			err = htsecTradeBuyOrderTemplate.Execute(&buf, &HtsecTradeBuyOrderVars{
+				PayTime:           order.PayTime,
+				Peer:              order.Peer,
+				TxTypeOriginal:    order.TxTypeOriginal,
+				TypeOriginal:      order.TypeOriginal,
+				Item:              order.Item,
+				Amount:            order.Amount,
+				Money:             order.Money,
+				Commission:        order.Commission,
+				Price:             order.Price,
+				CashAccount:       order.ExtraAccounts[ir.CashAccount],
+				PositionAccount:   order.ExtraAccounts[ir.PositionAccount],
+				CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
+				PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
+				BaseUnit:          order.Units[ir.BaseUnit],
+				TargetUnit:        order.Units[ir.TargetUnit],
+				CommissionUnit:    order.Units[ir.CommissionUnit],
+				Currency:          ledger.Config.DefaultCurrency,
+			})
+		case ir.TypeRecv: // sell
+			err = htsecTradeSellOrderTemplate.Execute(&buf, &HtsecTradeSellOrderVars{
+				PayTime:           order.PayTime,
+				Peer:              order.Peer,
+				TxTypeOriginal:    order.TxTypeOriginal,
+				TypeOriginal:      order.TypeOriginal,
+				Item:              order.Item,
+				Amount:            order.Amount,
+				Money:             order.Money,
+				Commission:        order.Commission,
+				Price:             order.Price,
+				CashAccount:       order.ExtraAccounts[ir.CashAccount],
+				PositionAccount:   order.ExtraAccounts[ir.PositionAccount],
+				CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
+				PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
+				BaseUnit:          order.Units[ir.BaseUnit],
+				TargetUnit:        order.Units[ir.TargetUnit],
+				CommissionUnit:    order.Units[ir.CommissionUnit],
+				Currency:          ledger.Config.DefaultCurrency,
 			})
 		default:
 			err = fmt.Errorf("Failed to get the TxType.")

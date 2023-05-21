@@ -12,7 +12,7 @@ OUTPUT="$ROOT_DIR/test/output/test-wechat-output.ledger"
 make -f "$ROOT_DIR/Makefile" build
 mkdir -p "$ROOT_DIR/test/output"
 
-# generate wechat bills output in beancount format
+# generate wechat bills output in ledger format
 "$ROOT_DIR/bin/double-entry-generator" translate \
     --provider wechat \
     --target ledger \
