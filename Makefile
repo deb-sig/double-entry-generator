@@ -90,7 +90,7 @@ clean: ## Clean all the temporary files
 	@rm -rf ./double-entry-generator
 	@rm -rf ./wasm-dist
 
-test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-huobi-ledger test-htsec-beancount test-icbc-beancount test-icbc-ledger ## Run all tests
+test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-huobi-ledger test-htsec-beancount test-htsec-ledger test-icbc-beancount test-icbc-ledger ## Run all tests
 
 test-go: ## Run Golang tests
 	@go test ./...
@@ -113,6 +113,9 @@ test-huobi-ledger: ## Run tests for huobi provider against ledger compiler
 
 test-htsec-beancount: ## Run tests for htsec provider against beancount compiler
 	@$(SHELL) ./test/htsec-test-beancount.sh
+
+test-htsec-ledger: ## Run tests for htsec provider against ledger compiler
+	@$(SHELL) ./test/htsec-test-ledger.sh
 
 test-icbc-beancount: ## Run tests for ICBC provider against beancount compiler
 	@$(SHELL) ./test/icbc-test-beancount.sh

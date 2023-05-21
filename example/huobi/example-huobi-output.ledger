@@ -8,19 +8,19 @@
     Income:Huobi:PnL     0 CNY
     Income:Rule1:PnL     0 CNY
     Equity:Opening Balances 
-2021-02-23 * "Huobi-币币交易" "买入-BTC/USDT"
+2021-02-23 * Huobi-币币交易-买入-BTC/USDT
     Assets:Rule1:Cash     -13.98369600 "USDT"
     Assets:Rule1:Positions     0.00030400 "BTC" @@ 13.98369600 "USDT" ; {45999.00000000 "USDT" } 
     Assets:Rule1:Cash     -0.00000060 "BTC" @ 45999.00000000 "USDT"
     Expenses:Rule1:Commission     0.00000060 "BTC" @ 45999.00000000 "USDT"
 
-2021-02-23 * "Huobi-币币交易" "买入-BTC1S/USDT"
+2021-02-23 * Huobi-币币交易-买入-BTC1S/USDT
     Assets:Rule1:Cash     -5.60652159 "USDT"
     Assets:Rule1:Positions     4.57600000 "BTC1S" @@ 5.60652159 "USDT" ; {1.22520000 "USDT" } 
     Assets:Rule1:Cash     -0.00915201 "BTC1S" @ 1.22520000 "USDT"
     Expenses:Rule1:Commission     0.00915201 "BTC1S" @ 1.22520000 "USDT"
 
-2021-02-24 * "Huobi-币币交易" "卖出-BTC/USDT"
+2021-02-24 * Huobi-币币交易-卖出-BTC/USDT
     Assets:Huobi:Positions     -0.00010800 "BTC" @ 49850.00000000 "USDT"
     Assets:Huobi:Cash     5.38380000 "USDT"
     Assets:Huobi:Cash     -0.01076760 "USDT"

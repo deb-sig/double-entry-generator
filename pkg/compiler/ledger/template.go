@@ -9,7 +9,7 @@ import (
 // - https://ledger-cli.org/doc/ledger3.html
 // - https://devhints.io/ledger
 /*
-2013/01/03 * Rent for January
+2013/01/03 * Rent for January (ledger 支持中文和空格，不需要给交易商品增加双引号)
   ; comment
   Expenses:Rent   $600.00
   Assets:Savings
@@ -71,7 +71,7 @@ ledger 支持单价 * 数量, 如
 **/
 
 // 火币的货币中可能包含数字, 如BTC1S, ledger 包含数字的货币解析成金额，然后报错，因此需要使用双引号 "BTC1S"
-var huobiTradeBuyOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}-{{ .TxTypeOriginal }}" "{{ .TypeOriginal }}-{{ .Item }}"
+var huobiTradeBuyOrder = `{{ .PayTime.Format "2006-01-02" }} * {{ .Peer }}-{{ .TxTypeOriginal }}-{{ .TypeOriginal }}-{{ .Item }}
     {{ .CashAccount }}     -{{ .Money | printf "%.8f" }} "{{ .BaseUnit }}"
     {{ .PositionAccount }}     {{ .Amount | printf "%.8f" }} "{{ .TargetUnit }}" @@ {{ .Money | printf "%.8f" }} "{{ .BaseUnit }}" ; { {{- .Price | printf "%.8f" }} "{{ .BaseUnit -}}" } 
     {{ .CashAccount }}     -{{ .Commission | printf "%.8f" }} "{{ .TargetUnit }}" @ {{ .Price | printf "%.8f" }} "{{ .BaseUnit }}"
@@ -99,7 +99,7 @@ type HuobiTradeBuyOrderVars struct {
 }
 
 // 火币买入模版 2（手续费为特定货币）
-var huobiTradeBuyOrderDiffCommissionUnit = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}-{{ .TxTypeOriginal }}" "{{ .TypeOriginal }}-{{ .Item }}"
+var huobiTradeBuyOrderDiffCommissionUnit = `{{ .PayTime.Format "2006-01-02" }} * {{ .Peer }}-{{ .TxTypeOriginal }}-{{ .TypeOriginal }}-{{ .Item }}
     {{ .CashAccount }}     -{{ .Money | printf "%.8f" }} "{{ .BaseUnit }}"
     {{ .PositionAccount }}     {{ .Amount | printf "%.8f" }} "{{ .TargetUnit }}" @@ {{ .Money | printf "%.8f" }} "{{ .BaseUnit }}"; { {{- .Price | printf "%.4f" }} {{ .BaseUnit -}} }
     {{ .PositionAccount }}     -{{ .Commission | printf "%.8f" }} "{{ .CommissionUnit }}"
@@ -108,7 +108,7 @@ var huobiTradeBuyOrderDiffCommissionUnit = `{{ .PayTime.Format "2006-01-02" }} *
 `
 
 // 火币卖出模版
-var huobiTradeSellOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}-{{ .TxTypeOriginal }}" "{{ .TypeOriginal }}-{{ .Item }}"
+var huobiTradeSellOrder = `{{ .PayTime.Format "2006-01-02" }} * {{ .Peer }}-{{ .TxTypeOriginal }}-{{ .TypeOriginal }}-{{ .Item }}
     {{ .PositionAccount }}     -{{ .Amount | printf "%.8f" }} "{{ .TargetUnit }}" @ {{ .Price | printf "%.8f" }} "{{ .BaseUnit }}"
     {{ .CashAccount }}     {{ .Money | printf "%.8f" }} "{{ .BaseUnit }}"
     {{ .CashAccount }}     -{{ .Commission | printf "%.8f" }} "{{ .CommissionUnit }}"
@@ -136,11 +136,73 @@ type HuobiTradeSellOrderVars struct {
 	CommissionUnit    string  // 手续费货币类型
 }
 
-// 海通买入模版(TODO)
+// 证券交易也以 数量 @@ 总价的方式进行计价，自动算出单价，避免精度换算导致对账不平的问题（详见上面火币的注释）
+// 证券代码如 SZ002304 带有数字，会被解析成金额，因此需要使用双引号 "SZ002304"
+
+// 海通买入模版
+var htsecTradeBuyOrder = `{{ .PayTime.Format "2006-01-02" }} * {{ .Peer }}-{{ .TypeOriginal }}-{{ .Item }}
+    {{ .CashAccount }}     -{{ .Money | printf "%.2f" }} {{ .Currency }}
+    {{ .PositionAccount }}     {{ .Amount | printf "%.2f" }} "{{ .TxTypeOriginal }}" @@ {{ .Money | printf "%.2f" }} {{ .Currency }}; { {{- .Price | printf "%.3f" }} {{ .Currency }}}
+    {{ .CashAccount }}     -{{ .Commission | printf "%.2f" }} {{ .Currency }}
+    {{ .CommissionAccount }}     {{ .Commission | printf "%.2f" }} {{ .Currency }}
+
+`
+
+type HtsecTradeBuyOrderVars struct {
+	PayTime           time.Time
+	Peer              string
+	TxTypeOriginal    string
+	TypeOriginal      string
+	Item              string
+	CashAccount       string
+	PositionAccount   string
+	CommissionAccount string
+	PnlAccount        string
+	Amount            float64
+	Money             float64
+	Commission        float64
+	Price             float64
+	BaseUnit          string
+	TargetUnit        string
+	CommissionUnit    string
+	Currency          string
+}
+
+// 海通卖出模板
+var htsecTradeSellOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}" "{{ .TypeOriginal }}-{{ .Item }}"
+    {{ .PositionAccount }}     -{{ .Amount | printf "%.2f" }} "{{ .TxTypeOriginal }}" @ {{ .Price | printf "%.3f" }} {{ .Currency }}
+    {{ .CashAccount }}     {{ .Money | printf "%.2f" }} {{ .Currency }}
+    {{ .CashAccount }}     -{{ .Commission | printf "%.2f" }} {{ .Currency }}
+    {{ .CommissionAccount }}     {{ .Commission | printf "%.2f" }} {{ .Currency }}
+    {{ .PnlAccount }}
+
+`
+
+type HtsecTradeSellOrderVars struct {
+	PayTime           time.Time
+	Peer              string
+	TxTypeOriginal    string
+	TypeOriginal      string
+	Item              string
+	CashAccount       string
+	PositionAccount   string
+	CommissionAccount string
+	PnlAccount        string
+	Amount            float64
+	Money             float64
+	Commission        float64
+	Price             float64
+	BaseUnit          string
+	TargetUnit        string
+	CommissionUnit    string
+	Currency          string
+}
 
 var (
 	normalOrderTemplate                          *template.Template
 	huobiTradeBuyOrderTemplate                   *template.Template
 	huobiTradeBuyOrderDiffCommissionUnitTemplate *template.Template
 	huobiTradeSellOrderTemplate                  *template.Template
+	htsecTradeBuyOrderTemplate                   *template.Template
+	htsecTradeSellOrderTemplate                  *template.Template
 )
