@@ -1,6 +1,6 @@
 package icbc
 
-// Config is the configuration for Alipay.
+// Config is the configuration for ICBC.
 type Config struct {
 	Rules []Rule `mapstructure:"rules,omitempty"`
 }
