@@ -1,0 +1,16 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:DebitCard:TDChequing
+defaultCurrency: CAD
+title: 测试
+td:
+  rules:
+    - item: "T T"
+      targetAccount: Expenses:Grocery
+    - item: "DOLLARAMA"
+      targetAccount: Expenses:Grocery
+    - item: "DEVELOPM MSP"
+      targetAccount: Income:Salary
+    - type: 收入
+      item: "SEND E-TFR"
+      targetAccount: Income:FIXME
