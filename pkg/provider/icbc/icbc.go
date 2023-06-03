@@ -31,7 +31,7 @@ func New() *Icbc {
 	}
 }
 
-// Translate translates the alipay bill records to IR.
+// Translate translates the icbc bill records to IR.
 func (icbc *Icbc) Translate(filename string) (*ir.IR, error) {
 	log.SetPrefix("[Provider-ICBC] ")
 
