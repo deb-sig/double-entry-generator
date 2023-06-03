@@ -5,6 +5,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/pkg/provider/htsec"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/huobi"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/icbc"
+	"github.com/deb-sig/double-entry-generator/pkg/provider/td"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/wechat"
 )
 
@@ -23,4 +24,5 @@ type Config struct {
 	Huobi                    *huobi.Config  `yaml:"huobi,omitempty"`
 	Htsec                    *htsec.Config  `yaml:"htsec,omitempty"`
 	Icbc                     *icbc.Config   `yaml:"icbc,omitempty"`
+	Td                       *td.Config     `yaml:"td,omitempty"`
 }
