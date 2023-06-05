@@ -32,4 +32,6 @@ const (
 	ProviderHtsec = "htsec"
 	//ProviderIcbc is the name for ICBC provider.
 	ProviderIcbc = "icbc"
+	//ProviderTd is the name for TD provider.
+	ProviderTd = "td"
 )
