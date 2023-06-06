@@ -265,14 +265,14 @@ option "operating_currency" "CNY"
 	Expenses:Wechat:Sponsor 36.99 CNY
 	Assets:Digital:Wechat:Cash -36.99 CNY
 
-+2022-10-03 * "/" "/"
-+	merchantId: "18000080172301020022142939242047"
-+	method: "零钱"
-+	orderId: "4200001658202301020544822518"
-+	payTime: "2022-10-03 03:50:20 +0800 CST"
-+	source: "微信支付"
-+	status: "支付成功"
-+	txType: "转入零钱通-来自零钱"
-+	type: "/"
-+	Assets:Digital:Wechat:Cash:零钱通 36.99 CNY
-+	Assets:Digital:Wechat:Cash -36.99 CNY
+ 2022-10-03 * "/" "/"
+	merchantId: "18000080172301020022142939242047"
+	method: "零钱"
+	orderId: "4200001658202301020544822518"
+	payTime: "2022-10-03 03:50:20 +0800 CST"
+	source: "微信支付"
+	status: "支付成功"
+	txType: "转入零钱通-来自零钱"
+	type: "/"
+	Assets:Digital:Wechat:Cash:零钱通 36.99 CNY
+	Assets:Digital:Wechat:Cash -36.99 CNY
