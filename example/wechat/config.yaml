@@ -28,7 +28,12 @@ wechat:
     - type: 支出
       txType: 赞赏码
       targetAccount: Expenses:Wechat:Sponsor
-
+    - type: / # 转入零钱通
+      txType: 转入零钱通-来自零钱
+      peer: /
+      item: /
+      targetAccount: Assets:Digital:Wechat:Cash:零钱通
+      methodAccount: Assets:Digital:Wechat:Cash
     - peer: 云膳过桥米线,餐厅
       sep: ","
       time: 11:00-15:00
