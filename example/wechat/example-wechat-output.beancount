@@ -4,7 +4,7 @@ option "operating_currency" "CNY"
 1970-01-01 open Assets:Bank:CN:BOC:Savings
 1970-01-01 open Assets:Bank:CN:ICBC:Savings
 1970-01-01 open Assets:Digital:Wechat:Cash
-1970-01-01 open Assets:Digital:Wechat:Cash:零钱通
+1970-01-01 open Assets:Digital:Wechat:CashTong
 1970-01-01 open Assets:FIXME
 1970-01-01 open Assets:Trade:Tencent:LiCaiTong
 1970-01-01 open Expenses:FIXME
