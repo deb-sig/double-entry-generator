@@ -271,5 +271,5 @@
     ; status: "支付成功"
     ; txType: "转入零钱通-来自零钱"
     ; type: "/"
-    ; Assets:Digital:Wechat:Cash:零钱通 36.99 CNY
+    ; Assets:Digital:Wechat:CashTong 36.99 CNY
     ; Assets:Digital:Wechat:Cash -36.99 CNY
