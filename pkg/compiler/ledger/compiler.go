@@ -195,6 +195,7 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 			CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
 			Metadata:          order.Metadata,
 			Currency:          ledger.Config.DefaultCurrency,
+			Tags:              order.Tags,
 		})
 	case ir.OrderTypeHuobiTrade: // Huobi trades
 		switch order.Type {

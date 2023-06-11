@@ -16,8 +16,12 @@ import (
 */
 
 // 普通账单的模版（消费账）
+// ledger的 tag语法定义： https://ledger-cli.org/doc/ledger3.html#Metadata-tags
+// 单个tag定义: `; :TAG:`
+// 多个tag定义: `; :TAG1:TAG2:TAG3:`
 var normalOrder = `{{ .PayTime.Format "2006-01-02" }} * {{ EscapeString .Peer }} {{- if .Item }} - {{ EscapeString .Item }} {{ end }}
     {{- if .Note}}; {{ .Note }}{{ end }}
+    {{- if .Tags}}{{printf "\n"}}    ; :{{- range $index, $tag := .Tags}}{{ if $index }}:{{ end }}{{ $tag }}{{ end }}:{{ end }}
     {{- range $key, $value := .Metadata }}{{ if $value }}{{ printf "\n" }}    ; {{ $key }}: "{{ $value }}"{{end}}{{end}}
     {{ .PlusAccount }}      {{ .Money | printf "%.2f" }} {{ .Currency }}
     {{ .MinusAccount }}   - {{ .Money | printf "%.2f" }} {{ .Currency }}
@@ -40,6 +44,7 @@ type NormalOrderVars struct {
 	CommissionAccount string            // 佣金账户
 	Metadata          map[string]string // 元数据
 	Currency          string            // 货币
+	Tags              []string          // 标签
 }
 
 // 火币买入模版（手续费单位为购买单位货币）
