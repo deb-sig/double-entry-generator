@@ -361,13 +361,14 @@ alipay:
 
 `targetAccount` 与 `methodAccount` 的增减账户关系如下表：
 
-| 收/支 | 交易分类 | methodAccount | targetAccount |
+
+| 收/支 | 交易分类 | minusAccount  | plusAccount   |
 | ----- | -------- | ------------- | ------------- |
-| 收入  | *        | plusAccount   | minusAccount  |
-| 收入  | 退款     | plusAccount   | minusAccount  |
-| 支出  | *        | minusAccount  | plusAccount   |
-| 其他  | *        | minusAccount  | plusAccount   |
-| 其他  | 退款     | plusAccount   | minusAccount  |
+| 收入  | *        | targetAccount | methodAccount |
+| 收入  | 退款     | targetAccount | methodAccount |
+| 支出  | *        | methodAccount | targetAccount |
+| 其他  | *        | methodAccount | targetAccount |
+| 其他  | 退款     | targetAccount | methodAccount |
 
 > 当交易类型为「其他」时，需要自行手动定义借贷账户。此时本软件会认为 `methodAccount` 是贷账户，`targetAccount` 是借账户。
 
@@ -489,10 +490,10 @@ wechat:
 
 `targetAccount` 与 `methodAccount` 的增减账户关系如下表：
 
-| 收/支 | methodAccount | targetAccount |
+| 收/支 | minusAccount  | plusAccount   |
 | ----- | ------------- | ------------- |
-| 收入  | plusAccount   | minusAccount  |
-| 支出  | minusAccount  | plusAccount   |
+| 收入  | targetAccount | methodAccount |
+| 支出  | methodAccount | targetAccount |
 
 ### Huobi Global (Crypto)
 
@@ -661,11 +662,10 @@ icbc:
 
 `targetAccount` 与 `defaultCashAccount` 的增减账户关系如下表：
 
-| 收/支 | defaultCashAccount | targetAccount |
-| ----- | ------------------ | ------------- |
-| 收入  | plusAccount        | minusAccount  |
-| 支出  | minusAccount       | plusAccount   |
-
+| 收/支 | minusAccount       | plusAccount        |
+| ----- | ------------------ | ------------------ |
+| 收入  | targetAccount      | defaultCashAccount |
+| 支出  | defaultCashAccount | targetAccount      |
 
 ## Special Thanks
 
