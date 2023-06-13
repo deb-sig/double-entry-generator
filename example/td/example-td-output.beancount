@@ -1,43 +1,45 @@
-1970-01-01 * Open Balance
-    Assets:FIXME     0 CAD
-    Expenses:FIXME     0 CAD
-    Expenses:Grocery     0 CAD
-    Income:FIXME     0 CAD
-    Income:Salary     0 CAD
-    Equity:Opening Balances 
-2023-05-01 * TD - DOLLARAMA # 845   _M 
-    Expenses:Grocery      1.96 CAD
-    Assets:DebitCard:TDChequing   - 1.96 CAD
+option "title" "测试"
+option "operating_currency" "CAD"
 
-2023-05-01 * TD - T T SUPERMARKET   _M 
-    Expenses:Grocery      12.10 CAD
-    Assets:DebitCard:TDChequing   - 12.10 CAD
+1970-01-01 open Assets:FIXME
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Expenses:Grocery
+1970-01-01 open Income:FIXME
+1970-01-01 open Income:Salary
 
-2023-05-01 * TD - PTS TO:  02816700587 
-    Expenses:FIXME      10.00 CAD
-    Assets:DebitCard:TDChequing   - 10.00 CAD
+2023-05-01 * "TD" "DOLLARAMA # 845   _M" #grocery_tag1 #cheap_tag2
+	Expenses:Grocery 1.96 CAD
+	Assets:DebitCard:TDChequing -1.96 CAD
 
-2023-05-01 * TD - SFCA             MSP 
-    Assets:DebitCard:TDChequing      0.01 CAD
-    Assets:FIXME   - 0.01 CAD
+2023-05-01 * "TD" "T T SUPERMARKET   _M" #tt_tag
+	Expenses:Grocery 12.10 CAD
+	Assets:DebitCard:TDChequing -12.10 CAD
 
-2023-05-01 * TD - ICBC AGENT #942 
-    Expenses:FIXME      35.00 CAD
-    Assets:DebitCard:TDChequing   - 35.00 CAD
+2023-05-01 * "TD" "PTS TO:  02816700587"
+	Expenses:FIXME 10.00 CAD
+	Assets:DebitCard:TDChequing -10.00 CAD
 
-2023-05-01 * TD - DOLLARAMA # 845   _M 
-    Expenses:Grocery      15.68 CAD
-    Assets:DebitCard:TDChequing   - 15.68 CAD
+2023-05-01 * "TD" "SFCA             MSP"
+	Assets:DebitCard:TDChequing 0.01 CAD
+	Assets:FIXME -0.01 CAD
 
-2023-05-01 * TD - T T SUPERMARKET   _M 
-    Expenses:Grocery      5.30 CAD
-    Assets:DebitCard:TDChequing   - 5.30 CAD
+2023-05-01 * "TD" "ICBC AGENT #942"
+	Expenses:FIXME 35.00 CAD
+	Assets:DebitCard:TDChequing -35.00 CAD
 
-2023-05-02 * TD - SEND E-TFR ***Y4h 
-    Expenses:FIXME      239.13 CAD
-    Assets:DebitCard:TDChequing   - 239.13 CAD
+2023-05-01 * "TD" "DOLLARAMA # 845   _M" #grocery_tag1 #cheap_tag2
+	Expenses:Grocery 15.68 CAD
+	Assets:DebitCard:TDChequing -15.68 CAD
 
-2023-05-03 * TD - DEVELOPM MSP 
-    Assets:DebitCard:TDChequing      332.22 CAD
-    Income:Salary   - 332.22 CAD
+2023-05-01 * "TD" "T T SUPERMARKET   _M" #tt_tag
+	Expenses:Grocery 5.30 CAD
+	Assets:DebitCard:TDChequing -5.30 CAD
+
+2023-05-02 * "TD" "SEND E-TFR ***Y4h"
+	Expenses:FIXME 239.13 CAD
+	Assets:DebitCard:TDChequing -239.13 CAD
+
+2023-05-03 * "TD" "DEVELOPM MSP"
+	Assets:DebitCard:TDChequing 332.22 CAD
+	Income:Salary -332.22 CAD
 
