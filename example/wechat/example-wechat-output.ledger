@@ -101,6 +101,7 @@
     Assets:Digital:Wechat:Cash   - 5505.00 CNY
 
 2020-11-27 * 用户A - 收款方备注:二维码收款 
+    ; :income:service:
     ; merchantId: "/"
     ; method: "零钱"
     ; orderId: "3985734"

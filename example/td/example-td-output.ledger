@@ -5,12 +5,13 @@
     Income:FIXME     0 CAD
     Income:Salary     0 CAD
     Equity:Opening Balances 
-
 2023-05-01 * TD - DOLLARAMA # 845   _M 
+    ; :grocery_tag1:cheap_tag2:
     Expenses:Grocery      1.96 CAD
     Assets:DebitCard:TDChequing   - 1.96 CAD
 
 2023-05-01 * TD - T T SUPERMARKET   _M 
+    ; :tt_tag:
     Expenses:Grocery      12.10 CAD
     Assets:DebitCard:TDChequing   - 12.10 CAD
 
@@ -27,10 +28,12 @@
     Assets:DebitCard:TDChequing   - 35.00 CAD
 
 2023-05-01 * TD - DOLLARAMA # 845   _M 
+    ; :grocery_tag1:cheap_tag2:
     Expenses:Grocery      15.68 CAD
     Assets:DebitCard:TDChequing   - 15.68 CAD
 
 2023-05-01 * TD - T T SUPERMARKET   _M 
+    ; :tt_tag:
     Expenses:Grocery      5.30 CAD
     Assets:DebitCard:TDChequing   - 5.30 CAD
 
