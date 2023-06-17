@@ -1,4 +1,4 @@
-1970-01-01 * Open Balance
+1970/01/01 * Open Balance
     Assets:Alipay     0 CNY
     Assets:Alipay:Invest:Fund     0 CNY
     Assets:Alipay:Invest:Gold     0 CNY
@@ -15,7 +15,7 @@
     Income:FIXME     0 CNY
     Liabilities:CC:COMM:7449     0 CNY
     Equity:Opening Balances 
-2023-01-18 * xxxx - 转账 
+2023/01/18 * xxxx - 转账 
     ; category: "转账红包"
     ; method: "余额"
     ; orderId: "2xxxxxxxxxxxxxxxxxxxxxxxxx9"
@@ -26,7 +26,7 @@
     Assets:Alipay      222228.50 CNY
     Income:FIXME   - 222228.50 CNY
 
-2023-02-02 * 蚂蚁财富-蚂蚁（杭州）基金销售有限公司 - 蚂蚁财富-交银定期支付双息平衡混合-卖出至余额宝 
+2023/02/02 * 蚂蚁财富-蚂蚁（杭州）基金销售有限公司 - 蚂蚁财富-交银定期支付双息平衡混合-卖出至余额宝 
     ; category: "投资理财"
     ; method: "余额宝"
     ; orderId: "2xxxxxxxxxxxxxxxxxxxxxxxxxx8"
@@ -37,7 +37,7 @@
     Expenses:FIXME      99.34 CNY
     Assets:Alipay   - 99.34 CNY
 
-2023-02-04 * xxxxxxx - 退款-亲情卡 
+2023/02/04 * xxxxxxx - 退款-亲情卡 
     ; category: "退款"
     ; merchantId: "20xxxxxxxxxxxxxxxx5"
     ; method: "交通银行信用卡(7449)"
@@ -49,7 +49,7 @@
     Liabilities:CC:COMM:7449      16.03 CNY
     Expenses:FIXME   - 16.03 CNY
 
-2023-02-08 * x4***6 - 商品示例 
+2023/02/08 * x4***6 - 商品示例 
     ; category: "日用百货"
     ; merchantId: "Txxxxxxxxxxxxx0"
     ; method: "余额"
@@ -61,7 +61,7 @@
     Expenses:Groceries      20.00 CNY
     Assets:Alipay   - 20.00 CNY
 
-2023-02-12 * xxxxxxxxxxxx - 亲情卡 
+2023/02/12 * xxxxxxxxxxxx - 亲情卡 
     ; category: "亲友代付"
     ; merchantId: "20230xxxxxxx014741014xxxxxx"
     ; method: "交通银行信用卡(7449)"

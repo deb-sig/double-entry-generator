@@ -136,7 +136,7 @@ func (ledger *Ledger) writeHeader(file io.Writer) error {
 	}
 	sort.Strings(sortedAccounts)
 
-	_, err = io.WriteString(file, "1970-01-01 * Open Balance\n")
+	_, err = io.WriteString(file, "1970/01/01 * Open Balance\n")
 	if err != nil {
 		return fmt.Errorf("write open account error: %v", err)
 	}
