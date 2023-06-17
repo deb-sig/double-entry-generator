@@ -7,6 +7,7 @@
 - 火币-币币交易
 - 海通证券
 - 中国工商银行
+- Toronto-Dominion Bank
 
 目前记账语言支持：
 
@@ -24,6 +25,7 @@
                   huobi                               huobi
                   htsec                               htsec
                   icbc                                icbc
+                  td                                  td
 ```
 
 ## 安装
@@ -111,6 +113,16 @@ double-entry-generator translate \
   ./example/icbc/example-icbc-credit-records.csv
 ```
 
+#### Toronto-Dominion Bank
+
+```bash
+double-entry-generator translate \
+  --config ./example/td/config.yaml \
+  --provider td \
+  --output ./example/td/example-td-output.beancount \
+  ./example/td/example-td-records.csv
+```
+
 ### Ledger
 
 #### 支付宝
@@ -165,6 +177,17 @@ double-entry-generator translate \
   --target ledger \
   --output ./example/icbc/example-icbc-credit-output.ledger \
   ./example/icbc/example-icbc-credit-records.csv
+```
+
+#### Toronto-Dominion Bank
+
+```bash
+double-entry-generator translate \
+  --config ./example/td/config.yaml \
+  --provider td \
+  --target ledger \
+  --output ./example/td/example-td-output.ledger \
+  ./example/td/example-td-records.csv
 ```
 
 ## 账单下载与格式问题
@@ -242,6 +265,19 @@ double-entry-generator translate \
 信用卡账单示例： [example-icbc-credit-records.csv](example/icbc/credit/example-icbc-credit-records.csv)
 
 信用卡账单转换后的结果示例：[example-icbc-credit-output.beancount](example/icbc/credit/example-icbc-credit-output.beancount).
+
+### Toronto-Dominion Bank
+
+1. 登录TD 网页版本: https://easyweb.td.com/
+2. 点击指定的账户
+3. 选择账单范围 -> "Select Download Format" -> Spreadsheet(.csv) -> Download
+
+#### 格式示例
+
+[example-td-records.csv](./example/td/example-td-records.csv)
+
++ Beancount 转换的结果示例: [example-td-out.beancount](./example/td/example-td-output.beancount)
++ Ledger 转换的结果示例: [example-td-out.ledger](./example/td/example-td-output.ledger)
 
 ## 配置
 
@@ -659,6 +695,64 @@ icbc:
 规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
 
 中国工商银行账单中的记账金额中存在收入/支出之分，通过这个机制就可以判断银行卡账户在交易中的正负关系。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和全局值 `defaultCashAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `defaultCashAccount` 的正负关系，来覆盖默认定义的增减账户。
+
+`targetAccount` 与 `defaultCashAccount` 的增减账户关系如下表：
+
+| 收/支 | minusAccount       | plusAccount        |
+| ----- | ------------------ | ------------------ |
+| 收入  | targetAccount      | defaultCashAccount |
+| 支出  | defaultCashAccount | targetAccount      |
+
+### Toronto-Dominion Bank
+
+<details>
+<summary>
+  TD银行配置文件示例
+</summary>
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:DebitCard:TDChequing
+defaultCurrency: CAD
+title: 测试
+td:
+  rules:
+    - item: "T T"
+      targetAccount: Expenses:Grocery
+      tag: tt_tag
+    - item: "DOLLARAMA"
+      targetAccount: Expenses:Grocery
+      tag: grocery_tag1,cheap_tag2
+    - item: "DEVELOPM MSP"
+      targetAccount: Income:Salary
+    - type: 收入
+      item: "SEND E-TFR"
+      targetAccount: Income:FIXME
+
+```
+
+</details></br>
+
+`defaultMinusAccount`, `defaultPlusAccount`, `defaultCashAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户， `defaultCashAccount` 是该配置中默认使用的银行卡账户（等同于支付宝/微信中的 `methodAccount` ）。 `defaultCurrency` 是默认货币。
+
+`td` 是 Toronto-Dominion Bank相关的配置。它提供基于规则的匹配。因为TD本身的账单较简单，所以可以指定的规则不多：
+- `item`:（交易商品）的完全/包含匹配。
+- `type`:（收/支）的完全/包含匹配。
+
+在单条规则中可以使用分隔符 `sep` 填写多个关键字，在同一对象中，每个关键字之间是或的关系。
+
+在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
+
+在单条规则中可以使用 `tag` 来设置流水的 [Beancount Tag](https://beancount.github.io/docs/beancount_language_syntax.html#tags)或[Ledger Meta Tag](https://ledger-cli.org/doc/ledger3.html#Metadata-tags)，使用 `sep` 作为分隔符。
+
+在单条规则中可以使用 `ignore` 来设置是否忽略匹配上该规则的交易，`true` 表示忽略匹配上该规则的交易，`fasle` 则为不忽略，缺省为 `false` 。
+
+匹配成功则使用规则中定义的 `targetAccount` 账户覆盖默认定义账户。
+
+规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
+
+TD账单中的记账金额中存在收入/支出之分，通过这个机制就可以判断银行卡账户在交易中的正负关系。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和全局值 `defaultCashAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `defaultCashAccount` 的正负关系，来覆盖默认定义的增减账户。
 
 `targetAccount` 与 `defaultCashAccount` 的增减账户关系如下表：
 
