@@ -107,10 +107,10 @@ double-entry-generator translate \
 
 ```bash
 double-entry-generator translate \
-  --config ./example/icbc/config.yaml \
+  --config ./example/icbc/credit/config.yaml \
   --provider icbc \
-  --output ./example/icbc/example-icbc-credit-output.beancount \
-  ./example/icbc/example-icbc-credit-records.csv
+  --output ./example/icbc/credit/example-icbc-credit-output.beancount \
+  ./example/icbc/credit/example-icbc-credit-records.csv
 ```
 
 #### Toronto-Dominion Bank
@@ -172,11 +172,11 @@ double-entry-generator translate \
 
 ```bash
 double-entry-generator translate \
-  --config ./example/icbc/config.yaml \
+  --config ./example/icbc/credit/config.yaml \
   --provider icbc \
   --target ledger \
-  --output ./example/icbc/example-icbc-credit-output.ledger \
-  ./example/icbc/example-icbc-credit-records.csv
+  --output ./example/icbc/credit/example-icbc-credit-output.ledger \
+  ./example/icbc/credit/example-icbc-credit-records.csv
 ```
 
 #### Toronto-Dominion Bank
