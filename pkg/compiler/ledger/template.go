@@ -19,7 +19,7 @@ import (
 // ledger的 tag语法定义： https://ledger-cli.org/doc/ledger3.html#Metadata-tags
 // 单个tag定义: `; :TAG:`
 // 多个tag定义: `; :TAG1:TAG2:TAG3:`
-var normalOrder = `{{ .PayTime.Format "2006-01-02" }} * {{ EscapeString .Peer }} {{- if .Item }} - {{ EscapeString .Item }} {{ end }}
+var normalOrder = `{{ .PayTime.Format "2006/01/02" }} * {{ EscapeString .Peer }} {{- if .Item }} - {{ EscapeString .Item }} {{ end }}
     {{- if .Note}}; {{ .Note }}{{ end }}
     {{- if .Tags}}{{printf "\n"}}    ; :{{- range $index, $tag := .Tags}}{{ if $index }}:{{ end }}{{ $tag }}{{ end }}:{{ end }}
     {{- range $key, $value := .Metadata }}{{ if $value }}{{ printf "\n" }}    ; {{ $key }}: "{{ $value }}"{{end}}{{end}}
@@ -76,7 +76,7 @@ ledger 支持单价 * 数量, 如
 **/
 
 // 火币的货币中可能包含数字, 如BTC1S, ledger 包含数字的货币解析成金额，然后报错，因此需要使用双引号 "BTC1S"
-var huobiTradeBuyOrder = `{{ .PayTime.Format "2006-01-02" }} * {{ .Peer }}-{{ .TxTypeOriginal }}-{{ .TypeOriginal }}-{{ .Item }}
+var huobiTradeBuyOrder = `{{ .PayTime.Format "2006/01/02" }} * {{ .Peer }}-{{ .TxTypeOriginal }}-{{ .TypeOriginal }}-{{ .Item }}
     {{ .CashAccount }}     -{{ .Money | printf "%.8f" }} "{{ .BaseUnit }}"
     {{ .PositionAccount }}     {{ .Amount | printf "%.8f" }} "{{ .TargetUnit }}" @@ {{ .Money | printf "%.8f" }} "{{ .BaseUnit }}" ; { {{- .Price | printf "%.8f" }} "{{ .BaseUnit -}}" } 
     {{ .CashAccount }}     -{{ .Commission | printf "%.8f" }} "{{ .TargetUnit }}" @ {{ .Price | printf "%.8f" }} "{{ .BaseUnit }}"
@@ -104,7 +104,7 @@ type HuobiTradeBuyOrderVars struct {
 }
 
 // 火币买入模版 2（手续费为特定货币）
-var huobiTradeBuyOrderDiffCommissionUnit = `{{ .PayTime.Format "2006-01-02" }} * {{ .Peer }}-{{ .TxTypeOriginal }}-{{ .TypeOriginal }}-{{ .Item }}
+var huobiTradeBuyOrderDiffCommissionUnit = `{{ .PayTime.Format "2006/01/02" }} * {{ .Peer }}-{{ .TxTypeOriginal }}-{{ .TypeOriginal }}-{{ .Item }}
     {{ .CashAccount }}     -{{ .Money | printf "%.8f" }} "{{ .BaseUnit }}"
     {{ .PositionAccount }}     {{ .Amount | printf "%.8f" }} "{{ .TargetUnit }}" @@ {{ .Money | printf "%.8f" }} "{{ .BaseUnit }}"; { {{- .Price | printf "%.4f" }} {{ .BaseUnit -}} }
     {{ .PositionAccount }}     -{{ .Commission | printf "%.8f" }} "{{ .CommissionUnit }}"
@@ -113,7 +113,7 @@ var huobiTradeBuyOrderDiffCommissionUnit = `{{ .PayTime.Format "2006-01-02" }} *
 `
 
 // 火币卖出模版
-var huobiTradeSellOrder = `{{ .PayTime.Format "2006-01-02" }} * {{ .Peer }}-{{ .TxTypeOriginal }}-{{ .TypeOriginal }}-{{ .Item }}
+var huobiTradeSellOrder = `{{ .PayTime.Format "2006/01/02" }} * {{ .Peer }}-{{ .TxTypeOriginal }}-{{ .TypeOriginal }}-{{ .Item }}
     {{ .PositionAccount }}     -{{ .Amount | printf "%.8f" }} "{{ .TargetUnit }}" @ {{ .Price | printf "%.8f" }} "{{ .BaseUnit }}"
     {{ .CashAccount }}     {{ .Money | printf "%.8f" }} "{{ .BaseUnit }}"
     {{ .CashAccount }}     -{{ .Commission | printf "%.8f" }} "{{ .CommissionUnit }}"
@@ -145,7 +145,7 @@ type HuobiTradeSellOrderVars struct {
 // 证券代码如 SZ002304 带有数字，会被解析成金额，因此需要使用双引号 "SZ002304"
 
 // 海通买入模版
-var htsecTradeBuyOrder = `{{ .PayTime.Format "2006-01-02" }} * {{ .Peer }}-{{ .TypeOriginal }}-{{ .Item }}
+var htsecTradeBuyOrder = `{{ .PayTime.Format "2006/01/02" }} * {{ .Peer }}-{{ .TypeOriginal }}-{{ .Item }}
     {{ .CashAccount }}     -{{ .Money | printf "%.2f" }} {{ .Currency }}
     {{ .PositionAccount }}     {{ .Amount | printf "%.2f" }} "{{ .TxTypeOriginal }}" @@ {{ .Money | printf "%.2f" }} {{ .Currency }}; { {{- .Price | printf "%.3f" }} {{ .Currency }}}
     {{ .CashAccount }}     -{{ .Commission | printf "%.2f" }} {{ .Currency }}
@@ -171,7 +171,7 @@ type HtsecTradeBuyOrderVars struct {
 }
 
 // 海通卖出模板
-var htsecTradeSellOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}" "{{ .TypeOriginal }}-{{ .Item }}"
+var htsecTradeSellOrder = `{{ .PayTime.Format "2006/01/02" }} * "{{ .Peer }}" "{{ .TypeOriginal }}-{{ .Item }}"
     {{ .PositionAccount }}     -{{ .Amount | printf "%.2f" }} "{{ .TxTypeOriginal }}" @ {{ .Price | printf "%.3f" }} {{ .Currency }}
     {{ .CashAccount }}     {{ .Money | printf "%.2f" }} {{ .Currency }}
     {{ .CashAccount }}     -{{ .Commission | printf "%.2f" }} {{ .Currency }}
