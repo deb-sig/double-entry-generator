@@ -1,0 +1,24 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Liabilities:CreditCard:BMO
+defaultCurrency: CAD
+title: 测试
+bmo:
+  rules:
+    - item: "T T"
+      targetAccount: Expenses:Grocery
+      tag: tt_tag
+    - item: "COSTCO"
+      targetAccount: Expenses:Grocery
+    - item: "T&T SUPERMARKET"
+      targetAccount: Expenses:Grocery
+    - item: "JOLLIBEE"
+      targetAccount: Expenses:Food:Lunch
+    - item: "DOLLARAMA"
+      targetAccount: Expenses:Grocery
+      tag: grocery_tag1,cheap_tag2
+    - item: "DEVELOPM MSP"
+      targetAccount: Income:Salary
+    - type: 收入
+      item: "SEND E-TFR"
+      targetAccount: Income:FIXME

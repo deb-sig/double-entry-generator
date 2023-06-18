@@ -1,0 +1,22 @@
+option "title" "测试"
+option "operating_currency" "CAD"
+
+1970-01-01 open Assets:FIXME
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Expenses:Food:Lunch
+1970-01-01 open Expenses:Grocery
+1970-01-01 open Income:FIXME
+1970-01-01 open Income:Salary
+
+2023-05-11 * "BMO" "COSTCO WHOLESALE W54 SURREY BC"
+	Expenses:Grocery 3.27 CAD
+	Liabilities:CreditCard:BMO -3.27 CAD
+
+2023-05-11 * "BMO" "COSTCO WHOLESALE W54 SURREY BC"
+	Expenses:Grocery 85.06 CAD
+	Liabilities:CreditCard:BMO -85.06 CAD
+
+2023-05-12 * "BMO" "T&T SUPERMARKET #026 SURREY BC"
+	Expenses:Grocery 6.00 CAD
+	Liabilities:CreditCard:BMO -6.00 CAD
+
