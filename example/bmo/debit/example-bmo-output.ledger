@@ -1,0 +1,23 @@
+1970/01/01 * Open Balance
+    Assets:FIXME     0 CAD
+    Expenses:FIXME     0 CAD
+    Expenses:Grocery     0 CAD
+    Income:FIXME     0 CAD
+    Income:Salary     0 CAD
+    Equity:Opening Balances 
+2023/05/01 * BMO - [DN]ACFS            MSP/DIV 
+    Assets:DebitCard:BMOChequing      0.01 CAD
+    Assets:FIXME   - 0.01 CAD
+
+2023/05/18 * BMO - [CW]TELUS MOB 
+    Expenses:FIXME      68.32 CAD
+    Assets:DebitCard:BMOChequing   - 68.32 CAD
+
+2023/05/23 * BMO - [CW]BC HYDRO 
+    Expenses:FIXME      50.00 CAD
+    Assets:DebitCard:BMOChequing   - 50.00 CAD
+
+2023/06/12 * BMO - [IB]           6088 #3 ROAD 
+    Expenses:FIXME      40.00 CAD
+    Assets:DebitCard:BMOChequing   - 40.00 CAD
+

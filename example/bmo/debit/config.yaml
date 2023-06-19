@@ -1,0 +1,18 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:DebitCard:BMOChequing
+defaultCurrency: CAD
+title: 测试
+bmo:
+  rules:
+    - item: "T T"
+      targetAccount: Expenses:Grocery
+      tag: tt_tag
+    - item: "DOLLARAMA"
+      targetAccount: Expenses:Grocery
+      tag: grocery_tag1,cheap_tag2
+    - item: "DEVELOPM MSP"
+      targetAccount: Income:Salary
+    - type: 收入
+      item: "SEND E-TFR"
+      targetAccount: Income:FIXME
