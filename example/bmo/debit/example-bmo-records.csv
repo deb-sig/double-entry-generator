@@ -1,0 +1,10 @@
+Following data is valid as of 20239810344234 (Year/Month/Day/Hour/Minute/Second)
+
+
+First Bank Card,Transaction Type,Date Posted, Transaction Amount,Description
+
+
+'5678653123124124',CREDIT,20230501,0.01,[DN]ACFS            MSP/DIV                                                    
+'5678653123124124',DEBIT,20230518,-68.32,[CW]TELUS MOB                                                                  
+'5678653123124124',DEBIT,20230523,-50.0,[CW]BC HYDRO                                                                   
+'5678653123124124',DEBIT,20230612,-40.0,[IB]           6088 #3 ROAD                                                    

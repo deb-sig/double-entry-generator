@@ -3,6 +3,7 @@ package analyser
 import (
 	"fmt"
 
+	"github.com/deb-sig/double-entry-generator/pkg/analyser/bmo"
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/icbc"
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/td"
 
@@ -36,6 +37,8 @@ func New(providerName string) (Interface, error) {
 		return icbc.Icbc{}, nil
 	case consts.ProviderTd:
 		return td.Td{}, nil
+	case consts.ProviderBmo:
+		return bmo.Bmo{}, nil
 	default:
 		return nil, fmt.Errorf("Fail to create the analyser for the given name %s", providerName)
 	}

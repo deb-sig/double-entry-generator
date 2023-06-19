@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/deb-sig/double-entry-generator/pkg/provider/alipay"
+	"github.com/deb-sig/double-entry-generator/pkg/provider/bmo"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/htsec"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/huobi"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/icbc"
@@ -25,4 +26,5 @@ type Config struct {
 	Htsec                    *htsec.Config  `yaml:"htsec,omitempty"`
 	Icbc                     *icbc.Config   `yaml:"icbc,omitempty"`
 	Td                       *td.Config     `yaml:"td,omitempty"`
+	Bmo                      *bmo.Config    `yaml:"bmo,omitempty"`
 }
