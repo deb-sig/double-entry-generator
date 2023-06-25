@@ -2,6 +2,7 @@ package wechat
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 	"strconv"
 	"strings"
