@@ -67,5 +67,6 @@ const (
 	TxTypeCash2Others          TxType = "零钱通转出"
 	TxTypeFamilyCard           TxType = "亲属卡交易"
 	TxTypeSponsorCode          TxType = "赞赏码"
+	TxTypeOther                TxType = "其他"
 	TxTypeUnknown              TxType = "Unknown"
 )
