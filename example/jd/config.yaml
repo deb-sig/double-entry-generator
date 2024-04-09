@@ -1,0 +1,27 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCurrency: CNY
+title: 测试
+jd:
+  rules:
+    - method: 京东白条
+      methodAccount: Liabilities:Baitiao
+    - method: 小金库零用钱
+      methodAccount: Assets:EPay:JD
+    - item: 椰子
+      targetAccount: Expenses:Food
+    - item: 京东小金库-转入
+      peer: 京东金融
+      targetAccount: Assets:EPay:JD
+    - category: 美妆个护
+      targetAccount: Expenses:MakeUp
+    - item: "食品酒饮"
+      targetAccount: Assets:Food
+    - peer: 亲密卡
+      targetAccount: Expenses:Prpaid
+    - item: 白条,还款
+      targetAccount: Liabilities:Baitiao
+    - item: 京东小金库收益
+      fullMatch: true
+      targetAccount: Income:PnL:JD
+      methodAccount: Assets:EPay:JD
