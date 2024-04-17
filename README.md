@@ -315,6 +315,17 @@ double-entry-generator translate \
 + Beancount 转换的结果示例: [example-bmo-out.beancount](./example/bmo/debit/example-bmo-output.beancount)
 + Ledger 转换的结果示例: [example-bmo-out.ledger](./example/bmo/debit/example-bmo-output.ledger)
 
+### 京东
+
+1. 打开京东手机 APP
+2. 前往我的 -> 我的钱包 -> 账单
+3. 点击右上角 Icon(三条横杠)
+4. 选择“账单导出（仅限个人对账）”
+
+#### 格式示例
+
+[example-jd-records.csv](./example/jd/example-jd-records.csv)
+
 ## 配置
 
 ### 支付宝
@@ -854,6 +865,54 @@ BMO账单中的记账金额中存在收入/支出之分，通过这个机制就�
 | ----- | ------------------ | ------------------ |
 | 收入  | targetAccount      | defaultCashAccount |
 | 支出  | defaultCashAccount | targetAccount      |
+
+### 京东
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCurrency: CNY
+title: 测试
+jd:
+  rules:
+    - method: 京东白条
+      methodAccount: Liabilities:Baitiao
+    - method: 小金库零用钱
+      methodAccount: Assets:EPay:JD
+    - item: 椰子
+      targetAccount: Expenses:Food
+    - item: 京东小金库-转入
+      peer: 京东金融
+      targetAccount: Assets:EPay:JD
+    - category: 美妆个护
+      targetAccount: Expenses:MakeUp
+    - item: "食品酒饮"
+      targetAccount: Assets:Food
+    - peer: 亲密卡
+      targetAccount: Expenses:Prpaid
+    - item: 白条,还款
+      targetAccount: Liabilities:Baitiao
+    - item: 京东小金库收益
+      fullMatch: true
+      targetAccount: Income:PnL:JD
+      methodAccount: Assets:EPay:JD
+```
+
+京东账单的格式总体上和[支付宝](#支付宝-3)类似。
+
+京东账单在交易类别为`不计收支`时，账户的处理分为两种情况：
+
+1. 一般情况：`收/付款方式`（即`method`匹配的字段） 一般为支出账户, `交易分类`（即 `category` 匹配的字段）一般为收入账户。例如银行卡资金转入京东小金库时，`收/付款方式` 为银行卡，`交易分类` 为小金库; 白条还款时，`收/付款方式` 为银行卡或小金库零用钱，`交易分类` 为白条。
+
+2. 特殊情况：`交易说明`（即`item`匹配的字段）的前缀为`冻结-`或`解冻-`时为`不计收支`的特殊情况。`冻结-`情形下, `收/付款方式`为支出账户; `解冻-`情形下 `收/付款方式`为收入账户但是金额为 0。目前所有和`冻结` , `解冻` 相关的交易会被忽略。
+
+`targetAccount` 与 `methodAccount` 的增减账户关系如下表：
+
+| 收/支    | minusAccount  | plusAccount   |
+| -------- | ------------- | ------------- |
+| 收入     | targetAccount | methodAccount |
+| 支出     | methodAccount | targetAccount |
+| 不计收支 | methodAccount | targetAccount |
 
 ## Special Thanks
 

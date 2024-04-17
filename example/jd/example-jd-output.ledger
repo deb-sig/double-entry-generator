@@ -1,0 +1,165 @@
+1970/01/01 * Open Balance
+    Assets:EPay:JD     0 CNY
+    Assets:FIXME     0 CNY
+    Assets:Food     0 CNY
+    Expenses:FIXME     0 CNY
+    Expenses:Food     0 CNY
+    Expenses:MakeUp     0 CNY
+    Expenses:Prpaid     0 CNY
+    Income:PnL:JD     0 CNY
+    Liabilities:Baitiao     0 CNY
+    Equity:Opening Balances 
+2021/11/17 * 京东金融 - 京东小金库-转入 
+    ; category: "小金库"
+    ; merchantId: "100000000000000000000027"
+    ; method: "银行卡"
+    ; orderId: "2000000000000079"
+    ; payTime: "2021-11-17 23:06:50 &#43;0800 CST"
+    ; source: "京东金融"
+    ; status: "交易成功"
+    ; type: "不计收支"
+    Assets:EPay:JD      2990.13 CNY
+    Assets:FIXME   - 2990.13 CNY
+
+2021/12/11 * 亲密卡 - 亲密卡 
+    ; category: "线下消费"
+    ; merchantId: "160000000000000000000006"
+    ; method: "京东白条"
+    ; payTime: "2021-12-11 23:51:52 &#43;0800 CST"
+    ; source: "亲密卡"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Prpaid      238.18 CNY
+    Liabilities:Baitiao   - 238.18 CNY
+
+2021/12/12 * 亲密卡 - 亲密卡 
+    ; category: "线下消费"
+    ; merchantId: "100000000000000000000045"
+    ; method: "京东白条"
+    ; payTime: "2021-12-12 19:06:00 &#43;0800 CST"
+    ; source: "亲密卡"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Prpaid      53.00 CNY
+    Liabilities:Baitiao   - 53.00 CNY
+
+2021/12/15 * 京东金融 - 白条主动还款 
+    ; category: "白条"
+    ; merchantId: "107500000000000000000058"
+    ; method: "小金库零用钱"
+    ; orderId: "2000000000000000000"
+    ; payTime: "2021-12-15 12:09:23 &#43;0800 CST"
+    ; source: "京东金融"
+    ; status: "交易成功"
+    ; type: "不计收支"
+    Liabilities:Baitiao      1125.43 CNY
+    Assets:EPay:JD   - 1125.43 CNY
+
+2021/12/15 * 京东平台商户 - 退款-freeplus洁面乳150ml 
+    ; category: "网购"
+    ; merchantId: "2000000000000000954"
+    ; method: "京东白条"
+    ; orderId: "88438843884"
+    ; payTime: "2021-12-15 18:35:00 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "交易成功"
+    ; type: "收入"
+    Liabilities:Baitiao      112.98 CNY
+    Assets:FIXME   - 112.98 CNY
+
+2021/12/15 * 京东平台商户 - 退款-freeplus洁面乳150ml 
+    ; category: "网购"
+    ; merchantId: "2000000000000000000"
+    ; method: "京东白条"
+    ; orderId: "88438843884"
+    ; payTime: "2021-12-15 19:29:00 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "交易成功"
+    ; type: "收入"
+    Liabilities:Baitiao      1.00 CNY
+    Assets:FIXME   - 1.00 CNY
+
+2021/12/15 * Food - Food 
+    ; category: "食品酒饮"
+    ; merchantId: "110000000000000000000000"
+    ; method: "京东白条"
+    ; orderId: "200000000014"
+    ; payTime: "2021-12-15 19:35:14 &#43;0800 CST"
+    ; source: "Food"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:FIXME      79.88 CNY
+    Liabilities:Baitiao   - 79.88 CNY
+
+2021/12/16 * 京东平台商户 - 退款-freeplus洁面乳150ml 
+    ; category: "网购"
+    ; merchantId: "1000000000000000000"
+    ; method: "京东白条"
+    ; orderId: "88438843884"
+    ; payTime: "2021-12-16 08:22:00 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "交易成功"
+    ; type: "收入"
+    Liabilities:Baitiao      1.00 CNY
+    Assets:FIXME   - 1.00 CNY
+
+2021/12/18 * 京东平台商户 - freeplus洁面乳150ml 
+    ; category: "美妆个护"
+    ; merchantId: "100000000000000000000002"
+    ; method: "京东白条"
+    ; orderId: "88438843884"
+    ; payTime: "2021-12-18 19:45:25 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:MakeUp      223.99 CNY
+    Liabilities:Baitiao   - 223.99 CNY
+
+2021/12/23 * Members - Members Mark 泰国进口 椰子水 1L*6支 椰子汁饮料 
+    ; category: "食品酒饮"
+    ; merchantId: "110000000000000000000044"
+    ; method: "京东白条"
+    ; orderId: "234906303557"
+    ; payTime: "2021-12-23 12:04:37 &#43;0800 CST"
+    ; source: "Members"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Food      91.42 CNY
+    Liabilities:Baitiao   - 91.42 CNY
+
+2021/12/28 * 京东小金库 - 京东小金库收益 
+    ; category: "小金库"
+    ; merchantId: "29999999999999999992"
+    ; method: "小金库零用钱"
+    ; orderId: "20000000000000000002"
+    ; payTime: "2021-12-28 12:14:38 &#43;0800 CST"
+    ; source: "京东小金库"
+    ; status: "交易成功"
+    ; type: "收入"
+    Assets:EPay:JD      0.01 CNY
+    Income:PnL:JD   - 0.01 CNY
+
+2021/12/29 * 京东小金库 - 京东小金库收益 
+    ; category: "小金库"
+    ; merchantId: "20000000000000000002"
+    ; method: "小金库零用钱"
+    ; orderId: "20000000000000000022"
+    ; payTime: "2021-12-29 06:37:20 &#43;0800 CST"
+    ; source: "京东小金库"
+    ; status: "交易成功"
+    ; type: "收入"
+    Assets:EPay:JD      0.01 CNY
+    Income:PnL:JD   - 0.01 CNY
+
+2023/12/08 * 京东云余额充值预付款网银账户 - PLUS京典年卡(先享后付) 
+    ; category: "其他"
+    ; merchantId: "700000000000000"
+    ; method: "京东白条"
+    ; orderId: "700000000000008"
+    ; payTime: "2023-12-08 00:14:40 &#43;0800 CST"
+    ; source: "京东云余额充值预付款网银账户"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:FIXME      99.00 CNY
+    Liabilities:Baitiao   - 99.00 CNY
+

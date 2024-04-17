@@ -41,7 +41,8 @@ func convertType(t Type) ir.Type {
 }
 
 // getMetadata get the metadata (e.g. status, method, category and so on.)
-//  from order.
+//
+//	from order.
 func getMetadata(o Order) map[string]string {
 	// FIXME(TripleZ): hard-coded, bad pattern
 	source := "支付宝"
