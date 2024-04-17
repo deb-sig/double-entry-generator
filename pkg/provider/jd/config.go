@@ -1,6 +1,6 @@
 package jd
 
-// Config is the configuration for Alipay.
+// Config is the configuration for JD.
 type Config struct {
 	Rules []Rule `mapstructure:"rules,omitempty"`
 }
