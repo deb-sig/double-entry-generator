@@ -9,6 +9,7 @@
 - 中国工商银行
 - Toronto-Dominion Bank
 - Bank of Montreal
+- 京东
 
 目前记账语言支持：
 
@@ -263,7 +264,7 @@ double-entry-generator translate \
 
 #### 下载方式
 
-登录e海通财PC独立交易版PC客户端，左侧导航栏选择查询-交割单，右侧点击查询按钮导出交割单excel文件。
+登录 e 海通财 PC 独立交易版 PC 客户端，左侧导航栏选择查询-交割单，右侧点击查询按钮导出交割单 excel 文件。
 
 #### 格式示例
 
@@ -291,7 +292,7 @@ double-entry-generator translate \
 
 ### Toronto-Dominion Bank
 
-1. 登录TD 网页版本: https://easyweb.td.com/
+1. 登录 TD 网页版本: https://easyweb.td.com/
 2. 点击指定的账户
 3. 选择账单范围 -> "Select Download Format" -> Spreadsheet(.csv) -> Download
 
@@ -299,8 +300,8 @@ double-entry-generator translate \
 
 [example-td-records.csv](./example/td/example-td-records.csv)
 
-+ Beancount 转换的结果示例: [example-td-out.beancount](./example/td/example-td-output.beancount)
-+ Ledger 转换的结果示例: [example-td-out.ledger](./example/td/example-td-output.ledger)
+- Beancount 转换的结果示例: [example-td-out.beancount](./example/td/example-td-output.beancount)
+- Ledger 转换的结果示例: [example-td-out.ledger](./example/td/example-td-output.ledger)
 
 ### Bank of Montreal
 
@@ -312,8 +313,19 @@ double-entry-generator translate \
 
 [example-bmo-record.csv](./example/bmo/debit/example-bmo-records.csv)
 
-+ Beancount 转换的结果示例: [example-bmo-out.beancount](./example/bmo/debit/example-bmo-output.beancount)
-+ Ledger 转换的结果示例: [example-bmo-out.ledger](./example/bmo/debit/example-bmo-output.ledger)
+- Beancount 转换的结果示例: [example-bmo-out.beancount](./example/bmo/debit/example-bmo-output.beancount)
+- Ledger 转换的结果示例: [example-bmo-out.ledger](./example/bmo/debit/example-bmo-output.ledger)
+
+### 京东
+
+1. 打开京东手机 APP
+2. 前往我的 -> 我的钱包 -> 账单
+3. 点击右上角 Icon(三条横杠)
+4. 选择“账单导出（仅限个人对账）”
+
+#### 格式示例
+
+[example-jd-records.csv](./example/jd/example-jd-records.csv)
 
 ## 配置
 
@@ -406,6 +418,7 @@ alipay:
 `alipay` is the provider-specific configuration. Alipay provider has rules matching mechanism.
 
 `alipay` 蚂蚁账单相关的配置。它提供基于规则的匹配。可以指定：
+
 - `peer`（交易对方）的完全/包含匹配。
 - `item`（商品说明）的完全/包含匹配。
 - `type`（收/支）的完全/包含匹配。
@@ -413,9 +426,10 @@ alipay:
 - `category`（交易分类）的完全/包含匹配。
 - `time`（交易时间）的区间匹配。
   > 交易时间可写为以下两种形式：
+  >
   > - `11:00-13:00`
   > - `11:00:00-13:00:00`
-  > 24 小时制，起始时间和终止之间之间使用 `-` 分隔。
+  >   24 小时制，起始时间和终止之间之间使用 `-` 分隔。
 
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
 
@@ -433,13 +447,12 @@ alipay:
 
 `targetAccount` 与 `methodAccount` 的增减账户关系如下表：
 
-
 | 收/支 | 交易分类 | minusAccount  | plusAccount   |
 | ----- | -------- | ------------- | ------------- |
-| 收入  | *        | targetAccount | methodAccount |
+| 收入  | \*       | targetAccount | methodAccount |
 | 收入  | 退款     | targetAccount | methodAccount |
-| 支出  | *        | methodAccount | targetAccount |
-| 其他  | *        | methodAccount | targetAccount |
+| 支出  | \*       | methodAccount | targetAccount |
+| 其他  | \*       | methodAccount | targetAccount |
 | 其他  | 退款     | targetAccount | methodAccount |
 
 > 当交易类型为「其他」时，需要自行手动定义借贷账户。此时本软件会认为 `methodAccount` 是贷账户，`targetAccount` 是借账户。
@@ -481,11 +494,11 @@ wechat:
       targetAccount: Assets:Bank:CN:ICBC:Savings
 
     - peer: 云膳过桥米线,餐厅
-      sep: ','
+      sep: ","
       time: 11:00-15:00
       targetAccount: Expenses:Food:Meal:Lunch
     - peer: 云膳过桥米线,餐厅
-      sep: ','
+      sep: ","
       time: 16:30-21:30
       targetAccount: Expenses:Food:Meal:Dinner
     - peer: 餐厅
@@ -523,7 +536,6 @@ wechat:
       methodAccount: Assets:Bank:CN:ICBC:Savings
     - method: 中国银行
       methodAccount: Assets:Bank:CN:BOC:Savings
-
 ```
 
 </details></br>
@@ -535,6 +547,7 @@ wechat:
 `wechat` is the provider-specific configuration. WeChat provider has rules matching mechanism.
 
 `wechat` 是微信相关的配置。它提供基于规则的匹配。可以指定：
+
 - `peer`（交易对方）的完全/包含匹配。
 - `item`（商品名称）的完全/包含匹配。
 - `type`（收/支）的完全/包含匹配。
@@ -542,9 +555,10 @@ wechat:
 - `method`（支付方式）的完全/包含匹配。
 - `time`（交易时间）的区间匹配。
   > 交易时间可写为以下两种形式：
+  >
   > - `11:00-13:00`
   > - `11:00:00-13:00:00`
-  > 24 小时制，起始时间和终止之间之间使用 `-` 分隔。
+  >   24 小时制，起始时间和终止之间之间使用 `-` 分隔。
 
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
 
@@ -583,11 +597,11 @@ defaultCurrency: USDT
 title: 测试
 huobi:
   rules:
-    - item: BTC/USDT,BTC1S/USDT  # multiple keywords with separator
+    - item: BTC/USDT,BTC1S/USDT # multiple keywords with separator
       type: 买入
       txType: 币币交易
       fullMatch: true
-      sep: ','  # define separator as a comma
+      sep: "," # define separator as a comma
       cashAccount: Assets:Rule1:Cash
       positionAccount: Assets:Rule1:Positions
       CommissionAccount: Expenses:Rule1:Commission
@@ -601,14 +615,16 @@ huobi:
 `huobi` is the provider-specific configuration. Huobi provider has rules matching mechanism.
 
 `huobi` 是火币相关的配置。它提供基于规则的匹配。可以指定：
+
 - `item`（交易对）的完全/包含匹配。
 - `type`（交易方向）的完全/包含匹配。
 - `txType`（交易类型）的完全/包含匹配。
 - `time`（交易时间）的区间匹配。
   > 交易时间可写为以下两种形式：
+  >
   > - `11:00-13:00`
   > - `11:00:00-13:00:00`
-  > 24 小时制，起始时间和终止之间之间使用 `-` 分隔。
+  >   24 小时制，起始时间和终止之间之间使用 `-` 分隔。
 
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
 
@@ -621,6 +637,7 @@ huobi:
 规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
 
 其中：
+
 - `defaultCashAccount` 是默认资本账户，一般用于存储 USDT。
 - `defaultPositionAccount` 是默认持仓账户。
 - `defaultCommissionAccount` 是默认手续费账户。
@@ -645,7 +662,7 @@ htsec:
   rules:
     - item: 兴业转债
       type: 卖
-      sep: ','
+      sep: ","
       cashAccount: Assets:Rule1:Cash
       positionAccount: Assets:Rule1:Positions
       CommissionAccount: Expenses:Rule1:Commission
@@ -659,13 +676,15 @@ htsec:
 `htsec` is the provider-specific configuration. Htsec provider has rules matching mechanism.
 
 `htsec` 是海通证券相关的配置。它提供基于规则的匹配。可以指定：
+
 - `item`（交易方向-证券编码-证券市值）的完全/包含匹配。
 - `type`（交易方向）的完全/包含匹配。
 - `time`（交易时间）的区间匹配。
   > 交易时间可写为以下两种形式：
+  >
   > - `11:00-13:00`
   > - `11:00:00-13:00:00`
-      > 24 小时制，起始时间和终止之间之间使用 `-` 分隔。
+  >   24 小时制，起始时间和终止之间之间使用 `-` 分隔。
 
 在单条规则中可以使用分隔符（sep）填写多个关键字，在同一对象中，每个关键字之间是或的关系。
 
@@ -678,6 +697,7 @@ htsec:
 规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
 
 其中：
+
 - `defaultCashAccount` 是默认资本账户，一般用于存储证券账户可用资金。
 - `defaultPositionAccount` 是默认持仓账户。
 - `defaultCommissionAccount` 是默认手续费账户。
@@ -714,6 +734,7 @@ icbc:
 `defaultMinusAccount`, `defaultPlusAccount`, `defaultCashAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户， `defaultCashAccount` 是该配置中默认使用的银行卡账户（等同于支付宝/微信中的 `methodAccount` ）。 `defaultCurrency` 是默认货币。
 
 `icbc` 是中国工商银行相关的配置。它提供基于规则的匹配。可以指定：
+
 - `peer`（交易对方）的完全/包含匹配。
 - `type`（收/支）的完全/包含匹配。
 - `txType`（交易类型）的完全/包含匹配。
@@ -765,14 +786,14 @@ td:
     - type: 收入
       item: "SEND E-TFR"
       targetAccount: Income:FIXME
-
 ```
 
 </details></br>
 
 `defaultMinusAccount`, `defaultPlusAccount`, `defaultCashAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户， `defaultCashAccount` 是该配置中默认使用的银行卡账户（等同于支付宝/微信中的 `methodAccount` ）。 `defaultCurrency` 是默认货币。
 
-`td` 是 Toronto-Dominion Bank相关的配置。它提供基于规则的匹配。因为TD本身的账单较简单，所以可以指定的规则不多：
+`td` 是 Toronto-Dominion Bank 相关的配置。它提供基于规则的匹配。因为 TD 本身的账单较简单，所以可以指定的规则不多：
+
 - `item`:（交易商品）的完全/包含匹配。
 - `type`:（收/支）的完全/包含匹配。
 
@@ -788,7 +809,7 @@ td:
 
 规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
 
-TD账单中的记账金额中存在收入/支出之分，通过这个机制就可以判断银行卡账户在交易中的正负关系。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和全局值 `defaultCashAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `defaultCashAccount` 的正负关系，来覆盖默认定义的增减账户。
+TD 账单中的记账金额中存在收入/支出之分，通过这个机制就可以判断银行卡账户在交易中的正负关系。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和全局值 `defaultCashAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `defaultCashAccount` 的正负关系，来覆盖默认定义的增减账户。
 
 `targetAccount` 与 `defaultCashAccount` 的增减账户关系如下表：
 
@@ -823,14 +844,14 @@ bmo:
     - type: 收入
       item: "SEND E-TFR"
       targetAccount: Income:FIXME
-
 ```
 
 </details></br>
 
 `defaultMinusAccount`, `defaultPlusAccount`, `defaultCashAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户， `defaultCashAccount` 是该配置中默认使用的银行卡账户（等同于支付宝/微信中的 `methodAccount` ）。 `defaultCurrency` 是默认货币。
 
-`bmo` 是 Toronto-Dominion Bank相关的配置。它提供基于规则的匹配。因为BMO本身的账单较简单，所以可以指定的规则不多：
+`bmo` 是 Toronto-Dominion Bank 相关的配置。它提供基于规则的匹配。因为 BMO 本身的账单较简单，所以可以指定的规则不多：
+
 - `item`:（交易商品）的完全/包含匹配。
 - `type`:（收/支）的完全/包含匹配。
 
@@ -846,7 +867,7 @@ bmo:
 
 规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
 
-BMO账单中的记账金额中存在收入/支出之分，通过这个机制就可以判断银行卡账户在交易中的正负关系。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和全局值 `defaultCashAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `defaultCashAccount` 的正负关系，来覆盖默认定义的增减账户。
+BMO 账单中的记账金额中存在收入/支出之分，通过这个机制就可以判断银行卡账户在交易中的正负关系。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和全局值 `defaultCashAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `defaultCashAccount` 的正负关系，来覆盖默认定义的增减账户。
 
 `targetAccount` 与 `defaultCashAccount` 的增减账户关系如下表：
 
@@ -854,6 +875,54 @@ BMO账单中的记账金额中存在收入/支出之分，通过这个机制就�
 | ----- | ------------------ | ------------------ |
 | 收入  | targetAccount      | defaultCashAccount |
 | 支出  | defaultCashAccount | targetAccount      |
+
+### 京东
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCurrency: CNY
+title: 测试
+jd:
+  rules:
+    - method: 京东白条
+      methodAccount: Liabilities:Baitiao
+    - method: 小金库零用钱
+      methodAccount: Assets:EPay:JD
+    - item: 椰子
+      targetAccount: Expenses:Food
+    - item: 京东小金库-转入
+      peer: 京东金融
+      targetAccount: Assets:EPay:JD
+    - category: 美妆个护
+      targetAccount: Expenses:MakeUp
+    - item: "食品酒饮"
+      targetAccount: Assets:Food
+    - peer: 亲密卡
+      targetAccount: Expenses:Prpaid
+    - item: 白条,还款
+      targetAccount: Liabilities:Baitiao
+    - item: 京东小金库收益
+      fullMatch: true
+      targetAccount: Income:PnL:JD
+      methodAccount: Assets:EPay:JD
+```
+
+京东账单的格式总体上和[支付宝](#支付宝-3)类似。
+
+京东账单在交易类别为`不计收支`时，账户的处理分为两种情况：
+
+1. 一般情况：`收/付款方式`（即`method`匹配的字段） 一般为支出账户, `交易分类`（即 `category` 匹配的字段）一般为收入账户。例如银行卡资金转入京东小金库时，`收/付款方式` 为银行卡，`交易分类` 为小金库; 白条还款时，`收/付款方式` 为银行卡或小金库零用钱，`交易分类` 为白条。
+
+2. 特殊情况：`交易说明`（即`item`匹配的字段）的前缀为`冻结-`或`解冻-`时为`不计收支`的特殊情况。`冻结-`情形下, `收/付款方式`为支出账户; `解冻-`情形下 `收/付款方式`为收入账户但是金额为 0。目前所有和`冻结` , `解冻` 相关的交易会被忽略。
+
+`targetAccount` 与 `methodAccount` 的增减账户关系如下表：
+
+| 收/支    | minusAccount  | plusAccount   |
+| -------- | ------------- | ------------- |
+| 收入     | targetAccount | methodAccount |
+| 支出     | methodAccount | targetAccount |
+| 不计收支 | methodAccount | targetAccount |
 
 ## Special Thanks
 
