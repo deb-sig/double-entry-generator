@@ -76,7 +76,7 @@ func New() *JD {
 
 func (c *JD) Translate(fn string) (*ir.IR, error) {
 
-	log.SetPrefix("[Provider-Alipay] ")
+	log.SetPrefix("[Provider-JD] ")
 	r, err := reader.GetReader(fn)
 	if err != nil {
 		return nil, fmt.Errorf("can not get bill reader. %w", err)

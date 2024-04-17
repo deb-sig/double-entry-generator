@@ -117,8 +117,6 @@ func (a JD) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider
 				}
 			}
 
-			log.Println(resPlus, resMinus, o.Item, r.TargetAccount, r.MethodAccount)
-
 			if r.Tags != nil {
 				tags = strings.Split(*r.Tags, sep)
 			}
