@@ -124,8 +124,9 @@ func (a JD) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider
 		}
 	}
 
-	if strings.HasPrefix(o.Item, "退款-") && ir.TypeRecv != o.Type {
-		return ignore, resPlus, resMinus, extraAccounts, tags
+	if o.TypeOriginal == "不计收支" && (strings.HasPrefix(o.Item, "冻结-") ||
+		strings.HasPrefix(o.Item, "解冻-")) {
+		ignore = true
 	}
 	return ignore, resMinus, resPlus, extraAccounts, tags
 }

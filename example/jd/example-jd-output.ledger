@@ -151,3 +151,15 @@
     Assets:EPay:JD      0.01 CNY
     Income:PnL:JD   - 0.01 CNY
 
+2023/12/08 * 京东云余额充值预付款网银账户 - PLUS京典年卡(先享后付) 
+    ; category: "其他"
+    ; merchantId: "700000000000000"
+    ; method: "京东白条"
+    ; orderId: "700000000000008"
+    ; payTime: "2023-12-08 00:14:40 &#43;0800 CST"
+    ; source: "京东云余额充值预付款网银账户"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:FIXME      99.00 CNY
+    Liabilities:Baitiao   - 99.00 CNY
+
