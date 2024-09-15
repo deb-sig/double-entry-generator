@@ -90,6 +90,12 @@ func (a Alipay) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 				log.Fatalf(err.Error())
 			}
 		}
+		if r.MinPrice != nil && o.Money < *r.MinPrice {
+			match = false
+		}
+		if r.MaxPrice != nil && o.Money > *r.MaxPrice {
+			match = false
+		}
 
 		if match {
 			if r.Ignore {

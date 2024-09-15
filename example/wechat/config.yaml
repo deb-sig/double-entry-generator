@@ -44,6 +44,16 @@ wechat:
       time: 23:50-00:05 # test T-1
       targetAccount: Expenses:Food:Meal:MidNight
 
+    - peer: 美团平台商户
+      type: 支出
+      minPrice: 0
+      maxPrice: 9.99
+      targetAccount: Expenses:Food:Drink
+    - peer: 美团平台商户
+      type: 支出
+      minPrice: 10
+      targetAccount: Expenses:Food:Meal
+
     - peer: 房东
       type: 支出
       targetAccount: Expenses:Housing:Rent

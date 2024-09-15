@@ -15,7 +15,12 @@ alipay:
       methodAccount: Assets:Alipay
 
     - category: 日用百货
+      minPrice: 10
       targetAccount: Expenses:Groceries
+    - category: 日用百货
+      minPrice: 0
+      maxPrice: 9.99
+      targetAccount: Expenses:Food:Drink
     - category: 餐饮美食
       time: 11:00-14:00
       targetAccount: Expenses:Food:Lunch
