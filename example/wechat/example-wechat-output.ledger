@@ -5,6 +5,8 @@
     Assets:FIXME     0 CNY
     Assets:Trade:Tencent:LiCaiTong     0 CNY
     Expenses:FIXME     0 CNY
+    Expenses:Food:Drink     0 CNY
+    Expenses:Food:Meal     0 CNY
     Expenses:Food:Meal:Dinner     0 CNY
     Expenses:Food:Meal:Lunch     0 CNY
     Expenses:Food:Meal:MidNight     0 CNY
@@ -274,4 +276,28 @@
     ; type: "收入"
     Assets:Digital:Wechat:Cash      5.00 CNY
     Income:Wechat:RedPacket   - 5.00 CNY
+
+2023/07/09 * 美团平台商户 - 美团订单-12345 
+    ; merchantId: "654321"
+    ; method: "工商银行"
+    ; orderId: "123456"
+    ; payTime: "2023-07-09 13:25:22 &#43;0800 CST"
+    ; source: "微信支付"
+    ; status: "支付成功"
+    ; txType: "商户消费"
+    ; type: "支出"
+    Expenses:Food:Drink      9.90 CNY
+    Assets:Bank:CN:ICBC:Savings   - 9.90 CNY
+
+2023/07/09 * 美团平台商户 - 美团订单-54321 
+    ; merchantId: "654321"
+    ; method: "工商银行"
+    ; orderId: "123456"
+    ; payTime: "2023-07-09 13:30:22 &#43;0800 CST"
+    ; source: "微信支付"
+    ; status: "支付成功"
+    ; txType: "商户消费"
+    ; type: "支出"
+    Expenses:Food:Meal      50.00 CNY
+    Assets:Bank:CN:ICBC:Savings   - 50.00 CNY
 

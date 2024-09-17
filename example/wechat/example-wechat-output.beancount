@@ -7,6 +7,8 @@ option "operating_currency" "CNY"
 1970-01-01 open Assets:FIXME
 1970-01-01 open Assets:Trade:Tencent:LiCaiTong
 1970-01-01 open Expenses:FIXME
+1970-01-01 open Expenses:Food:Drink
+1970-01-01 open Expenses:Food:Meal
 1970-01-01 open Expenses:Food:Meal:Dinner
 1970-01-01 open Expenses:Food:Meal:Lunch
 1970-01-01 open Expenses:Food:Meal:MidNight
@@ -275,4 +277,28 @@ option "operating_currency" "CNY"
 	type: "收入"
 	Assets:Digital:Wechat:Cash 5.00 CNY
 	Income:Wechat:RedPacket -5.00 CNY
+
+2023-07-09 * "美团平台商户" "美团订单-12345"
+	merchantId: "654321"
+	method: "工商银行"
+	orderId: "123456"
+	payTime: "2023-07-09 13:25:22 +0800 CST"
+	source: "微信支付"
+	status: "支付成功"
+	txType: "商户消费"
+	type: "支出"
+	Expenses:Food:Drink 9.90 CNY
+	Assets:Bank:CN:ICBC:Savings -9.90 CNY
+
+2023-07-09 * "美团平台商户" "美团订单-54321"
+	merchantId: "654321"
+	method: "工商银行"
+	orderId: "123456"
+	payTime: "2023-07-09 13:30:22 +0800 CST"
+	source: "微信支付"
+	status: "支付成功"
+	txType: "商户消费"
+	type: "支出"
+	Expenses:Food:Meal 50.00 CNY
+	Assets:Bank:CN:ICBC:Savings -50.00 CNY
 
