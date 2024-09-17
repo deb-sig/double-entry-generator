@@ -102,6 +102,9 @@ func (w Wechat) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 				log.Fatalf("Error in SplitFindTimeStampInterval: %v", err)
 			}
 		}
+		if r.MinPrice != nil && r.MaxPrice != nil && *r.MinPrice > *r.MaxPrice {
+			log.Fatalf("Error rule: minPrice > maxPrice!")
+		}
 		if r.MinPrice != nil && o.Money < *r.MinPrice {
 			match = false
 		}
