@@ -6,6 +6,7 @@
     Expenses:Electronics     0 CNY
     Expenses:FIXME     0 CNY
     Expenses:Food:Dinner     0 CNY
+    Expenses:Food:Drink     0 CNY
     Expenses:Food:Lunch     0 CNY
     Expenses:Groceries     0 CNY
     Expenses:Insurance     0 CNY
@@ -72,4 +73,26 @@
     ; type: "支出"
     Expenses:FIXME      49.74 CNY
     Liabilities:CC:COMM:7449   - 49.74 CNY
+
+2023/07/10 * xxxx - xxxx 
+    ; category: "日用百货"
+    ; merchantId: "xxxx"
+    ; orderId: "xxxx"
+    ; payTime: "2023-07-10 13:10:16 &#43;0800 CST"
+    ; source: "支付宝"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Food:Drink      9.90 CNY
+    Assets:FIXME   - 9.90 CNY
+
+2023/07/10 * xxxx - xxxx 
+    ; category: "日用百货"
+    ; merchantId: "xxxx"
+    ; orderId: "xxxx"
+    ; payTime: "2023-07-10 13:20:16 &#43;0800 CST"
+    ; source: "支付宝"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Groceries      82.00 CNY
+    Assets:FIXME   - 82.00 CNY
 
