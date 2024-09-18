@@ -53,7 +53,7 @@ func (icbc *Icbc) translateToOrders(array []string) error {
 		bill.Balances, _ = strconv.ParseFloat(strings.ReplaceAll(array[11], ",", ""), 64)
 		bill.PeerAccountName = array[12]
 	case DebitMode:
-		debitBillVersion := 1
+		var debitBillVersion int32
 		if len(array) == 14 {
 			debitBillVersion = 1
 		} else if len(array) == 16 {
