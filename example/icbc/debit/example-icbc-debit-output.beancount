@@ -67,3 +67,13 @@ option "operating_currency" "CNY"
 	Assets:Bank:CN:ICBC 1234.56 CNY
 	Assets:Borrow -1234.56 CNY
 
+2023-05-02 * "广东三元麦当劳食品有 深圳市财付通支付科技有限公司"
+	cardName: "这是卡别名"
+	currency: "人民币"
+	peerAccount: "深圳市财付通支付科技有限公司"
+	source: "中国工商银行"
+	txType: "消费"
+	type: "支出"
+	Expenses:FIXME 13.40 CNY
+	Assets:Bank:CN:ICBC -13.40 CNY
+

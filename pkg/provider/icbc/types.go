@@ -20,12 +20,14 @@ type Order struct {
 	PayTime         time.Time // 记账日期
 	TxTypeOriginal  string    // 摘要
 	Peer            string    // 交易场所
+	Item            string    // 交易详情
 	Region          string    // 交易国家或地区简称
 	Money           float64   // 记账金额 (收入/支出)
 	Type            OrderType // 收/支 (数据中无该列，推测而来)
 	Currency        string    // 记账币种
 	Balances        float64   // 余额
 	PeerAccountName string    // 对方户名
+	PeerAccountNum  string    // 对方账户
 }
 
 // localTimeFmt set time format to utc+8

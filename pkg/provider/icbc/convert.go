@@ -12,6 +12,7 @@ func (icbc *Icbc) convertToIR() *ir.IR {
 	for _, o := range icbc.Orders {
 		irO := ir.Order{
 			Peer:           o.Peer,
+			Item:           o.Item,
 			Money:          o.Money,
 			PayTime:        o.PayTime,
 			Type:           convertType(o.Type),
@@ -36,11 +37,12 @@ func convertType(t OrderType) ir.Type {
 }
 
 // getMetadata get the metadata (e.g. status, method, category and so on.)
-//  from order.
+//
+//	from order.
 func (icbc *Icbc) getMetadata(o Order) map[string]string {
 	// FIXME(TripleZ): hard-coded, bad pattern
 	source := "中国工商银行"
-	var txTypeOriginal, guessedType, currency, balances, peerAccount string
+	var txTypeOriginal, guessedType, currency, balances, peerAccount, peerAccountNum string
 
 	if o.TxTypeOriginal != "" {
 		txTypeOriginal = o.TxTypeOriginal
@@ -62,13 +64,18 @@ func (icbc *Icbc) getMetadata(o Order) map[string]string {
 		peerAccount = o.PeerAccountName
 	}
 
+	if o.PeerAccountNum != "" {
+		peerAccountNum = o.PeerAccountNum
+	}
+
 	metadata := map[string]string{
-		"source":      source,
-		"txType":      txTypeOriginal,
-		"type":        guessedType,
-		"currency":    currency,
-		"balances":    balances,
-		"peerAccount": peerAccount,
+		"source":         source,
+		"txType":         txTypeOriginal,
+		"type":           guessedType,
+		"currency":       currency,
+		"balances":       balances,
+		"peerAccount":    peerAccount,
+		"peerAccountNum": peerAccountNum,
 	}
 
 	if icbc.CardName != "" {
