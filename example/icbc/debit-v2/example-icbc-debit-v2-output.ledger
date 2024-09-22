@@ -1,0 +1,84 @@
+1970/01/01 * Open Balance
+    Assets:Borrow     0 CNY
+    Assets:FIXME     0 CNY
+    Expenses:FIXME     0 CNY
+    Income:Bank:ICBC:CreditCard     0 CNY
+    Liabilities:Bank:CMB:CreditCard     0 CNY
+    Equity:Opening Balances 
+2023/02/10 * 总行信用卡合伙人
+    ; cardName: "这是卡别名"
+    ; currency: "人民币"
+    ; peerAccount: "总行信用卡合伙人"
+    ; peerAccountNum: "1234****9876"
+    ; source: "中国工商银行"
+    ; txType: "合伙人返现"
+    ; type: "收入"
+    Assets:Bank:CN:ICBC      30.00 CNY
+    Income:Bank:ICBC:CreditCard   - 30.00 CNY
+
+2023/02/20 * 手机银行 张三
+    ; cardName: "这是卡别名"
+    ; currency: "人民币"
+    ; peerAccount: "张三"
+    ; peerAccountNum: "1234****9876"
+    ; source: "中国工商银行"
+    ; txType: "跨行汇款"
+    ; type: "支出"
+    Assets:Borrow      1234.56 CNY
+    Assets:Bank:CN:ICBC   - 1234.56 CNY
+
+2023/04/14 * ABC公司
+    ; cardName: "这是卡别名"
+    ; currency: "人民币"
+    ; peerAccount: "ABC公司"
+    ; peerAccountNum: "1234****9876"
+    ; source: "中国工商银行"
+    ; txType: "工资"
+    ; type: "收入"
+    Assets:Bank:CN:ICBC      1234.56 CNY
+    Assets:FIXME   - 1234.56 CNY
+
+2023/04/14 * 手机银行 王五
+    ; cardName: "这是卡别名"
+    ; currency: "人民币"
+    ; peerAccount: "王五"
+    ; peerAccountNum: "1234****9876"
+    ; source: "中国工商银行"
+    ; txType: "网转"
+    ; type: "支出"
+    Assets:Borrow      500.00 CNY
+    Assets:Bank:CN:ICBC   - 500.00 CNY
+
+2023/04/20 * 银联无卡支付业务((特约)掌上生活还款)
+    ; cardName: "这是卡别名"
+    ; currency: "人民币"
+    ; peerAccount: "银联无卡支付业务((特约)掌上生活还款)"
+    ; peerAccountNum: "1234****9876"
+    ; source: "中国工商银行"
+    ; txType: "银联消费"
+    ; type: "支出"
+    Liabilities:Bank:CMB:CreditCard      1234.56 CNY
+    Assets:Bank:CN:ICBC   - 1234.56 CNY
+
+2023/04/22 * 李四
+    ; cardName: "这是卡别名"
+    ; currency: "人民币"
+    ; peerAccount: "李四"
+    ; peerAccountNum: "1234****9876"
+    ; source: "中国工商银行"
+    ; txType: "他行汇入"
+    ; type: "收入"
+    Assets:Bank:CN:ICBC      1234.56 CNY
+    Assets:Borrow   - 1234.56 CNY
+
+2023/05/02 * 广东三元麦当劳食品有 深圳市财付通支付科技有限公司
+    ; cardName: "这是卡别名"
+    ; currency: "人民币"
+    ; peerAccount: "深圳市财付通支付科技有限公司"
+    ; peerAccountNum: "1234****9876"
+    ; source: "中国工商银行"
+    ; txType: "消费"
+    ; type: "支出"
+    Expenses:FIXME      13.40 CNY
+    Assets:Bank:CN:ICBC   - 13.40 CNY
+
