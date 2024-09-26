@@ -1,0 +1,22 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:Bank:CN:ICBC
+defaultCurrency: CNY
+title: 测试
+icbc:
+  rules:
+    - peer: 财付通-,支付宝-
+      ignore: true
+    - peer: 支付宝
+      txType: 蚂蚁基金赎回到银行
+      ignore: true
+    - peer: 总行信用卡合伙人
+      targetAccount: Income:Bank:ICBC:CreditCard
+    - peer: 掌上生活还款
+      targetAccount: Liabilities:Bank:CMB:CreditCard
+    - txType: 自动还款
+      peer: 广东XX分行银行卡中心
+      ignore: true
+    - peer: 张三,李四,王五
+      txTpe: 汇款,网转,汇入
+      targetAccount: Assets:Borrow
