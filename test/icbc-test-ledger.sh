@@ -30,20 +30,37 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# generate icbc debit bills output in beancount format
+# generate icbc debit bills (v1) output in beancount format
 "$ROOT_DIR/bin/double-entry-generator" translate \
     --provider icbc \
     --target ledger \
-    --config "$ROOT_DIR/example/icbc/debit/config.yaml" \
+    --config "$ROOT_DIR/example/icbc/debit-v1/config.yaml" \
     --output "$DEBIT_OUTPUT" \
-    "$ROOT_DIR/example/icbc/debit/example-icbc-debit-records.csv"
+    "$ROOT_DIR/example/icbc/debit-v1/example-icbc-debit-v1-records.csv"
 
 diff -u --color \
-    "$ROOT_DIR/example/icbc/debit/example-icbc-debit-output.ledger" \
+    "$ROOT_DIR/example/icbc/debit-v1/example-icbc-debit-v1-output.ledger" \
     "$DEBIT_OUTPUT"
 
 if [ $? -ne 0 ]; then
-    echo "[FAIL] ICBC provider (debit mode) output is different from expected output."
+    echo "[FAIL] ICBC provider (debit mode v1) output is different from expected output."
+    exit 1
+fi
+
+# generate icbc debit bills (v1) output in beancount format
+"$ROOT_DIR/bin/double-entry-generator" translate \
+    --provider icbc \
+    --target ledger \
+    --config "$ROOT_DIR/example/icbc/debit-v2/config.yaml" \
+    --output "$DEBIT_OUTPUT" \
+    "$ROOT_DIR/example/icbc/debit-v2/example-icbc-debit-v2-records.csv"
+
+diff -u --color \
+    "$ROOT_DIR/example/icbc/debit-v2/example-icbc-debit-v2-output.ledger" \
+    "$DEBIT_OUTPUT"
+
+if [ $? -ne 0 ]; then
+    echo "[FAIL] ICBC provider (debit mode v2) output is different from expected output."
     exit 1
 fi
 

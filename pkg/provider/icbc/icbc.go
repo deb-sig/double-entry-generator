@@ -69,8 +69,8 @@ func (icbc *Icbc) Translate(filename string) (*ir.IR, error) {
 			}
 			log.Printf("Now the ICBC provider is in `%s` mode", icbc.Mode)
 			continue
-		} else if icbc.LineNum <= 5 {
-			// The first 5 non-empty lines are useless for us.
+		} else if icbc.LineNum <= 4 {
+			// The first 4 non-empty lines are useless for us.
 			continue
 		}
 
@@ -81,7 +81,7 @@ func (icbc *Icbc) Translate(filename string) (*ir.IR, error) {
 
 		err = icbc.translateToOrders(line)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to translate bill: line %d: %v",
+			return nil, fmt.Errorf("failed to translate bill: line %d: %v",
 				icbc.LineNum, err)
 		}
 	}

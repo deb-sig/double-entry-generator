@@ -27,19 +27,35 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# generate icbc debit bills output in beancount format
+# generate icbc debit bills (v1) output in beancount format
 "$ROOT_DIR/bin/double-entry-generator" translate \
     --provider icbc \
-    --config "$ROOT_DIR/example/icbc/debit/config.yaml" \
-    --output "$ROOT_DIR/test/output/test-icbc-debit-output.beancount" \
-    "$ROOT_DIR/example/icbc/debit/example-icbc-debit-records.csv"
+    --config "$ROOT_DIR/example/icbc/debit-v1/config.yaml" \
+    --output "$ROOT_DIR/test/output/test-icbc-debit-v1-output.beancount" \
+    "$ROOT_DIR/example/icbc/debit-v1/example-icbc-debit-v1-records.csv"
 
 diff -u --color \
-    "$ROOT_DIR/example/icbc/debit/example-icbc-debit-output.beancount" \
-    "$ROOT_DIR/test/output/test-icbc-debit-output.beancount"
+    "$ROOT_DIR/example/icbc/debit-v1/example-icbc-debit-v1-output.beancount" \
+    "$ROOT_DIR/test/output/test-icbc-debit-v1-output.beancount"
 
 if [ $? -ne 0 ]; then
-    echo "[FAIL] ICBC provider (debit mode) output is different from expected output."
+    echo "[FAIL] ICBC provider (debit mode v1) output is different from expected output."
+    exit 1
+fi
+
+# generate icbc debit bills (v2) output in beancount format
+"$ROOT_DIR/bin/double-entry-generator" translate \
+    --provider icbc \
+    --config "$ROOT_DIR/example/icbc/debit-v2/config.yaml" \
+    --output "$ROOT_DIR/test/output/test-icbc-debit-v2-output.beancount" \
+    "$ROOT_DIR/example/icbc/debit-v2/example-icbc-debit-v2-records.csv"
+
+diff -u --color \
+    "$ROOT_DIR/example/icbc/debit-v2/example-icbc-debit-v2-output.beancount" \
+    "$ROOT_DIR/test/output/test-icbc-debit-v2-output.beancount"
+
+if [ $? -ne 0 ]; then
+    echo "[FAIL] ICBC provider (debit mode v2) output is different from expected output."
     exit 1
 fi
 
