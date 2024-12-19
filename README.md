@@ -9,6 +9,7 @@
 - 中国工商银行
 - Toronto-Dominion Bank
 - Bank of Montreal
+- 京东
 
 目前记账语言支持：
 
@@ -908,6 +909,8 @@ jd:
 
 2. 特殊情况：`交易说明`（即`item`匹配的字段）的前缀为`冻结-`或`解冻-`时为`不计收支`的特殊情况。`冻结-`情形下, `收/付款方式`为支出账户; `解冻-`情形下 `收/付款方式`为收入账户但是金额为 0。目前所有和`冻结` , `解冻` 相关的交易会被忽略。
 
+3. 对于京东账单中的退款记录，`plusAccount` 为 `methodAccount`，`minusAccount` 为 `targetAccount`，即退款的资金原路返回。
+
 `targetAccount` 与 `methodAccount` 的增减账户关系如下表：
 
 | 收/支    | minusAccount  | plusAccount   |
@@ -915,6 +918,7 @@ jd:
 | 收入     | targetAccount | methodAccount |
 | 支出     | methodAccount | targetAccount |
 | 不计收支 | methodAccount | targetAccount |
+| 不计收支（退款）| targetAccount | methodAccount |
 
 ## Special Thanks
 
