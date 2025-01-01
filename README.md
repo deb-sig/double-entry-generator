@@ -883,7 +883,7 @@ BMO账单中的记账金额中存在收入/支出之分，通过这个机制就�
 
 <details>
 <summary>
-  BMO银行配置文件示例
+  京东配置文件示例
 </summary>
 
 ```yaml
