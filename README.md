@@ -136,6 +136,16 @@ double-entry-generator translate \
   ./example/bmo/credit/example-bmo-records.csv
 ```
 
+#### 京东
+
+```bash
+double-entry-generator translate \
+  --config ./example/jd/config.yaml \
+  --provider jd \
+  --output ./example/jd/example-jd-output.beancount \
+  ./example/jd/example-jd-records.csv
+```
+
 ### Ledger
 
 #### 支付宝
@@ -871,6 +881,11 @@ BMO账单中的记账金额中存在收入/支出之分，通过这个机制就�
 
 ### 京东
 
+<details>
+<summary>
+  BMO银行配置文件示例
+</summary>
+
 ```yaml
 defaultMinusAccount: Assets:FIXME
 defaultPlusAccount: Expenses:FIXME
@@ -900,6 +915,8 @@ jd:
       targetAccount: Income:PnL:JD
       methodAccount: Assets:EPay:JD
 ```
+
+</details></br>
 
 京东账单的格式总体上和[支付宝](#支付宝-3)类似。
 
