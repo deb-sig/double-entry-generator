@@ -1,0 +1,10 @@
+$:
+  vscode:
+    - docker:
+        image: docker.cnb.cool/zwyyy456/cnb-dev-env:latest
+      services:
+        - vscode
+        - docker
+      stages:
+        - name: ls
+          script: ls -l

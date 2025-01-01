@@ -170,8 +170,6 @@ double-entry-generator translate \
   --output ./example/citic/credit/example-icbc-credit-output.beancount \
   ./example/citic/credit/example-citic-credit-records.xls
 ```
-```
-
 
 #### 京东
 
@@ -181,6 +179,15 @@ double-entry-generator translate \
   --provider jd \
   --output ./example/jd/example-jd-output.beancount \
   ./example/jd/example-jd-records.csv
+```
+
+#### 美团
+```bash
+double-entry-generator translate \
+    --config ./example/mt/config.yaml \
+    --provider mt \
+    --output ./example/mt/example-mt-output.bean \
+    ./example/mt/example-mt-records.csv
 ```
 
 ### Ledger
@@ -1023,7 +1030,7 @@ BMO账单中的记账金额中存在收入/支出之分，通过这个机制就�
 
 <details>
 <summary>
-  BMO银行配置文件示例
+  京东配置文件示例
 </summary>
 
 ```yaml

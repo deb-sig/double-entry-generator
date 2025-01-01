@@ -19,7 +19,7 @@ jd:
       targetAccount: Expenses:Electronics
     - category: 日用百货,清洁纸品,生活服务,家居家装,其他网购,1号店
       sep: ","
-      targetAccount: Expenses:Groceries 
+      targetAccount: Expenses:Groceries
     - category: 运动户外
       targetAccount: Expenses:Sports
     - category: 鞋服箱包,服饰内衣
@@ -29,7 +29,6 @@ jd:
     - item: 转入
       type: 收入
       targetAccount: Income:Rebate
-
 
     - peer: 亲密卡
       targetAccount: Expenses:Prpaid
@@ -47,7 +46,7 @@ jd:
     - method: 钱包余额
       methodAccount: Assets:JD:Balance
     - method: (0354)
-      methodAccount: Liabilities:CC:BCM:0354 
+      methodAccount: Liabilities:CC:BCM:0354
     - method: (1341)
       methodAccount: Liabilities:CC:BoC:1341
     - method: (1875)

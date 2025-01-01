@@ -1,0 +1,202 @@
+option "title" "mt"
+option "operating_currency" "CNY"
+
+1970-01-01 open Assests:Test:Wx
+1970-01-01 open Assets:DC:BoC:3147
+1970-01-01 open Assets:FIXME
+1970-01-01 open Assets:MT:Balance:zwyyy456
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Expenses:Food:Meal:Coupon
+1970-01-01 open Expenses:Food:Meal:Dinner
+1970-01-01 open Expenses:Food:Meal:Lunch
+1970-01-01 open Expenses:Food:Snacks
+1970-01-01 open Income:Rebate
+1970-01-01 open Liabilities:CC:BCM:0354
+1970-01-01 open Liabilities:CC:BoC:1341
+1970-01-01 open Liabilities:CC:BoC:1875
+1970-01-01 open Liabilities:CC:BoNB:2189
+1970-01-01 open Liabilities:CC:CMB:0924
+1970-01-01 open Liabilities:CC:CMBC:0073
+1970-01-01 open Liabilities:CC:CMBC:5559
+1970-01-01 open Liabilities:MT:zwyyy456
+
+2025-02-12 * "" "美团商家代金券-289893081774554007"
+	merchantId: "5745785860u403b"
+	method: "美团月付"
+	orderId: "25021211100401670003863875012443"
+	payTime: "2025-02-12 19:08:24 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Meal:Coupon 10.06 CNY
+	Liabilities:MT:zwyyy456 -10.06 CNY
+
+2025-02-12 * "" "美团商家代金券-289893092226646356"
+	merchantId: "5744287672u403b"
+	method: "美团月付"
+	orderId: "25021211100401670003864953265443"
+	payTime: "2025-02-12 19:09:15 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Meal:Coupon 11.77 CNY
+	Liabilities:MT:zwyyy456 -11.77 CNY
+
+2025-02-12 * "" "满记甜品（上海百联世纪大都会二店） 订单详情"
+	merchantId: "0_2195183208401009"
+	method: "美团月付"
+	orderId: "25021211100401670003883711290443"
+	payTime: "2025-02-12 20:58:49 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Snacks 26.31 CNY
+	Liabilities:MT:zwyyy456 -26.31 CNY
+
+2025-02-12 * "" "【美团月付】主动还款2025年3月账单"
+	merchantId: "2502122059126546010530289443_1087639443"
+	method: "中国银行储蓄卡(3147)"
+	orderId: "25021211100401670003883284995443"
+	payTime: "2025-02-12 20:59:12 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Liabilities:MT:zwyyy456 48.12 CNY
+	Assets:DC:BoC:3147 -48.12 CNY
+
+2025-02-16 * "" "霸碗盖码饭(上海由由世纪广场店) 订单详情"
+	merchantId: "0_2196949152977071"
+	method: "中国银行信用卡(1875)"
+	orderId: "25021611100401670004377675164443"
+	payTime: "2025-02-16 12:34:52 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Meal:Lunch 19.02 CNY
+	Liabilities:CC:BoC:1875 -19.02 CNY
+
+2025-02-16 * "" "米麒麟云南小锅米线（北洋泾店） 订单详情"
+	merchantId: "0_2197093615441029"
+	method: "中国银行信用卡(1875)"
+	orderId: "25021611100401670004440772542443"
+	payTime: "2025-02-16 19:06:37 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Meal:Dinner 19.81 CNY
+	Liabilities:CC:BoC:1875 -19.81 CNY
+
+2025-02-20 * "" "美团商家代金券-289893081774554007"
+	merchantId: "467192366"
+	method: "美团月付"
+	orderId: "2502200120013716443"
+	payTime: "2025-02-20 14:08:11 +0800 CST"
+	source: "美团"
+	type: "收入"
+	Liabilities:MT:zwyyy456 10.06 CNY
+	Income:Rebate -10.06 CNY
+
+2025-02-20 * "" "美团商家代金券-289893092226646356"
+	merchantId: "467219105"
+	method: "美团月付"
+	orderId: "2502200119979523443"
+	payTime: "2025-02-20 14:08:11 +0800 CST"
+	source: "美团"
+	type: "收入"
+	Liabilities:MT:zwyyy456 11.77 CNY
+	Income:Rebate -11.77 CNY
+
+2025-02-22 * "" "纯味斑鱼府代金券"
+	merchantId: "1KUHBMW0L6A04076"
+	method: "中国银行信用卡(1875)"
+	orderId: "25022211100401670005106003552443"
+	payTime: "2025-02-22 00:50:05 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Meal:Coupon 49.56 CNY
+	Liabilities:CC:BoC:1875 -49.56 CNY
+
+2025-02-22 * "" "潇湘阁代金券"
+	merchantId: "1KUHE9S6RE704076"
+	method: "中国银行信用卡(1875)"
+	orderId: "25022211100401670005106205516443"
+	payTime: "2025-02-22 01:34:49 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Meal:Coupon 48.00 CNY
+	Liabilities:CC:BoC:1875 -48.00 CNY
+
+2025-02-22 * "" "川渝竹苑·川菜小酒馆·Bistro2人餐"
+	merchantId: "1KUHEF0HT3B04076"
+	method: "中国银行信用卡(1875)"
+	orderId: "25022211100401670005107313353443"
+	payTime: "2025-02-22 01:37:36 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Meal:Coupon 57.77 CNY
+	Liabilities:CC:BoC:1875 -57.77 CNY
+
+2025-02-22 * "" "「经典招牌」芒椰小丸子-中杯"
+	merchantId: "1KUHEJC54GY04076"
+	method: "美团余额"
+	orderId: "25022211100401670005107038546443"
+	payTime: "2025-02-22 01:39:24 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Snacks 10.90 CNY
+	Assets:MT:Balance:zwyyy456 -10.90 CNY
+
+2025-02-22 * "" "7分甜杨枝甘露-大杯1杯"
+	merchantId: "1KUHEL8A49F04076"
+	method: "中国银行信用卡(1875)"
+	orderId: "25022211100401670005107001197443"
+	payTime: "2025-02-22 01:40:24 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Snacks 14.01 CNY
+	Liabilities:CC:BoC:1875 -14.01 CNY
+
+2025-02-22 * "" "【爆款回归】葡式蛋挞6只"
+	merchantId: "1KUHEPBAL7R04076"
+	method: "中国银行信用卡(1875)"
+	orderId: "25022211100401670005107560671443"
+	payTime: "2025-02-22 01:42:03 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Meal:Coupon 20.00 CNY
+	Liabilities:CC:BoC:1875 -20.00 CNY
+
+2025-02-22 * "" "【干饭必饱】炒米粉（辣）+矿泉水"
+	merchantId: "1KUHFNYFEL504076"
+	method: "中国银行信用卡(1875)"
+	orderId: "25022211100401670005107049805443"
+	payTime: "2025-02-22 01:58:54 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Meal:Coupon 15.90 CNY
+	Liabilities:CC:BoC:1875 -15.90 CNY
+
+2025-02-23 * "" "特惠|云南米线单人餐"
+	merchantId: "1KUMYGHXA2A04076"
+	method: "中国银行信用卡(1875)"
+	orderId: "25022311100401670005375719946443"
+	payTime: "2025-02-23 18:36:01 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Meal:Dinner 19.90 CNY
+	Liabilities:CC:BoC:1875 -19.90 CNY
+
+2025-02-27 * "" "【爆款回归】葡式蛋挞6只"
+	merchantId: "4981008581243837847AL7R600WKKG"
+	method: "中国银行信用卡(1875)"
+	orderId: "2502270181541103443"
+	payTime: "2025-02-27 07:04:17 +0800 CST"
+	source: "美团"
+	type: "收入"
+	Liabilities:CC:BoC:1875 20.00 CNY
+	Income:Rebate -20.00 CNY
+
+2025-02-28 * "" "喜茶（北京大兴万科广场店） 订单详情"
+	merchantId: "0_2204430449361044"
+	method: "美团月付"
+	orderId: "25022811100401670006000394166443"
+	payTime: "2025-02-28 20:35:13 +0800 CST"
+	source: "美团"
+	type: "支出"
+	Expenses:Food:Snacks 21.17 CNY
+	Liabilities:MT:zwyyy456 -21.17 CNY
+
