@@ -99,7 +99,8 @@ func (a *Alipay) postProcess(ir_ *ir.IR) *ir.IR {
 	for i := 0; i < len(ir_.Orders); i++ {
 		var order = ir_.Orders[i]
 		// found alipay refund tx
-		if order.Metadata["status"] == "退款成功" && order.Category == "退款" {
+		// “退款成功”状态的交易记录的category未必都是“退款”，“退款成功”的饿了么订单记录的category是“餐饮美食”
+		if order.Metadata["status"] == "退款成功" {
 			for j := 0; j < len(ir_.Orders); j++ {
 				// find the order corresponding to the refund
 				// (different tx) && (prefix match) && (money equal)
@@ -117,7 +118,8 @@ func (a *Alipay) postProcess(ir_ *ir.IR) *ir.IR {
 			}
 		}
 		// found alipay closed tx
-		if order.Metadata["status"] == "交易关闭" && order.Metadata["type"] == "不计收支" {
+		// “交易关闭”状态的交易记录的type未必都是“不计收支”，“交易关闭”的闲鱼卖出记录的type是“收入”
+		if order.Metadata["status"] == "交易关闭" {
 			ir_.Orders[i].Metadata["useless"] = "true"
 			log.Printf("[orderId %s] canceled.",
 				ir_.Orders[i].Metadata["orderId"])
