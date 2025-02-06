@@ -519,16 +519,19 @@ wechat:
       item: /
       targetAccount: Income:Wechat:RedPacket
     - type: / # 转入零钱通
-      txType: 转入零钱
+      txType: 转入零钱通
       peer: /
       item: /
-      targetAccount: Assets:Digital:Wechat:Cash
+      targetAccount: Assets:Digital:Wechat:MiniFund
     - type: / # 零钱提现
       txType: 零钱提现
       targetAccount: Assets:Digital:Wechat:Cash
       commissionAccount: Expenses:Wechat:Commission
     - type: / # 零钱充值
       txType: 零钱充值
+      targetAccount: Assets:Digital:Wechat:Cash
+    - type: / # 零钱通转出-到零钱
+      txType: 零钱通转出-到零钱
       targetAccount: Assets:Digital:Wechat:Cash
     - type: / # 零钱通转出-到工商银行(9876)
       txType: 零钱通转出-到工商银行(9876)
@@ -572,7 +575,7 @@ wechat:
       methodAccount: Assets:Digital:Wechat:Cash
     - method: 零钱通
       fullMatch: true
-      methodAccount: Assets:Digital:Wechat:Cash
+      methodAccount: Assets:Digital:Wechat:MiniFund
     - method: 工商银行
       methodAccount: Assets:Bank:CN:ICBC:Savings
     - method: 中国银行
