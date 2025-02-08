@@ -2,6 +2,7 @@ package citic
 
 import (
 	"log"
+	"time"
 
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
 	"github.com/extrame/xls"
@@ -47,6 +48,15 @@ func (citic *Citic) Translate(filename string) (*ir.IR, error) {
 		}
 
 		citic.translateToOrders(row)
+	}
+
+	// hack:
+	// 中信账单只有日期没有时间，且顺序是倒序。
+	// 补上ns时差，以便排序后为准确的正序
+	for index, _ := range citic.Orders {
+		hackDuration := time.Duration(len(citic.Orders)-index) * time.Nanosecond
+		citic.Orders[index].TradeTime = citic.Orders[index].TradeTime.Add(hackDuration)
+		citic.Orders[index].PostTime = citic.Orders[index].PostTime.Add(hackDuration)
 	}
 
 	log.Printf("Finished to parse the file %s", filename)
