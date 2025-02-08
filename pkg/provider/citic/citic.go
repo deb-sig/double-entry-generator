@@ -1,6 +1,7 @@
 package citic
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -17,7 +18,7 @@ type Citic struct {
 func New() *Citic {
 	return &Citic{
 		Statistics: Statistics{},
-		LineNum:    0,
+		LineNum:    2, // 表格前2行是标题
 		Orders:     make([]Order, 0),
 	}
 }
@@ -34,12 +35,11 @@ func (citic *Citic) Translate(filename string) (*ir.IR, error) {
 
 	sheet := xlsFile.GetSheet(0)
 
-	// 表格前2行是标题
-	for i := 2; i <= int(sheet.MaxRow); i++ {
+	for citic.LineNum = 2; citic.LineNum <= int(sheet.MaxRow); citic.LineNum++ {
 		var row []string
 		// 一行有8列
-		for j := 0; j < 8; j++ {
-			row = append(row, sheet.Row(i).Col(j))
+		for i := 0; i < 8; i++ {
+			row = append(row, sheet.Row(citic.LineNum).Col(i))
 		}
 
 		// 跳过可能的空行
@@ -47,13 +47,16 @@ func (citic *Citic) Translate(filename string) (*ir.IR, error) {
 			continue
 		}
 
-		citic.translateToOrders(row)
+		err = citic.translateToOrders(row)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to translate bill: line %d: %v", citic.LineNum, err)
+		}
 	}
 
 	// hack:
 	// 中信账单只有日期没有时间，且顺序是倒序。
 	// 补上ns时差，以便排序后为准确的正序
-	for index, _ := range citic.Orders {
+	for index := range citic.Orders {
 		hackDuration := time.Duration(len(citic.Orders)-index) * time.Nanosecond
 		citic.Orders[index].TradeTime = citic.Orders[index].TradeTime.Add(hackDuration)
 		citic.Orders[index].PostTime = citic.Orders[index].PostTime.Add(hackDuration)
