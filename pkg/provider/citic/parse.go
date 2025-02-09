@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (h *Citic) translateToOrders(arr []string) error {
+func (citic *Citic) translateToOrders(arr []string) error {
 	// trim strings
 	for idx, a := range arr {
 		a = strings.TrimSpace(a)
@@ -37,6 +37,6 @@ func (h *Citic) translateToOrders(arr []string) error {
 		return fmt.Errorf("parse money %s error: %v", arr[6], err)
 	}
 
-	h.Orders = append(h.Orders, bill)
+	citic.Orders = append(citic.Orders, bill)
 	return nil
 }

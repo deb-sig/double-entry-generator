@@ -2,9 +2,9 @@ package citic
 
 import "github.com/deb-sig/double-entry-generator/pkg/ir"
 
-func (h *Citic) convertToIR() *ir.IR {
+func (citic *Citic) convertToIR() *ir.IR {
 	i := ir.New()
-	for _, o := range h.Orders {
+	for _, o := range citic.Orders {
 		irO := ir.Order{
 			Peer:    "CITIC",
 			PayTime: o.TradeTime,

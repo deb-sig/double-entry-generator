@@ -27,4 +27,4 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "[PASS] All citic provider tests!"
+echo "[PASS] All citic provider for beancount target tests!"
