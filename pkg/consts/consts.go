@@ -38,4 +38,6 @@ const (
 	ProviderBmo = "bmo"
 	//ProviderJD is the name for JD provider
 	ProviderJD = "jd"
+	//ProviderCitic is the name for citic provider
+	ProviderCitic = "citic"
 )

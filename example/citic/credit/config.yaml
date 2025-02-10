@@ -1,0 +1,21 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Liabilities:CreditCard:CITIC
+defaultCurrency: CNY
+title: 测试
+citic:
+  rules:
+    - item: 三快
+      targetAccount: Expenses:Food
+    - item: 电子商务,天猫,京东,特约商户
+      targetAccount: Expenses:Shopping
+    - item: 电费,网上国网
+      targetAccount: Expenses:Electricity
+    - item: 滴滴出行,嘀嘀,中国石油
+      targetAccount: Expenses:Transport
+    - item: 现金奖励
+      targetAccount: Income:Rewards
+    - item: 财付通(银联云闪付)
+      ignore: true
+    - item: 财付通还款
+      targetAccount: Assets:WeChat
