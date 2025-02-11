@@ -146,6 +146,16 @@ double-entry-generator translate \
   ./example/jd/example-jd-records.csv
 ```
 
+#### 中信银行信用卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/citic/credit/config.yaml \
+  --provider citic \
+  --output ./example/citic/credit/example-icbc-credit-output.beancount \
+  ./example/citic/credit/example-citic-credit-records.xls
+```
+
 ### Ledger
 
 #### 支付宝
