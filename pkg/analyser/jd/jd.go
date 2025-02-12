@@ -128,5 +128,8 @@ func (a JD) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider
 		strings.HasPrefix(o.Item, "解冻-")) {
 		ignore = true
 	}
+	if o.TypeOriginal == "不计收支" && (strings.HasPrefix(o.Item, "退款-")) {
+		return ignore, resPlus, resMinus, extraAccounts, tags
+	}
 	return ignore, resMinus, resPlus, extraAccounts, tags
 }
