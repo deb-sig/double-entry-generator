@@ -1,0 +1,60 @@
+option "title" "测试"
+option "operating_currency" "CNY"
+
+1970-01-01 open Assets:FIXME
+1970-01-01 open Assets:WeChat
+1970-01-01 open Expenses:Electricity
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Expenses:Food
+1970-01-01 open Expenses:Shopping
+1970-01-01 open Expenses:Transport
+1970-01-01 open Income:Rewards
+
+2024-10-20 * "CITIC" "公共事业缴费（电费）"
+	Expenses:Electricity 20.16 CNY
+	Liabilities:CreditCard:CITIC -20.16 CNY
+
+2024-10-20 * "CITIC" "财付通－中国石油天然气股份有限公司北京销售分公司"
+	Expenses:Transport 1.00 CNY
+	Liabilities:CreditCard:CITIC -1.00 CNY
+
+2024-10-20 * "CITIC" "支付宝－上海家化电子商务有限公司"
+	Expenses:Shopping 10.34 CNY
+	Liabilities:CreditCard:CITIC -10.34 CNY
+
+2024-10-20 * "CITIC" "财付通还款"
+	Liabilities:CreditCard:CITIC 1.21 CNY
+	Assets:WeChat -1.21 CNY
+
+2024-11-03 * "CITIC" "支付宝－特约商户"
+	Expenses:Shopping 39.24 CNY
+	Liabilities:CreditCard:CITIC -39.24 CNY
+
+2024-11-03 * "CITIC" "支付宝－北京三快在线科技有限公司"
+	Expenses:Food 76.80 CNY
+	Liabilities:CreditCard:CITIC -76.80 CNY
+
+2024-11-03 * "CITIC" "云闪付APP-滴滴出行科技有限公司"
+	Expenses:Transport 20.47 CNY
+	Liabilities:CreditCard:CITIC -20.47 CNY
+
+2024-11-09 * "CITIC" "云闪付APP-网上国网"
+	Expenses:Electricity 25.00 CNY
+	Liabilities:CreditCard:CITIC -25.00 CNY
+
+2024-11-09 * "CITIC" "支付宝－浙江天猫技术有限公司"
+	Expenses:Shopping 88.00 CNY
+	Liabilities:CreditCard:CITIC -88.00 CNY
+
+2024-11-09 * "CITIC" "财付通－京东商城平台商户"
+	Expenses:Shopping 807.89 CNY
+	Liabilities:CreditCard:CITIC -807.89 CNY
+
+2024-11-09 * "CITIC" "0.2元现金奖励-笔笔返0.2元"
+	Liabilities:CreditCard:CITIC 0.20 CNY
+	Income:Rewards -0.20 CNY
+
+2024-11-09 * "CITIC" "支付宝－北京嘀嘀无限科技发展有限公司"
+	Expenses:Transport 5.90 CNY
+	Liabilities:CreditCard:CITIC -5.90 CNY
+

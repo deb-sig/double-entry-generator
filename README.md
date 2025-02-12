@@ -7,6 +7,7 @@
 - 火币-币币交易
 - 海通证券
 - 中国工商银行
+- 中信银行信用卡
 - Toronto-Dominion Bank
 - Bank of Montreal
 - 京东
@@ -234,6 +235,17 @@ double-entry-generator translate \
   ./example/bmo/debit/example-bmo-records.csv
 ```
 
+#### 中信银行信用卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/citic/credit/config.yaml \
+  --provider citic \
+  --target ledger \
+  --output ./example/citic/credit/example-citic-credit-output.ledger \
+  ./example/citic/credit/example-citic-credit-records.csv
+```
+
 ## 账单下载与格式问题
 
 ### 支付宝
@@ -346,6 +358,26 @@ double-entry-generator translate \
 #### 格式示例
 
 [example-jd-records.csv](./example/jd/example-jd-records.csv)
+
+
+### 中信银行信用卡
+
+#### 下载方式
+1. 打开中信银行信用卡 PC 官网
+2. 使用手机 App 扫码登录
+3. 选择账单查询标签页
+4. 选择卡片及账单月份
+5. 点击“账单下载”
+
+#### 格式示例
+
+> `double-entry-generator` 目前只支持中信银行的信用卡，如果你有储蓄卡欢迎提供账单样本或者直接贡献代码。
+
+
+信用卡账单示例： [example-citic-records.csv](example/citic/credit/example-citic-records.xls)
+
+信用卡账单转换后的结果示例：[example-citic-output.beancount](example/citic/credit/example-citic-output.beancount).
+
 
 ## 配置
 
@@ -946,6 +978,66 @@ jd:
 | 支出     | methodAccount | targetAccount |
 | 不计收支 | methodAccount | targetAccount |
 | 不计收支（退款）| targetAccount | methodAccount |
+
+### 中信银行信用卡
+
+<details>
+<summary>
+  中信银行信用卡配置文件示例
+</summary>
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Liabilities:CreditCard:CITIC
+defaultCurrency: CNY
+title: 测试
+citic:
+  rules:
+    - item: 三快
+      targetAccount: Expenses:Food
+    - item: 电子商务,天猫,京东,特约商户
+      targetAccount: Expenses:Shopping
+    - item: 电费,网上国网
+      targetAccount: Expenses:Electricity
+    - item: 滴滴出行,嘀嘀,中国石油
+      targetAccount: Expenses:Transport
+    - item: 现金奖励
+      targetAccount: Income:Rewards
+    - item: 财付通(银联云闪付)
+      ignore: true
+    - item: 财付通还款
+      targetAccount: Assets:WeChat
+```
+
+</details></br>
+
+`defaultMinusAccount`, `defaultPlusAccount`, `defaultCashAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户， `defaultCashAccount` 是该配置中默认使用的银行卡账户（等同于支付宝/微信中的 `methodAccount` ）。 `defaultCurrency` 是默认货币。
+
+`citic` 是中信银行信用卡相关的配置。它提供基于规则的匹配。可以指定：
+- `item`（交易描述）的完全/包含匹配。
+
+在单条规则中可以使用分隔符 `sep` 填写多个关键字，在同一对象中，每个关键字之间是或的关系。
+
+在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
+
+在单条规则中可以使用 `tag` 来设置流水的 [Tag](https://beancount.github.io/docs/beancount_language_syntax.html#tags)，使用 `sep` 作为分隔符。
+
+在单条规则中可以使用 `ignore` 来设置是否忽略匹配上该规则的交易，`true` 表示忽略匹配上该规则的交易，`fasle` 则为不忽略，缺省为 `false` 。
+
+匹配成功则使用规则中定义的 `targetAccount` 账户覆盖默认定义账户。
+
+规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
+
+中信银行信用卡账单中的记账金额中存在收入/支出之分，通过这个机制就可以判断银行卡账户在交易中的正负关系。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和全局值 `defaultCashAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `defaultCashAccount` 的正负关系，来覆盖默认定义的增减账户。
+
+`targetAccount` 与 `defaultCashAccount` 的增减账户关系如下表：
+
+| 收/支 | minusAccount       | plusAccount        |
+| ----- | ------------------ | ------------------ |
+| 收入  | targetAccount      | defaultCashAccount |
+| 支出  | defaultCashAccount | targetAccount      |
+
 
 ## Special Thanks
 
