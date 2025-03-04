@@ -1,0 +1,27 @@
+1970/01/01 * Open Balance
+    Assets:FIXME     0 CNY
+    Expenses:FIXME     0 CNY
+    Expenses:Food     0 CNY
+    Expenses:Mobile     0 CNY
+    Expenses:Movie     0 CNY
+    Equity:Opening Balances 
+2023/12/29 * CMB - 掌上生活还款 
+    Liabilities:CreditCard:CMB      1.23 CNY
+    Assets:FIXME   - 1.23 CNY
+
+2024/01/01 * CMB - 银联转账还款 
+    Liabilities:CreditCard:CMB      30.00 CNY
+    Assets:FIXME   - 30.00 CNY
+
+2024/01/02 * CMB - 掌上生活影票-电影票 
+    Expenses:Movie      56.78 CNY
+    Liabilities:CreditCard:CMB   - 56.78 CNY
+
+2024/01/03 * CMB - 手机银行饭票 
+    Liabilities:CreditCard:CMB      3.90 CNY
+    Expenses:Food   - 3.90 CNY
+
+2024/01/05 * CMB - 中国移动 
+    Expenses:Mobile      8000.00 CNY
+    Liabilities:CreditCard:CMB   - 8000.00 CNY
+
