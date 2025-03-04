@@ -48,4 +48,6 @@ const (
 	ProviderHxsec = "hxsec"
 	//ProviderCCB is the name for CCB provider.
 	ProviderCCB = "ccb"
+	//ProviderCmb is the name for citic provider
+	ProviderCmb = "cmb"
 )
