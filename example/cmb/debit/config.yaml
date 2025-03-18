@@ -1,0 +1,16 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:DebitCard:CMB
+defaultCurrency: CNY
+title: 测试
+cmb:
+  rules:
+    # 消费
+    - peer: 电费,网上国网,国网
+      targetAccount: Expenses:Electricity
+    - peer: 中国移动
+      targetAccount: Expenses:Mobile
+    # 保险赔付
+    - peer: 太平洋健康保险股份有限公司
+      item: 汇入汇款
+      targetAccount: Income:Insurance
