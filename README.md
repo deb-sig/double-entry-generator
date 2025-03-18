@@ -519,16 +519,19 @@ wechat:
       item: /
       targetAccount: Income:Wechat:RedPacket
     - type: / # 转入零钱通
-      txType: 转入零钱
+      txType: 转入零钱通
       peer: /
       item: /
-      targetAccount: Assets:Digital:Wechat:Cash
+      targetAccount: Assets:Digital:Wechat:MiniFund
     - type: / # 零钱提现
       txType: 零钱提现
       targetAccount: Assets:Digital:Wechat:Cash
       commissionAccount: Expenses:Wechat:Commission
     - type: / # 零钱充值
       txType: 零钱充值
+      targetAccount: Assets:Digital:Wechat:Cash
+    - type: / # 零钱通转出-到零钱
+      txType: 零钱通转出-到零钱
       targetAccount: Assets:Digital:Wechat:Cash
     - type: / # 零钱通转出-到工商银行(9876)
       txType: 零钱通转出-到工商银行(9876)
@@ -572,7 +575,7 @@ wechat:
       methodAccount: Assets:Digital:Wechat:Cash
     - method: 零钱通
       fullMatch: true
-      methodAccount: Assets:Digital:Wechat:Cash
+      methodAccount: Assets:Digital:Wechat:MiniFund
     - method: 工商银行
       methodAccount: Assets:Bank:CN:ICBC:Savings
     - method: 中国银行
@@ -621,6 +624,31 @@ wechat:
 | ----- | ------------- | ------------- |
 | 收入  | targetAccount | methodAccount |
 | 支出  | methodAccount | targetAccount |
+
+在历史版本中，零钱和零钱通默认视为一个账户，并忽略了零钱和零钱通之间互转的记录；在最新版本中，零钱和零钱通是否视为一个账户交给用户自己决定。如果需要继续视为一个账户，可以参考以下配置规则：
+
+``` yaml
+# 将零钱和零钱通视为一个账户
+- method: 零钱
+  fullMatch: true
+  methodAccount: Assets:Digital:Wechat:Cash
+- method: 零钱通
+  fullMatch: true
+  methodAccount: Assets:Digital:Wechat:Cash
+- type: /
+  txType: 转入零钱通
+  peer: /
+  item: /
+  targetAccount: Assets:Digital:Wechat:Cash
+# 忽略零钱和零钱通之间的互转记录
+- txType: "零钱通转出-到零钱"
+  fullMatch: true
+  ignore: true
+- txType: "转入零钱通-来自零钱"
+  fullMatch: true
+  ignore: true
+```
+
 
 ### Huobi Global (Crypto)
 
