@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (citic *Citic) translateToOrders(arr []string) error {
+func (citic *Citic) TranslateToOrders(arr []string) error {
 	// trim strings
 	for idx, a := range arr {
 		a = strings.TrimSpace(a)

@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version: 1.23.0
       - uses: actions/checkout@v3
       - name: Cache Go modules
         uses: actions/cache@preview
@@ -44,15 +44,22 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.17.2
+          go-version: 1.23.0
 
       - name: Check Go modules
         run: |
           go mod tidy && git add go.*
           git diff --cached --exit-code || (echo 'Please run "go mod tidy" to sync Go modules' && exit 1);
+      - name: Install Ginkgo
+        run: |
+          # Use version from go.mod, not @latest
+          go install github.com/onsi/ginkgo/v2/ginkgo
       - name: Verify gofmt
         run: |
           make check-format && make format && git add pkg
           git diff --cached --exit-code || (echo 'Please run "make format" to verify gofmt & goimports' && exit 1);
-      - name: Run Go test
+      - name: Run Integration test
         run: make test
+
+      - name: Run Unit test
+        run: ginkgo ./...

@@ -47,7 +47,7 @@ func (citic *Citic) Translate(filename string) (*ir.IR, error) {
 			continue
 		}
 
-		err = citic.translateToOrders(row)
+		err = citic.TranslateToOrders(row)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to translate bill: line %d: %v", citic.LineNum, err)
 		}
