@@ -148,7 +148,7 @@ check-format: ## Check if the format looks good.
 	@go fmt ./...
 
 goreleaser-build-test: ## Goreleaser build for testing
-	goreleaser build --single-target --snapshot --rm-dist
+	goreleaser build --single-target --snapshot --clean
 
 clean-wasm: ## Clean wasm-dist dir
 	@rm -rf ./wasm-dist

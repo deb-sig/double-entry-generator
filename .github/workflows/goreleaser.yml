@@ -31,15 +31,15 @@ jobs:
           fetch-depth: 0
       -
         name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.16
+          go-version: '1.24.1'
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v3
         with:
           distribution: goreleaser
           version: ~> 1.18
-          args: release --rm-dist
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ steps.installationToken.outputs.token }}
