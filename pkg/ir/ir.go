@@ -65,12 +65,13 @@ const (
 type Account string
 
 const (
-	CashAccount       Account = "CashAccount"
-	PositionAccount   Account = "PositionAccount"
-	CommissionAccount Account = "CommissionAccount"
-	PnlAccount        Account = "PnlAccount"
-	PlusAccount       Account = "PlusAccount"
-	MinusAccount      Account = "MinusAccount"
+	CashAccount              Account = "CashAccount"
+	PositionAccount          Account = "PositionAccount"
+	CommissionAccount        Account = "CommissionAccount"
+	PnlAccount               Account = "PnlAccount"
+	ThirdPartyCustodyAccount Account = "ThirdPartyCustodyAccount" // 第三方存管账户
+	PlusAccount              Account = "PlusAccount"
+	MinusAccount             Account = "MinusAccount"
 )
 
 // Type is transaction type defined by alipay.

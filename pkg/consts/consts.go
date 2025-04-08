@@ -40,4 +40,6 @@ const (
 	ProviderJD = "jd"
 	//ProviderCitic is the name for citic provider
 	ProviderCitic = "citic"
+	// ProviderHxsec is the name for hxsec provider.
+	ProviderHxsec = "hxsec"
 )
