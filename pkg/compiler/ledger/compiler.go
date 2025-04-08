@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io"
 	"log"
+	"math"
 	"sort"
 
 	"github.com/deb-sig/double-entry-generator/pkg/analyser"
@@ -77,6 +78,10 @@ func (ledger *Ledger) initTemplates() error {
 	htsecTradeSellOrderTemplate, err = template.New("httradeSellOrder").Funcs(funcMap).Parse(htsecTradeSellOrder)
 	if err != nil {
 		return fmt.Errorf("Failed to init the httradeSellOrder template. %v", err)
+	}
+	etfMergeOrderLedgerTemplate, err = template.New("etfMergeOrderLedger").Funcs(funcMap).Parse(etfMergeOrderLedger) // Initialize new template
+	if err != nil {
+		return fmt.Errorf("Failed to init the etfMergeOrderLedger template. %v", err)
 	}
 
 	return nil
@@ -277,43 +282,122 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 		}
 
 	case ir.OrderTypeSecuritiesTrade:
-		switch order.Type {
-		case ir.TypeSend: // buy
-			err = htsecTradeBuyOrderTemplate.Execute(&buf, &HtsecTradeBuyOrderVars{
-				PayTime:           order.PayTime,
-				Peer:              order.Peer,
-				TxTypeOriginal:    order.TxTypeOriginal,
-				TypeOriginal:      order.TypeOriginal,
-				Item:              order.Item,
-				Amount:            order.Amount,
-				Money:             order.Money,
-				Commission:        order.Commission,
-				Price:             order.Price,
-				CashAccount:       order.ExtraAccounts[ir.CashAccount],
-				PositionAccount:   order.ExtraAccounts[ir.PositionAccount],
-				CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
-				PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
-				Currency:          ledger.Config.DefaultCurrency,
+		// Special handling for Hxsec based on original type
+		switch order.TypeOriginal {
+		case "银行转证券":
+			// Bank to broker cash account
+			err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
+				PayTime:      order.PayTime,
+				Peer:         order.Peer,
+				Item:         "银行转证券", // Simplified item
+				Note:         order.Note,
+				Money:        order.Money,
+				Commission:   0, // No commission for transfers
+				PlusAccount:  order.ExtraAccounts[ir.CashAccount],
+				MinusAccount: order.ExtraAccounts[ir.ThirdPartyCustodyAccount], // Use the correct constant
+				// PnlAccount and CommissionAccount are not typically used here
+				Metadata: order.Metadata,
+				Currency: ledger.Config.DefaultCurrency,
+				Tags:     order.Tags,
 			})
-		case ir.TypeRecv: // sell
-			err = htsecTradeSellOrderTemplate.Execute(&buf, &HtsecTradeSellOrderVars{
-				PayTime:           order.PayTime,
-				Peer:              order.Peer,
-				TxTypeOriginal:    order.TxTypeOriginal,
-				TypeOriginal:      order.TypeOriginal,
-				Item:              order.Item,
-				Amount:            order.Amount,
-				Money:             order.Money,
-				Commission:        order.Commission,
-				Price:             order.Price,
-				CashAccount:       order.ExtraAccounts[ir.CashAccount],
-				PositionAccount:   order.ExtraAccounts[ir.PositionAccount],
-				CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
-				PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
-				Currency:          ledger.Config.DefaultCurrency,
+		case "证券转银行":
+			// Broker cash account to Bank
+			err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
+				PayTime:      order.PayTime,
+				Peer:         order.Peer,
+				Item:         "证券转银行", // Simplified item
+				Note:         order.Note,
+				Money:        math.Abs(order.Money), // Use absolute value
+				Commission:   0,                     // No commission for transfers
+				PlusAccount:  order.ExtraAccounts[ir.ThirdPartyCustodyAccount], // Money goes TO the bank
+				MinusAccount: order.ExtraAccounts[ir.CashAccount],              // Money comes FROM the broker cash
+				// PnlAccount and CommissionAccount are not typically used here
+				Metadata: order.Metadata,
+				Currency: ledger.Config.DefaultCurrency,
+				Tags:     order.Tags,
 			})
-		default:
-			err = fmt.Errorf("Failed to get the TxType.")
+		case "利息归本":
+			err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
+				PayTime:      order.PayTime,
+				Peer:         order.Peer,
+				Item:         "利息归本", // Simplified item
+				Note:         order.Note,
+				Money:        order.Money,
+				Commission:   0, // No commission for interest
+				PlusAccount:  order.ExtraAccounts[ir.CashAccount],
+				MinusAccount: order.ExtraAccounts[ir.PnlAccount], // Interest comes from PnL account
+				// CommissionAccount not used here
+				Metadata: order.Metadata,
+				Currency: ledger.Config.DefaultCurrency,
+				Tags:     order.Tags,
+			})
+		case "ETF份额合并":
+			// Handle ETF Share Merge (e.g., reverse split)
+			// Generates two postings: one removing old shares, one adding new shares.
+			newAmountStr, ok := order.Metadata["new_amount"]
+			if !ok {
+				err = fmt.Errorf("missing 'new_amount' metadata for ETF份额合并 transaction")
+				break // Exit the inner switch
+			}
+			// Note: order.Amount already holds the *removed* amount from the provider logic
+
+			// Remove new_amount from metadata before passing to template
+			delete(order.Metadata, "new_amount")
+
+			// Use the new template
+			err = etfMergeOrderLedgerTemplate.Execute(&buf, &EtfMergeOrderVars{
+				PayTime:         order.PayTime,
+				Peer:            order.Peer,
+				TypeOriginal:    order.TypeOriginal,
+				Item:            order.Item,
+				PositionAccount: order.ExtraAccounts[ir.PositionAccount],
+				RemovedAmount:   order.Amount,
+				AddedAmount:     newAmountStr,
+				TxTypeOriginal:  order.TxTypeOriginal,
+				Metadata:        order.Metadata, // Pass the whole map, template will filter
+			})
+
+		default: // Handle actual trades (Buy/Sell/etc.)
+			switch order.Type {
+			case ir.TypeSend: // buy
+				err = htsecTradeBuyOrderTemplate.Execute(&buf, &HtsecTradeBuyOrderVars{
+					PayTime:           order.PayTime,
+					Peer:              order.Peer,
+					TxTypeOriginal:    order.TxTypeOriginal,
+					TypeOriginal:      order.TypeOriginal,
+					Item:              order.Item,
+					Amount:            order.Amount,
+					Money:             order.Money,
+					Commission:        order.Commission,
+					Price:             order.Price,
+					CashAccount:       order.ExtraAccounts[ir.CashAccount],
+					PositionAccount:   order.ExtraAccounts[ir.PositionAccount],
+					CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
+					PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
+					Currency:          ledger.Config.DefaultCurrency,
+					Metadata:          order.Metadata,
+				})
+			case ir.TypeRecv: // sell
+				err = htsecTradeSellOrderTemplate.Execute(&buf, &HtsecTradeSellOrderVars{
+					PayTime:           order.PayTime,
+					Peer:              order.Peer,
+					TxTypeOriginal:    order.TxTypeOriginal,
+					TypeOriginal:      order.TypeOriginal,
+					Item:              order.Item,
+					Amount:            order.Amount,
+					Money:             order.Money,
+					Commission:        order.Commission,
+					Price:             order.Price,
+					CashAccount:       order.ExtraAccounts[ir.CashAccount],
+					PositionAccount:   order.ExtraAccounts[ir.PositionAccount],
+					CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
+					PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
+					Currency:          ledger.Config.DefaultCurrency,
+					Metadata:          order.Metadata,
+				})
+			default:
+				err = fmt.Errorf("Failed to get the TxType.")
+			}
 		}
 	}
 	if err != nil {

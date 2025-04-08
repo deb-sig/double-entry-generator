@@ -30,6 +30,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/pkg/provider/alipay"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/htsec"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/huobi"
+	"github.com/deb-sig/double-entry-generator/pkg/provider/hxsec"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/wechat"
 )
 
@@ -59,6 +60,8 @@ func New(name string) (Interface, error) {
 		return jd.New(), nil
 	case consts.ProviderCitic:
 		return citic.New(), nil
+	case consts.ProviderHxsec:
+		return hxsec.New(), nil
 	default:
 		return nil, fmt.Errorf("Fail to create the provider for the given name %s", name)
 	}

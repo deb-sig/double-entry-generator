@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"sort"
 	"text/template"
 
@@ -77,6 +78,10 @@ func (b *BeanCount) initTemplates() error {
 	htsecTradeSellOrderTemplate, err = template.New("httradeSellOrder").Funcs(funcMap).Parse(htsecTradeSellOrder)
 	if err != nil {
 		return fmt.Errorf("Failed to init the httradeSellOrder template. %v", err)
+	}
+	etfMergeOrderBeancountTemplate, err = template.New("etfMergeOrderBeancount").Funcs(funcMap).Parse(etfMergeOrderBeancount) // Initialize new template
+	if err != nil {
+		return fmt.Errorf("Failed to init the etfMergeOrderBeancount template. %v", err)
 	}
 	return nil
 }
@@ -278,43 +283,122 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 			err = fmt.Errorf("Failed to get the TxType.")
 		}
 	case ir.OrderTypeSecuritiesTrade:
-		switch o.Type {
-		case ir.TypeSend: // buy
-			err = htsecTradeBuyOrderTemplate.Execute(&buf, &HtsecTradeBuyOrderVars{
-				PayTime:           o.PayTime,
-				Peer:              o.Peer,
-				TxTypeOriginal:    o.TxTypeOriginal,
-				TypeOriginal:      o.TypeOriginal,
-				Item:              o.Item,
-				Amount:            o.Amount,
-				Money:             o.Money,
-				Commission:        o.Commission,
-				Price:             o.Price,
-				CashAccount:       o.ExtraAccounts[ir.CashAccount],
-				PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
-				CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
-				PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
-				Currency:          b.Config.DefaultCurrency,
+		// Special handling for Hxsec based on original type
+		switch o.TypeOriginal {
+		case "银行转证券":
+			// Bank to broker cash account
+			err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
+				PayTime:      o.PayTime,
+				Peer:         o.Peer,
+				Item:         "银行转证券", // Simplified item
+				Note:         o.Note,
+				Money:        o.Money,
+				Commission:   0, // No commission for transfers
+				PlusAccount:  o.ExtraAccounts[ir.CashAccount],
+				MinusAccount: o.ExtraAccounts[ir.ThirdPartyCustodyAccount], // Use the correct constant
+				// PnlAccount and CommissionAccount are not typically used here
+				Metadata: o.Metadata,
+				Currency: b.Config.DefaultCurrency,
+				Tags:     o.Tags,
 			})
-		case ir.TypeRecv: // sell
-			err = htsecTradeSellOrderTemplate.Execute(&buf, &HtsecTradeSellOrderVars{
-				PayTime:           o.PayTime,
-				Peer:              o.Peer,
-				TxTypeOriginal:    o.TxTypeOriginal,
-				TypeOriginal:      o.TypeOriginal,
-				Item:              o.Item,
-				Amount:            o.Amount,
-				Money:             o.Money,
-				Commission:        o.Commission,
-				Price:             o.Price,
-				CashAccount:       o.ExtraAccounts[ir.CashAccount],
-				PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
-				CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
-				PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
-				Currency:          b.Config.DefaultCurrency,
+		case "证券转银行":
+			// Broker cash account to Bank
+			err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
+				PayTime:      o.PayTime,
+				Peer:         o.Peer,
+				Item:         "证券转银行", // Simplified item
+				Note:         o.Note,
+				Money:        math.Abs(o.Money), // Use absolute value
+				Commission:   0,                 // No commission for transfers
+				PlusAccount:  o.ExtraAccounts[ir.ThirdPartyCustodyAccount], // Money goes TO the bank
+				MinusAccount: o.ExtraAccounts[ir.CashAccount],              // Money comes FROM the broker cash
+				// PnlAccount and CommissionAccount are not typically used here
+				Metadata: o.Metadata,
+				Currency: b.Config.DefaultCurrency,
+				Tags:     o.Tags,
 			})
-		default:
-			err = fmt.Errorf("Failed to get the TxType.")
+		case "利息归本":
+			err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
+				PayTime:      o.PayTime,
+				Peer:         o.Peer,
+				Item:         "利息归本", // Simplified item
+				Note:         o.Note,
+				Money:        o.Money,
+				Commission:   0, // No commission for interest
+				PlusAccount:  o.ExtraAccounts[ir.CashAccount],
+				MinusAccount: o.ExtraAccounts[ir.PnlAccount], // Interest comes from PnL account
+				// CommissionAccount not used here
+				Metadata: o.Metadata,
+				Currency: b.Config.DefaultCurrency,
+				Tags:     o.Tags,
+			})
+		case "ETF份额合并":
+			// Handle ETF Share Merge (e.g., reverse split)
+			// Generates two postings: one removing old shares, one adding new shares.
+			newAmountStr, ok := o.Metadata["new_amount"]
+			if !ok {
+				err = fmt.Errorf("missing 'new_amount' metadata for ETF份额合并 transaction")
+				break // Exit the inner switch
+			}
+			// Note: o.Amount already holds the *removed* amount from the provider logic
+
+			// Remove new_amount from metadata before passing to template
+			delete(o.Metadata, "new_amount")
+
+			// Use the new template
+			err = etfMergeOrderBeancountTemplate.Execute(&buf, &EtfMergeOrderVars{
+				PayTime:         o.PayTime,
+				Peer:            o.Peer,
+				TypeOriginal:    o.TypeOriginal,
+				Item:            o.Item,
+				PositionAccount: o.ExtraAccounts[ir.PositionAccount],
+				RemovedAmount:   o.Amount,
+				AddedAmount:     newAmountStr,
+				TxTypeOriginal:  o.TxTypeOriginal,
+				Metadata:        o.Metadata, // Pass the whole map, template will filter
+			})
+
+		default: // Handle actual trades (Buy/Sell/etc.)
+			switch o.Type {
+			case ir.TypeSend: // buy, 融券回购
+				err = htsecTradeBuyOrderTemplate.Execute(&buf, &HtsecTradeBuyOrderVars{
+					PayTime:           o.PayTime,
+					Peer:              o.Peer,
+					TxTypeOriginal:    o.TxTypeOriginal,
+					TypeOriginal:      o.TypeOriginal,
+					Item:              o.Item,
+					Amount:            o.Amount,
+					Money:             o.Money,
+					Commission:        o.Commission,
+					Price:             o.Price,
+					CashAccount:       o.ExtraAccounts[ir.CashAccount],
+					PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
+					CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
+					PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
+					Currency:          b.Config.DefaultCurrency,
+					Metadata:          o.Metadata,
+				})
+			case ir.TypeRecv: // sell, 融券购回
+				err = htsecTradeSellOrderTemplate.Execute(&buf, &HtsecTradeSellOrderVars{
+					PayTime:           o.PayTime,
+					Peer:              o.Peer,
+					TxTypeOriginal:    o.TxTypeOriginal,
+					TypeOriginal:      o.TypeOriginal,
+					Item:              o.Item,
+					Amount:            o.Amount,
+					Money:             o.Money,
+					Commission:        o.Commission,
+					Price:             o.Price,
+					CashAccount:       o.ExtraAccounts[ir.CashAccount],
+					PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
+					CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
+					PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
+					Currency:          b.Config.DefaultCurrency,
+					Metadata:          o.Metadata,
+				})
+			default:
+				err = fmt.Errorf("Failed to get the TxType.")
+			}
 		}
 	}
 	if err != nil {

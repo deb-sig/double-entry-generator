@@ -146,6 +146,7 @@ type HuobiTradeSellOrderVars struct {
 
 // 海通买入模版
 var htsecTradeBuyOrder = `{{ .PayTime.Format "2006/01/02" }} * {{ .Peer }}-{{ .TypeOriginal }}-{{ .Item }}
+    {{- range $key, $value := .Metadata }}{{ if $value }}{{ printf "\n" }}    ; {{ $key }}: "{{ $value }}"{{end}}{{end}}
     {{ .CashAccount }}     -{{ .Money | printf "%.2f" }} {{ .Currency }}
     {{ .PositionAccount }}     {{ .Amount | printf "%.2f" }} "{{ .TxTypeOriginal }}" @@ {{ .Money | printf "%.2f" }} {{ .Currency }}; { {{- .Price | printf "%.3f" }} {{ .Currency }}}
     {{ .CashAccount }}     -{{ .Commission | printf "%.2f" }} {{ .Currency }}
@@ -168,10 +169,12 @@ type HtsecTradeBuyOrderVars struct {
 	Commission        float64 // 手续费
 	Price             float64 // 单价
 	Currency          string
+	Metadata          map[string]string // 元数据
 }
 
 // 海通卖出模板
 var htsecTradeSellOrder = `{{ .PayTime.Format "2006/01/02" }} * "{{ .Peer }}" "{{ .TypeOriginal }}-{{ .Item }}"
+    {{- range $key, $value := .Metadata }}{{ if $value }}{{ printf "\n" }}    ; {{ $key }}: "{{ $value }}"{{end}}{{end}}
     {{ .PositionAccount }}     -{{ .Amount | printf "%.2f" }} "{{ .TxTypeOriginal }}" @ {{ .Price | printf "%.3f" }} {{ .Currency }}
     {{ .CashAccount }}     {{ .Money | printf "%.2f" }} {{ .Currency }}
     {{ .CashAccount }}     -{{ .Commission | printf "%.2f" }} {{ .Currency }}
@@ -195,7 +198,30 @@ type HtsecTradeSellOrderVars struct {
 	Commission        float64 // 手续费
 	Price             float64 // 单价
 	Currency          string
+	Metadata          map[string]string // 元数据
 }
+
+// EtfMergeOrderVars holds variables for the ETF merge template (shared structure with beancount version).
+type EtfMergeOrderVars struct {
+	PayTime         time.Time
+	Peer            string
+	TypeOriginal    string
+	Item            string
+	PositionAccount string
+	RemovedAmount   float64
+	AddedAmount     string // Keep as string since it's pre-formatted
+	TxTypeOriginal  string
+	Metadata        map[string]string
+}
+
+const etfMergeOrderLedger = `{{.PayTime.Format "2006/01/02"}} * {{ EscapeString .Peer }} | {{ EscapeString .TypeOriginal }}-{{ EscapeString .Item }}
+{{- range $key, $value := .Metadata }}
+    ; {{ $key }}: {{ EscapeString $value }}
+{{- end }}
+    {{ .PositionAccount }}  -{{ printf "%.2f" .RemovedAmount }} {{ .TxTypeOriginal }}
+    {{ .PositionAccount }}   {{ .AddedAmount }} {{ .TxTypeOriginal }}
+
+`
 
 var (
 	normalOrderTemplate                          *template.Template
@@ -204,4 +230,5 @@ var (
 	huobiTradeSellOrderTemplate                  *template.Template
 	htsecTradeBuyOrderTemplate                   *template.Template
 	htsecTradeSellOrderTemplate                  *template.Template
+	etfMergeOrderLedgerTemplate                  *template.Template // Added template variable
 )
