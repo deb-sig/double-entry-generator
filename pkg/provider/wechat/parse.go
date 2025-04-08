@@ -2,7 +2,6 @@ package wechat
 
 import (
 	"fmt"
-	"log"
 	"regexp"
 	"strconv"
 	"strings"
@@ -31,11 +30,6 @@ func (w *Wechat) translateToOrders(array []string) error {
 
 	bill.TxType = getTxType(array[1])
 	switch bill.TxType {
-	case TxTypeCash2Cash:
-		fallthrough
-	case TxTypeCash2CashLooseChange:
-		log.Printf("Get an unusable tx type, ignore it: %s\n", bill.TxType)
-		return nil
 	case TxTypeUnknown:
 		return fmt.Errorf("Failed to get the tx type %s: %v", array[1], err)
 	}
