@@ -10,6 +10,7 @@
 - 中信银行信用卡
 - Toronto-Dominion Bank
 - Bank of Montreal
+- 京东
 
 目前记账语言支持：
 
@@ -134,6 +135,16 @@ double-entry-generator translate \
   --provider bmo \
   --output ./example/bmo/credit/example-bmo-output.beancount \
   ./example/bmo/credit/example-bmo-records.csv
+```
+
+#### 京东
+
+```bash
+double-entry-generator translate \
+  --config ./example/jd/config.yaml \
+  --provider jd \
+  --output ./example/jd/example-jd-output.beancount \
+  ./example/jd/example-jd-records.csv
 ```
 
 #### 中信银行信用卡
@@ -912,6 +923,11 @@ BMO账单中的记账金额中存在收入/支出之分，通过这个机制就�
 
 ### 京东
 
+<details>
+<summary>
+  京东配置文件示例
+</summary>
+
 ```yaml
 defaultMinusAccount: Assets:FIXME
 defaultPlusAccount: Expenses:FIXME
@@ -942,6 +958,8 @@ jd:
       methodAccount: Assets:EPay:JD
 ```
 
+</details></br>
+
 京东账单的格式总体上和[支付宝](#支付宝-3)类似。
 
 京东账单在交易类别为`不计收支`时，账户的处理分为两种情况：
@@ -950,6 +968,8 @@ jd:
 
 2. 特殊情况：`交易说明`（即`item`匹配的字段）的前缀为`冻结-`或`解冻-`时为`不计收支`的特殊情况。`冻结-`情形下, `收/付款方式`为支出账户; `解冻-`情形下 `收/付款方式`为收入账户但是金额为 0。目前所有和`冻结` , `解冻` 相关的交易会被忽略。
 
+3. 对于京东账单中的退款记录，`plusAccount` 为 `methodAccount`，`minusAccount` 为 `targetAccount`，即退款的资金原路返回。
+
 `targetAccount` 与 `methodAccount` 的增减账户关系如下表：
 
 | 收/支    | minusAccount  | plusAccount   |
@@ -957,6 +977,7 @@ jd:
 | 收入     | targetAccount | methodAccount |
 | 支出     | methodAccount | targetAccount |
 | 不计收支 | methodAccount | targetAccount |
+| 不计收支（退款）| targetAccount | methodAccount |
 
 ### 中信银行信用卡
 
