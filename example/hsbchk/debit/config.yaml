@@ -1,0 +1,26 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:Bank:HK:HSBC:Savings
+defaultCurrency: HKD
+title: HSBC HK借记卡示例
+
+hsbchk:
+  rules:
+    - item: WITHDRAWAL
+      targetAccount: Assets:Cash
+
+    - item: SALARY PAYMENT
+      targetAccount: Income:Salary
+
+    - item: TRANSFER FROM
+      targetAccount: Assets:Bank:HK:HSBC:Savings:Another
+
+    - item: BILL PAYMENT
+      targetAccount: Expenses:Utilities
+
+    - item: POS PURCHASE
+      item: SUPERMARKET
+      targetAccount: Expenses:Groceries
+
+    - item: INTEREST CREDIT
+      targetAccount: Income:Interest 

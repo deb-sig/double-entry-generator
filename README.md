@@ -10,6 +10,7 @@
 - 中信银行信用卡
 - Toronto-Dominion Bank
 - Bank of Montreal
+- HSBC HK (香港汇丰银行)
 
 目前记账语言支持：
 
@@ -29,6 +30,7 @@
                   icbc                                icbc
                   td                                  td
                   bmo                                 bmo
+                  hsbchk                              hsbchk
 ```
 
 ## 安装
@@ -136,6 +138,28 @@ double-entry-generator translate \
   ./example/bmo/credit/example-bmo-records.csv
 ```
 
+#### HSBC HK
+
+##### 借记卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/hsbchk/debit/config.yaml \
+  --provider hsbchk \
+  --output ./example/hsbchk/debit/example-hsbchk-debit-output.beancount \
+  ./example/hsbchk/debit/example-hsbchk-debit-records.csv
+```
+
+##### 信用卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/hsbchk/credit/config.yaml \
+  --provider hsbchk \
+  --output ./example/hsbchk/credit/example-hsbchk-credit-output.beancount \
+  ./example/hsbchk/credit/example-hsbchk-credit-records.csv
+```
+
 #### 中信银行信用卡
 
 ```bash
@@ -222,6 +246,30 @@ double-entry-generator translate \
   --target ledger \
   --output ./example/bmo/debit/example-bmo-output.ledger \
   ./example/bmo/debit/example-bmo-records.csv
+```
+
+#### HSBC HK (香港汇丰银行)
+
+##### 借记卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/hsbchk/debit/config.yaml \
+  --provider hsbchk \
+  --target ledger \
+  --output ./example/hsbchk/debit/example-hsbchk-debit-output.ledger \
+  ./example/hsbchk/debit/example-hsbchk-debit-records.csv
+```
+
+##### 信用卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/hsbchk/credit/config.yaml \
+  --provider hsbchk \
+  --target ledger \
+  --output ./example/hsbchk/credit/example-hsbchk-credit-output.ledger \
+  ./example/hsbchk/credit/example-hsbchk-credit-records.csv
 ```
 
 #### 中信银行信用卡
@@ -342,7 +390,7 @@ double-entry-generator translate \
 1. 打开京东手机 APP
 2. 前往我的 -> 我的钱包 -> 账单
 3. 点击右上角 Icon(三条横杠)
-4. 选择“账单导出（仅限个人对账）”
+4. 选择"账单导出（仅限个人对账）"
 
 #### 格式示例
 
@@ -356,7 +404,7 @@ double-entry-generator translate \
 2. 使用手机 App 扫码登录
 3. 选择账单查询标签页
 4. 选择卡片及账单月份
-5. 点击“账单下载”
+5. 点击"账单下载"
 
 #### 格式示例
 
@@ -367,6 +415,26 @@ double-entry-generator translate \
 
 信用卡账单转换后的结果示例：[example-citic-output.beancount](example/citic/credit/example-citic-output.beancount).
 
+
+### HSBC HK
+
+#### 下载方式
+
+1. 登录HSBC HK网上银行
+2. 访问账户概览页面
+3. 选择所需的账户（借记卡或信用卡）
+4. 在交易明细页面，选择想要导出的时间段
+5. 点击"导出"按钮，选择CSV格式导出
+
+#### 格式示例
+
+借记卡账单示例： [example-hsbchk-debit-records.csv](example/hsbchk/debit/example-hsbchk-debit-records.csv)
+
+借记卡账单转换后的结果示例：[example-hsbchk-debit-output.beancount](example/hsbchk/debit/example-hsbchk-debit-output.beancount).
+
+信用卡账单示例： [example-hsbchk-credit-records.csv](example/hsbchk/credit/example-hsbchk-credit-records.csv)
+
+信用卡账单转换后的结果示例：[example-hsbchk-credit-output.beancount](example/hsbchk/credit/example-hsbchk-credit-output.beancount).
 
 ## 配置
 
@@ -483,7 +551,7 @@ alipay:
 
 规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
 
-支付宝提供了“交易方式”字段来标识资金出入账户。这样就可以直接通过“交易方式”，并辅以“收/支”字段确认该账户为增加账户还是减少账户。而复式记账法每笔交易至少需要两个账户，另一个账户则可通过“交易对方”（peer）、“商品”（item）、“收/支”（type）以及“交易方式”（method）的多种包含匹配得出。匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `methodAccount` 的正负关系，来覆盖默认定义的增减账户。
+支付宝提供了"交易方式"字段来标识资金出入账户。这样就可以直接通过"交易方式"，并辅以"收/支"字段确认该账户为增加账户还是减少账户。而复式记账法每笔交易至少需要两个账户，另一个账户则可通过"交易对方"（peer）、"商品"（item）、"收/支"（type）以及"交易方式"（method）的多种包含匹配得出。匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `methodAccount` 的正负关系，来覆盖默认定义的增减账户。
 
 `targetAccount` 与 `methodAccount` 的增减账户关系如下表：
 
@@ -613,7 +681,7 @@ wechat:
 
 规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
 
-微信账单提供了“交易方式”字段来标识资金出入账户。这样就可以直接通过“交易方式”，并辅以“收/支”字段确认该账户为增加账户还是减少账户。而复式记账法每笔交易至少需要两个账户，另一个账户则可通过“交易对方”（peer）、“商品”（item）、“收/支”（type）以及“交易方式”（method）的多种包含匹配得出。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `methodAccount` 的正负关系，来覆盖默认定义的增减账户。
+微信账单提供了"交易方式"字段来标识资金出入账户。这样就可以直接通过"交易方式"，并辅以"收/支"字段确认该账户为增加账户还是减少账户。而复式记账法每笔交易至少需要两个账户，另一个账户则可通过"交易对方"（peer）、"商品"（item）、"收/支"（type）以及"交易方式"（method）的多种包含匹配得出。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和 `methodAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `methodAccount` 的正负关系，来覆盖默认定义的增减账户。
 
 `targetAccount` 与 `methodAccount` 的增减账户关系如下表：
 
@@ -1017,6 +1085,77 @@ citic:
 | 收入  | targetAccount      | defaultCashAccount |
 | 支出  | defaultCashAccount | targetAccount      |
 
+### HSBC HK (香港汇丰银行)
+
+<details>
+<summary>
+  HSBC HK配置文件示例
+</summary>
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:Bank:HK:HSBC:Savings  # 借记卡使用
+# defaultCashAccount: Liabilities:CreditCard:HSBC  # 信用卡使用
+defaultCurrency: HKD  # 或 CNY，取决于账户货币
+title: 测试
+hsbchk:
+  rules:
+    - item: WITHDRAWAL
+      targetAccount: Assets:Cash
+
+    - item: SALARY PAYMENT
+      targetAccount: Income:Salary
+
+    - merchant: KFC RESTAURANT,MCDONALDS
+      sep: ','
+      targetAccount: Expenses:Food:FastFood
+
+    - merchant: 7-ELEVEN
+      targetAccount: Expenses:Groceries
+
+    - merchant: METRO
+      targetAccount: Expenses:Transport
+
+    - item: PAYMENT - THANK YOU
+      targetAccount: Assets:Bank:HK:HSBC:Savings
+
+    - merchant: UNIONPAY MERCHANT
+      targetAccount: Expenses:Shopping
+```
+
+</details></br>
+
+`defaultMinusAccount`, `defaultPlusAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户， `defaultCashAccount` 是该配置中默认使用的银行卡账户。 `defaultCurrency` 是默认货币。
+
+`hsbchk` 是香港汇丰银行相关的配置。它提供基于规则的匹配。可以指定：
+- `item`（交易描述）的完全/包含匹配。
+- `merchant`（商户名称，仅信用卡）的完全/包含匹配。
+- `country`（国家/地区，仅信用卡）的完全/包含匹配。
+- `type`（收/支）的完全/包含匹配。
+- `time`（交易时间）的区间匹配。
+  > 交易时间可写为以下两种形式：
+  > - `11:00-13:00`
+  > - `11:00:00-13:00:00`
+  > 24 小时制，起始时间和终止之间之间使用 `-` 分隔。
+- `minPrice`（最小金额）和 `maxPrice`（最大金额）的区间匹配。
+
+在单条规则中可以使用分隔符 `sep` 填写多个关键字，在同一对象中，每个关键字之间是或的关系。
+
+在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
+
+在单条规则中可以使用 `tag` 来设置流水的 [Tag](https://beancount.github.io/docs/beancount_language_syntax.html#tags)，使用 `sep` 作为分隔符。
+
+在单条规则中可以使用 `ignore` 来设置是否忽略匹配上该规则的交易，`true` 表示忽略匹配上该规则的交易，`fasle` 则为不忽略，缺省为 `false` 。
+
+匹配成功则使用规则中定义的 `targetAccount` 和全局值 `defaultCashAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `defaultCashAccount` 的正负关系，来覆盖默认定义的增减账户。
+
+`targetAccount` 与 `defaultCashAccount` 的增减账户关系如下表：
+
+| 收/支 | minusAccount       | plusAccount        |
+| ----- | ------------------ | ------------------ |
+| 收入  | targetAccount      | defaultCashAccount |
+| 支出  | defaultCashAccount | targetAccount      |
 
 ## Special Thanks
 
