@@ -174,6 +174,13 @@ func (b *BeanCount) writeBills(file io.Writer) error {
 	return nil
 }
 
+func (b *BeanCount) getCurrency(o ir.Order) string {
+	if o.Currency != "" {
+		return o.Currency
+	}
+	return b.Config.DefaultCurrency
+}
+
 func (b *BeanCount) writeBill(file io.Writer, index int) error {
 	o := b.IR.Orders[index]
 
@@ -184,6 +191,7 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 	default:
 		fallthrough
 	case ir.OrderTypeNormal:
+		currency := b.getCurrency(o)
 		err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
 			PayTime:           o.PayTime,
 			Peer:              o.Peer,
@@ -196,7 +204,7 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 			PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
 			CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
 			Metadata:          o.Metadata,
-			Currency:          b.Config.DefaultCurrency,
+			Currency:          currency,
 			Tags:              o.Tags,
 		})
 	case ir.OrderTypeHuobiTrade: // Huobi trades

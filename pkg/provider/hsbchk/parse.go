@@ -2,7 +2,6 @@ package hsbchk
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -49,7 +48,8 @@ func (h *HsbcHK) translateToDebitOrders(line []string) error {
 	orderType := OrderTypeUnknown
 	if money < 0 {
 		orderType = OrderTypeSend
-	} else if money > 0 {
+		money = -money
+	} else {
 		orderType = OrderTypeRecv
 	}
 
@@ -72,13 +72,14 @@ func (h *HsbcHK) translateToDebitOrders(line []string) error {
 
 	// 创建订单
 	order := Order{
-		PayTime:     payTime,
-		Description: line[1],
-		Money:       money,
-		Currency:    line[3],
-		Balance:     balance,
-		Type:        orderType,
-		Country:     "", // 借记卡账单没有国家信息
+		PayTime:         payTime,
+		Description:     strings.TrimSpace(line[1]),
+		Money:           money,
+		Currency:        strings.TrimSpace(line[3]),
+		Balance:         balance,
+		BalanceCurrency: strings.TrimSpace(line[5]),
+		Type:            orderType,
+		Country:         "", // 借记卡账单没有国家信息
 	}
 
 	h.Orders = append(h.Orders, order)
@@ -152,20 +153,4 @@ func (h *HsbcHK) translateToCreditOrders(line []string) error {
 
 	h.Orders = append(h.Orders, order)
 	return nil
-}
-
-// detectCardMode 检测账单类型是借记卡还是信用卡
-func (h *HsbcHK) detectCardMode(headers []string) {
-	// 根据标题行判断
-	if len(headers) >= 10 && headers[9] == "Credit / Debit" {
-		h.Mode = CreditMode
-		log.Printf("Detected HSBC HK Credit Card")
-	} else if len(headers) >= 5 && headers[4] == "Balance" {
-		h.Mode = DebitMode
-		log.Printf("Detected HSBC HK Debit Card")
-	} else {
-		// 默认使用信用卡模式
-		h.Mode = CreditMode
-		log.Printf("Unable to detect card type, using default Credit Card mode")
-	}
 }

@@ -75,3 +75,19 @@ func (h *HsbcHK) Translate(filename string) (*ir.IR, error) {
 	log.Printf("Finished to parse the file %s", filename)
 	return h.convertToIR(), nil
 }
+
+// detectCardMode 检测账单类型是借记卡还是信用卡
+func (h *HsbcHK) detectCardMode(headers []string) {
+	// 根据标题行判断
+	if len(headers) >= 10 && headers[9] == "Credit / Debit" {
+		h.Mode = CreditMode
+		log.Printf("Detected HSBC HK Credit Card Bills")
+	} else if len(headers) >= 5 && headers[4] == "Balance" {
+		h.Mode = DebitMode
+		log.Printf("Detected HSBC HK Debit Card Bills")
+	} else {
+		// 默认使用信用卡模式
+		h.Mode = CreditMode
+		log.Printf("Unable to detect card type, using default Credit Card mode")
+	}
+}

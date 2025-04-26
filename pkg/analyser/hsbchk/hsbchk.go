@@ -71,14 +71,11 @@ func (h HsbcHK) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 			matchFunc = util.SplitFindEquals
 		}
 
+		if r.Peer != nil {
+			match = matchFunc(*r.Peer, o.Peer, sep, match)
+		}
 		if r.Item != nil {
 			match = matchFunc(*r.Item, o.Item, sep, match)
-		}
-		if r.Merchant != nil {
-			match = matchFunc(*r.Merchant, o.Peer, sep, match)
-		}
-		if r.Country != nil && o.TxTypeOriginal != "" {
-			match = matchFunc(*r.Country, o.TxTypeOriginal, sep, match)
 		}
 		if r.Type != nil {
 			match = matchFunc(*r.Type, o.TypeOriginal, sep, match)

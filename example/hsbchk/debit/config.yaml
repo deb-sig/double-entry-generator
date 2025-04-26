@@ -6,21 +6,23 @@ title: HSBC HK借记卡示例
 
 hsbchk:
   rules:
-    - item: WITHDRAWAL
+    - peer: WITHDRAWAL
       targetAccount: Assets:Cash
 
-    - item: SALARY PAYMENT
+    - peer: SALARY PAYMENT
       targetAccount: Income:Salary
 
-    - item: TRANSFER FROM
-      targetAccount: Assets:Bank:HK:HSBC:Savings:Another
+    - peer: TRANSFER FROM
+      targetAccount: Income:Transfer
 
-    - item: BILL PAYMENT
+    - peer: BILL PAYMENT
       targetAccount: Expenses:Utilities
 
-    - item: POS PURCHASE
-      item: SUPERMARKET
+    - peer: POS PURCHASE,SUPERMARKET
       targetAccount: Expenses:Groceries
 
-    - item: INTEREST CREDIT
+    - peer: INTEREST CREDIT
       targetAccount: Income:Interest 
+
+    - peer: TRIPLE Z
+      ignore: true

@@ -1,29 +1,35 @@
 package hsbchk
 
-import "github.com/deb-sig/double-entry-generator/pkg/ir"
+import (
+	"fmt"
+
+	"github.com/deb-sig/double-entry-generator/pkg/ir"
+)
 
 // convertToIR 将解析后的订单转换为中间表示
 func (h *HsbcHK) convertToIR() *ir.IR {
 	i := ir.New()
 	for _, o := range h.Orders {
 		irO := ir.Order{
-			OrderType:    ir.OrderTypeNormal,
-			PayTime:      o.PayTime,
-			Type:         convertOrderType(o.Type),
-			TypeOriginal: string(o.Type),
-			Peer:         o.Merchant, // 使用商户名称作为交易对方
-			Item:         o.Description,
-			Money:        o.Money,
+			OrderType: ir.OrderTypeNormal,
+			PayTime:   o.PayTime,
+			Type:      convertOrderType(o.Type),
+			Money:     o.Money,
+			Currency:  o.Currency,
 		}
 
 		// 根据卡片模式设置额外信息
 		if h.Mode == DebitMode {
 			// 借记卡特有信息
+			irO.Peer = o.Description
 		} else {
 			// 信用卡特有信息
 			irO.TxTypeOriginal = o.StatusOriginal
+			irO.Peer = o.Merchant
+			irO.Item = o.Description
 		}
 
+		irO.Metadata = h.getMetadata(o)
 		i.Orders = append(i.Orders, irO)
 	}
 	return i
@@ -39,4 +45,28 @@ func convertOrderType(t OrderType) ir.Type {
 	default:
 		return ir.TypeUnknown
 	}
+}
+
+// getMetadata get the metadata (e.g. status, method, category and so on.)
+//
+//	from order.
+func (h *HsbcHK) getMetadata(o Order) map[string]string {
+	// FIXME(TripleZ): hard-coded, bad pattern
+	source := "HSBC HK"
+	var balance, balanceCurrency string
+
+	if o.Balance != 0 {
+		balance = fmt.Sprintf("%.2f", o.Balance)
+	}
+
+	if o.BalanceCurrency != "" {
+		balanceCurrency = o.BalanceCurrency
+	}
+
+	metadata := map[string]string{
+		"source":  source,
+		"balance": fmt.Sprintf("%s %s", balance, balanceCurrency),
+	}
+
+	return metadata
 }

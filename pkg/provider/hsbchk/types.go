@@ -17,17 +17,18 @@ type Statistics struct {
 
 // Order is the single order.
 type Order struct {
-	PayTime        time.Time // 交易日期
-	PostDate       time.Time // 入账日期 (仅信用卡)
-	Description    string    // 交易描述
-	Merchant       string    // 商户名称 (仅信用卡)
-	Country        string    // 国家/地区
-	Money          float64   // 交易金额
-	Currency       string    // 货币
-	Balance        float64   // 余额 (仅借记卡)
-	Type           OrderType // 收/支
-	StatusOriginal string    // 交易状态 (仅信用卡)
-	CreditDebit    string    // CREDIT/DEBIT (仅信用卡)
+	PayTime         time.Time // 交易日期
+	PostDate        time.Time // 入账日期 (仅信用卡)
+	Description     string    // 交易描述
+	Merchant        string    // 商户名称 (仅信用卡)
+	Country         string    // 国家/地区
+	Money           float64   // 交易金额
+	Currency        string    // 货币
+	Balance         float64   // 余额 (仅借记卡)
+	BalanceCurrency string    // 余额货币 (仅借记卡)
+	Type            OrderType // 收/支
+	StatusOriginal  string    // 交易状态 (仅信用卡)
+	CreditDebit     string    // CREDIT/DEBIT (仅信用卡)
 }
 
 // TimeFormat 设置时间格式
