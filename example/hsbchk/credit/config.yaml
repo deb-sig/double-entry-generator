@@ -7,24 +7,24 @@ title: HSBC HK信用卡示例
 hsbchk:
   rules:
     - item: APPLEPAY MEITUAN
-      merchant: MEITUAN
+      peer: MEITUAN
       targetAccount: Expenses:Food:Delivery
 
     - item: PAYMENT - THANK YOU
       targetAccount: Assets:Bank:HK:HSBC:Savings
 
-    - merchant: KFC RESTAURANT,MCDONALDS
+    - peer: KFC RESTAURANT,MCDONALDS
       sep: ','
       targetAccount: Expenses:Food:FastFood
 
-    - merchant: 7-ELEVEN
+    - peer: 7-ELEVEN
       targetAccount: Expenses:Groceries
 
-    - merchant: METRO
+    - peer: METRO
       targetAccount: Expenses:Transport
 
     - item: RETURN
       targetAccount: Assets:Refund
 
-    - merchant: UNIONPAY MERCHANT
+    - peer: UNIONPAY MERCHANT
       targetAccount: Expenses:Shopping 

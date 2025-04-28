@@ -53,19 +53,42 @@ func convertOrderType(t OrderType) ir.Type {
 func (h *HsbcHK) getMetadata(o Order) map[string]string {
 	// FIXME(TripleZ): hard-coded, bad pattern
 	source := "HSBC HK"
-	var balance, balanceCurrency string
 
-	if o.Balance != 0 {
-		balance = fmt.Sprintf("%.2f", o.Balance)
+	if h.Mode == DebitMode {
+		// 借记卡特有信息
+		var balance, balanceCurrency string
+		if o.Balance != 0 {
+			balance = fmt.Sprintf("%.2f", o.Balance)
+		}
+		if o.BalanceCurrency != "" {
+			balanceCurrency = o.BalanceCurrency
+		}
+
+		metadata := map[string]string{
+			"source":  source,
+			"balance": fmt.Sprintf("%s %s", balance, balanceCurrency),
+		}
+
+		return metadata
 	}
 
-	if o.BalanceCurrency != "" {
-		balanceCurrency = o.BalanceCurrency
+	// 信用卡特有信息
+	var postDate, country, creditDebit string
+	if !o.PostDate.IsZero() {
+		postDate = o.PostDate.Format(TimeFormat)
+	}
+	if o.Country != "" {
+		country = o.Country
+	}
+	if o.CreditDebit != "" {
+		creditDebit = o.CreditDebit
 	}
 
 	metadata := map[string]string{
-		"source":  source,
-		"balance": fmt.Sprintf("%s %s", balance, balanceCurrency),
+		"source":          source,
+		"post_date":       postDate,
+		"country":         country,
+		"credit_or_debit": creditDebit,
 	}
 
 	return metadata

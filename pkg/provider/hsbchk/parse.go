@@ -114,9 +114,11 @@ func (h *HsbcHK) translateToCreditOrders(line []string) error {
 
 	// 信用卡中 CREDIT 是收入(还款等), DEBIT 是支出(消费)
 	orderType := OrderTypeUnknown
-	if line[9] == "DEBIT" {
+	creditOrDebit := strings.TrimSpace(line[9])
+	if creditOrDebit == "DEBIT" {
 		orderType = OrderTypeSend
-	} else if line[9] == "CREDIT" {
+		money = -money
+	} else if creditOrDebit == "CREDIT" {
 		orderType = OrderTypeRecv
 	}
 
@@ -140,15 +142,15 @@ func (h *HsbcHK) translateToCreditOrders(line []string) error {
 	// 创建订单
 	order := Order{
 		PayTime:        payTime,
-		PostDate:       postDate,
+		PostDate:       postDate, // m
 		Description:    line[2],
 		Money:          money,
 		Currency:       line[4],
 		StatusOriginal: line[5],
 		Merchant:       line[6],
-		Country:        line[7],
+		Country:        line[7], // m
 		Type:           orderType,
-		CreditDebit:    line[9],
+		CreditDebit:    creditOrDebit, // m
 	}
 
 	h.Orders = append(h.Orders, order)
