@@ -49,7 +49,7 @@ func (h *HsbcHK) translateToDebitOrders(line []string) error {
 	if money < 0 {
 		orderType = OrderTypeSend
 		money = -money
-	} else {
+	} else if money > 0 {
 		orderType = OrderTypeRecv
 	}
 

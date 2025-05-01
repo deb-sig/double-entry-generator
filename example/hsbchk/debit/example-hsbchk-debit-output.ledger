@@ -32,6 +32,12 @@
     Assets:Bank:HK:HSBC:Savings      12500.00 HKD
     Income:Salary   - 12500.00 HKD
 
+2025/03/12 * SALARY PAYMENT           CDE COMPANY LTD
+    ; balance: "12500.00 CNY"
+    ; source: "HSBC HK"
+    Assets:Bank:HK:HSBC:Savings      12500.00 CNY
+    Income:Salary   - 12500.00 CNY
+
 2025/03/15 * ATM WITHDRAWAL           CENTRAL BRANCH
     ; balance: "3288.67 HKD"
     ; source: "HSBC HK"
