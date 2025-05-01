@@ -1129,8 +1129,8 @@ hsbchk:
 `defaultMinusAccount`, `defaultPlusAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户， `defaultCashAccount` 是该配置中默认使用的银行卡账户。 `defaultCurrency` 是默认货币。
 
 `hsbchk` 是香港汇丰银行相关的配置。它提供基于规则的匹配。可以指定：
-- `peer`（商户名称，仅信用卡）的完全/包含匹配。
-- `item`（交易描述）的完全/包含匹配。
+- `peer`（[信用卡]商户名称,[借记卡]交易描述）的完全/包含匹配。
+- `item`（[信用卡]交易描述,[借记卡]无）的完全/包含匹配。
 - `type`（"收入"/"支出"）的完全/包含匹配。
 - `time`（交易时间）的区间匹配。
   > 交易时间可写为以下两种形式：
