@@ -416,7 +416,7 @@ double-entry-generator translate \
 信用卡账单转换后的结果示例：[example-citic-output.beancount](example/citic/credit/example-citic-output.beancount).
 
 
-### HSBC HK
+### HSBC HK (香港汇丰银行)
 
 #### 下载方式
 
@@ -424,7 +424,7 @@ double-entry-generator translate \
 2. 访问账户概览页面
 3. 选择所需的账户（借记卡或信用卡）
 4. 在交易明细页面，选择想要导出的时间段
-5. 点击"导出"按钮，选择CSV格式导出
+5. 点击"导出"按钮，选择 CSV 格式导出
 
 #### 格式示例
 
@@ -1107,20 +1107,20 @@ hsbchk:
     - item: SALARY PAYMENT
       targetAccount: Income:Salary
 
-    - merchant: KFC RESTAURANT,MCDONALDS
+    - peer: KFC RESTAURANT,MCDONALDS
       sep: ','
       targetAccount: Expenses:Food:FastFood
 
-    - merchant: 7-ELEVEN
+    - peer: 7-ELEVEN
       targetAccount: Expenses:Groceries
 
-    - merchant: METRO
+    - peer: METRO
       targetAccount: Expenses:Transport
 
     - item: PAYMENT - THANK YOU
       targetAccount: Assets:Bank:HK:HSBC:Savings
 
-    - merchant: UNIONPAY MERCHANT
+    - peer: UNIONPAY MERCHANT
       targetAccount: Expenses:Shopping
 ```
 
@@ -1129,10 +1129,9 @@ hsbchk:
 `defaultMinusAccount`, `defaultPlusAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户， `defaultCashAccount` 是该配置中默认使用的银行卡账户。 `defaultCurrency` 是默认货币。
 
 `hsbchk` 是香港汇丰银行相关的配置。它提供基于规则的匹配。可以指定：
+- `peer`（商户名称，仅信用卡）的完全/包含匹配。
 - `item`（交易描述）的完全/包含匹配。
-- `merchant`（商户名称，仅信用卡）的完全/包含匹配。
-- `country`（国家/地区，仅信用卡）的完全/包含匹配。
-- `type`（收/支）的完全/包含匹配。
+- `type`（"收入"/"支出"）的完全/包含匹配。
 - `time`（交易时间）的区间匹配。
   > 交易时间可写为以下两种形式：
   > - `11:00-13:00`
