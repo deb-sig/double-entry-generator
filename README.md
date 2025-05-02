@@ -229,13 +229,17 @@ double-entry-generator translate \
 
 #### 中国工商银行
 
+> [!TIP]
+> 
+> 可自动识别借记卡/信用卡账单。
+
 ```bash
 double-entry-generator translate \
-  --config ./example/icbc/credit/config.yaml \
+  --config ./example/icbc/config.yaml \
   --provider icbc \
   --target ledger \
-  --output ./example/icbc/credit/example-icbc-credit-output.ledger \
-  ./example/icbc/credit/example-icbc-credit-records.csv
+  --output ./example/icbc/example-icbc-output.ledger \
+  ./example/icbc/example-icbc-records.csv
 ```
 
 #### Toronto-Dominion Bank
@@ -262,27 +266,19 @@ double-entry-generator translate \
 
 #### HSBC HK (香港汇丰银行)
 
-##### 借记卡
+> [!TIP]
+> 
+> 可自动识别借记卡/信用卡账单。
 
 ```bash
 double-entry-generator translate \
-  --config ./example/hsbchk/debit/config.yaml \
+  --config ./example/hsbchk/config.yaml \
   --provider hsbchk \
   --target ledger \
-  --output ./example/hsbchk/debit/example-hsbchk-debit-output.ledger \
-  ./example/hsbchk/debit/example-hsbchk-debit-records.csv
+  --output ./example/hsbchk/example-hsbchk-output.ledger \
+  ./example/hsbchk/example-hsbchk-records.csv
 ```
 
-##### 信用卡
-
-```bash
-double-entry-generator translate \
-  --config ./example/hsbchk/credit/config.yaml \
-  --provider hsbchk \
-  --target ledger \
-  --output ./example/hsbchk/credit/example-hsbchk-credit-output.ledger \
-  ./example/hsbchk/credit/example-hsbchk-credit-records.csv
-```
 
 #### 中信银行信用卡
 
