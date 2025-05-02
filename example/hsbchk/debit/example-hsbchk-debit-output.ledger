@@ -1,0 +1,64 @@
+1970/01/01 * Open Balance
+    Assets:Cash     0 HKD
+    Assets:FIXME     0 HKD
+    Expenses:FIXME     0 HKD
+    Expenses:Groceries     0 HKD
+    Expenses:Utilities     0 HKD
+    Income:Interest     0 HKD
+    Income:Salary     0 HKD
+    Income:Transfer     0 HKD
+    Equity:Opening Balances 
+2025/03/01 * INTEREST CREDIT
+    ; balance: "10561.33 HKD"
+    ; source: "HSBC HK"
+    Assets:Bank:HK:HSBC:Savings      5.45 HKD
+    Income:Interest   - 5.45 HKD
+
+2025/03/05 * ONLINE TRANSFER          TO 98-765432-1
+    ; balance: "8561.33 HKD"
+    ; source: "HSBC HK"
+    Expenses:FIXME      2000.00 HKD
+    Assets:Bank:HK:HSBC:Savings   - 2000.00 HKD
+
+2025/03/10 * BILL PAYMENT             ELECTRICITY
+    ; balance: "8211.33 HKD"
+    ; source: "HSBC HK"
+    Expenses:Utilities      350.00 HKD
+    Assets:Bank:HK:HSBC:Savings   - 350.00 HKD
+
+2025/03/12 * SALARY PAYMENT           ABC COMPANY LTD
+    ; balance: "4288.67 HKD"
+    ; source: "HSBC HK"
+    Assets:Bank:HK:HSBC:Savings      12500.00 HKD
+    Income:Salary   - 12500.00 HKD
+
+2025/03/12 * SALARY PAYMENT           CDE COMPANY LTD
+    ; balance: "12500.00 CNY"
+    ; source: "HSBC HK"
+    Assets:Bank:HK:HSBC:Savings      12500.00 CNY
+    Income:Salary   - 12500.00 CNY
+
+2025/03/15 * ATM WITHDRAWAL           CENTRAL BRANCH
+    ; balance: "3288.67 HKD"
+    ; source: "HSBC HK"
+    Assets:Cash      1000.00 HKD
+    Assets:Bank:HK:HSBC:Savings   - 1000.00 HKD
+
+2025/03/18 * POS PURCHASE             SUPERMARKET HK
+    ; balance: "3213.17 HKD"
+    ; source: "HSBC HK"
+    Expenses:Groceries      75.50 HKD
+    Assets:Bank:HK:HSBC:Savings   - 75.50 HKD
+
+2025/03/20 * FUND TRANSFER FROM       12-345678-9 JOHN SMITH
+    ; balance: "3713.17 HKD"
+    ; source: "HSBC HK"
+    Assets:Bank:HK:HSBC:Savings      500.00 HKD
+    Income:Transfer   - 500.00 HKD
+
+2025/03/24 * MOBILE WITHDRAWAL        (22MAR25)
+    ; balance: "3613.17 HKD"
+    ; source: "HSBC HK"
+    Assets:Cash      100.00 HKD
+    Assets:Bank:HK:HSBC:Savings   - 100.00 HKD
+

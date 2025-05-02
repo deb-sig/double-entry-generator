@@ -1,0 +1,30 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Liabilities:CreditCard:HSBC
+defaultCurrency: CNY
+title: HSBC HK信用卡示例
+
+hsbchk:
+  rules:
+    - item: APPLEPAY MEITUAN
+      peer: MEITUAN
+      targetAccount: Expenses:Food:Delivery
+
+    - item: PAYMENT - THANK YOU
+      targetAccount: Assets:Bank:HK:HSBC:Savings
+
+    - peer: KFC RESTAURANT,MCDONALDS
+      sep: ','
+      targetAccount: Expenses:Food:FastFood
+
+    - peer: 7-ELEVEN
+      targetAccount: Expenses:Groceries
+
+    - peer: METRO
+      targetAccount: Expenses:Transport
+
+    - item: RETURN
+      targetAccount: Assets:Refund
+
+    - peer: UNIONPAY MERCHANT
+      targetAccount: Expenses:Shopping 

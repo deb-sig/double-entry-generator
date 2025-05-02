@@ -1,0 +1,100 @@
+option "title" "HSBC HK信用卡示例"
+option "operating_currency" "CNY"
+
+1970-01-01 open Assets:Bank:HK:HSBC:Savings
+1970-01-01 open Assets:FIXME
+1970-01-01 open Assets:Refund
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Expenses:Food:Delivery
+1970-01-01 open Expenses:Food:FastFood
+1970-01-01 open Expenses:Groceries
+1970-01-01 open Expenses:Shopping
+1970-01-01 open Expenses:Transport
+
+2025-03-20 * "KFC RESTAURANT" "SALES:   KFC RESTAURANT            CHN          CN"
+	country: "CHINA"
+	credit_or_debit: "DEBIT"
+	post_date: "21/03/2025"
+	source: "HSBC HK"
+	Expenses:Food:FastFood 179.50 CNY
+	Liabilities:CreditCard:HSBC -179.50 CNY
+
+2025-03-22 * "SHENZHEN METRO" "APPLEPAY SHENZHEN METRO            CHN          CN"
+	country: "CHINA"
+	credit_or_debit: "DEBIT"
+	post_date: "24/03/2025"
+	source: "HSBC HK"
+	Expenses:Transport 1.01 CNY
+	Liabilities:CreditCard:HSBC -1.01 CNY
+
+2025-03-24 * "" "PAYMENT - THANK YOU"
+	credit_or_debit: "CREDIT"
+	post_date: "24/03/2025"
+	source: "HSBC HK"
+	Liabilities:CreditCard:HSBC 3266.16 CNY
+	Assets:Bank:HK:HSBC:Savings -3266.16 CNY
+
+2025-03-31 * "PINDUODUO PLATFORM" "RETURN:  PINDUODUO PLATFORM        CHN          CN"
+	country: "CHINA"
+	credit_or_debit: "CREDIT"
+	post_date: "01/04/2025"
+	source: "HSBC HK"
+	Liabilities:CreditCard:HSBC 25.00 CNY
+	Assets:Refund -25.00 CNY
+
+2025-04-01 * "7-ELEVEN CONVENIENCE" "QR       7-ELEVEN CONVENIENCE      CHN          CN"
+	country: "CHINA"
+	credit_or_debit: "DEBIT"
+	post_date: "02/04/2025"
+	source: "HSBC HK"
+	Expenses:Groceries 7.54 CNY
+	Liabilities:CreditCard:HSBC -7.54 CNY
+
+2025-04-05 * "TL" "SALES:   TL                        CHN          CN"
+	country: "CHINA"
+	credit_or_debit: "DEBIT"
+	post_date: "07/04/2025"
+	source: "HSBC HK"
+	Expenses:FIXME 204.00 CNY
+	Liabilities:CreditCard:HSBC -204.00 CNY
+
+2025-04-06 * "MEITUAN" "APPLEPAY MEITUAN                   CHN          CN"
+	country: "CHINA"
+	credit_or_debit: "DEBIT"
+	post_date: "07/04/2025"
+	source: "HSBC HK"
+	Expenses:Food:Delivery 21.80 CNY
+	Liabilities:CreditCard:HSBC -21.80 CNY
+
+2025-04-07 * "MCDONALDS" "SALES:   MCDONALDS                 CHN          CN"
+	country: "CHINA"
+	credit_or_debit: "DEBIT"
+	post_date: "08/04/2025"
+	source: "HSBC HK"
+	Expenses:Food:FastFood 27.90 CNY
+	Liabilities:CreditCard:HSBC -27.90 CNY
+
+2025-04-07 * "MCDONALDS" "SALES:   MCDONALDS (HKD)              CHN          CN"
+	country: "CHINA"
+	credit_or_debit: "DEBIT"
+	post_date: "08/04/2025"
+	source: "HSBC HK"
+	Expenses:Food:FastFood 27.90 HKD
+	Liabilities:CreditCard:HSBC -27.90 HKD
+
+2025-04-08 * "YAHUI CATERING CO.,LTD." "QR       YAHUI CATERING CO.,LTD.   CHN          CN"
+	country: "CHINA"
+	credit_or_debit: "DEBIT"
+	post_date: "09/04/2025"
+	source: "HSBC HK"
+	Expenses:FIXME 18.00 CNY
+	Liabilities:CreditCard:HSBC -18.00 CNY
+
+2025-04-09 * "UNIONPAY MERCHANT" "QR       UNIONPAY MERCHANT         CHN          CN"
+	country: "CHINA"
+	credit_or_debit: "DEBIT"
+	post_date: "10/04/2025"
+	source: "HSBC HK"
+	Expenses:Shopping 1099.14 CNY
+	Liabilities:CreditCard:HSBC -1099.14 CNY
+
