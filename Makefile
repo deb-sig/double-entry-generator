@@ -156,7 +156,7 @@ lint: ## Lint GO code
 check-format: ## Check if the format looks good.
 	@go fmt ./...
 
-before-commit-check: format check-format lint ## Do all static checks before you commit code (go fmt, gofmt, goimports, golangci-lint)
+before-commit-check: format check-format lint test ## Do all static checks & tests before you commit code
 
 goreleaser-build-test: ## Goreleaser build for testing
 	goreleaser build --single-target --snapshot --clean
