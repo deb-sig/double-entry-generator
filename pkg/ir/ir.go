@@ -43,6 +43,7 @@ type Order struct {
 	Method          string
 	Amount          float64
 	Price           float64
+	Currency        string
 	Commission      float64 // 手续费/服务费
 	Units           map[Unit]string
 	ExtraAccounts   map[Account]string

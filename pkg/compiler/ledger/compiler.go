@@ -172,6 +172,13 @@ func (ledger *Ledger) writeBills(file io.Writer) error {
 	return nil
 }
 
+func (ledger *Ledger) getCurrency(o ir.Order) string {
+	if o.Currency != "" {
+		return o.Currency
+	}
+	return ledger.Config.DefaultCurrency
+}
+
 func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 	order := ledger.IR.Orders[index]
 
@@ -182,6 +189,7 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 	default:
 		fallthrough
 	case ir.OrderTypeNormal:
+		currency := ledger.getCurrency(order)
 		err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
 			PayTime:           order.PayTime,
 			Peer:              order.Peer,
@@ -194,7 +202,7 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 			PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
 			CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
 			Metadata:          order.Metadata,
-			Currency:          ledger.Config.DefaultCurrency,
+			Currency:          currency,
 			Tags:              order.Tags,
 		})
 	case ir.OrderTypeHuobiTrade: // Huobi trades

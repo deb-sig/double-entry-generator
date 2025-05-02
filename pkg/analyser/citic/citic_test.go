@@ -1,13 +1,14 @@
 package citic_test
 
 import (
+	"testing"
+
 	main "github.com/deb-sig/double-entry-generator/pkg/analyser/citic"
 	"github.com/deb-sig/double-entry-generator/pkg/config"
 	"github.com/deb-sig/double-entry-generator/pkg/ir"
 	citicConfig "github.com/deb-sig/double-entry-generator/pkg/provider/citic"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"testing"
 )
 
 // Entry point for Ginkgo tests

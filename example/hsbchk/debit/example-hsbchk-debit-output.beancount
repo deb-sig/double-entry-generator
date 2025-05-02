@@ -1,0 +1,66 @@
+option "title" "HSBC HK借记卡示例"
+option "operating_currency" "HKD"
+
+1970-01-01 open Assets:Cash
+1970-01-01 open Assets:FIXME
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Expenses:Groceries
+1970-01-01 open Expenses:Utilities
+1970-01-01 open Income:Interest
+1970-01-01 open Income:Salary
+1970-01-01 open Income:Transfer
+
+2025-03-01 * "INTEREST CREDIT"
+	balance: "10561.33 HKD"
+	source: "HSBC HK"
+	Assets:Bank:HK:HSBC:Savings 5.45 HKD
+	Income:Interest -5.45 HKD
+
+2025-03-05 * "ONLINE TRANSFER          TO 98-765432-1"
+	balance: "8561.33 HKD"
+	source: "HSBC HK"
+	Expenses:FIXME 2000.00 HKD
+	Assets:Bank:HK:HSBC:Savings -2000.00 HKD
+
+2025-03-10 * "BILL PAYMENT             ELECTRICITY"
+	balance: "8211.33 HKD"
+	source: "HSBC HK"
+	Expenses:Utilities 350.00 HKD
+	Assets:Bank:HK:HSBC:Savings -350.00 HKD
+
+2025-03-12 * "SALARY PAYMENT           ABC COMPANY LTD"
+	balance: "4288.67 HKD"
+	source: "HSBC HK"
+	Assets:Bank:HK:HSBC:Savings 12500.00 HKD
+	Income:Salary -12500.00 HKD
+
+2025-03-12 * "SALARY PAYMENT           CDE COMPANY LTD"
+	balance: "12500.00 CNY"
+	source: "HSBC HK"
+	Assets:Bank:HK:HSBC:Savings 12500.00 CNY
+	Income:Salary -12500.00 CNY
+
+2025-03-15 * "ATM WITHDRAWAL           CENTRAL BRANCH"
+	balance: "3288.67 HKD"
+	source: "HSBC HK"
+	Assets:Cash 1000.00 HKD
+	Assets:Bank:HK:HSBC:Savings -1000.00 HKD
+
+2025-03-18 * "POS PURCHASE             SUPERMARKET HK"
+	balance: "3213.17 HKD"
+	source: "HSBC HK"
+	Expenses:Groceries 75.50 HKD
+	Assets:Bank:HK:HSBC:Savings -75.50 HKD
+
+2025-03-20 * "FUND TRANSFER FROM       12-345678-9 JOHN SMITH"
+	balance: "3713.17 HKD"
+	source: "HSBC HK"
+	Assets:Bank:HK:HSBC:Savings 500.00 HKD
+	Income:Transfer -500.00 HKD
+
+2025-03-24 * "MOBILE WITHDRAWAL        (22MAR25)"
+	balance: "3613.17 HKD"
+	source: "HSBC HK"
+	Assets:Cash 100.00 HKD
+	Assets:Bank:HK:HSBC:Savings -100.00 HKD
+

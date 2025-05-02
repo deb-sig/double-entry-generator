@@ -60,7 +60,7 @@ else
 endif
 
 # All targets.
-.PHONY: lint test build container push help clean test-go test-wechat test-alipay test-huobi test-htsec format check-format goreleaser-build-test
+.PHONY: lint test build container push help clean test-go test-wechat test-alipay test-huobi test-htsec format check-format goreleaser-build-test install-golangci-lint clean-cache
 
 help:  ## Display this help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
@@ -90,7 +90,7 @@ clean: ## Clean all the temporary files
 	@rm -rf ./double-entry-generator
 	@rm -rf ./wasm-dist
 
-test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-huobi-ledger test-htsec-beancount test-htsec-ledger test-icbc-beancount test-icbc-ledger test-td-beancount test-td-ledger test-bmo-beancount test-bmo-ledger test-citic-beancount test-citic-ledger ## Run all tests
+test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-huobi-ledger test-htsec-beancount test-htsec-ledger test-icbc-beancount test-icbc-ledger test-td-beancount test-td-ledger test-bmo-beancount test-bmo-ledger test-citic-beancount test-citic-ledger test-hsbchk-beancount test-hsbchk-ledger ## Run all tests
 
 test-go: ## Run Golang tests
 	@go test ./...
@@ -107,13 +107,11 @@ test-wechat-ledger: ## Run tests for WeChat provider against ledger compiler
 
 test-huobi-beancount: ## Run tests for huobi provider against beancount compiler
 	@$(SHELL) ./test/huobi-test-beancount.sh
-
 test-huobi-ledger: ## Run tests for huobi provider against ledger compiler
 	@$(SHELL) ./test/huobi-test-ledger.sh
 
 test-htsec-beancount: ## Run tests for htsec provider against beancount compiler
 	@$(SHELL) ./test/htsec-test-beancount.sh
-
 test-htsec-ledger: ## Run tests for htsec provider against ledger compiler
 	@$(SHELL) ./test/htsec-test-ledger.sh
 
@@ -137,9 +135,20 @@ test-citic-beancount: ## Run tests for CITIC provider against beancount compiler
 test-citic-ledger: ## Run tests for CITIC provider against ledger compiler
 	@$(SHELL) ./test/citic-test-ledger.sh
 
+test-hsbchk-beancount: ## Run tests for HSBC HK provider against beancount compiler
+	@$(SHELL) ./test/hsbchk-test-beancount.sh
+test-hsbchk-ledger: ## Run tests for HSBC HK provider against ledger compiler
+	@$(SHELL) ./test/hsbchk-test-ledger.sh
+
 format: ## Format code
 	@gofmt -s -w pkg
 	@goimports -w pkg
+
+install-golangci-lint:
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+clean-cache:
+	@go clean -cache && go clean -modcache
 
 lint: ## Lint GO code
 	@golangci-lint run
