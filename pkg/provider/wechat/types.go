@@ -68,5 +68,6 @@ const (
 	TxTypeFamilyCard           TxType = "亲属卡交易"
 	TxTypeSponsorCode          TxType = "赞赏码"
 	TxTypeOther                TxType = "其他"
+	TxTypeDonation             TxType = "分分捐"
 	TxTypeUnknown              TxType = "Unknown"
 )
