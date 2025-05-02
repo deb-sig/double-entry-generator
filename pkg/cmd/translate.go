@@ -27,13 +27,15 @@ import (
 	"github.com/deb-sig/double-entry-generator/pkg/config"
 	"github.com/deb-sig/double-entry-generator/pkg/consts"
 	"github.com/deb-sig/double-entry-generator/pkg/provider"
+	"github.com/deb-sig/double-entry-generator/pkg/provider/wechat"
 )
 
 var (
-	providerName string
-	targetName   string
-	appendMode   bool
-	output       string
+	providerName               string
+	targetName                 string
+	appendMode                 bool
+	output                     string
+	ignoreInvalidWechatTxTypes bool
 )
 
 var translateCmd = &cobra.Command{
@@ -54,10 +56,17 @@ func init() {
 	translateCmd.Flags().StringVarP(&targetName, "target", "t", "beancount", "Target (beancount)")
 	translateCmd.Flags().BoolVarP(&appendMode, "append", "a", false, "Append mode")
 	translateCmd.Flags().StringVarP(&output, "output", "o", "default_output.beancount", "Output file")
+	translateCmd.Flags().BoolVar(&ignoreInvalidWechatTxTypes, "ignore-invalid-wechat-tx-types", false, "Ignore invalid WeChat transaction types")
 }
 
 func run(args []string) {
 	// Get the config from viper.
+	log.Printf("Use config file: %s", viper.ConfigFileUsed())
+	// If a config file is found, read it in.
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("Read config file error: %v", err)
+	}
+
 	c := &config.Config{}
 	err := viper.Unmarshal(c)
 	logErrorIfNotNil(err)
@@ -83,6 +92,12 @@ func run(args []string) {
 
 	p, err := provider.New(providerName)
 	logErrorIfNotNil(err)
+
+	if providerName == consts.ProviderWechat {
+		if w, ok := p.(*wechat.Wechat); ok {
+			w.IgnoreInvalidTxTypes = ignoreInvalidWechatTxTypes
+		}
+	}
 
 	i, err := p.Translate(args[0])
 	logErrorIfNotNil(err)

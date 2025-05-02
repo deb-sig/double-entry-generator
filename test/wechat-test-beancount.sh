@@ -16,6 +16,7 @@ mkdir -p "$ROOT_DIR/test/output"
     --provider wechat \
     --config "$ROOT_DIR/example/wechat/config.yaml" \
     --output "$ROOT_DIR/test/output/test-wechat-output.beancount" \
+    --ignore-invalid-wechat-tx-types \
     "$ROOT_DIR/example/wechat/example-wechat-records.csv"
 
 diff -u --color \

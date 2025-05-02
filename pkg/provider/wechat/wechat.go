@@ -13,17 +13,19 @@ import (
 
 // Wechat is the provider for Wechat.
 type Wechat struct {
-	Statistics Statistics `json:"statistics,omitempty"`
-	LineNum    int        `json:"line_num,omitempty"`
-	Orders     []Order    `json:"orders,omitempty"`
+	Statistics           Statistics `json:"statistics,omitempty"`
+	LineNum              int        `json:"line_num,omitempty"`
+	Orders               []Order    `json:"orders,omitempty"`
+	IgnoreInvalidTxTypes bool       `json:"ignore_invalid_tx_types,omitempty"`
 }
 
 // New creates a new wechat provider.
 func New() *Wechat {
 	return &Wechat{
-		Statistics: Statistics{},
-		LineNum:    0,
-		Orders:     make([]Order, 0),
+		Statistics:           Statistics{},
+		LineNum:              0,
+		Orders:               make([]Order, 0),
+		IgnoreInvalidTxTypes: false,
 	}
 }
 

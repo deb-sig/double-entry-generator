@@ -60,7 +60,7 @@ else
 endif
 
 # All targets.
-.PHONY: lint test build container push help clean test-go test-wechat test-alipay test-huobi test-htsec format check-format goreleaser-build-test install-golangci-lint clean-cache
+.PHONY: lint test build container push help clean test-go test-wechat test-alipay test-huobi test-htsec format check-format goreleaser-build-test install-golangci-lint clean-cache gen-doc before-commit-check
 
 help:  ## Display this help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
@@ -156,8 +156,13 @@ lint: ## Lint GO code
 check-format: ## Check if the format looks good.
 	@go fmt ./...
 
+before-commit-check: format check-format lint ## Do all static checks before you commit code (go fmt, gofmt, goimports, golangci-lint)
+
 goreleaser-build-test: ## Goreleaser build for testing
 	goreleaser build --single-target --snapshot --clean
+
+gen-doc: ## Generate command docs by spf13/cobra
+	@go run hack/generate-doc.go
 
 clean-wasm: ## Clean wasm-dist dir
 	@rm -rf ./wasm-dist

@@ -88,6 +88,22 @@ double-entry-generator translate \
   ./example/wechat/example-wechat-records.csv
 ```
 
+> [!NOTE]
+> 
+> 如果遇到 `"Failed to get the tx type"` 错误，请先在 [issue](https://github.com/deb-sig/double-entry-generator/issues) 上报问题。
+> 
+> 若此未识别交易类型为支出，且 `double-entry-generator` 版本至少为 `2.9.1` ，则可在转换命令中加上 `--ignore-invalid-wechat-tx-types` 参数以忽略该错误。
+> 
+> 示例：
+> ```bash
+> double-entry-generator translate \
+>   --config ./example/wechat/config.yaml \
+>   --provider wechat \
+>   --output ./example/wechat/example-wechat-output.beancount \
+>   --ignore-invalid-wechat-tx-types \
+>   ./example/wechat/example-wechat-records.csv
+> ```
+
 #### Huobi Global (Crypto)
 
 ```bash
@@ -110,12 +126,16 @@ double-entry-generator translate \
 
 #### 中国工商银行
 
+> [!TIP]
+> 
+> 可自动识别借记卡/信用卡账单。
+
 ```bash
 double-entry-generator translate \
-  --config ./example/icbc/credit/config.yaml \
+  --config ./example/icbc/config.yaml \
   --provider icbc \
-  --output ./example/icbc/credit/example-icbc-credit-output.beancount \
-  ./example/icbc/credit/example-icbc-credit-records.csv
+  --output ./example/icbc/example-icbc-output.beancount \
+  ./example/icbc/example-icbc-credit-records.csv
 ```
 
 #### Toronto-Dominion Bank
@@ -140,24 +160,16 @@ double-entry-generator translate \
 
 #### HSBC HK
 
-##### 借记卡
+> [!TIP]
+> 
+> 可自动识别借记卡/信用卡账单。
 
 ```bash
 double-entry-generator translate \
-  --config ./example/hsbchk/debit/config.yaml \
+  --config ./example/hsbchk/config.yaml \
   --provider hsbchk \
-  --output ./example/hsbchk/debit/example-hsbchk-debit-output.beancount \
-  ./example/hsbchk/debit/example-hsbchk-debit-records.csv
-```
-
-##### 信用卡
-
-```bash
-double-entry-generator translate \
-  --config ./example/hsbchk/credit/config.yaml \
-  --provider hsbchk \
-  --output ./example/hsbchk/credit/example-hsbchk-credit-output.beancount \
-  ./example/hsbchk/credit/example-hsbchk-credit-records.csv
+  --output ./example/hsbchk/example-hsbchk-output.beancount \
+  ./example/hsbchk/example-hsbchk-records.csv
 ```
 
 #### 中信银行信用卡
@@ -420,11 +432,10 @@ double-entry-generator translate \
 
 #### 下载方式
 
-1. 登录HSBC HK网上银行
-2. 访问账户概览页面
-3. 选择所需的账户（借记卡或信用卡）
-4. 在交易明细页面，选择想要导出的时间段
-5. 点击"导出"按钮，选择 CSV 格式导出
+1. 登录 [香港汇丰银行网上银行](https://www.hsbc.com.hk/zh-cn/online/dashboard) 。
+2. 点击对应信用卡账户到交易记录页。
+3. 点击搜索与筛选选日期搜索。
+4. 选定范围得到当期账单记录，滚动到底部，点击下载按钮即可下载 CSV 格式的账单。
 
 #### 格式示例
 
