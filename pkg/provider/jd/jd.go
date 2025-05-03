@@ -189,7 +189,7 @@ func (c *JD) convertToIRType(s Type) ir.Type {
 
 func (c *JD) translateValue(s string) (int64, error) {
 
-	re := regexp.MustCompile(`\(已退款[0-9]+(\.[0-9]+)?\)|\(已全额退款\)$`)
+	re := regexp.MustCompile(`\(已退款[0-9]+(\.[0-9]+)?\)$|\(已全额退款\)$`)
 
 	// 检查金额是否以 '(已全额退款)' 或者 '(已退款xx.xx)' 结尾
 	// 如果是，去掉后缀

@@ -122,18 +122,6 @@ option "operating_currency" "CNY"
 	Expenses:Reside:Express 40.00 CNY
 	Liabilities:CC:BoC:1341 -40.00 CNY
 
-2024-12-18 * "京东平台商户" "云南正宗大果王青皮大丑橘当季新鲜柑橘大果无籽孕妇喜爱酸甜 5斤 70mm以上"
-	category: "食品酒饮"
-	merchantId: "1000345234234223"
-	method: "微信-招商银行信用卡"
-	orderId: "100000011234"
-	payTime: "2024-12-18 21:32:13 +0800 CST"
-	source: "京东平台商户"
-	status: "交易成功"
-	type: "支出"
-	Expenses:Food:Snacks 14.99 CNY
-	Assets:FIXME -14.99 CNY
-
 2024-12-19 * "京东物流" "京东外部商户"
 	category: "收发快递"
 	merchantId: "1000345234234223"
@@ -145,18 +133,6 @@ option "operating_currency" "CNY"
 	type: "支出"
 	Expenses:Reside:Express 13.00 CNY
 	Assets:JD:Balance -13.00 CNY
-
-2024-12-21 * "京东平台商户" "志高（CHIGO）热水袋暖水袋 充电暖手宝暖宝宝 智能防爆 双插手亲肤绒 天空青蓝"
-	category: "先享后付"
-	merchantId: "1000345234234223"
-	method: "先享后付"
-	orderId: "100000011234"
-	payTime: "2024-12-21 13:40:59 +0800 CST"
-	source: "京东平台商户"
-	status: "交易成功"
-	type: "不计收支"
-	Expenses:FIXME 35.61 CNY
-	Assets:FIXME -35.61 CNY
 
 2024-12-21 * "京东平台商户" "京东京造暖星智能双人电热毯 自动断电双温双控定时除螨电褥子1.5x1.8m"
 	category: "其他网购"
@@ -253,30 +229,6 @@ option "operating_currency" "CNY"
 	type: "支出"
 	Expenses:Clothes 19.72 CNY
 	Liabilities:CC:BoC:1341 -19.72 CNY
-
-2024-12-26 * "京鲜生" "京鲜生 红肉蜜柚 2粒 单果1.5-2.5斤 生鲜水果"
-	category: "先享后付"
-	merchantId: "1000345234234223"
-	method: "先享后付"
-	orderId: "100000011234"
-	payTime: "2024-12-26 22:35:50 +0800 CST"
-	source: "京鲜生"
-	status: "交易成功"
-	type: "不计收支"
-	Expenses:FIXME 0.00 CNY
-	Assets:FIXME -0.00 CNY
-
-2024-12-26 * "京东平台商户" "退款-京鲜生 红肉蜜柚 2粒 单果1.5-2.5斤 生鲜水果"
-	category: "网购"
-	merchantId: "1000345234234223"
-	method: "先享后付"
-	orderId: "100000011234"
-	payTime: "2024-12-26 22:36:09 +0800 CST"
-	source: "京东平台商户"
-	status: "退款成功"
-	type: "不计收支"
-	Assets:FIXME 0.00 CNY
-	Income:Rebate -0.00 CNY
 
 2024-12-26 * "京鲜生" "京鲜生 红肉蜜柚 2粒 单果1.5-2.5斤 生鲜水果"
 	category: "食品酒饮"

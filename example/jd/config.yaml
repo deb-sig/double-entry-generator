@@ -59,6 +59,10 @@ jd:
       methodAccount: Liabilities:CC:CMBC:0073
     - method: (5559)
       methodAccount: Liabilities:CC:CMBC:5559
+    - method: 微信-
+      ignore: true
+    - method: 先享后付
+      ignore: true
     - category: 网购
       type: 不计收支
       targetAccount: Income:Rebate

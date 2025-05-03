@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// translateToOrders translates csv file to []Order.
+// translateToOrders parses a single CSV row into an Order and appends it to mt.Orders
 func (mt *MT) translateToOrders(array []string) error {
 	var err error
 
