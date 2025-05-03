@@ -22,7 +22,7 @@ IMAGE_SUFFIX ?= $(strip )
 SHELL := /bin/bash
 
 # Project main package location (can be multiple ones).
-CMD_DIR := .
+CMD_DIR := ./v2
 
 # Project output directory.
 OUTPUT_DIR := ./bin
@@ -68,9 +68,9 @@ help:  ## Display this help
 build: build-local  ## Build the project
 
 LD_FLAGS := -ldflags "-s -w
-LD_FLAGS += -X $(ROOT)/pkg/version.VERSION=$(VERSION)
-LD_FLAGS += -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)
-LD_FLAGS += -X $(ROOT)/pkg/version.COMMIT=$(GIT_COMMIT)"
+LD_FLAGS += -X $(ROOT)/v2/pkg/version.VERSION=$(VERSION)
+LD_FLAGS += -X $(ROOT)/v2/pkg/version.REPOROOT=$(ROOT)
+LD_FLAGS += -X $(ROOT)/v2/pkg/version.COMMIT=$(GIT_COMMIT)"
 
 build-local:
 	@for target in $(TARGETS); do                                                      \
@@ -141,8 +141,8 @@ test-hsbchk-ledger: ## Run tests for HSBC HK provider against ledger compiler
 	@$(SHELL) ./test/hsbchk-test-ledger.sh
 
 format: ## Format code
-	@gofmt -s -w pkg
-	@goimports -w pkg
+	@gofmt -s -w v2/pkg
+	@goimports -w v2/pkg
 
 install-golangci-lint:
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
@@ -152,6 +152,11 @@ clean-cache:
 
 lint: ## Lint GO code
 	@golangci-lint run
+
+mod-tidy: ## Run `go mod tidy`
+	@go mod tidy
+	@cd v2
+	@go mod tidy
 
 check-format: ## Check if the format looks good.
 	@go fmt ./...
