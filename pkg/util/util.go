@@ -146,9 +146,6 @@ func SplitFindTimeStampInterval(timeRangeStr string, targetTime time.Time, match
 	if targetTime.After(startTime) && targetTime.Before(endTime) {
 		isContain = true
 	}
-	if match {
-		println("start time", startTime.String(), endTime.String(), targetTime.String())
-	}
 
 	return isContain && match, nil
 }

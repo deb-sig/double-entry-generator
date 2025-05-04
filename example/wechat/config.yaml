@@ -90,3 +90,7 @@ wechat:
     - peer: 测试时间戳
       timestamp_range: 1658112487-1658112490 # order_time= 2022-07-18 10:48:09 ts=1658112489
       targetAccount: Expenses:Travel
+
+    - type: 支出
+      txType: 分分捐
+      targetAccount: Expenses:Charity:Donation

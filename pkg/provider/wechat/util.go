@@ -50,6 +50,8 @@ func getTxType(tt string) TxType {
 		return TxTypeFamilyCard
 	} else if strings.Contains(tt, string(TxTypeSponsorCode)) {
 		return TxTypeSponsorCode
+	} else if strings.Contains(tt, string(TxTypeDonation)) {
+		return TxTypeDonation
 	} else if strings.Contains(tt, string(TxTypeOther)) {
 		return TxTypeOther
 	} else {

@@ -7,6 +7,7 @@ option "operating_currency" "CNY"
 1970-01-01 open Assets:Digital:Wechat:MiniFund
 1970-01-01 open Assets:FIXME
 1970-01-01 open Assets:Trade:Tencent:LiCaiTong
+1970-01-01 open Expenses:Charity:Donation
 1970-01-01 open Expenses:FIXME
 1970-01-01 open Expenses:Food:Drink
 1970-01-01 open Expenses:Food:Meal
@@ -326,4 +327,28 @@ option "operating_currency" "CNY"
 	type: "支出"
 	Expenses:Food:Meal 50.00 CNY
 	Assets:Bank:CN:ICBC:Savings -50.00 CNY
+
+2024-06-07 * "腾讯公益慈善基金会" "焕新乐园"
+	merchantId: "156823045120240607AQEQJ8ZY4P"
+	method: "工商银行储蓄卡(9876)"
+	orderId: "4200002168202406076349888061"
+	payTime: "2024-06-07 23:40:27 +0800 CST"
+	source: "微信支付"
+	status: "支付成功"
+	txType: "分分捐"
+	type: "支出"
+	Expenses:Charity:Donation 0.01 CNY
+	Assets:Bank:CN:ICBC:Savings -0.01 CNY
+
+2024-06-07 * "测试" "ignore-invalid-wechat-tx-types"
+	merchantId: "156823045120240607AQEQJ8ZY4P"
+	method: "工商银行储蓄卡(9876)"
+	orderId: "4200002168202406076349888061"
+	payTime: "2024-06-07 23:40:27 +0800 CST"
+	source: "微信支付"
+	status: "支付成功"
+	txType: "deg-不认识的-txType"
+	type: "支出"
+	Expenses:FIXME 0.01 CNY
+	Assets:Bank:CN:ICBC:Savings -0.01 CNY
 
