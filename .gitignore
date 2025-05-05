@@ -26,3 +26,5 @@ test/output
 
 # OS X temporary files
 .DS_Store
+
+.devcontainer
