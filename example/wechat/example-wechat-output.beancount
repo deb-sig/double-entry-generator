@@ -340,7 +340,7 @@ option "operating_currency" "CNY"
 	Expenses:Charity:Donation 0.01 CNY
 	Assets:Bank:CN:ICBC:Savings -0.01 CNY
 
-2024-06-07 * "测试" "ignore-invalid-wechat-tx-types"
+2024-06-07 * "测试" "ignore-invalid-tx-types"
 	merchantId: "156823045120240607AQEQJ8ZY4P"
 	method: "工商银行储蓄卡(9876)"
 	orderId: "4200002168202406076349888061"
