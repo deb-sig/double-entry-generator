@@ -59,6 +59,14 @@ brew upgrade deb-sig/tap/double-entry-generator
 go install github.com/deb-sig/double-entry-generator@latest
 ```
 
+> [!CAUTION]
+>  
+> 当前此种方法无法安装 `v2` 及以上版本，问题详情可见 [#130](https://github.com/deb-sig/double-entry-generator/issues/130) 。
+
+> [!TIP]
+> 
+> 通过这种方式安装 `double-entry-generator` ，请使用 `go version -m $(which double-entry-generator)` 来查看版本。
+
 ## 使用
 
 请见[使用文档](doc/double-entry-generator_translate.md)
