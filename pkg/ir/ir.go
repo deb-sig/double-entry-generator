@@ -66,12 +66,13 @@ const (
 type Account string
 
 const (
-	CashAccount       Account = "CashAccount"
-	PositionAccount   Account = "PositionAccount"
-	CommissionAccount Account = "CommissionAccount"
-	PnlAccount        Account = "PnlAccount"
-	PlusAccount       Account = "PlusAccount"
-	MinusAccount      Account = "MinusAccount"
+	CashAccount              Account = "CashAccount"
+	PositionAccount          Account = "PositionAccount"
+	CommissionAccount        Account = "CommissionAccount"
+	PnlAccount               Account = "PnlAccount"
+	ThirdPartyCustodyAccount Account = "ThirdPartyCustodyAccount" // 第三方存管账户
+	PlusAccount              Account = "PlusAccount"
+	MinusAccount             Account = "MinusAccount"
 )
 
 // Type is transaction type defined by alipay.
@@ -87,8 +88,15 @@ type OrderType string // 为 IR 设置的交易类别
 
 const (
 	OrderTypeNormal          OrderType = "Normal"          // 流水交易
-	OrderTypeHuobiTrade      OrderType = "HuobiTrade"      //  火币交易
+	OrderTypeHuobiTrade      OrderType = "HuobiTrade"      // 火币交易
 	OrderTypeSecuritiesTrade OrderType = "SecuritiesTrade" // 证券交易
+
+	// China Securities specific
+	OrderTypeChinaSecuritiesBankTransferToBroker   OrderType = "ChinaSecuritiesBankTransferToBroker"   // 银行转证券
+	OrderTypeChinaSecuritiesBrokerTransferToBank   OrderType = "ChinaSecuritiesBrokerTransferToBank"   // 证券转银行
+	OrderTypeChinaSecuritiesInterestCapitalization OrderType = "ChinaSecuritiesInterestCapitalization" // 利息归本
+	OrderTypeChinaSecuritiesEtfMerge               OrderType = "ChinaSecuritiesEtfMerge"               // ETF份额合并
+	OrderTypeChinaSecuritiesDividend               OrderType = "ChinaSecuritiesDividend"               // 红利入账
 )
 
 // New creates a new IR.

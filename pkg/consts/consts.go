@@ -44,4 +44,6 @@ const (
 	ProviderHsbcHK = "hsbchk"
 	// ProvderMT is the name for mt provider
 	ProviderMT = "mt"
+	// ProviderHxsec is the name for hxsec provider.
+	ProviderHxsec = "hxsec"
 )
