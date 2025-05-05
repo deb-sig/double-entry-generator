@@ -56,7 +56,7 @@ func init() {
 	translateCmd.Flags().StringVarP(&targetName, "target", "t", "beancount", "Target (beancount)")
 	translateCmd.Flags().BoolVarP(&appendMode, "append", "a", false, "Append mode")
 	translateCmd.Flags().StringVarP(&output, "output", "o", "default_output.beancount", "Output file")
-	translateCmd.Flags().BoolVar(&ignoreInvalidWechatTxTypes, "ignore-invalid-wechat-tx-types", false, "Ignore invalid WeChat transaction types")
+	translateCmd.Flags().BoolVar(&ignoreInvalidWechatTxTypes, "ignore-invalid-tx-types", false, "Ignore invalid transaction types (ONLY support WeChat provider)")
 }
 
 func run(args []string) {

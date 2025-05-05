@@ -15,7 +15,7 @@ double-entry-generator translate [flags] <path to bill file>
 ```
   -a, --append                           Append mode
   -h, --help                             help for translate
-      --ignore-invalid-wechat-tx-types   Ignore invalid WeChat transaction types
+      --ignore-invalid-tx-types   Ignore invalid WeChat transaction types
   -o, --output string                    Output file (default "default_output.beancount")
   -p, --provider string                  Bills provider (alipay) (default "alipay")
   -t, --target string                    Target (beancount) (default "beancount")
