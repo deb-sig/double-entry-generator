@@ -1,4 +1,4 @@
-package jd
+package mt
 
 import (
 	"log"
@@ -9,27 +9,23 @@ import (
 	"github.com/deb-sig/double-entry-generator/pkg/util"
 )
 
-type JD struct {
+type MT struct {
 }
 
 // GetAllCandidateAccounts returns all accounts defined in config.
-func (a JD) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
-	// uniqMap will be used to create the concepts.
+func (mt MT) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 	uniqMap := make(map[string]bool)
 
-	if cfg.JD == nil || len(cfg.JD.Rules) == 0 {
+	if cfg.MT == nil || len(cfg.MT.Rules) == 0 {
 		return uniqMap
 	}
 
-	for _, r := range cfg.JD.Rules {
+	for _, r := range cfg.MT.Rules {
 		if r.MethodAccount != nil {
 			uniqMap[*r.MethodAccount] = true
 		}
 		if r.TargetAccount != nil {
 			uniqMap[*r.TargetAccount] = true
-		}
-		if r.PnlAccount != nil {
-			uniqMap[*r.PnlAccount] = true
 		}
 	}
 	uniqMap[cfg.DefaultPlusAccount] = true
@@ -37,11 +33,11 @@ func (a JD) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 	return uniqMap
 }
 
-// GetAccounts returns minus and plus account.
-func (a JD) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (bool, string, string, map[ir.Account]string, []string) {
+// GetAccounts matches rules, returns minus and plus account for beancount or ledger.
+func (mt MT) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (bool, string, string, map[ir.Account]string, []string) {
 	ignore := false
 
-	if cfg.JD == nil || len(cfg.JD.Rules) == 0 {
+	if cfg.MT == nil || len(cfg.MT.Rules) == 0 {
 		return ignore, cfg.DefaultMinusAccount, cfg.DefaultPlusAccount, nil, nil
 	}
 	resMinus := cfg.DefaultMinusAccount
@@ -50,7 +46,7 @@ func (a JD) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider
 	var tags = make([]string, 0)
 
 	var err error
-	for _, r := range cfg.JD.Rules {
+	for _, r := range cfg.MT.Rules {
 		match := true
 		// get separator
 		sep := ","
@@ -58,13 +54,9 @@ func (a JD) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider
 			sep = *r.Separator
 		}
 
-		matchFunc := util.SplitFindContains
+		matchFunc := util.SplitFindContains // 匹配规则为包含
 		if r.FullMatch {
-			matchFunc = util.SplitFindEquals
-		}
-
-		if r.Peer != nil {
-			match = matchFunc(*r.Peer, o.Peer, sep, match)
+			matchFunc = util.SplitFindEquals // 匹配规则为完全相等
 		}
 		if r.Type != nil {
 			match = matchFunc(*r.Type, o.TypeOriginal, sep, match)
@@ -75,20 +67,23 @@ func (a JD) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider
 		if r.Method != nil {
 			match = matchFunc(*r.Method, o.Method, sep, match)
 		}
-		if r.Category != nil {
-			match = matchFunc(*r.Category, o.Category, sep, match)
-		}
-		if r.Time != nil {
+		if r.Time != nil { // 检查支付时间是否在给定的时间范围中
 			match, err = util.SplitFindTimeInterval(*r.Time, o.PayTime, match)
 			if err != nil {
 				log.Fatalf("%v", err)
 			}
 		}
-		if r.TimestampRange != nil {
+		if r.TimestampRange != nil { // 检查支付时间是否在 unix 时间戳格式的时间范围中
 			match, err = util.SplitFindTimeStampInterval(*r.TimestampRange, o.PayTime, match)
 			if err != nil {
 				log.Fatalf("%v", err)
 			}
+		}
+		if r.MinPrice != nil && o.Money < *r.MinPrice {
+			match = false
+		}
+		if r.MaxPrice != nil && o.Money > *r.MaxPrice {
+			match = false
 		}
 
 		if match {
@@ -96,7 +91,7 @@ func (a JD) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider
 				ignore = true
 				break
 			}
-
+			// 美团目前看来，支付情况比较简单，只有消费与退款收入两种，暂不考虑美团月付的情况
 			if r.TargetAccount != nil {
 				if o.Type == ir.TypeRecv {
 					resMinus = *r.TargetAccount
@@ -111,25 +106,10 @@ func (a JD) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider
 					resMinus = *r.MethodAccount
 				}
 			}
-			if r.PnlAccount != nil {
-				extraAccounts = map[ir.Account]string{
-					ir.PnlAccount: *r.PnlAccount,
-				}
-			}
-
 			if r.Tags != nil {
 				tags = strings.Split(*r.Tags, sep)
 			}
-
 		}
-	}
-
-	if o.TypeOriginal == "不计收支" && (strings.HasPrefix(o.Item, "冻结-") ||
-		strings.HasPrefix(o.Item, "解冻-")) {
-		ignore = true
-	}
-	if o.TypeOriginal == "不计收支" && (strings.HasPrefix(o.Item, "退款-")) {
-		return ignore, resPlus, resMinus, extraAccounts, tags
 	}
 	return ignore, resMinus, resPlus, extraAccounts, tags
 }

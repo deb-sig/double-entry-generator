@@ -42,4 +42,6 @@ const (
 	ProviderCitic = "citic"
 	//ProviderHsbcHK is the name for HSBC HK provider
 	ProviderHsbcHK = "hsbchk"
+	// ProvderMT is the name for mt provider
+	ProviderMT = "mt"
 )

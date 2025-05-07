@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -129,17 +130,17 @@ func (c *JD) translateLine(row []string) error {
 	if err != nil {
 		return err
 	}
-	bill.Category = row[1]
-	bill.PeerType = row[2]
-	bill.ItemName = row[3]
+	bill.Category = row[7]
+	bill.PeerType = row[1]
+	bill.ItemName = row[2]
 
-	bill.Type = c.translateType(row[4])
-	bill.Money, err = c.translateValue(row[5])
+	bill.Type = c.translateType(row[6])
+	bill.Money, err = c.translateValue(row[3])
 	if err != nil {
 		return err
 	}
-	bill.Method = row[6]
-	bill.Status = row[7]
+	bill.Method = row[4]
+	bill.Status = row[5]
 	bill.DealNo = row[8]
 	bill.MerchantId = row[9]
 	bill.Notes = row[10]
@@ -187,6 +188,12 @@ func (c *JD) convertToIRType(s Type) ir.Type {
 }
 
 func (c *JD) translateValue(s string) (int64, error) {
+
+	re := regexp.MustCompile(`\(已退款[0-9]+(\.[0-9]+)?\)$|\(已全额退款\)$`)
+
+	// 检查金额是否以 '(已全额退款)' 或者 '(已退款xx.xx)' 结尾
+	// 如果是，去掉后缀
+	s = re.ReplaceAllString(s, "")
 	s = strings.ReplaceAll(s, ".", "")
 	return strconv.ParseInt(s, 10, 64)
 }

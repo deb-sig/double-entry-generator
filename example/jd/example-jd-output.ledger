@@ -1,165 +1,290 @@
 1970/01/01 * Open Balance
     Assets:EPay:JD     0 CNY
     Assets:FIXME     0 CNY
-    Assets:Food     0 CNY
+    Assets:JD:Balance     0 CNY
+    Expenses:Clothes     0 CNY
+    Expenses:Electronics     0 CNY
     Expenses:FIXME     0 CNY
-    Expenses:Food     0 CNY
+    Expenses:Food:Snacks     0 CNY
+    Expenses:Groceries     0 CNY
+    Expenses:Hospital:Medicine     0 CNY
     Expenses:MakeUp     0 CNY
     Expenses:Prpaid     0 CNY
+    Expenses:Reside:Express     0 CNY
+    Expenses:Sports     0 CNY
     Income:PnL:JD     0 CNY
+    Income:Rebate     0 CNY
     Liabilities:Baitiao     0 CNY
+    Liabilities:CC:BCM:0354     0 CNY
+    Liabilities:CC:BoC:1341     0 CNY
+    Liabilities:CC:BoC:1875     0 CNY
+    Liabilities:CC:BoNB:2189     0 CNY
+    Liabilities:CC:CMB:0924     0 CNY
+    Liabilities:CC:CMBC:0073     0 CNY
+    Liabilities:CC:CMBC:5559     0 CNY
+    Liabilities:JD:Baitiao     0 CNY
     Equity:Opening Balances 
-2021/11/17 * 京东金融 - 京东小金库-转入 
-    ; category: "小金库"
-    ; merchantId: "100000000000000000000027"
-    ; method: "银行卡"
-    ; orderId: "2000000000000079"
-    ; payTime: "2021-11-17 23:06:50 &#43;0800 CST"
-    ; source: "京东金融"
+2024/12/05 * 京东平台商户 - 奥科美（AOKO）U.2硬盘底座NVMe协议U2固态硬盘盒企业级u.2转USB3.2硬盘转接器 2.5/3.5英寸SATA机械硬盘通用 U3S 
+    ; category: "电脑办公"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1341)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-05 22:49:55 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Electronics      235.61 CNY
+    Liabilities:CC:BoC:1341   - 235.61 CNY
+
+2024/12/09 * 京东平台商户 - 京东京造山地自行车越客MX1成人学生山地车禧玛诺21速黑色(身高160-180) 等多件 
+    ; category: "运动户外"
+    ; merchantId: "1000345234234223"
+    ; method: "交通银行信用卡(0354)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-09 23:22:23 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Sports      657.21 CNY
+    Liabilities:CC:BCM:0354   - 657.21 CNY
+
+2024/12/10 * 京东平台商户 - 海康威视（HIKVISION）64GB USB3.2U盘大容量 S303金属银色 读速150MB/s 高速移动u盘 华为小米电脑商务办公学习通用优盘 
+    ; category: "电脑办公"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1341)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-10 18:37:24 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Electronics      20.61 CNY
+    Liabilities:CC:BoC:1341   - 20.61 CNY
+
+2024/12/10 * 京东平台商户 - 李宁（LI-NING）羽毛球手胶 防滑耐磨光面薄款吸汗带 网球鱼竿耐用柄皮缠绕带 吸汗手胶GP3000黄色(60条装) 等多件 
+    ; category: "运动户外"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1341)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-10 23:40:50 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Sports      416.87 CNY
+    Liabilities:CC:BoC:1341   - 416.87 CNY
+
+2024/12/10 * 京东平台商户 - 退款-李宁（LI-NING）羽毛球手胶 防滑耐磨光面薄款吸汗带 网球鱼竿耐用柄皮缠绕带 吸汗手胶GP3000黄色(60条装) 
+    ; category: "网购"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1341)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-10 23:41:30 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "退款成功"
+    ; type: "不计收支"
+    Liabilities:CC:BoC:1341      233.45 CNY
+    Income:Rebate   - 233.45 CNY
+
+2024/12/11 * 京东平台商户 - 退款-奥科美（AOKO）U.2硬盘底座NVMe协议U2固态硬盘盒企业级u.2转USB3.2硬盘转接器 2.5/3.5英寸SATA机械硬盘通用 U3S 
+    ; category: "网购"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1341)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-11 10:38:58 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "退款成功"
+    ; type: "不计收支"
+    Liabilities:CC:BoC:1341      235.50 CNY
+    Income:Rebate   - 235.50 CNY
+
+2024/12/14 * 京东物流 - 京东物流 
+    ; category: "收发快递"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1341)"
+    ; orderId: "JDX100000011234"
+    ; payTime: "2024-12-14 20:59:42 &#43;0800 CST"
+    ; source: "京东物流"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Reside:Express      10.85 CNY
+    Liabilities:CC:BoC:1341   - 10.85 CNY
+
+2024/12/16 * 京东物流 - 京东物流 
+    ; category: "收发快递"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1341)"
+    ; orderId: "JDX100000011234"
+    ; payTime: "2024-12-16 21:42:33 &#43;0800 CST"
+    ; source: "京东物流"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Reside:Express      40.00 CNY
+    Liabilities:CC:BoC:1341   - 40.00 CNY
+
+2024/12/19 * 京东物流 - 京东外部商户 
+    ; category: "收发快递"
+    ; merchantId: "1000345234234223"
+    ; method: "钱包余额"
+    ; orderId: "JDX100000011234"
+    ; payTime: "2024-12-19 18:10:42 &#43;0800 CST"
+    ; source: "京东物流"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Reside:Express      13.00 CNY
+    Assets:JD:Balance   - 13.00 CNY
+
+2024/12/21 * 京东平台商户 - 京东京造暖星智能双人电热毯 自动断电双温双控定时除螨电褥子1.5x1.8m 
+    ; category: "其他网购"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1875)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-21 21:02:03 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Groceries      68.19 CNY
+    Liabilities:CC:BoC:1875   - 68.19 CNY
+
+2024/12/24 * 京东平台商户 - 拓路者（Pioneer Camp）男裤子秋冬季舒适透气徒步裤男士加绒防水户外长裤冬季保暖软壳裤 丛林绿 XL 等多件 
+    ; category: "服饰内衣 运动户外"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1875)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-24 22:33:07 &#43;0800 CST"
+    ; source: "京东平台商户"
     ; status: "交易成功"
     ; type: "不计收支"
-    Assets:EPay:JD      2990.13 CNY
-    Assets:FIXME   - 2990.13 CNY
+    Expenses:Clothes      468.32 CNY
+    Liabilities:CC:BoC:1875   - 468.32 CNY
 
-2021/12/11 * 亲密卡 - 亲密卡 
-    ; category: "线下消费"
-    ; merchantId: "160000000000000000000006"
-    ; method: "京东白条"
-    ; payTime: "2021-12-11 23:51:52 &#43;0800 CST"
-    ; source: "亲密卡"
-    ; status: "交易成功"
-    ; type: "支出"
-    Expenses:Prpaid      238.18 CNY
-    Liabilities:Baitiao   - 238.18 CNY
-
-2021/12/12 * 亲密卡 - 亲密卡 
-    ; category: "线下消费"
-    ; merchantId: "100000000000000000000045"
-    ; method: "京东白条"
-    ; payTime: "2021-12-12 19:06:00 &#43;0800 CST"
-    ; source: "亲密卡"
-    ; status: "交易成功"
-    ; type: "支出"
-    Expenses:Prpaid      53.00 CNY
-    Liabilities:Baitiao   - 53.00 CNY
-
-2021/12/15 * 京东金融 - 白条主动还款 
-    ; category: "白条"
-    ; merchantId: "107500000000000000000058"
-    ; method: "小金库零用钱"
-    ; orderId: "2000000000000000000"
-    ; payTime: "2021-12-15 12:09:23 &#43;0800 CST"
-    ; source: "京东金融"
-    ; status: "交易成功"
+2024/12/24 * 京东平台商户 - 退款-拓路者（Pioneer Camp）男裤子秋冬季舒适透气徒步裤男士加绒防水户外长裤冬季保暖软壳裤 丛林绿 XL等多件 
+    ; category: "网购"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1875)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-24 22:33:54 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "退款成功"
     ; type: "不计收支"
-    Liabilities:Baitiao      1125.43 CNY
-    Assets:EPay:JD   - 1125.43 CNY
+    Liabilities:CC:BoC:1875      397.84 CNY
+    Income:Rebate   - 397.84 CNY
 
-2021/12/15 * 京东平台商户 - 退款-freeplus洁面乳150ml 
+2024/12/24 * 京东平台商户 - 退款-痞帅翻领青年男士高品质夹克休闲百搭男款工装外套2024潮流上衣 灰色 XL 
     ; category: "网购"
-    ; merchantId: "2000000000000000954"
-    ; method: "京东白条"
-    ; orderId: "88438843884"
-    ; payTime: "2021-12-15 18:35:00 &#43;0800 CST"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1875)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-24 22:34:05 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "退款成功"
+    ; type: "不计收支"
+    Liabilities:CC:BoC:1875      70.48 CNY
+    Income:Rebate   - 70.48 CNY
+
+2024/12/24 * 京东平台商户 - 拓路者（Pioneer Camp）藏狼软壳裤男秋冬户外登山裤防风男士休闲长裤子冬季加绒保暖直筒 灰色 XL 等多件 
+    ; category: "服饰内衣 运动户外"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1875)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-24 22:43:08 &#43;0800 CST"
     ; source: "京东平台商户"
     ; status: "交易成功"
-    ; type: "收入"
-    Liabilities:Baitiao      112.98 CNY
-    Assets:FIXME   - 112.98 CNY
+    ; type: "支出"
+    Expenses:Clothes      448.32 CNY
+    Liabilities:CC:BoC:1875   - 448.32 CNY
 
-2021/12/15 * 京东平台商户 - 退款-freeplus洁面乳150ml 
+2024/12/24 * 京东平台商户 - 退款-痞帅翻领青年男士高品质夹克休闲百搭男款工装外套2024潮流上衣 灰色 XL 
     ; category: "网购"
-    ; merchantId: "2000000000000000000"
-    ; method: "京东白条"
-    ; orderId: "88438843884"
-    ; payTime: "2021-12-15 19:29:00 &#43;0800 CST"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1875)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-24 22:43:31 &#43;0800 CST"
+    ; source: "京东平台商户"
+    ; status: "退款成功"
+    ; type: "不计收支"
+    Liabilities:CC:BoC:1875      70.48 CNY
+    Income:Rebate   - 70.48 CNY
+
+2024/12/24 * 一号店 - 一号店消费 
+    ; category: "1号店"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1341)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-24 23:19:44 &#43;0800 CST"
+    ; source: "一号店"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Groceries      119.66 CNY
+    Liabilities:CC:BoC:1341   - 119.66 CNY
+
+2024/12/26 * 京东平台商户 - 京东京造【抑菌袜】5双新疆棉秋冬加厚吸汗男休闲袜男商务袜中筒袜透气 
+    ; category: "服饰内衣"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1341)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-26 18:03:01 &#43;0800 CST"
     ; source: "京东平台商户"
     ; status: "交易成功"
-    ; type: "收入"
-    Liabilities:Baitiao      1.00 CNY
-    Assets:FIXME   - 1.00 CNY
+    ; type: "支出"
+    Expenses:Clothes      19.72 CNY
+    Liabilities:CC:BoC:1341   - 19.72 CNY
 
-2021/12/15 * Food - Food 
+2024/12/26 * 京鲜生 - 京鲜生 红肉蜜柚 2粒 单果1.5-2.5斤 生鲜水果 
     ; category: "食品酒饮"
-    ; merchantId: "110000000000000000000000"
-    ; method: "京东白条"
-    ; orderId: "200000000014"
-    ; payTime: "2021-12-15 19:35:14 &#43;0800 CST"
-    ; source: "Food"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1341)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-26 22:36:40 &#43;0800 CST"
+    ; source: "京鲜生"
     ; status: "交易成功"
     ; type: "支出"
-    Expenses:FIXME      79.88 CNY
-    Liabilities:Baitiao   - 79.88 CNY
+    Expenses:Food:Snacks      9.80 CNY
+    Liabilities:CC:BoC:1341   - 9.80 CNY
 
-2021/12/16 * 京东平台商户 - 退款-freeplus洁面乳150ml 
+2024/12/28 * JEEP - JEEP SPIRIT吉普卫衣男韩版圆领宽松男士卫衣百搭长袖打底衫 深蓝加绒 XL  等多件 
+    ; category: "食品酒饮 服饰内衣"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1875)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-28 13:27:56 &#43;0800 CST"
+    ; source: "JEEP"
+    ; status: "交易成功"
+    ; type: "支出"
+    Expenses:Clothes      131.77 CNY
+    Liabilities:CC:BoC:1875   - 131.77 CNY
+
+2024/12/28 * 京东平台商户 - 退款-JEEP SPIRIT吉普卫衣男韩版圆领宽松男士卫衣百搭长袖打底衫 深蓝加绒 XL 
     ; category: "网购"
-    ; merchantId: "1000000000000000000"
-    ; method: "京东白条"
-    ; orderId: "88438843884"
-    ; payTime: "2021-12-16 08:22:00 &#43;0800 CST"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1875)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-28 13:28:32 &#43;0800 CST"
     ; source: "京东平台商户"
-    ; status: "交易成功"
-    ; type: "收入"
-    Liabilities:Baitiao      1.00 CNY
-    Assets:FIXME   - 1.00 CNY
+    ; status: "退款成功"
+    ; type: "不计收支"
+    Liabilities:CC:BoC:1875      89.84 CNY
+    Income:Rebate   - 89.84 CNY
 
-2021/12/18 * 京东平台商户 - freeplus洁面乳150ml 
-    ; category: "美妆个护"
-    ; merchantId: "100000000000000000000002"
-    ; method: "京东白条"
-    ; orderId: "88438843884"
-    ; payTime: "2021-12-18 19:45:25 &#43;0800 CST"
-    ; source: "京东平台商户"
-    ; status: "交易成功"
-    ; type: "支出"
-    Expenses:MakeUp      223.99 CNY
-    Liabilities:Baitiao   - 223.99 CNY
-
-2021/12/23 * Members - Members Mark 泰国进口 椰子水 1L*6支 椰子汁饮料 
+2024/12/30 * 京东平台商户 - 利园潮汕正宗手打牛肉丸火锅丸子牛筋丸火锅丸料烧烤麻辣烫关东煮丸子 潮汕牛筋丸 250g 等多件 
     ; category: "食品酒饮"
-    ; merchantId: "110000000000000000000044"
-    ; method: "京东白条"
-    ; orderId: "234906303557"
-    ; payTime: "2021-12-23 12:04:37 &#43;0800 CST"
-    ; source: "Members"
+    ; merchantId: "1000345234234223"
+    ; method: "中国银行信用卡(1875)"
+    ; orderId: "100000011234"
+    ; payTime: "2024-12-30 10:40:22 &#43;0800 CST"
+    ; source: "京东平台商户"
     ; status: "交易成功"
     ; type: "支出"
-    Expenses:Food      91.42 CNY
-    Liabilities:Baitiao   - 91.42 CNY
+    Expenses:Food:Snacks      60.90 CNY
+    Liabilities:CC:BoC:1875   - 60.90 CNY
 
-2021/12/28 * 京东小金库 - 京东小金库收益 
-    ; category: "小金库"
-    ; merchantId: "29999999999999999992"
-    ; method: "小金库零用钱"
-    ; orderId: "20000000000000000002"
-    ; payTime: "2021-12-28 12:14:38 &#43;0800 CST"
-    ; source: "京东小金库"
-    ; status: "交易成功"
-    ; type: "收入"
-    Assets:EPay:JD      0.01 CNY
-    Income:PnL:JD   - 0.01 CNY
-
-2021/12/29 * 京东小金库 - 京东小金库收益 
-    ; category: "小金库"
-    ; merchantId: "20000000000000000002"
-    ; method: "小金库零用钱"
-    ; orderId: "20000000000000000022"
-    ; payTime: "2021-12-29 06:37:20 &#43;0800 CST"
-    ; source: "京东小金库"
-    ; status: "交易成功"
-    ; type: "收入"
-    Assets:EPay:JD      0.01 CNY
-    Income:PnL:JD   - 0.01 CNY
-
-2023/12/08 * 京东云余额充值预付款网银账户 - PLUS京典年卡(先享后付) 
-    ; category: "其他"
-    ; merchantId: "700000000000000"
-    ; method: "京东白条"
-    ; orderId: "700000000000008"
-    ; payTime: "2023-12-08 00:14:40 &#43;0800 CST"
-    ; source: "京东云余额充值预付款网银账户"
+2024/12/30 * 京东物流 - 京东外部商户 
+    ; category: "收发快递"
+    ; merchantId: "1000345234234223"
+    ; method: "钱包余额"
+    ; orderId: "JDX100000011234"
+    ; payTime: "2024-12-30 17:16:02 &#43;0800 CST"
+    ; source: "京东物流"
     ; status: "交易成功"
     ; type: "支出"
-    Expenses:FIXME      99.00 CNY
-    Liabilities:Baitiao   - 99.00 CNY
+    Expenses:Reside:Express      10.20 CNY
+    Assets:JD:Balance   - 10.20 CNY
 
