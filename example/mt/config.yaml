@@ -1,0 +1,58 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCurrency: CNY
+title: mt
+mt:
+  rules:
+    - item: 单人餐,牛肉火锅,江湖菜,川菜,肉蟹煲,自助餐,盖码饭,米线,斑鱼,蛋挞,湖南菜,湘语,一条鱼,湘菜,活鱼,牛羊肉,米粉 # 不在时间段内容说明是买代金券
+      sep: ","
+      targetAccount: Expenses:Food:Meal:Coupon
+    - item: 单人餐,牛肉火锅,江湖菜,川菜,肉蟹煲,自助餐,盖码饭,米线,斑鱼,蛋挞,湖南菜,湘语,一条鱼,湘菜,活鱼,牛羊肉,米粉 # 交易说明，限定时间段
+      sep: ","
+      time: 16:00-21:00
+      targetAccount: Expenses:Food:Meal:Dinner
+    - item: 单人餐,牛肉火锅,江湖菜,川菜,肉蟹煲,自助餐,盖码饭,米线,斑鱼,蛋挞,湖南菜,湘语,一条鱼,湘菜,活鱼,牛羊肉,米粉 # 交易说明，限定时间段
+      sep: ","
+      time: 10:30-14:00
+      targetAccount: Expenses:Food:Meal:Lunch
+    - item: 代金券
+      sep: ","
+      targetAccount: Expenses:Food:Meal:Coupon
+    - item: 瑞幸,喜茶,分甜,奶茶,果茶,甜品,中杯,大杯
+      sep: ","
+      targetAccount: Expenses:Food:Snacks
+    - item: 【美团月付】主动还款
+      targetAccount: Liabilities:MT:zwyyy456
+
+    - method: (0354)
+      methodAccount: Liabilities:CC:BCM:0354
+    - method: (1341)
+      methodAccount: Liabilities:CC:BoC:1341
+    - method: (1875)
+      methodAccount: Liabilities:CC:BoC:1875
+    - method: (2189)
+      methodAccount: Liabilities:CC:BoNB:2189
+    - method: (0924)
+      methodAccount: Liabilities:CC:CMB:0924
+    - method: (0073)
+      methodAccount: Liabilities:CC:CMBC:0073
+    - method: (5559)
+      methodAccount: Liabilities:CC:CMBC:5559
+    - method: (3147)
+      methodAccount: Assets:DC:BoC:3147
+    - method: 美团月付
+      methodAccount: Liabilities:MT:zwyyy456
+    - method: 美团余额
+      methodAccount: Assets:MT:Balance:zwyyy456
+    - method: 微信支付
+      methodAccount: Assests:Test:Wx
+      ignore: true # 忽略微信支付，微信账单中单独处理
+    - category: 网购
+      type: 不计收支
+      targetAccount: Income:Rebate
+    
+    - type: 收入 # 说明是代金券退款
+      targetAccount: Income:Rebate
+    - item: 转入
+      type: 收入
+      targetAccount: Income:Rebate

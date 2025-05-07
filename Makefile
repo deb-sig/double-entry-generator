@@ -90,7 +90,7 @@ clean: ## Clean all the temporary files
 	@rm -rf ./double-entry-generator
 	@rm -rf ./wasm-dist
 
-test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-huobi-ledger test-htsec-beancount test-htsec-ledger test-icbc-beancount test-icbc-ledger test-td-beancount test-td-ledger test-bmo-beancount test-bmo-ledger test-citic-beancount test-citic-ledger test-hsbchk-beancount test-hsbchk-ledger ## Run all tests
+test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-huobi-ledger test-htsec-beancount test-htsec-ledger test-icbc-beancount test-icbc-ledger test-td-beancount test-td-ledger test-bmo-beancount test-bmo-ledger test-citic-beancount test-citic-ledger test-hsbchk-beancount test-hsbchk-ledger test-jd-beancount test-jd-ledger test-mt-beancount ## Run all tests
 
 test-go: ## Run Golang tests
 	@go test ./...
@@ -139,6 +139,14 @@ test-hsbchk-beancount: ## Run tests for HSBC HK provider against beancount compi
 	@$(SHELL) ./test/hsbchk-test-beancount.sh
 test-hsbchk-ledger: ## Run tests for HSBC HK provider against ledger compiler
 	@$(SHELL) ./test/hsbchk-test-ledger.sh
+
+test-jd-beancount: ## Run tests for jd provider against beancount compiler
+	@$(SHELL) ./test/jd-test-beancount.sh
+test-jd-ledger: ## Run tests for jd provider against ledger compiler
+	@$(SHELL) ./test/jd-test-ledger.sh
+
+test-mt-beancount: ## Run tests for mt provider against beancount compiler
+	@$(SHELL) ./test/mt-test-beancount.sh
 
 format: ## Format code
 	@gofmt -s -w pkg

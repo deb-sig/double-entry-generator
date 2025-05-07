@@ -9,6 +9,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/pkg/provider/huobi"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/icbc"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/jd"
+	"github.com/deb-sig/double-entry-generator/pkg/provider/mt"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/td"
 	"github.com/deb-sig/double-entry-generator/pkg/provider/wechat"
 )
@@ -33,4 +34,5 @@ type Config struct {
 	JD                       *jd.Config     `yaml:"jd,omitempty"`
 	Citic                    *citic.Config  `yaml:"citic,omitempty"`
 	HsbcHK                   *hsbchk.Config `yaml:"hsbchk,omitempty"`
+	MT                       *mt.Config     `yaml:"mt,omitempty"`
 }

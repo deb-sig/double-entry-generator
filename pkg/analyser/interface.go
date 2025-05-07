@@ -8,6 +8,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/hsbchk"
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/icbc"
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/jd"
+	"github.com/deb-sig/double-entry-generator/pkg/analyser/mt"
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/td"
 
 	"github.com/deb-sig/double-entry-generator/pkg/analyser/alipay"
@@ -48,6 +49,9 @@ func New(providerName string) (Interface, error) {
 		return citic.Citic{}, nil
 	case consts.ProviderHsbcHK:
 		return hsbchk.HsbcHK{}, nil
+	case consts.ProviderMT:
+		return mt.MT{}, nil
+
 	default:
 		return nil, fmt.Errorf("Fail to create the analyser for the given name %s", providerName)
 	}
