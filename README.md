@@ -57,7 +57,7 @@ brew upgrade deb-sig/tap/double-entry-generator
 ### 源码安装
 
 ```bash
-go install github.com/deb-sig/double-entry-generator@latest
+go install github.com/deb-sig/double-entry-generator/v2@latest
 ```
 
 > [!TIP]
