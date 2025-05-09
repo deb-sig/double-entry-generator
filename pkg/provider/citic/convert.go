@@ -1,6 +1,6 @@
 package citic
 
-import "github.com/deb-sig/double-entry-generator/pkg/ir"
+import "github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 
 func (citic *Citic) convertToIR() *ir.IR {
 	i := ir.New()

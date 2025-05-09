@@ -1,6 +1,6 @@
 package huobi
 
-import "github.com/deb-sig/double-entry-generator/pkg/ir"
+import "github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 
 func (h *Huobi) convertToIR() *ir.IR {
 	i := ir.New()

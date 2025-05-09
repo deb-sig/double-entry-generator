@@ -1,17 +1,17 @@
 package config
 
 import (
-	"github.com/deb-sig/double-entry-generator/pkg/provider/alipay"
-	"github.com/deb-sig/double-entry-generator/pkg/provider/bmo"
-	"github.com/deb-sig/double-entry-generator/pkg/provider/citic"
-	"github.com/deb-sig/double-entry-generator/pkg/provider/hsbchk"
-	"github.com/deb-sig/double-entry-generator/pkg/provider/htsec"
-	"github.com/deb-sig/double-entry-generator/pkg/provider/huobi"
-	"github.com/deb-sig/double-entry-generator/pkg/provider/icbc"
-	"github.com/deb-sig/double-entry-generator/pkg/provider/jd"
-	"github.com/deb-sig/double-entry-generator/pkg/provider/mt"
-	"github.com/deb-sig/double-entry-generator/pkg/provider/td"
-	"github.com/deb-sig/double-entry-generator/pkg/provider/wechat"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hsbchk"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/htsec"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/huobi"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/jd"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/mt"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/td"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/wechat"
 )
 
 // Config is the global configuration.

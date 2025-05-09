@@ -1,4 +1,4 @@
-module github.com/deb-sig/double-entry-generator
+module github.com/deb-sig/double-entry-generator/v2
 
 go 1.24
 

@@ -1,6 +1,6 @@
 package htsec
 
-import "github.com/deb-sig/double-entry-generator/pkg/ir"
+import "github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 
 func (h *Htsec) convertToIR() *ir.IR {
 	i := ir.New()

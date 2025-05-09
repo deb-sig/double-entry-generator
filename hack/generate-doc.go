@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/deb-sig/double-entry-generator/pkg/cmd"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/cmd"
 	"github.com/spf13/cobra/doc"
 )
 
