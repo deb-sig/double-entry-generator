@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/deb-sig/double-entry-generator/pkg/provider/citic"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )

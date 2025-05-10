@@ -3,7 +3,7 @@ package hsbchk
 import (
 	"fmt"
 
-	"github.com/deb-sig/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 )
 
 // convertToIR 将解析后的订单转换为中间表示

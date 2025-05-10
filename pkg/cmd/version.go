@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/deb-sig/double-entry-generator/pkg/version"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/version"
 )
 
 func init() {

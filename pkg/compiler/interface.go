@@ -3,13 +3,13 @@ package compiler
 import (
 	"fmt"
 
-	"github.com/deb-sig/double-entry-generator/pkg/analyser"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser"
 
-	"github.com/deb-sig/double-entry-generator/pkg/compiler/beancount"
-	"github.com/deb-sig/double-entry-generator/pkg/compiler/ledger"
-	"github.com/deb-sig/double-entry-generator/pkg/config"
-	"github.com/deb-sig/double-entry-generator/pkg/consts"
-	"github.com/deb-sig/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/compiler/beancount"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/compiler/ledger"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 )
 
 // Interface is the type for the compiler.

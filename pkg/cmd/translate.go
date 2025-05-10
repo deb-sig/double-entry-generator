@@ -22,12 +22,12 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/deb-sig/double-entry-generator/pkg/cmd/validator"
-	"github.com/deb-sig/double-entry-generator/pkg/compiler"
-	"github.com/deb-sig/double-entry-generator/pkg/config"
-	"github.com/deb-sig/double-entry-generator/pkg/consts"
-	"github.com/deb-sig/double-entry-generator/pkg/provider"
-	"github.com/deb-sig/double-entry-generator/pkg/provider/wechat"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/cmd/validator"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/compiler"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/wechat"
 )
 
 var (

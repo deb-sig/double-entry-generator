@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/deb-sig/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 	"github.com/xuri/excelize/v2"
 )
 

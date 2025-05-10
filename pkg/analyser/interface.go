@@ -3,21 +3,21 @@ package analyser
 import (
 	"fmt"
 
-	"github.com/deb-sig/double-entry-generator/pkg/analyser/bmo"
-	"github.com/deb-sig/double-entry-generator/pkg/analyser/citic"
-	"github.com/deb-sig/double-entry-generator/pkg/analyser/hsbchk"
-	"github.com/deb-sig/double-entry-generator/pkg/analyser/icbc"
-	"github.com/deb-sig/double-entry-generator/pkg/analyser/jd"
-	"github.com/deb-sig/double-entry-generator/pkg/analyser/mt"
-	"github.com/deb-sig/double-entry-generator/pkg/analyser/td"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bmo"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/citic"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/hsbchk"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/icbc"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/jd"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/mt"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/td"
 
-	"github.com/deb-sig/double-entry-generator/pkg/analyser/alipay"
-	"github.com/deb-sig/double-entry-generator/pkg/analyser/htsec"
-	"github.com/deb-sig/double-entry-generator/pkg/analyser/huobi"
-	"github.com/deb-sig/double-entry-generator/pkg/analyser/wechat"
-	"github.com/deb-sig/double-entry-generator/pkg/config"
-	"github.com/deb-sig/double-entry-generator/pkg/consts"
-	"github.com/deb-sig/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/alipay"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/htsec"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/huobi"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/wechat"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 )
 
 // Interface is the interface of analyser.
