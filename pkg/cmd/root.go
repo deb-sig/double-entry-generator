@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/deb-sig/double-entry-generator/pkg/config"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
 	"github.com/spf13/cobra"
 )
 

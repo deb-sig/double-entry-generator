@@ -1,6 +1,6 @@
 package td
 
-import "github.com/deb-sig/double-entry-generator/pkg/ir"
+import "github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 
 func (td *Td) convertToIR() *ir.IR {
 	itermediateRepresentation := ir.New()

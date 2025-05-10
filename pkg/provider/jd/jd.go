@@ -25,8 +25,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/deb-sig/double-entry-generator/pkg/io/reader"
-	"github.com/deb-sig/double-entry-generator/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/io/reader"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 )
 
 const (

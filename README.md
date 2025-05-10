@@ -57,12 +57,8 @@ brew upgrade deb-sig/tap/double-entry-generator
 ### 源码安装
 
 ```bash
-go install github.com/deb-sig/double-entry-generator@latest
+go install github.com/deb-sig/double-entry-generator/v2@latest
 ```
-
-> [!CAUTION]
->  
-> 当前此种方法无法安装 `v2` 及以上版本，问题详情可见 [#130](https://github.com/deb-sig/double-entry-generator/issues/130) 。
 
 > [!TIP]
 > 
@@ -101,7 +97,7 @@ double-entry-generator translate \
 > 
 > 如果遇到 `"Failed to get the tx type"` 错误，请先在 [issue](https://github.com/deb-sig/double-entry-generator/issues) 上报问题。
 > 
-> 若此未识别交易类型为支出，且 `double-entry-generator` 版本至少为 `2.9.1` ，则可在转换命令中加上 `--ignore-invalid-tx-types` 参数以忽略该错误。
+> 若此未识别交易类型为支出，且 `double-entry-generator` 版本至少为 `v2.10.0` ，则可在转换命令中加上 `--ignore-invalid-tx-types` 参数以忽略该错误。
 > 
 > 示例：
 > ```bash

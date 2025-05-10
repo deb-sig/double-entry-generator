@@ -8,11 +8,11 @@ import (
 	"sort"
 	"text/template"
 
-	"github.com/deb-sig/double-entry-generator/pkg/analyser"
-	"github.com/deb-sig/double-entry-generator/pkg/config"
-	"github.com/deb-sig/double-entry-generator/pkg/io/writer"
-	"github.com/deb-sig/double-entry-generator/pkg/ir"
-	"github.com/deb-sig/double-entry-generator/pkg/util"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/io/writer"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/util"
 )
 
 // BeanCount is the implementation.

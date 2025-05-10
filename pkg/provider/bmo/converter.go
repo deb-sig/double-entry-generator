@@ -1,6 +1,6 @@
 package bmo
 
-import "github.com/deb-sig/double-entry-generator/pkg/ir"
+import "github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 
 func (bmo *Bmo) convertToIR() *ir.IR {
 	itermediateRepresentation := ir.New()
