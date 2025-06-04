@@ -128,7 +128,7 @@ func (h *Hxsec) fieldsToIR(fields []string) error {
 		irO.Money = amount
 		irO.Type = ir.TypeRecv
 		code := fmt.Sprintf("%06s", fields[colSecurityCode])
-		irO.Item = "红利入账-" + code + "-" + fields[colSecurityName]
+		irO.Item = code + "-" + fields[colSecurityName]
 
 	case "证券买入", "证券卖出":
 		irO.OrderType = ir.OrderTypeSecuritiesTrade

@@ -375,7 +375,7 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 		err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
 			PayTime:      o.PayTime,
 			Peer:         o.Peer,
-			Item:         o.Item,
+			Item:         "红利入账-" + o.Item,
 			Note:         o.Note,
 			Money:        o.Money,
 			PlusAccount:  o.ExtraAccounts[ir.CashAccount],
