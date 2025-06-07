@@ -1,0 +1,15 @@
+defaultCashAccount: Assets:Hxsec:Cash
+defaultPositionAccount: Assets:Hxsec:Positions
+defaultCommissionAccount: Expenses:Hxsec:Commission
+defaultPnlAccount: Income:Hxsec:PnL
+defaultThirdPartyCustodyAccount: Assets:CN:CCB:Debit
+defaultCurrency: CNY
+title: 测试
+hxsec:
+  rules:
+    - item: HS300ETF
+      sep: ','
+      cashAccount: Assets:Rule1:Cash
+      positionAccount: Assets:Hxsec:Positions:沪深300
+      CommissionAccount: Expenses:Rule1:Commission
+      pnlAccount: Income:Rule1:PnL

@@ -6,6 +6,7 @@
 - 微信
 - 火币-币币交易
 - 海通证券
+- 华西证券（通达信）
 - 中国工商银行
 - 中信银行信用卡
 - Toronto-Dominion Bank
@@ -127,6 +128,16 @@ double-entry-generator translate \
   --provider htsec \
   --output ./example/htsec/example-htsec-output.beancount \
   ./example/htsec/example-htsec-records.xlsx
+```
+
+#### 华西证券
+
+```bash
+double-entry-generator translate \
+  --config ./example/hxsec/config.yaml \
+  --provider hxsec \
+  --output ./example/hxsec/example-hxsec-output.beancount \
+  ./example/hxsec/example-hxsec-records.xls
 ```
 
 #### 中国工商银行
@@ -372,6 +383,18 @@ double-entry-generator translate \
 [example-htsec-records.csv](./example/htsec/example-htsec-records.xlsx)
 
 转换后的结果示例：[exmaple-htsec-output.beancount](./example/htsec/example-htsec-output.beancount).
+
+### 华西证券
+
+#### 下载方式
+
+登录华彩人生牛金岁月PC客户端，导出交割单excel文件。
+
+#### 格式示例
+
+[example-hxsec-records.xls](./example/hxsec/example-hxsec-records.xls)
+
+转换后的结果示例：[exmaple-hxsec-output.beancount](./example/hxsec/example-hxsec-output.beancount).
 
 ### 中国工商银行
 
@@ -865,6 +888,48 @@ htsec:
 - `defaultCommissionAccount` 是默认手续费账户。
 - `defaultPnlAccount` 是默认损益账户。
 - `defaultCurrency` 是默认货币。
+
+### 华西证券
+
+<details>
+<summary>
+  华西证券交割单配置文件示例
+</summary>
+
+```yaml
+defaultCashAccount: Assets:Hxsec:Cash
+defaultPositionAccount: Assets:Hxsec:Positions
+defaultCommissionAccount: Expenses:Hxsec:Commission
+defaultPnlAccount: Income:Hxsec:PnL
+defaultThirdPartyCustodyAccount: Assets:CN:CCB:Debit
+defaultCurrency: CNY
+title: 测试
+hxsec:
+  rules:
+    - item: HS300ETF
+      sep: ','
+      cashAccount: Assets:Rule1:Cash
+      positionAccount: Assets:Hxsec:Positions:沪深300
+      CommissionAccount: Expenses:Rule1:Commission
+      pnlAccount: Income:Rule1:PnL
+```
+
+</details></br>
+
+`defaultCashAccount`, `defaultPositionAccount`, `defaultCommissionAccount`, `defaultPnlAccount`, `defaultCurrency` 和 `defaultThirdPartyCustodyAccount` 是全局的必填默认值。
+
+`hxsec` is the provider-specific configuration. Hxsec provider has rules matching mechanism.
+
+匹配规则和海通证券相同。
+
+其中：
+- `defaultCashAccount` 是默认资本账户，一般用于存储证券账户可用资金。
+- `defaultPositionAccount` 是默认持仓账户。
+- `defaultCommissionAccount` 是默认手续费账户。
+- `defaultPnlAccount` 是默认损益账户。
+- `defaultCurrency` 是默认货币。
+- `defaultThirdPartyCustodyAccount` 是默认第三方存管账户。
+
 
 ### 中国工商银行
 
