@@ -87,6 +87,14 @@ func (w Wechat) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 		if r.Method != nil {
 			match = matchFunc(*r.Method, o.Method, sep, match)
 		}
+		if r.Status != nil {
+			// 从metadata中获取status信息
+			if status, exists := o.Metadata["status"]; exists {
+				match = matchFunc(*r.Status, status, sep, match)
+			} else {
+				match = false
+			}
+		}
 		if r.Item != nil {
 			match = matchFunc(*r.Item, o.Item, sep, match)
 		}

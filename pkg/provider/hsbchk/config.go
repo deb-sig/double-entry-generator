@@ -5,6 +5,7 @@ type Rule struct {
 	Peer              *string  `yaml:"peer,omitempty"`           // Description
 	Item              *string  `yaml:"item,omitempty"`           // ,
 	Type              *string  `yaml:"type,omitempty"`           // 收/支
+	Status            *string  `yaml:"status,omitempty"`         // 交易状态
 	Time              *string  `yaml:"time,omitempty"`           // 时间区间
 	MinPrice          *float64 `yaml:"minPrice,omitempty"`       // 最小金额 (包含)
 	MaxPrice          *float64 `yaml:"maxPrice,omitempty"`       // 最大金额 (包含)

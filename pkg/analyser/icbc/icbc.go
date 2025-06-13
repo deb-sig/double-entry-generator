@@ -79,6 +79,14 @@ func (i Icbc) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provid
 		if r.TxType != nil {
 			match = matchFunc(*r.TxType, o.TxTypeOriginal, sep, match)
 		}
+		if r.Status != nil {
+			// 从metadata中获取status信息
+			if status, exists := o.Metadata["status"]; exists {
+				match = matchFunc(*r.Status, status, sep, match)
+			} else {
+				match = false
+			}
+		}
 
 		if match {
 			if r.Ignore {

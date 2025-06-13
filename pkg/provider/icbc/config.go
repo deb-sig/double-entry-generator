@@ -11,6 +11,7 @@ type Rule struct {
 	Item              *string `mapstructure:"item,omitempty"`
 	Type              *string `mapstructure:"type,omitempty"`
 	TxType            *string `mapstructure:"txType,omitempty"`
+	Status            *string `mapstructure:"status,omitempty"`
 	Separator         *string `mapstructure:"sep,omitempty"` // default: ,
 	Method            *string `mapstructure:"method,omitempty"`
 	Time              *string `mapstructure:"time,omitempty"`
