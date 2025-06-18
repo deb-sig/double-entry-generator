@@ -16,6 +16,7 @@ option "operating_currency" "CNY"
 	credit_or_debit: "DEBIT"
 	post_date: "21/03/2025"
 	source: "HSBC HK"
+	status: "POSTED"
 	Expenses:Food:FastFood 179.50 CNY
 	Liabilities:CreditCard:HSBC -179.50 CNY
 
@@ -24,6 +25,7 @@ option "operating_currency" "CNY"
 	credit_or_debit: "DEBIT"
 	post_date: "24/03/2025"
 	source: "HSBC HK"
+	status: "POSTED"
 	Expenses:Transport 1.01 CNY
 	Liabilities:CreditCard:HSBC -1.01 CNY
 
@@ -31,6 +33,7 @@ option "operating_currency" "CNY"
 	credit_or_debit: "CREDIT"
 	post_date: "24/03/2025"
 	source: "HSBC HK"
+	status: "POSTED"
 	Liabilities:CreditCard:HSBC 3266.16 CNY
 	Assets:Bank:HK:HSBC:Savings -3266.16 CNY
 
@@ -39,6 +42,7 @@ option "operating_currency" "CNY"
 	credit_or_debit: "CREDIT"
 	post_date: "01/04/2025"
 	source: "HSBC HK"
+	status: "POSTED"
 	Liabilities:CreditCard:HSBC 25.00 CNY
 	Assets:Refund -25.00 CNY
 
@@ -47,6 +51,7 @@ option "operating_currency" "CNY"
 	credit_or_debit: "DEBIT"
 	post_date: "02/04/2025"
 	source: "HSBC HK"
+	status: "POSTED"
 	Expenses:Groceries 7.54 CNY
 	Liabilities:CreditCard:HSBC -7.54 CNY
 
@@ -55,6 +60,7 @@ option "operating_currency" "CNY"
 	credit_or_debit: "DEBIT"
 	post_date: "07/04/2025"
 	source: "HSBC HK"
+	status: "POSTED"
 	Expenses:FIXME 204.00 CNY
 	Liabilities:CreditCard:HSBC -204.00 CNY
 
@@ -63,6 +69,7 @@ option "operating_currency" "CNY"
 	credit_or_debit: "DEBIT"
 	post_date: "07/04/2025"
 	source: "HSBC HK"
+	status: "POSTED"
 	Expenses:Food:Delivery 21.80 CNY
 	Liabilities:CreditCard:HSBC -21.80 CNY
 
@@ -71,6 +78,7 @@ option "operating_currency" "CNY"
 	credit_or_debit: "DEBIT"
 	post_date: "08/04/2025"
 	source: "HSBC HK"
+	status: "POSTED"
 	Expenses:Food:FastFood 27.90 CNY
 	Liabilities:CreditCard:HSBC -27.90 CNY
 
@@ -79,6 +87,7 @@ option "operating_currency" "CNY"
 	credit_or_debit: "DEBIT"
 	post_date: "08/04/2025"
 	source: "HSBC HK"
+	status: "POSTED"
 	Expenses:Food:FastFood 27.90 HKD
 	Liabilities:CreditCard:HSBC -27.90 HKD
 
@@ -87,6 +96,7 @@ option "operating_currency" "CNY"
 	credit_or_debit: "DEBIT"
 	post_date: "09/04/2025"
 	source: "HSBC HK"
+	status: "POSTED"
 	Expenses:FIXME 18.00 CNY
 	Liabilities:CreditCard:HSBC -18.00 CNY
 
@@ -95,6 +105,6 @@ option "operating_currency" "CNY"
 	credit_or_debit: "DEBIT"
 	post_date: "10/04/2025"
 	source: "HSBC HK"
+	status: "POSTED"
 	Expenses:Shopping 1099.14 CNY
 	Liabilities:CreditCard:HSBC -1099.14 CNY
-
