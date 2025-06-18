@@ -108,3 +108,4 @@ option "operating_currency" "CNY"
 	status: "POSTED"
 	Expenses:Shopping 1099.14 CNY
 	Liabilities:CreditCard:HSBC -1099.14 CNY
+
