@@ -1,0 +1,131 @@
+option "title" "测试"
+option "operating_currency" "CNY"
+
+1970-01-01 open Assets:CN:CCB:Debit
+1970-01-01 open Assets:Hxsec:Cash
+1970-01-01 open Assets:Hxsec:Positions
+1970-01-01 open Assets:Hxsec:Positions:沪深300
+1970-01-01 open Assets:Rule1:Cash
+1970-01-01 open Expenses:Hxsec:Commission
+1970-01-01 open Expenses:Rule1:Commission
+1970-01-01 open Income:Hxsec:PnL
+1970-01-01 open Income:Rule1:PnL
+
+2023-02-12 * "hxsec" "银行转证券"
+	account_number: "114514114514"
+	trade_time: "00:00:00"
+	Assets:Hxsec:Cash 128000.00 CNY
+	Assets:CN:CCB:Debit -128000.00 CNY
+
+2023-02-12 * "hxsec" "银行转证券"
+	account_number: "114514114514"
+	trade_time: "00:00:00"
+	Assets:Hxsec:Cash 2500.00 CNY
+	Assets:CN:CCB:Debit -2500.00 CNY
+
+2023-02-13 * "hxsec" "融券回购-204001-GC001"
+	account_number: "114514114514"
+	interest_rate: "1.880%"
+	security_code: "204001"
+	security_name: "GC001"
+	shareholder_code: "A114514114"
+	trade_id: "1145141146"
+	trade_time: "15:02:47"
+	Assets:Hxsec:Cash -126000.00 CNY
+	Assets:Hxsec:Positions 1260.00 SH204001 {100.000 CNY} @@ 126000.00 CNY
+	Assets:Hxsec:Cash -0.13 CNY
+	Expenses:Hxsec:Commission 0.13 CNY
+
+2023-02-14 * "hxsec" "融券购回-204001-GC001"
+	account_number: "114514114514"
+	interest_rate: "1.880%"
+	security_code: "204001"
+	security_name: "GC001"
+	shareholder_code: "A114514114"
+	trade_id: "1145141146"
+	trade_time: "00:00:00"
+	Assets:Hxsec:Positions -1260.00 SH204001 {} @ 100.000 CNY
+	Assets:Hxsec:Cash 126006.49 CNY
+	Assets:Hxsec:Cash -0.00 CNY
+	Expenses:Hxsec:Commission 0.00 CNY
+	Income:Hxsec:PnL
+
+2023-02-14 * "hxsec" "证券买入-510310-HS300ETF"
+	account_number: "114514114514"
+	security_code: "510310"
+	security_name: "HS300ETF"
+	shareholder_code: "A114514114"
+	trade_id: "1145141147"
+	trade_time: "10:28:52"
+	Assets:Rule1:Cash -394.00 CNY
+	Assets:Hxsec:Positions:沪深300 100.00 SH510310 {3.940 CNY} @@ 394.00 CNY
+	Assets:Rule1:Cash -0.02 CNY
+	Expenses:Rule1:Commission 0.02 CNY
+
+2023-02-14 * "hxsec" "证券买入-511030-公司债"
+	account_number: "114514114514"
+	security_code: "511030"
+	security_name: "公司债"
+	shareholder_code: "A114514114"
+	trade_id: "1145141148"
+	trade_time: "14:05:21"
+	Assets:Hxsec:Cash -6297.60 CNY
+	Assets:Hxsec:Positions 600.00 SH511030 {10.496 CNY} @@ 6297.60 CNY
+	Assets:Hxsec:Cash -0.38 CNY
+	Expenses:Hxsec:Commission 0.38 CNY
+
+2023-02-14 * "hxsec" "融券回购-204001-GC001"
+	account_number: "114514114514"
+	interest_rate: "2.130%"
+	security_code: "204001"
+	security_name: "GC001"
+	shareholder_code: "A114514114"
+	trade_id: "1145141149"
+	trade_time: "14:44:54"
+	Assets:Hxsec:Cash -37000.00 CNY
+	Assets:Hxsec:Positions 370.00 SH204001 {100.000 CNY} @@ 37000.00 CNY
+	Assets:Hxsec:Cash -0.04 CNY
+	Expenses:Hxsec:Commission 0.04 CNY
+
+2023-02-14 * "hxsec" "ETF份额合并-511030-公司债"
+  account_number: "114514114514"
+  shareholder_code: "A114514114"
+  trade_time: "23:59:59"
+  Assets:Hxsec:Positions  -600.00 SH511030 {}
+  Assets:Hxsec:Positions  60.00 SH511030 {}
+
+2023-02-15 * "hxsec" "银行转证券"
+	account_number: "114514114514"
+	trade_time: "00:00:00"
+	Assets:Hxsec:Cash 110571.68 CNY
+	Assets:CN:CCB:Debit -110571.68 CNY
+
+2023-02-15 * "hxsec" "融券购回-204001-GC001"
+	account_number: "114514114514"
+	interest_rate: "2.130%"
+	security_code: "204001"
+	security_name: "GC001"
+	shareholder_code: "A114514114"
+	trade_id: "1145141149"
+	trade_time: "00:00:00"
+	Assets:Hxsec:Positions -370.00 SH204001 {} @ 100.000 CNY
+	Assets:Hxsec:Cash 37002.16 CNY
+	Assets:Hxsec:Cash -0.00 CNY
+	Expenses:Hxsec:Commission 0.00 CNY
+	Income:Hxsec:PnL
+
+2025-04-03 * "hxsec" "证券转银行"
+	account_number: "114514114514"
+	trade_time: "00:00:00"
+	Assets:CN:CCB:Debit 100.00 CNY
+	Assets:Hxsec:Cash -100.00 CNY
+
+2025-04-04 * "hxsec" "红利入账-511090-30年国债"
+	account_number: "114514114514"
+	security_code: "511090"
+	security_name: "30年国债"
+	shareholder_code: "A114514114"
+	trade_time: "23:59:59"
+	Assets:Hxsec:Cash 150.00 CNY
+	Income:Hxsec:PnL -150.00 CNY
+

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"sort"
 	"text/template"
 
@@ -77,6 +78,10 @@ func (b *BeanCount) initTemplates() error {
 	htsecTradeSellOrderTemplate, err = template.New("httradeSellOrder").Funcs(funcMap).Parse(htsecTradeSellOrder)
 	if err != nil {
 		return fmt.Errorf("Failed to init the httradeSellOrder template. %v", err)
+	}
+	etfMergeOrderBeancountTemplate, err = template.New("etfMergeOrderBeancount").Funcs(funcMap).Parse(etfMergeOrderBeancount)
+	if err != nil {
+		return fmt.Errorf("Failed to init the etfMergeOrderBeancount template. %v", err)
 	}
 	return nil
 }
@@ -287,7 +292,7 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 		}
 	case ir.OrderTypeSecuritiesTrade:
 		switch o.Type {
-		case ir.TypeSend: // buy
+		case ir.TypeSend: // buy, 融券回购
 			err = htsecTradeBuyOrderTemplate.Execute(&buf, &HtsecTradeBuyOrderVars{
 				PayTime:           o.PayTime,
 				Peer:              o.Peer,
@@ -303,8 +308,9 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 				CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
 				PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
 				Currency:          b.Config.DefaultCurrency,
+				Metadata:          o.Metadata,
 			})
-		case ir.TypeRecv: // sell
+		case ir.TypeRecv: // sell, 融券购回
 			err = htsecTradeSellOrderTemplate.Execute(&buf, &HtsecTradeSellOrderVars{
 				PayTime:           o.PayTime,
 				Peer:              o.Peer,
@@ -320,10 +326,83 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 				CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
 				PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
 				Currency:          b.Config.DefaultCurrency,
+				Metadata:          o.Metadata,
 			})
 		default:
-			err = fmt.Errorf("Failed to get the TxType.")
+			err = fmt.Errorf("unsupported ir.Type %s for OrderTypeSecuritiesTrade", o.Type)
 		}
+	case ir.OrderTypeChinaSecuritiesBankTransferToBroker: // 银行转证券
+		err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
+			PayTime:      o.PayTime,
+			Peer:         o.Peer,
+			Item:         "银行转证券",
+			Note:         o.Note,
+			Money:        o.Money,
+			PlusAccount:  o.ExtraAccounts[ir.CashAccount],
+			MinusAccount: o.ExtraAccounts[ir.ThirdPartyCustodyAccount],
+			Metadata:     o.Metadata,
+			Currency:     b.Config.DefaultCurrency,
+			Tags:         o.Tags,
+		})
+	case ir.OrderTypeChinaSecuritiesBrokerTransferToBank: // 证券转银行
+		err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
+			PayTime:      o.PayTime,
+			Peer:         o.Peer,
+			Item:         "证券转银行",
+			Note:         o.Note,
+			Money:        math.Abs(o.Money),
+			PlusAccount:  o.ExtraAccounts[ir.ThirdPartyCustodyAccount],
+			MinusAccount: o.ExtraAccounts[ir.CashAccount],
+			Metadata:     o.Metadata,
+			Currency:     b.Config.DefaultCurrency,
+			Tags:         o.Tags,
+		})
+	case ir.OrderTypeChinaSecuritiesInterestCapitalization: // 利息归本
+		err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
+			PayTime:      o.PayTime,
+			Peer:         o.Peer,
+			Item:         "利息归本",
+			Note:         o.Note,
+			Money:        o.Money,
+			PlusAccount:  o.ExtraAccounts[ir.CashAccount],
+			MinusAccount: o.ExtraAccounts[ir.PnlAccount],
+			Metadata:     o.Metadata,
+			Currency:     b.Config.DefaultCurrency,
+			Tags:         o.Tags,
+		})
+	case ir.OrderTypeChinaSecuritiesDividend: // 红利入账
+		currency := b.getCurrency(o)
+		err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
+			PayTime:      o.PayTime,
+			Peer:         o.Peer,
+			Item:         "红利入账-" + o.Item,
+			Note:         o.Note,
+			Money:        o.Money,
+			PlusAccount:  o.ExtraAccounts[ir.CashAccount],
+			MinusAccount: o.ExtraAccounts[ir.PnlAccount],
+			Metadata:     o.Metadata,
+			Currency:     currency,
+			Tags:         o.Tags,
+		})
+	case ir.OrderTypeChinaSecuritiesEtfMerge: // ETF份额合并
+		newAmountStr, ok := o.Metadata["new_amount"]
+		if !ok {
+			err = fmt.Errorf("missing 'new_amount' metadata for ETF份额合并 transaction (OrderTypeChinaSecuritiesEtfMerge)")
+			break // Exit the outer switch
+		}
+		delete(o.Metadata, "new_amount")
+
+		err = etfMergeOrderBeancountTemplate.Execute(&buf, &EtfMergeOrderVars{
+			PayTime:         o.PayTime,
+			Peer:            o.Peer,
+			TypeOriginal:    o.TypeOriginal,
+			Item:            o.Item,
+			PositionAccount: o.ExtraAccounts[ir.PositionAccount],
+			RemovedAmount:   o.Amount,
+			AddedAmount:     newAmountStr,
+			TxTypeOriginal:  o.TxTypeOriginal,
+			Metadata:        o.Metadata, // Pass the filtered map
+		})
 	}
 	if err != nil {
 		return err
