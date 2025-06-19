@@ -28,6 +28,7 @@ type Rule struct {
 	Category       *string  `mapstructure:"category,omitempty"`
 	Type           *string  `mapstructure:"type,omitempty"`
 	Method         *string  `mapstructure:"method,omitempty"`
+	Status         *string  `mapstructure:"status,omitempty"`
 	Separator      *string  `mapstructure:"sep,omitempty"` // default: ,
 	Time           *string  `mapstructure:"time,omitempty"`
 	TimestampRange *string  `mapstructure:"timestamp_range,omitempty"`

@@ -73,7 +73,7 @@ func (h *HsbcHK) getMetadata(o Order) map[string]string {
 	}
 
 	// 信用卡特有信息
-	var postDate, country, creditDebit string
+	var postDate, country, creditDebit, status string
 	if !o.PostDate.IsZero() {
 		postDate = o.PostDate.Format(TimeFormat)
 	}
@@ -83,12 +83,16 @@ func (h *HsbcHK) getMetadata(o Order) map[string]string {
 	if o.CreditDebit != "" {
 		creditDebit = o.CreditDebit
 	}
+	if o.StatusOriginal != "" {
+		status = o.StatusOriginal
+	}
 
 	metadata := map[string]string{
 		"source":          source,
 		"post_date":       postDate,
 		"country":         country,
 		"credit_or_debit": creditDebit,
+		"status":          status,
 	}
 
 	return metadata

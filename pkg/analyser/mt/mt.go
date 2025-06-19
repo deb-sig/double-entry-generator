@@ -67,6 +67,14 @@ func (mt MT) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provide
 		if r.Method != nil {
 			match = matchFunc(*r.Method, o.Method, sep, match)
 		}
+		if r.Status != nil {
+			// 从metadata中获取status信息
+			if status, exists := o.Metadata["status"]; exists {
+				match = matchFunc(*r.Status, status, sep, match)
+			} else {
+				match = false
+			}
+		}
 		if r.Time != nil { // 检查支付时间是否在给定的时间范围中
 			match, err = util.SplitFindTimeInterval(*r.Time, o.PayTime, match)
 			if err != nil {
