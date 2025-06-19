@@ -80,6 +80,14 @@ func (h HsbcHK) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 		if r.Type != nil {
 			match = matchFunc(*r.Type, o.TypeOriginal, sep, match)
 		}
+		if r.Status != nil {
+			// 从metadata中获取status信息
+			if status, exists := o.Metadata["status"]; exists {
+				match = matchFunc(*r.Status, status, sep, match)
+			} else {
+				match = false
+			}
+		}
 		if r.Time != nil {
 			var err error
 			match, err = util.SplitFindTimeInterval(*r.Time, o.PayTime, match)
