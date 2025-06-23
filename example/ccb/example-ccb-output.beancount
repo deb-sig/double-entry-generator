@@ -1,0 +1,102 @@
+option "title" "建设银行账单转换"
+option "operating_currency" "CNY"
+
+1970-01-01 open Assets:Bank:CCB
+1970-01-01 open Expenses:Life:Food:Meal:聚餐
+
+2025-01-01 * "中***融科技有限公司" "支付宝-支付宝外部商户-中移动金融科技有限公司" ; 消费
+	accountNum: "xxxxx*********xxxx"
+	balances: "2176.91"
+	currency: "人民币"
+	expense: "67"
+	peerAccount: "中***融科技有限公司"
+	peerAccountNum: "20883313166*****0156"
+	recordDate: "20250101"
+	region: "支付宝-支付宝外部商户-中移动金融科技有限公司"
+	source: "中国建设银行"
+	tradeTime: "18:53:19"
+	txType: "消费"
+	type: "支出"
+	Expenses:Life:Food:Meal:聚餐 67.00 CNY
+	Assets:Bank:CCB -67.00 CNY
+
+2025-01-02 * "**微超" "支付宝-支付宝外部商户-便民微超" ; 消费
+	accountNum: "xxxxx*********xxxx"
+	balances: "2160.13"
+	currency: "人民币"
+	expense: "16.78"
+	peerAccount: "**微超"
+	peerAccountNum: "2088131*****0121"
+	recordDate: "20250102"
+	region: "支付宝-支付宝外部商户-便民微超"
+	source: "中国建设银行"
+	tradeTime: "19:12:59"
+	txType: "消费"
+	type: "支出"
+	Expenses:Life:Food:Meal:聚餐 16.78 CNY
+	Assets:Bank:CCB -16.78 CNY
+
+2025-01-02 * "高***技术有限公司" "支付宝-支付宝外部商户-高德打车" ; 消费
+	accountNum: "xxxxx*********xxxx"
+	balances: "2140.13"
+	currency: "人民币"
+	expense: "20"
+	peerAccount: "高***技术有限公司"
+	peerAccountNum: "20880216448*****0156"
+	recordDate: "20250102"
+	region: "支付宝-支付宝外部商户-高德打车"
+	source: "中国建设银行"
+	tradeTime: "21:43:48"
+	txType: "消费"
+	type: "支出"
+	Expenses:Life:Food:Meal:聚餐 20.00 CNY
+	Assets:Bank:CCB -20.00 CNY
+
+2025-01-05 * "中***网络有限公司" "中国铁路网络有限公司（云闪付APP）" ; 无卡自助交易
+	accountNum: "xxxxx*********xxxx"
+	balances: "1579.11"
+	currency: "人民币"
+	expense: "515.02"
+	peerAccount: "中***网络有限公司"
+	peerAccountNum: "802080*****0015"
+	recordDate: "20250105"
+	region: "中国铁路网络有限公司（云闪付APP）"
+	source: "中国建设银行"
+	tradeTime: "17:12:28"
+	txType: "无卡自助交易"
+	type: "支出"
+	Assets:Bank:CCB 515.02 CNY
+	Assets:Bank:CCB -515.02 CNY
+
+2025-01-06 * "高***技术有限公司" "支付宝-支付宝外部商户-高德打车" ; 消费
+	accountNum: "xxxxx*********xxxx"
+	balances: "1561.05"
+	currency: "人民币"
+	expense: "18.06"
+	peerAccount: "高***技术有限公司"
+	peerAccountNum: "20880216448*****0156"
+	recordDate: "20250106"
+	region: "支付宝-支付宝外部商户-高德打车"
+	source: "中国建设银行"
+	tradeTime: "09:36:05"
+	txType: "消费"
+	type: "支出"
+	Expenses:Life:Food:Meal:聚餐 18.06 CNY
+	Assets:Bank:CCB -18.06 CNY
+
+2025-01-06 * "**微超" "支付宝-支付宝-消费-便民微超" ; 消费
+	accountNum: "xxxxx*********xxxx"
+	balances: "1494.65"
+	currency: "人民币"
+	expense: "66.4"
+	peerAccount: "**微超"
+	peerAccountNum: "2088131*****0121"
+	recordDate: "20250106"
+	region: "支付宝-支付宝-消费-便民微超"
+	source: "中国建设银行"
+	tradeTime: "12:03:39"
+	txType: "消费"
+	type: "支出"
+	Expenses:Life:Food:Meal:聚餐 66.40 CNY
+	Assets:Bank:CCB -66.40 CNY
+

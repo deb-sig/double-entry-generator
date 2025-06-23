@@ -1,0 +1,9 @@
+defaultMinusAccount: Assets:Bank:CCB
+defaultPlusAccount: Assets:Bank:CCB
+defaultCashAccount: Assets:Bank:CCB
+defaultCurrency: CNY
+title: 建设银行账单转换
+ccb:
+  rules:
+    - txType: 消费
+      targetAccount: Expenses:Life:Food:Meal:聚餐
