@@ -1365,35 +1365,72 @@ double-entry-generator translate \
   --config ./example/ccb/config.yaml \
   --provider ccb \
   --output ./example/ccb/example-ccb-output.beancount \
-  ./example/ccb/ccb-records.csv
+  ./example/ccb/交易明细_xxxx_2025xxxx_2025xxxx.xls
+```
+
+Windows PowerShell 下运行:
+
+```powershell
+double-entry-generator translate `
+  --config ./example/ccb/config.yaml `
+  --provider ccb `
+  --output ./example/ccb/example-ccb-output.beancount `
+  ./example/ccb/交易明细_xxxx_2025xxxx_2025xxxx.xls
 ```
 
 配置文件示例：
 
 ```yaml
 title: "建设银行账单转换"
-defaultMinusAccount: "Assets:Bank:CCB"
-defaultPlusAccount: "Assets:Bank:CCB"
-defaultCashAccount: "Assets:Bank:CCB"
+defaultMinusAccount: "Assets:Bank:CN:CCB:Checking"
+defaultPlusAccount: "Income:FIXME"
+defaultCashAccount: "Assets:Bank:CN:CCB:Checking"
 defaultCurrency: "CNY"
 
-ccb:
+CCB:
   rules:
-    - peer: "支付宝"
-      methodAccount: "Assets:Bank:CCB"
-      targetAccount: "Expenses:Payment:Alipay"
-      tag: "alipay,payment"
-    - peer: "高德"
-      methodAccount: "Assets:Bank:CCB"
+    # 餐饮消费 - 按时间分类
+    - peer: "美团,饿了么,肯德基,麦当劳,星巴克,咖啡,奶茶,餐厅,饭店,食堂"
+      sep: ","
+      time: "06:00-11:00"
+      targetAccount: "Expenses:Food:Meal:Breakfast"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "food,breakfast"
+      
+    - peer: "美团,饿了么,肯德基,麦当劳,星巴克,咖啡,奶茶,餐厅,饭店,食堂"
+      sep: ","
+      time: "11:00-15:00"
+      targetAccount: "Expenses:Food:Meal:Lunch"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "food,lunch"
+      
+    # 交通出行
+    - peer: "滴滴,高德打车,出租车,快车,专车"
+      sep: ","
       targetAccount: "Expenses:Transport:Taxi"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
       tag: "transport,taxi"
-    - peer: "铁路"
-      methodAccount: "Assets:Bank:CCB"
+      
+    - peer: "中国铁路,12306,火车,高铁"
+      sep: ","
       targetAccount: "Expenses:Transport:Train"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
       tag: "transport,train"
+      
+    # 工资收入
+    - peer: "工资,薪金,月薪,年薪"
+      sep: ","
+      targetAccount: "Income:Work:Salary"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "salary"
+      
+    # 忽略第三方支付平台的交易（避免重复记账）
+    - peer: "微信支付,支付宝,财付通"
+      sep: ","
+      ignore: true
 ```
 
-账单样例可参考 `example/ccb/ccb-records.csv`，字段顺序与建设银行导出一致。
+账单样例可参考 `example/ccb/交易明细_xxxx_2025xxxx_2025xxxx.xls`，字段顺序与建设银行导出一致。
 
 #### 中国工商银行
 
@@ -1419,7 +1456,7 @@ double-entry-generator translate \
   --config ./example/ccb/config.yaml \
   --provider ccb \
   --output ./example/ccb/example-ccb-output.beancount \
-  ./example/ccb/example-ccb-records.csv
+  ./example/ccb/交易明细_xxxx_2025xxxx_2025xxxx.xls
 ```
 
 windows的powershell下运行:
@@ -1429,7 +1466,7 @@ double-entry-generator translate \
   --config ./example/ccb/config.yaml \
   --provider ccb \
   --output ./example/ccb/example-ccb-output.beancount \
-  ./example/ccb/example-ccb-records.csv
+  ./example/ccb/交易明细_xxxx_2025xxxx_2025xxxx.xls
 ```
 
 #### Toronto-Dominion Bank
