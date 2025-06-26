@@ -46,4 +46,6 @@ const (
 	ProviderMT = "mt"
 	// ProviderHxsec is the name for hxsec provider.
 	ProviderHxsec = "hxsec"
+	//ProviderCCB is the name for CCB provider.
+	ProviderCCB = "ccb"
 )
