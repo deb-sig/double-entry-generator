@@ -25,11 +25,21 @@ jobs:
         ruby-version: '3.0'
         bundler-cache: true
         
+    - name: Debug - List files
+      run: |
+        echo "Current directory: $(pwd)"
+        echo "Listing docs directory:"
+        ls -la docs/
+        
     - name: Build Documentation
       run: |
         cd docs
+        echo "Installing dependencies..."
         bundle install
-        bundle exec jekyll build --destination ../_site
+        echo "Building documentation..."
+        bundle exec jekyll build --destination ../_site --verbose
+        echo "Build completed. Listing _site directory:"
+        ls -la ../_site/
         
     - name: Deploy to GitHub Pages
       if: github.ref == 'refs/heads/main'
@@ -37,4 +47,5 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./_site
-        destination_dir: docs 
+        destination_dir: docs
+        force_orphan: true 

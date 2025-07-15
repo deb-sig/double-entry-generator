@@ -40,4 +40,7 @@ social:
     - "https://github.com/deb-sig"
 
 # 分析
-google_analytics: "" 
+google_analytics: ""
+
+# 显示设置
+show_downloads: true 
