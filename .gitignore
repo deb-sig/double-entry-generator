@@ -28,7 +28,3 @@ test/output
 .DS_Store
 
 .devcontainer
-
-# go
-go.mod
-go.sum
