@@ -1,0 +1,68 @@
+title: Double Entry Generator 文档
+description: 基于规则的双重记账导入器文档
+baseurl: ""
+url: "https://deb-sig.github.io/double-entry-generator"
+
+# 主题设置
+theme: jekyll-theme-cayman
+
+# 导航
+header_pages:
+  - README.md
+  - providers/alipay.md
+  - providers/wechat.md
+  - providers/ccb.md
+  - configuration/config.md
+
+# 插件
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# 排除文件
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+
+# 集合
+collections:
+  providers:
+    output: true
+    permalink: /providers/:name/
+
+# 默认设置
+defaults:
+  - scope:
+      path: ""
+      type: "providers"
+    values:
+      layout: "provider"
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "page"
+
+# 搜索引擎优化
+author:
+  name: "deb-sig"
+  email: ""
+
+# 社交媒体
+social:
+  name: "deb-sig"
+  links:
+    - "https://github.com/deb-sig"
+
+# 分析
+google_analytics: "" 
