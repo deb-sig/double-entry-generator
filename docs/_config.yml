@@ -9,7 +9,6 @@ theme: jekyll-theme-cayman
 # 导航
 header_pages:
   - README.md
-  - providers/alipay.md
   - providers/wechat.md
   - providers/ccb.md
   - configuration/config.md
@@ -28,30 +27,6 @@ exclude:
   - vendor/cache/
   - vendor/gems/
   - vendor/ruby/
-
-# 集合
-collections:
-  providers:
-    output: true
-    permalink: /providers/:name/
-
-# 默认设置
-defaults:
-  - scope:
-      path: ""
-      type: "providers"
-    values:
-      layout: "provider"
-  - scope:
-      path: ""
-      type: "posts"
-    values:
-      layout: "post"
-  - scope:
-      path: ""
-      type: "pages"
-    values:
-      layout: "page"
 
 # 搜索引擎优化
 author:
