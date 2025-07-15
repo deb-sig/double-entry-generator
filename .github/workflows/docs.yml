@@ -14,41 +14,17 @@ permissions:
   id-token: write
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout
       uses: actions/checkout@v4
       
-    - name: Setup Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.0'
-        bundler-cache: true
-        
     - name: Debug - List files
       run: |
         echo "Current directory: $(pwd)"
         echo "Listing docs directory:"
-        ls -la docs/
-        
-    - name: Build Documentation
-      run: |
-        cd docs
-        echo "Installing dependencies..."
-        bundle install
-        echo "Building documentation..."
-        bundle exec jekyll build --destination ../_site --verbose
-        echo "Build completed. Listing _site directory:"
-        ls -la ../_site/
-        
-    - name: Copy Build Results
-      run: |
-        echo "Copying build results to docs directory..."
-        rm -rf docs/_site docs/.jekyll-cache
-        cp -r _site/* docs/
-        echo "Build results copied. Listing docs directory:"
         ls -la docs/
         
     - name: Commit and Push Changes
@@ -56,5 +32,5 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add docs/
-        git commit -m "docs: auto-build documentation" || echo "No changes to commit"
+        git commit -m "docs: update documentation" || echo "No changes to commit"
         git push origin feat/docs 
