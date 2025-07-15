@@ -9,6 +9,7 @@ import (
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/io/reader"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
+	"github.com/xuri/excelize/v2"
 )
 
 // Wechat is the provider for Wechat.
@@ -33,6 +34,17 @@ func New() *Wechat {
 func (w *Wechat) Translate(filename string) (*ir.IR, error) {
 	log.SetPrefix("[Provider-Wechat] ")
 
+	// Check if it's an Excel file
+	if strings.HasSuffix(strings.ToLower(filename), ".xlsx") {
+		return w.translateExcel(filename)
+	}
+
+	// Handle CSV file
+	return w.translateCSV(filename)
+}
+
+// translateCSV handles CSV file parsing
+func (w *Wechat) translateCSV(filename string) (*ir.IR, error) {
 	billReader, err := reader.GetReader(filename)
 	if err != nil {
 		return nil, fmt.Errorf("can't get bill reader, err: %v", err)
@@ -73,6 +85,38 @@ func (w *Wechat) Translate(filename string) (*ir.IR, error) {
 				w.LineNum, err)
 		}
 	}
-	log.Printf("Finished to parse the file %s", filename)
+	log.Printf("Finished to parse the CSV file %s", filename)
+	return w.convertToIR(), nil
+}
+
+// translateExcel handles Excel file parsing
+func (w *Wechat) translateExcel(filename string) (*ir.IR, error) {
+	log.Printf("Attempting to open Excel file: %s", filename)
+
+	xlsxFile, err := excelize.OpenFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("无法打开Excel文件，请检查文件路径或文件是否已损坏。原始错误: %v", err)
+	}
+
+	rows, err := xlsxFile.GetRows("Sheet1")
+	if err != nil {
+		return nil, fmt.Errorf("无法获取Excel的第一个工作表。原始错误: %v", err)
+	}
+
+	for _, row := range rows {
+		w.LineNum++
+		if w.LineNum <= 17 {
+			// The first 17 lines are useless for us.
+			continue
+		}
+
+		err = w.translateToOrders(row)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to translate bill: line %d: %v",
+				w.LineNum, err)
+		}
+	}
+
+	log.Printf("Finished to parse the Excel file %s", filename)
 	return w.convertToIR(), nil
 }
