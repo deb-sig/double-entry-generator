@@ -34,22 +34,14 @@ jobs:
         echo "Installing dependencies..."
         bundle install
         echo "Building documentation..."
-        bundle exec jekyll build --destination ../_site --verbose
-        echo "Build completed. Listing _site directory:"
-        ls -la ../_site/
+        bundle exec jekyll build --destination . --verbose
+        echo "Build completed. Listing docs directory:"
+        ls -la .
         
-    - name: Deploy to GitHub Pages (Main Branch)
-      if: github.ref == 'refs/heads/main'
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./_site
-        force_orphan: true
-        
-    - name: Deploy to GitHub Pages (Feature Branch)
-      if: github.ref == 'refs/heads/feat/docs'
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./_site
-        force_orphan: true 
+    - name: Commit and Push Changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add docs/
+        git commit -m "docs: auto-build documentation" || echo "No changes to commit"
+        git push origin feat/docs 
