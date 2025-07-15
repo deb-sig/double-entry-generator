@@ -39,9 +39,17 @@ jobs:
         echo "Installing dependencies..."
         bundle install
         echo "Building documentation..."
-        bundle exec jekyll build --destination . --verbose
-        echo "Build completed. Listing docs directory:"
-        ls -la .
+        bundle exec jekyll build --destination ../_site --verbose
+        echo "Build completed. Listing _site directory:"
+        ls -la ../_site/
+        
+    - name: Copy Build Results
+      run: |
+        echo "Copying build results to docs directory..."
+        rm -rf docs/_site docs/.jekyll-cache
+        cp -r _site/* docs/
+        echo "Build results copied. Listing docs directory:"
+        ls -la docs/
         
     - name: Commit and Push Changes
       run: |
