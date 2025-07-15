@@ -3,9 +3,6 @@ name: Build and Deploy Documentation
 on:
   push:
     branches: [ main, feat/docs ]
-    paths:
-      - 'docs/**'
-      - '.github/workflows/docs.yml'
   pull_request:
     branches: [ main ]
     paths:
