@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hsbchk"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/htsec"
@@ -38,4 +39,5 @@ type Config struct {
 	Citic                           *citic.Config  `yaml:"citic,omitempty"`
 	HsbcHK                          *hsbchk.Config `yaml:"hsbchk,omitempty"`
 	MT                              *mt.Config     `yaml:"mt,omitempty"`
+	CCB                             *ccb.Config    `yaml:"ccb,omitempty"`
 }
