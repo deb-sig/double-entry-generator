@@ -1,2 +1,0 @@
-# This file tells GitHub Pages not to process this directory with Jekyll
-# We handle the Jekyll build ourselves in the GitHub Actions workflow 
