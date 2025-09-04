@@ -1,3 +1,9 @@
+---
+title: 中信银行 (CITIC)
+parent: 提供商支持
+nav_order: 3
+---
+
 # 中信银行 (CITIC) Provider
 
 中信银行 Provider 支持将中信银行信用卡账单转换为 Beancount/Ledger 格式。

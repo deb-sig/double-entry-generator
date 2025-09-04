@@ -1,3 +1,9 @@
+---
+title: 工商银行 (ICBC)
+parent: 提供商支持
+nav_order: 2
+---
+
 # 工商银行 (ICBC) Provider
 
 工商银行 Provider 支持将工商银行账单转换为 Beancount/Ledger 格式，可自动识别借记卡和信用卡账单。

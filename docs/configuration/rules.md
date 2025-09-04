@@ -1,3 +1,9 @@
+---
+title: 规则配置
+parent: 配置指南
+nav_order: 1
+---
+
 # 规则配置详解
 
 规则是 Double Entry Generator 的核心功能，用于将交易自动分类到不同的账户。

@@ -1,3 +1,9 @@
+---
+title: 海通证券 (HTSEC)
+parent: 提供商支持
+nav_order: 9
+---
+
 # 海通证券 (HTSEC) Provider
 
 海通证券 Provider 支持将海通证券交易记录转换为 Beancount/Ledger 格式。

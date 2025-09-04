@@ -3,21 +3,39 @@ description: 基于规则的双重记账导入器文档
 baseurl: ""
 url: "https://fatsheep2.github.io/double-entry-generator"
 
-# 主题设置
-theme: jekyll-theme-cayman
+# 主题设置 - 使用现代化文档主题
+remote_theme: just-the-docs/just-the-docs
 
-# 导航
-header_pages:
-  - README.md
-  - configuration/README.md
-  
-# 文档集合
+# just-the-docs主题配置
+color_scheme: light
+search_enabled: true
+search:
+  heading_level: 2
+  previews: 2
+  preview_words_before: 3
+  preview_words_after: 3
+  tokenizer_separator: /[\s/]+/
+  rel_url: true
+  button: false
+
+# 导航配置
+nav_sort: case_insensitive
+nav_external_links:
+  - title: GitHub
+    url: https://github.com/deb-sig/double-entry-generator
+    hide_icon: false
+
+# 页面底部配置
+back_to_top: true
+back_to_top_text: "回到顶部"
+
+# 文档集合 - 调整为just-the-docs格式
 collections:
   providers:
     output: true
     permalink: /:collection/:name/
   configuration:
-    output: true
+    output: true  
     permalink: /:collection/:name/
 
 # 插件

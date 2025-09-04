@@ -1,3 +1,9 @@
+---
+title: 微信 (WeChat)
+parent: 提供商支持
+nav_order: 8
+---
+
 # 微信 (WeChat) Provider
 
 微信 Provider 支持将微信账单转换为 Beancount/Ledger 格式。

@@ -1,3 +1,9 @@
+---
+title: 支付宝 (Alipay)
+parent: 提供商支持
+nav_order: 7
+---
+
 # 支付宝 (Alipay) Provider
 
 支付宝 Provider 支持将支付宝账单转换为 Beancount/Ledger 格式。

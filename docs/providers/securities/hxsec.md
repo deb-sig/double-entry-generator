@@ -1,3 +1,9 @@
+---
+title: 华西证券 (HXSEC)
+parent: 提供商支持
+nav_order: 10
+---
+
 # 华西证券 (HXSEC) Provider
 
 华西证券 Provider 支持将华西证券（通达信）交易记录转换为 Beancount/Ledger 格式。

@@ -1,3 +1,10 @@
+---
+title: 首页
+nav_order: 1
+description: "基于规则的复式记账导入器"
+permalink: /
+---
+
 # Double Entry Generator 文档
 
 基于规则的复式记账导入器，支持将各种账单格式转换为 Beancount 或 Ledger 格式。

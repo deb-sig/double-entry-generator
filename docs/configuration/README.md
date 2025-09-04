@@ -1,3 +1,10 @@
+---
+title: 配置指南
+nav_order: 2
+has_children: true
+description: "详细的配置和规则设置指南"
+---
+
 # 配置总览
 
 Double Entry Generator 使用 YAML 格式的配置文件来定义转换规则。

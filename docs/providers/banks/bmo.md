@@ -1,3 +1,9 @@
+---
+title: 蒙特利尔银行 (BMO)
+parent: 提供商支持
+nav_order: 5
+---
+
 # 加拿大银行 (BMO) Provider
 
 BMO (Bank of Montreal) Provider 支持将加拿大蒙特利尔银行账单转换为 Beancount/Ledger 格式。

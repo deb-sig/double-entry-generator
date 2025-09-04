@@ -1,3 +1,9 @@
+---
+title: 汇丰银行香港 (HSBC HK)
+parent: 提供商支持
+nav_order: 4
+---
+
 # 汇丰银行香港 (HSBC HK) Provider
 
 汇丰银行香港 Provider 支持将香港汇丰银行账单转换为 Beancount/Ledger 格式。

@@ -1,3 +1,9 @@
+---
+title: 火币 (Huobi)
+parent: 提供商支持
+nav_order: 11
+---
+
 # 火币 (Huobi) Provider
 
 火币 Provider 支持将火币网币币交易记录转换为 Beancount/Ledger 格式。

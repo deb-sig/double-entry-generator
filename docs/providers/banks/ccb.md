@@ -1,3 +1,9 @@
+---
+title: 建设银行 (CCB)
+parent: 提供商支持
+nav_order: 1
+---
+
 # 建设银行 (CCB) Provider
 
 建设银行 Provider 支持将建设银行账单转换为 Beancount/Ledger 格式。
