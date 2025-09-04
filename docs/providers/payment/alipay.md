@@ -1,5 +1,6 @@
 ---
 title: 支付宝 (Alipay)
+layout: default
 parent: 提供商支持
 nav_order: 7
 ---
@@ -33,6 +34,7 @@ defaultMinusAccount: Assets:FIXME
 defaultPlusAccount: Expenses:FIXME
 defaultCurrency: CNY
 title: 支付宝账单转换
+layout: default
 
 alipay:
   rules:

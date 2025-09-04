@@ -1,5 +1,6 @@
 ---
 title: 道明银行 (TD)
+layout: default
 parent: 提供商支持
 nav_order: 6
 ---
@@ -31,6 +32,7 @@ defaultPlusAccount: Assets:Bank:TD
 defaultCashAccount: Assets:Bank:TD
 defaultCurrency: CAD
 title: TD银行账单转换
+layout: default
 
 td:
   rules:

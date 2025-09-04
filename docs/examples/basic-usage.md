@@ -1,3 +1,12 @@
+---
+title: 基本使用示例
+layout: default
+parent: 示例
+nav_order: 1
+description: "通过实际例子展示如何使用 Double Entry Generator"
+permalink: /examples/basic-usage/
+---
+
 # 基本使用示例
 
 本文档通过实际例子展示如何使用 Double Entry Generator。
@@ -17,6 +26,7 @@ defaultMinusAccount: Assets:FIXME
 defaultPlusAccount: Expenses:FIXME
 defaultCurrency: CNY
 title: 我的支付宝账单
+layout: default
 
 alipay:
   rules:
@@ -97,6 +107,7 @@ defaultPlusAccount: Expenses:FIXME
 defaultCashAccount: Assets:WeChat:Cash
 defaultCurrency: CNY
 title: 我的微信账单
+layout: default
 
 wechat:
   rules:
@@ -145,6 +156,7 @@ defaultPlusAccount: Assets:Bank:CCB
 defaultCashAccount: Assets:Bank:CCB
 defaultCurrency: CNY
 title: 建设银行账单
+layout: default
 
 ccb:
   rules:
@@ -247,5 +259,5 @@ bean-report main.beancount balances
 
 ## 下一步
 
-- [高级规则配置](advanced-rules.md) - 学习更复杂的规则配置技巧
-- [配置总览](../configuration/README.md) - 了解配置文件的详细说明
+- [高级规则配置](../advanced-rules/) - 学习更复杂的规则配置技巧
+- [配置总览](../../configuration/) - 了解配置文件的详细说明

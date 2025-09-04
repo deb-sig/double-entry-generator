@@ -1,5 +1,6 @@
 ---
 title: 汇丰银行香港 (HSBC HK)
+layout: default
 parent: 提供商支持
 nav_order: 4
 ---
@@ -31,6 +32,7 @@ defaultPlusAccount: Assets:Bank:HSBC:HK
 defaultCashAccount: Assets:Bank:HSBC:HK
 defaultCurrency: HKD
 title: 汇丰银行香港账单转换
+layout: default
 
 hsbchk:
   rules:

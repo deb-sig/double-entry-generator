@@ -1,5 +1,6 @@
 ---
 title: 贡献指南
+layout: default
 nav_order: 6
 description: "如何为 Double Entry Generator 项目做出贡献"
 permalink: /contributing/

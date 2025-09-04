@@ -1,5 +1,7 @@
 ---
 title: 高级规则配置
+layout: default
+parent: 示例
 nav_order: 2
 description: "学习如何编写复杂的匹配规则和账户映射"
 permalink: /examples/advanced-rules/

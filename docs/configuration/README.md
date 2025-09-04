@@ -1,7 +1,9 @@
 ---
 title: 配置指南
+layout: default
 nav_order: 2
 has_children: true
+permalink: /configuration/
 description: "详细的配置和规则设置指南"
 ---
 
@@ -18,6 +20,7 @@ defaultPlusAccount: Expenses:FIXME
 defaultCashAccount: Assets:Bank:Example
 defaultCurrency: CNY
 title: 示例配置
+layout: default
 
 # Provider 特定配置
 providerName:
@@ -103,5 +106,5 @@ rules:
 
 ## 下一步
 
-- [规则配置详解](rules.md) - 学习如何编写匹配规则
-- [账户映射](accounts.md) - 了解账户设置最佳实践
+- [规则配置详解](rules.html) - 学习如何编写匹配规则
+- [账户映射](accounts.html) - 了解账户设置最佳实践

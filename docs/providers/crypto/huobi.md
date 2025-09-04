@@ -1,5 +1,6 @@
 ---
 title: 火币 (Huobi)
+layout: default
 parent: 提供商支持
 nav_order: 11
 ---
@@ -31,6 +32,7 @@ defaultPlusAccount: Assets:Crypto:Huobi
 defaultCashAccount: Assets:Crypto:Huobi
 defaultCurrency: USDT
 title: 火币交易转换
+layout: default
 
 huobi:
   rules:

@@ -1,5 +1,6 @@
 ---
 title: 规则配置
+layout: default
 parent: 配置指南
 nav_order: 1
 ---

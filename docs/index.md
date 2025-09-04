@@ -1,25 +1,18 @@
 ---
 title: 首页
+layout: home
 nav_order: 1
-description: "基于规则的复式记账导入器"
+description: "基于规则的双重记账导入器"
 permalink: /
 ---
 
-# Double Entry Generator
+# 基于规则的双重记账导入器
 
+将各种账单格式智能转换为 Beancount 或 Ledger 格式，让复式记账变得简单高效
 
-<div class="hero">
-  <div class="hero-content">
-    <h1 class="hero-title">基于规则的双重记账导入器</h1>
-    <p class="hero-description">
-      将各种账单格式智能转换为 Beancount 或 Ledger 格式，让复式记账变得简单高效
-    </p>
-    <div class="hero-actions">
-      <a href="{{ '/getting-started/' | relative_url }}" class="btn btn-primary">快速开始</a>
-      <a href="https://github.com/deb-sig/double-entry-generator" class="btn btn-secondary">GitHub</a>
-    </div>
-  </div>
-</div>
+[快速开始](/double-entry-generator/getting-started/){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [GitHub](https://github.com/deb-sig/double-entry-generator){: .btn .fs-5 .mb-4 .mb-md-0 }
+
+---
 
 ## ✨ 特性
 
@@ -54,6 +47,8 @@ permalink: /
 
 ### 安装
 
+下面提供两种安装方式：
+
 ```bash
 # 使用 Go 安装（推荐）
 go install github.com/deb-sig/double-entry-generator/v2@latest
@@ -85,7 +80,7 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 - [加拿大银行 (BMO)](/double-entry-generator/providers/banks/bmo/) - Bank of Montreal
 - [道明银行 (TD)](/double-entry-generator/providers/banks/td/) - Toronto-Dominion Bank
 
-### 💰 支付工具  
+### 💰 支付工具
 - [支付宝 (Alipay)](/double-entry-generator/providers/payment/alipay/) - 支持 CSV 格式
 - [微信 (WeChat)](/double-entry-generator/providers/payment/wechat/) - 支持 CSV 和 XLSX 格式
 
@@ -103,7 +98,7 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 ## 配置指南
 
 - [配置总览](/double-entry-generator/configuration/) - 了解配置文件结构
-- [规则配置](/double-entry-generator/configuration/rules/) - 学习如何编写匹配规则  
+- [规则配置](/double-entry-generator/configuration/rules/) - 学习如何编写匹配规则
 - [账户映射](/double-entry-generator/configuration/accounts/) - 设置账户对应关系
 
 ## 示例
@@ -124,4 +119,4 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 
 ## 许可证
 
-本项目采用 Apache 2.0 许可证。 
+本项目采用 Apache 2.0 许可证。

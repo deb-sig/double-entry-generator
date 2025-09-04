@@ -1,5 +1,6 @@
 ---
 title: 账户映射  
+layout: default
 parent: 配置指南
 nav_order: 2
 ---

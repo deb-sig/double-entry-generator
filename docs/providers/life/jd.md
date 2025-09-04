@@ -1,5 +1,6 @@
 ---
 title: 京东 (JD)
+layout: default
 parent: 提供商支持
 nav_order: 12
 ---
@@ -31,6 +32,7 @@ defaultPlusAccount: Expenses:FIXME
 defaultCashAccount: Assets:WeChat  # 微信支付或其他支付方式
 defaultCurrency: CNY
 title: 京东购物转换
+layout: default
 
 jd:
   rules:

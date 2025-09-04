@@ -1,5 +1,6 @@
 ---
 title: 提供商支持
+layout: default
 nav_order: 3
 has_children: true
 description: "支持的银行和服务提供商列表"

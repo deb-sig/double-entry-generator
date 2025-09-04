@@ -1,5 +1,6 @@
 ---
 title: 华西证券 (HXSEC)
+layout: default
 parent: 提供商支持
 nav_order: 10
 ---
@@ -31,6 +32,7 @@ defaultPlusAccount: Assets:Broker:HXSEC
 defaultCashAccount: Assets:Broker:HXSEC
 defaultCurrency: CNY
 title: 华西证券交易转换
+layout: default
 
 hxsec:
   rules:

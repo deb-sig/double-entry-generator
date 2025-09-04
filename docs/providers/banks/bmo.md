@@ -1,5 +1,6 @@
 ---
 title: 蒙特利尔银行 (BMO)
+layout: default
 parent: 提供商支持
 nav_order: 5
 ---
@@ -31,6 +32,7 @@ defaultPlusAccount: Assets:Bank:BMO
 defaultCashAccount: Assets:Bank:BMO
 defaultCurrency: CAD
 title: BMO银行账单转换
+layout: default
 
 bmo:
   rules:

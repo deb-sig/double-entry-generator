@@ -1,5 +1,6 @@
 ---
 title: 海通证券 (HTSEC)
+layout: default
 parent: 提供商支持
 nav_order: 9
 ---
@@ -31,6 +32,7 @@ defaultPlusAccount: Assets:Broker:HTSEC
 defaultCashAccount: Assets:Broker:HTSEC
 defaultCurrency: CNY
 title: 海通证券交易转换
+layout: default
 
 htsec:
   rules:

@@ -1,5 +1,6 @@
 ---
 title: 快速开始
+layout: default
 nav_order: 2
 description: "快速上手 Double Entry Generator"
 permalink: /getting-started/
@@ -33,6 +34,12 @@ brew install double-entry-generator
 # 验证安装
 double-entry-generator --version
 ```
+
+### 使用 releases 构建好的版本
+- 点击 [releases](https://github.com/deb-sig/double-entry-generator/releases)
+- 选择合适的版本
+- 放在本地账本目录合适的目录下
+- 记得修改对应的命令哦
 
 ### 从源码构建
 

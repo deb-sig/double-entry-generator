@@ -2,9 +2,9 @@ name: Build and Deploy Documentation
 
 on:
   push:
-    branches: [ main, feat/docs ]
+    branches: [ main, master, feat/docs ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
     paths:
       - 'docs/**'
 
@@ -13,24 +13,58 @@ permissions:
   pages: write
   id-token: write
 
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
-  deploy:
+  # Build job
+  build:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Debug - List files
-      run: |
-        echo "Current directory: $(pwd)"
-        echo "Listing docs directory:"
-        ls -la docs/
+      - name: Checkout
+        uses: actions/checkout@v4
         
-    - name: Commit and Push Changes
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add docs/
-        git commit -m "docs: update documentation" || echo "No changes to commit"
-        git push origin feat/docs 
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+          cache-version: 0
+          working-directory: docs
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v4
+
+      - name: Build with Jekyll
+        working-directory: docs
+        run: |
+          # Update config for GitHub Pages
+          sed -i 's/^theme: "just-the-docs"/#theme: "just-the-docs"/' _config.yml
+          sed -i 's/^# remote_theme:/remote_theme:/' _config.yml
+          sed -i 's/^  # - jekyll-remote-theme/  - jekyll-remote-theme/' _config.yml
+          
+          # Build the site
+          bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+        env:
+          JEKYLL_ENV: production
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_site
+
+  # Deployment job - deploy for both main/master and feat/docs branches
+  deploy:
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/feat/docs'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 

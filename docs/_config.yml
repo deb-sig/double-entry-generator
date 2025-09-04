@@ -3,8 +3,8 @@ description: 基于规则的双重记账导入器文档
 baseurl: "/double-entry-generator"
 url: "https://fatsheep2.github.io"
 
-# 主题设置 - 使用远程主题
-remote_theme: just-the-docs/just-the-docs
+# 主题设置 - 本地开发使用theme，线上使用remote_theme
+theme: "just-the-docs"  # 仅本地开发时启用
 
 # just-the-docs主题配置
 color_scheme: light
@@ -64,24 +64,16 @@ back_to_top_text: "回到顶部"
 
 # 现代化功能
 aux_links:
-  - title: 快速开始
-    url: /double-entry-generator/
-  - title: 配置指南
-    url: /double-entry-generator/configuration/
+  快速开始: "/double-entry-generator/getting-started/"
+  配置指南: "/double-entry-generator/configuration/"
 
-# 代码高亮
+# 代码高亮 - GitHub Pages兼容设置
 highlighter: rouge
 markdown: kramdown
 kramdown:
   input: GFM
+  hard_wrap: false
   syntax_highlighter: rouge
-  syntax_highlighter_opts:
-    css_class: 'highlight'
-    span:
-      line_numbers: false
-    block:
-      line_numbers: true
-      start_line: 1
 
 # 数学公式支持
 mathjax: true
@@ -103,7 +95,10 @@ collections:
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
-  - jekyll-remote-theme
+  # - jekyll-remote-theme  # 本地开发时禁用
+
+# 远程主题设置 - 解决GitHub Pages Jekyll版本限制  
+# remote_theme: just-the-docs/just-the-docs
 
 # 排除文件
 exclude:

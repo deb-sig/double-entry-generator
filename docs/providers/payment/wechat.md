@@ -1,5 +1,6 @@
 ---
 title: 微信 (WeChat)
+layout: default
 parent: 提供商支持
 nav_order: 8
 ---
@@ -35,6 +36,7 @@ defaultPlusAccount: Expenses:FIXME
 defaultCashAccount: Assets:WeChat
 defaultCurrency: CNY
 title: 微信账单转换
+layout: default
 
 wechat:
   rules:

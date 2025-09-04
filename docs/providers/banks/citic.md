@@ -1,5 +1,6 @@
 ---
 title: 中信银行 (CITIC)
+layout: default
 parent: 提供商支持
 nav_order: 3
 ---
@@ -31,6 +32,7 @@ defaultPlusAccount: Expenses:FIXME
 defaultCashAccount: Liabilities:CC:CITIC
 defaultCurrency: CNY
 title: 中信银行信用卡账单转换
+layout: default
 
 citic:
   rules:

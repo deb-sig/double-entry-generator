@@ -1,5 +1,6 @@
 ---
 title: 建设银行 (CCB)
+layout: default
 parent: 提供商支持
 nav_order: 1
 ---
@@ -33,6 +34,7 @@ defaultPlusAccount: Expenses:FIXME
 defaultCashAccount: Assets:Bank:CCB
 defaultCurrency: CNY
 title: 建设银行账单转换
+layout: default
 
 ccb:
   rules:

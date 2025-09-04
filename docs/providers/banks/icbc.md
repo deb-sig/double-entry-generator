@@ -1,5 +1,6 @@
 ---
 title: 工商银行 (ICBC)
+layout: default
 parent: 提供商支持
 nav_order: 2
 ---
@@ -34,6 +35,7 @@ defaultPlusAccount: Assets:Bank:ICBC
 defaultCashAccount: Assets:Bank:ICBC
 defaultCurrency: CNY
 title: 工商银行账单转换
+layout: default
 
 icbc:
   rules:

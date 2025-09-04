@@ -1,5 +1,6 @@
 ---
 title: 美团 (MT)
+layout: default
 parent: 提供商支持
 nav_order: 13
 ---
@@ -31,6 +32,7 @@ defaultPlusAccount: Expenses:FIXME
 defaultCashAccount: Assets:WeChat  # 通常通过微信支付
 defaultCurrency: CNY
 title: 美团消费转换
+layout: default
 
 mt:
   rules:
