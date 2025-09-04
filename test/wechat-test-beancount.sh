@@ -28,4 +28,22 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "[PASS] All WeChat provider tests!"
+# Test xlsx format support
+echo "Testing WeChat provider with xlsx format..."
+"$ROOT_DIR/bin/double-entry-generator" translate \
+    --provider wechat \
+    --config "$ROOT_DIR/example/wechat/config.yaml" \
+    --output "$ROOT_DIR/test/output/test-wechat-xlsx-output.beancount" \
+    --ignore-invalid-tx-types \
+    "$ROOT_DIR/example/wechat/example-wechat-records.xlsx"
+
+diff -u --color \
+    "$ROOT_DIR/example/wechat/example-wechat-output.beancount" \
+    "$ROOT_DIR/test/output/test-wechat-xlsx-output.beancount"
+
+if [ $? -ne 0 ]; then
+    echo "[FAIL] WeChat provider xlsx output is different from expected output."
+    exit 1
+fi
+
+echo "[PASS] All WeChat provider tests (CSV and XLSX)!"
