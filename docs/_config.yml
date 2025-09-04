@@ -9,9 +9,16 @@ theme: jekyll-theme-cayman
 # 导航
 header_pages:
   - README.md
-  - providers/wechat.md
-  - providers/ccb.md
-  - configuration/config.md
+  - configuration/README.md
+  
+# 文档集合
+collections:
+  providers:
+    output: true
+    permalink: /:collection/:name/
+  configuration:
+    output: true
+    permalink: /:collection/:name/
 
 # 插件
 plugins:
