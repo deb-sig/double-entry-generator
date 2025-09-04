@@ -1,6 +1,4 @@
 source "https://rubygems.org"
 
-gem "jekyll", "~> 4.3"
-gem "jekyll-feed", "~> 0.17"
-gem "jekyll-seo-tag", "~> 2.8"
-gem "jekyll-theme-cayman", "~> 0.2" 
+gem "github-pages", group: :jekyll_plugins
+gem "jekyll-remote-theme" 

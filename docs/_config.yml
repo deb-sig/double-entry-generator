@@ -1,9 +1,9 @@
 title: Double Entry Generator 文档  
 description: 基于规则的双重记账导入器文档
-baseurl: ""
-url: "https://fatsheep2.github.io/double-entry-generator"
+baseurl: "/double-entry-generator"
+url: "https://fatsheep2.github.io"
 
-# 主题设置 - 使用现代化文档主题
+# 主题设置 - 使用远程主题
 remote_theme: just-the-docs/just-the-docs
 
 # just-the-docs主题配置
@@ -11,23 +11,84 @@ color_scheme: light
 search_enabled: true
 search:
   heading_level: 2
-  previews: 2
-  preview_words_before: 3
-  preview_words_after: 3
+  previews: 3
+  preview_words_before: 5
+  preview_words_after: 5
   tokenizer_separator: /[\s/]+/
   rel_url: true
-  button: false
+  button: true
+
+# 深色模式支持
+color_schemes:
+  light:
+    primary: "#2563eb"
+    primary_dark: "#1d4ed8"
+    accent: "#0ea5e9"
+    white: "#ffffff"
+    grey_lighter: "#f8fafc"
+    grey_light: "#e2e8f0"
+    grey: "#64748b"
+    grey_dark: "#334155"
+    grey_darker: "#1e293b"
+    dark: "#0f172a"
+    black: "#000000"
+  dark:
+    primary: "#3b82f6"
+    primary_dark: "#2563eb"
+    accent: "#06b6d4"
+    white: "#0f172a"
+    grey_lighter: "#1e293b"
+    grey_light: "#334155"
+    grey: "#64748b"
+    grey_dark: "#cbd5e1"
+    grey_darker: "#e2e8f0"
+    dark: "#f8fafc"
+    black: "#ffffff"
 
 # 导航配置
 nav_sort: case_insensitive
 nav_external_links:
-  - title: GitHub
+  - title: GitHub 仓库
     url: https://github.com/deb-sig/double-entry-generator
+    hide_icon: false
+  - title: 问题反馈
+    url: https://github.com/deb-sig/double-entry-generator/issues
+    hide_icon: false
+  - title: 讨论区
+    url: https://github.com/deb-sig/double-entry-generator/discussions
     hide_icon: false
 
 # 页面底部配置
 back_to_top: true
 back_to_top_text: "回到顶部"
+
+# 现代化功能
+aux_links:
+  - title: 快速开始
+    url: /double-entry-generator/
+  - title: 配置指南
+    url: /double-entry-generator/configuration/
+
+# 代码高亮
+highlighter: rouge
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+    span:
+      line_numbers: false
+    block:
+      line_numbers: true
+      start_line: 1
+
+# 数学公式支持
+mathjax: true
+
+# 自定义 CSS
+custom_css:
+  - assets/css/custom.css
 
 # 文档集合 - 调整为just-the-docs格式
 collections:
@@ -38,10 +99,11 @@ collections:
     output: true  
     permalink: /:collection/:name/
 
-# 插件
+# 插件 - GitHub Pages 支持的插件
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+  - jekyll-remote-theme
 
 # 排除文件
 exclude:

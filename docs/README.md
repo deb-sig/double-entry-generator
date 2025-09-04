@@ -5,16 +5,56 @@ description: "基于规则的复式记账导入器"
 permalink: /
 ---
 
-# Double Entry Generator 文档
+# Double Entry Generator
 
-基于规则的复式记账导入器，支持将各种账单格式转换为 Beancount 或 Ledger 格式。
+<div class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title">基于规则的双重记账导入器</h1>
+    <p class="hero-description">
+      将各种账单格式智能转换为 Beancount 或 Ledger 格式，让复式记账变得简单高效
+    </p>
+    <div class="hero-actions">
+      <a href="{{ '/getting-started/' | relative_url }}" class="btn btn-primary">快速开始</a>
+      <a href="https://github.com/deb-sig/double-entry-generator" class="btn btn-secondary">GitHub</a>
+    </div>
+  </div>
+</div>
 
-## 快速开始
+## ✨ 特性
+
+<div class="features">
+  <div class="feature">
+    <h3>🏦 多银行支持</h3>
+    <p>支持建设银行、工商银行、中信银行、汇丰银行等主流银行账单</p>
+  </div>
+  <div class="feature">
+    <h3>💰 支付工具</h3>
+    <p>支持支付宝、微信等主流支付平台的账单导入</p>
+  </div>
+  <div class="feature">
+    <h3>📈 证券交易</h3>
+    <p>支持海通证券、华西证券等券商的交易记录</p>
+  </div>
+  <div class="feature">
+    <h3>🪙 加密货币</h3>
+    <p>支持火币等交易所的币币交易记录</p>
+  </div>
+  <div class="feature">
+    <h3>🛒 生活服务</h3>
+    <p>支持美团、京东等生活服务平台的账单</p>
+  </div>
+  <div class="feature">
+    <h3>⚙️ 智能规则</h3>
+    <p>基于规则的智能分类，支持自定义账户映射</p>
+  </div>
+</div>
+
+## 🚀 快速开始
 
 ### 安装
 
 ```bash
-# 使用 Go 安装
+# 使用 Go 安装（推荐）
 go install github.com/deb-sig/double-entry-generator/v2@latest
 
 # 使用 Homebrew (macOS)
