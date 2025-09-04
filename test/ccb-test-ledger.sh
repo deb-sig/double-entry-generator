@@ -20,5 +20,13 @@ mkdir -p "$ROOT_DIR/test/output"
     --output "$OUTPUT" \
     "$ROOT_DIR/example/ccb/交易明细_xxxx_2025xxxx_2025xxxx.xls"
 
-# Need to create expected ledger output
-echo "[PASS] CCB provider test for ledger target - expected output not yet created!"
+diff -u --color \
+    "$ROOT_DIR/example/ccb/example-ccb-output.ledger" \
+    "$OUTPUT"
+
+if [ $? -ne 0 ]; then
+    echo "[FAIL] CCB provider ledger output is different from expected output."
+    exit 1
+fi
+
+echo "[PASS] All CCB provider tests for ledger target!"
