@@ -3,7 +3,7 @@ description: 基于规则的双重记账导入器文档
 baseurl: "/double-entry-generator"
 url: "https://fatsheep2.github.io"
 
-# 主题设置 - 本地开发和线上构建都使用相同的theme
+# 主题设置 - 使用本地主题（GitHub Actions 构建）
 theme: "just-the-docs"
 
 # just-the-docs主题配置
@@ -78,9 +78,7 @@ kramdown:
 # 数学公式支持
 mathjax: true
 
-# 自定义 CSS
-custom_css:
-  - assets/css/custom.css
+
 
 # 文档集合 - 调整为just-the-docs格式
 collections:
@@ -91,11 +89,13 @@ collections:
     output: true  
     permalink: /:collection/:name/
 
-# 插件 - GitHub Pages 支持的插件
+# 插件 - 只包含 Gemfile 中存在的插件
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
-  # - jekyll-remote-theme  # 不需要，直接使用theme
+  - jekyll-sitemap
+  - jekyll-gist
+  - jekyll-paginate
 
 # 排除文件
 exclude:
@@ -106,6 +106,9 @@ exclude:
   - vendor/cache/
   - vendor/gems/
   - vendor/ruby/
+
+# 仓库信息
+repository: "deb-sig/double-entry-generator"
 
 # 搜索引擎优化
 author:
