@@ -41,12 +41,6 @@ jobs:
       - name: Build with Jekyll
         working-directory: docs
         run: |
-          # Update config for GitHub Pages
-          sed -i 's/^theme: "just-the-docs"/#theme: "just-the-docs"/' _config.yml
-          sed -i 's/^# remote_theme:/remote_theme:/' _config.yml
-          sed -i 's/^  # - jekyll-remote-theme/  - jekyll-remote-theme/' _config.yml
-          
-          # Build the site
           bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production
