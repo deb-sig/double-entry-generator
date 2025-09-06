@@ -1,0 +1,10 @@
+source "https://rubygems.org"
+
+# 使用 Jekyll 4 和 just-the-docs 主题
+gem "jekyll", "~> 4.4"
+gem "webrick"
+gem "just-the-docs"
+gem "jekyll-feed", "~> 0.15"
+gem "jekyll-sitemap"
+gem "jekyll-gist"
+gem "jekyll-paginate"
