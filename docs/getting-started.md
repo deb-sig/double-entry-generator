@@ -8,7 +8,7 @@ permalink: /getting-started/
 
 # 快速开始
 
-Double Entry Generator 是一个基于规则的双重记账导入器，支持将各种账单格式转换为 Beancount 或 Ledger 格式。
+Double Entry Generator 是一个基于规则的复式记账导入器，支持将各种账单格式转换为 Beancount 或 Ledger 格式。
 
 ## 安装
 

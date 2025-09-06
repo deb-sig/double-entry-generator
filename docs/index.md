@@ -2,11 +2,11 @@
 title: 首页
 layout: home
 nav_order: 1
-description: "基于规则的双重记账导入器"
+description: "基于规则的复式记账导入器"
 permalink: /
 ---
 
-# 基于规则的双重记账导入器
+# 基于规则的复式记账导入器
 
 将各种账单格式智能转换为 Beancount 或 Ledger 格式，让复式记账变得简单高效
 
