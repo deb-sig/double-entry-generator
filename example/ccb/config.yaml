@@ -1,0 +1,210 @@
+# 建设银行（CCB）默认配置文件
+# 文件名：config.yaml
+
+# 全局配置
+title: 建设银行账单转换
+defaultMinusAccount: Assets:Bank:CN:CCB:Checking
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:Bank:CN:CCB:Checking
+defaultCurrency: CNY
+
+# 建设银行特定配置
+CCB:
+  rules:
+    # ===== 收入类交易 =====
+    
+    # 工资收入
+    - peer: "工资,薪金,月薪,年薪"
+      sep: ","
+      targetAccount: "Income:Work:Salary"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "salary"
+      
+    # 奖金收入
+    - peer: "奖金,年终奖,绩效"
+      sep: ","
+      targetAccount: "Income:Work:Bonus"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "bonus"
+      
+    # 投资收益
+    - peer: "基金,理财,投资"
+      sep: ","
+      targetAccount: "Income:Investment:Dividend"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "investment"
+      
+    # 转账收入
+    - type: "收入"
+      peer: "转账"
+      targetAccount: "Income:Transfer"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      
+    # ===== 支出类交易 =====
+    
+    # 餐饮消费 - 按时间分类
+    - peer: "美团,饿了么,肯德基,麦当劳,星巴克,咖啡,奶茶,餐厅,饭店,食堂"
+      sep: ","
+      time: "06:00-11:00"
+      targetAccount: "Expenses:Food:Meal:Breakfast"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "food,breakfast"
+      
+    - peer: "美团,饿了么,肯德基,麦当劳,星巴克,咖啡,奶茶,餐厅,饭店,食堂"
+      sep: ","
+      time: "11:00-15:00"
+      targetAccount: "Expenses:Food:Meal:Lunch"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "food,lunch"
+      
+    - peer: "美团,饿了么,肯德基,麦当劳,星巴克,咖啡,奶茶,餐厅,饭店,食堂"
+      sep: ","
+      time: "17:00-22:00"
+      targetAccount: "Expenses:Food:Meal:Dinner"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "food,dinner"
+      
+    - peer: "美团,饿了么,肯德基,麦当劳,星巴克,咖啡,奶茶,餐厅,饭店,食堂"
+      sep: ","
+      time: "22:00-06:00"
+      targetAccount: "Expenses:Food:Meal:Snack"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "food,snack"
+      
+    # 交通出行
+    - peer: "滴滴,高德打车,出租车,快车,专车"
+      sep: ","
+      targetAccount: "Expenses:Transport:Taxi"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "transport,taxi"
+      
+    - peer: "地铁,公交,巴士,公交车"
+      sep: ","
+      targetAccount: "Expenses:Transport:Public"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "transport,public"
+      
+    - peer: "中国铁路,12306,火车,高铁"
+      sep: ","
+      targetAccount: "Expenses:Transport:Train"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "transport,train"
+      
+    - peer: "航空公司,机场,机票"
+      sep: ","
+      targetAccount: "Expenses:Transport:Flight"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "transport,flight"
+      
+    # 购物消费
+    - peer: "淘宝,天猫,京东,拼多多,苏宁,国美"
+      sep: ","
+      targetAccount: "Expenses:Shopping:Online"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "shopping,online"
+      
+    - peer: "超市,便利店,沃尔玛,家乐福,永辉"
+      sep: ","
+      targetAccount: "Expenses:Shopping:Groceries"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "shopping,groceries"
+      
+    # 生活服务
+    - peer: "水电费,电费,水费,燃气费,物业费"
+      sep: ","
+      targetAccount: "Expenses:Life:Utilities"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "life,utilities"
+      
+    - peer: "房租,租金,押金"
+      sep: ","
+      targetAccount: "Expenses:Housing:Rent"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "housing,rent"
+      
+    - peer: "医院,诊所,药店,医药"
+      sep: ","
+      targetAccount: "Expenses:Health:Medical"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "health,medical"
+      
+    # 娱乐休闲
+    - peer: "电影院,影院,电影"
+      sep: ","
+      targetAccount: "Expenses:Entertainment:Movie"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "entertainment,movie"
+      
+    - peer: "游戏,手游,网游"
+      sep: ","
+      targetAccount: "Expenses:Entertainment:Game"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "entertainment,game"
+      
+    # 金融服务
+    - peer: "手续费,年费,管理费"
+      sep: ","
+      targetAccount: "Expenses:Bank:Fees"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "bank,fees"
+      
+    - peer: "信用卡还款"
+      targetAccount: "Liabilities:CreditCard:CCB"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "creditcard,payment"
+      
+    # ===== 转账类交易 =====
+    
+    # 微信零钱提现
+    - peer: "微信零钱提现"
+      targetAccount: "Assets:Digital:WeChat:Cash"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "transfer,wechat"
+      
+    # 支付宝提现
+    - peer: "支付宝提现"
+      targetAccount: "Assets:Digital:Alipay:Cash"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "transfer,alipay"
+      
+    # 银行间转账
+    - type: "转账"
+      peer: "工商银行,中国银行,农业银行,招商银行"
+      sep: ","
+      targetAccount: "Assets:Bank:CN:Other"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "transfer,bank"
+      
+    # ===== 忽略的交易 =====
+    
+    # 忽略第三方支付平台的交易（避免重复记账）
+    - peer: "微信支付,支付宝,财付通"
+      sep: ","
+      ignore: true
+      
+    # 忽略系统维护、对账等内部交易
+    - peer: "系统维护,对账,冲正"
+      sep: ","
+      ignore: true
+      
+    # ===== 方法账户映射 =====
+    
+    # 借记卡
+    - method: "借记卡"
+      fullMatch: true
+      methodAccount: "Assets:Bank:CN:CCB:DebitCard"
+      
+    # 信用卡
+    - method: "信用卡"
+      fullMatch: true
+      methodAccount: "Liabilities:CreditCard:CCB"
+      
+    # 活期账户
+    - method: "活期"
+      fullMatch: true
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      
+    # 定期账户
+    - method: "定期"
+      fullMatch: true
+      methodAccount: "Assets:Bank:CN:CCB:TimeDeposit"

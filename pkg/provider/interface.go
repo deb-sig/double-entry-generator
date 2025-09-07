@@ -20,6 +20,7 @@ import (
 	"fmt"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hsbchk"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
@@ -68,6 +69,8 @@ func New(name string) (Interface, error) {
 		return mt.New(), nil
 	case consts.ProviderHxsec:
 		return hxsec.New(), nil
+	case consts.ProviderCCB:
+		return ccb.New(), nil
 	default:
 		return nil, fmt.Errorf("Fail to create the provider for the given name %s", name)
 	}
