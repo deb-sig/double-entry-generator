@@ -1,0 +1,51 @@
+option "title" "boc"
+option "operating_currency" "CNY"
+
+1970-01-01 open Assets:DC:BCM:0258
+1970-01-01 open Assets:DC:BoC:3167
+1970-01-01 open Assets:FIXME
+1970-01-01 open Expenses:Education:Training
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Expenses:Relax:Game
+1970-01-01 open Expenses:Reside:Rent
+1970-01-01 open Expenses:Transport:Subway
+1970-01-01 open Income:BoC:Rebate
+1970-01-01 open Income:BoC:Salary
+1970-01-01 open Liabilities:CC:BCM:4664
+1970-01-01 open Liabilities:CC:BoC:2875
+1970-01-01 open Liabilities:CC:BoC:4260
+1970-01-01 open Liabilities:CC:CMB:4294
+1970-01-01 open Liabilities:CC:CMBC:5669
+
+2025-08-01 * "张三6222******0258" "银联入账"
+	Assets:DC:BoC:3167 1000.00 CNY
+	Assets:DC:BCM:0258 -1000.00 CNY
+
+2025-08-01 * "张林6205******2260" "无卡支付"
+	Expenses:Reside:Rent 3000.00 CNY
+	Assets:DC:BoC:3167 -3000.00 CNY
+
+2025-08-04 * "张三6226******5669" "无卡支付"
+	Liabilities:CC:CMBC:5669 2769.59 CNY
+	Assets:DC:BoC:3167 -2769.59 CNY
+
+2025-08-05 * "美金数据有限公司4520******1924" "工资"
+	Assets:DC:BoC:3167 5771.00 CNY
+	Income:BoC:Salary -5771.00 CNY
+
+2025-08-12 * "上海十企业管理顾问有限公司3101******6787" "跨行转账"
+	Expenses:Education:Training 2600.00 CNY
+	Assets:DC:BoC:3167 -2600.00 CNY
+
+2025-08-14 * "张三6225******4294" "无卡支付"
+	Liabilities:CC:CMB:4294 68.14 CNY
+	Assets:DC:BoC:3167 -68.14 CNY
+
+2025-08-14 * "张三6222******4664" "无卡支付"
+	Liabilities:CC:BCM:4664 206.80 CNY
+	Assets:DC:BoC:3167 -206.80 CNY
+
+2025-08-22 * "张三6226******5669" "无卡支付"
+	Liabilities:CC:CMBC:5669 71.89 CNY
+	Assets:DC:BoC:3167 -71.89 CNY
+

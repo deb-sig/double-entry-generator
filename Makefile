@@ -51,7 +51,8 @@ TEST_CONFIGS := \
 	ccb:beancount,ledger:. \
 	citic:beancount,ledger:credit \
 	hxsec:beancount:. \
-	spdb_debit:beancount:.
+	spdb_debit:beancount:. \
+	boc:beancount:.
 
 # Current version of the project.
 GIT_COMMIT = $(shell git describe --tags --always --dirty)
@@ -131,6 +132,9 @@ test-provider: ## Run a provider shell test (PROVIDER=<name> TARGET=<beancount|l
 	@export TEST_CONFIGS='$(TEST_CONFIGS)' && \
 	source test/e2e.sh && \
 	run_single_test "$(PROVIDER)" "$(TARGET)"
+
+test-boc-beancount: ## Run tests for boc provider against beancount compiler
+	@$(SHELL) ./test/boc-test-beancount.sh
 
 format: ## Format code
 	@gofmt -s -w pkg

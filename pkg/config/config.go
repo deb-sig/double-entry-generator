@@ -7,6 +7,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_credit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/boc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cmb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hsbchk"
@@ -50,4 +51,5 @@ type Config struct {
 	Cmb                             *cmb.Config          `yaml:"cmb,omitempty"`
 	AbcDebit                        *abc_debit.Config    `yaml:"abc_debit,omitempty" mapstructure:"abc_debit,omitempty"`
 	SpdbDebit                       *spdb_debit.Config   `yaml:"spdb_debit,omitempty" mapstructure:"spdb_debit,omitempty"`
+	Boc                             *boc.Config          `yaml:"boc,omitempty"`
 }

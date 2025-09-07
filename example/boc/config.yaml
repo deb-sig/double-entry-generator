@@ -1,0 +1,49 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCurrency: CNY
+title: boc
+boc:
+  rules:
+  - item: 公共交通
+    sep: ","
+    targetAccount: Expenses:Transport:Subway
+  - item: xbox,steam,游戏
+    sep: ","
+    targetAccount: Expenses:Relax:Game
+  - peer: 顾问有限公司
+    sep: ","
+    targetAccount: Expenses:Education:Training
+  - peer: 张林
+    sep: ","
+    targetAccount: Expenses:Reside:Rent
+  - peer: "0258"
+    targetAccount: Assets:DC:BCM:0258
+  - peer: "5669"
+    targetAccount: Liabilities:CC:CMBC:5669
+  - peer: "4664"
+    targetAccount: Liabilities:CC:BCM:4664
+  - peer: "4294"
+    targetAccount: Liabilities:CC:CMB:4294
+
+  - peer: 支付宝,微信,钱袋宝,京东
+    sep: ","
+    ignore: true # 忽略支付宝和微信
+
+  - item: 支付宝,微信,钱袋宝,京东
+    sep: ","
+    ignore: true # 忽略支付宝和微信
+  - item: 曾三
+    ignore: true # 说明是信用卡还款，忽略它
+
+  - method: "3167"
+    methodAccount: Assets:DC:BoC:3167
+  - method: "2875"
+    methodAccount: Liabilities:CC:BoC:2875
+  - method: "4260"
+    methodAccount: Liabilities:CC:BoC:4260
+  - item: 网银在线CHN
+    type: 收入
+    targetAccount: Income:BoC:Rebate
+  - item: 工资
+    type: 收入
+    targetAccount: Income:BoC:Salary
