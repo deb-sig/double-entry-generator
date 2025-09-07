@@ -13,6 +13,7 @@
 - Bank of Montreal
 - HSBC HK (香港汇丰银行)
 - 京东
+- 中国建设银行（CCB）
 
 目前记账语言支持：
 
@@ -30,6 +31,7 @@
                   huobi                               huobi
                   htsec                               htsec
                   icbc                                icbc
+                  ccb                                 ccb
                   td                                  td
                   bmo                                 bmo
                   hsbchk                              hsbchk
@@ -559,7 +561,6 @@ alipay:
       type: 其他
       item: 黄金-卖出
       methodAccount: Assets:Alipay:Invest:Gold
-      targetAccount: Assets:Alipay
       pnlAccount: Income:Alipay:Invest:PnL
     - peer: 基金
       type: 其他
@@ -986,6 +987,65 @@ icbc:
 | 收入  | targetAccount      | defaultCashAccount |
 | 支出  | defaultCashAccount | targetAccount      |
 
+### 中国建设银行
+
+<details>
+<summary>
+  中国建设银行配置文件示例
+</summary>
+
+```yaml
+defaultMinusAccount: Assets:Bank:CCB
+defaultPlusAccount: Assets:Bank:CCB
+defaultCashAccount: Assets:Bank:CCB
+defaultCurrency: CNY
+title: 建设银行账单转换
+ccb:
+  rules:
+    - peer: 支付宝
+      methodAccount: Assets:Bank:CCB
+      targetAccount: Expenses:Payment:Alipay
+      tag: alipay,payment
+    - peer: 高德
+      methodAccount: Assets:Bank:CCB
+      targetAccount: Expenses:Transport:Taxi
+      tag: transport,taxi
+    - peer: 铁路
+      methodAccount: Assets:Bank:CCB
+      targetAccount: Expenses:Transport:Train
+      tag: transport,train
+```
+
+</details></br>
+
+`defaultMinusAccount`, `defaultPlusAccount`, `defaultCashAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户， `defaultCashAccount` 是该配置中默认使用的银行卡账户（等同于支付宝/微信中的 `methodAccount` ）。 `defaultCurrency` 是默认货币。
+
+`ccb` 是中国建设银行相关的配置。它提供基于规则的匹配。可以指定：
+- `peer`（对方户名）的完全/包含匹配。
+- `type`（收/支）的完全/包含匹配。
+- `txType`（摘要）的完全/包含匹配。
+
+在单条规则中可以使用分隔符 `sep` 填写多个关键字，在同一对象中，每个关键字之间是或的关系。
+
+在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
+
+在单条规则中可以使用 `tag` 来设置流水的 [Tag](https://beancount.github.io/docs/beancount_language_syntax.html#tags)，使用 `sep` 作为分隔符。
+
+在单条规则中可以使用 `ignore` 来设置是否忽略匹配上该规则的交易，`true` 表示忽略匹配上该规则的交易，`fasle` 则为不忽略，缺省为 `false` 。
+
+匹配成功则使用规则中定义的 `targetAccount` 账户覆盖默认定义账户。
+
+规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
+
+中国建设银行账单中的记账金额中存在收入/支出之分，通过这个机制就可以判断银行卡账户在交易中的正负关系。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和全局值 `defaultCashAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `defaultCashAccount` 的正负关系，来覆盖默认定义的增减账户。
+
+`targetAccount` 与 `defaultCashAccount` 的增减账户关系如下表：
+
+| 收/支 | minusAccount       | plusAccount        |
+| ----- | ------------------ | ------------------ |
+| 收入  | targetAccount      | defaultCashAccount |
+| 支出  | defaultCashAccount | targetAccount      |
+
 ### Toronto-Dominion Bank
 
 <details>
@@ -1293,3 +1353,106 @@ hsbchk:
 ## Special Thanks
 
 - [dilfish/atb](https://github.com/dilfish/atb) convert alipay bill to beancount version
+
+#### 中国建设银行（CCB）
+
+> [!TIP]
+> 
+> 支持建设银行账单（CSV、XLS、XLSX格式），字段自动识别。
+
+```bash
+double-entry-generator translate \
+  --config ./example/ccb/config.yaml \
+  --provider ccb \
+  --output ./example/ccb/example-ccb-output.beancount \
+  ./example/ccb/交易明细_xxxx_2025xxxx_2025xxxx.xls
+```
+
+Windows PowerShell 下运行:
+
+```powershell
+double-entry-generator translate `
+  --config ./example/ccb/config.yaml `
+  --provider ccb `
+  --output ./example/ccb/example-ccb-output.beancount `
+  ./example/ccb/交易明细_xxxx_2025xxxx_2025xxxx.xls
+```
+
+配置文件示例：
+
+```yaml
+title: "建设银行账单转换"
+defaultMinusAccount: "Assets:Bank:CN:CCB:Checking"
+defaultPlusAccount: "Income:FIXME"
+defaultCashAccount: "Assets:Bank:CN:CCB:Checking"
+defaultCurrency: "CNY"
+
+CCB:
+  rules:
+    # 餐饮消费 - 按时间分类
+    - peer: "美团,饿了么,肯德基,麦当劳,星巴克,咖啡,奶茶,餐厅,饭店,食堂"
+      sep: ","
+      time: "06:00-11:00"
+      targetAccount: "Expenses:Food:Meal:Breakfast"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "food,breakfast"
+      
+    - peer: "美团,饿了么,肯德基,麦当劳,星巴克,咖啡,奶茶,餐厅,饭店,食堂"
+      sep: ","
+      time: "11:00-15:00"
+      targetAccount: "Expenses:Food:Meal:Lunch"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "food,lunch"
+      
+    # 交通出行
+    - peer: "滴滴,高德打车,出租车,快车,专车"
+      sep: ","
+      targetAccount: "Expenses:Transport:Taxi"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "transport,taxi"
+      
+    - peer: "中国铁路,12306,火车,高铁"
+      sep: ","
+      targetAccount: "Expenses:Transport:Train"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "transport,train"
+      
+    # 工资收入
+    - peer: "工资,薪金,月薪,年薪"
+      sep: ","
+      targetAccount: "Income:Work:Salary"
+      methodAccount: "Assets:Bank:CN:CCB:Checking"
+      tag: "salary"
+      
+    # 忽略第三方支付平台的交易（避免重复记账）
+    - peer: "微信支付,支付宝,财付通"
+      sep: ","
+      ignore: true
+```
+
+账单样例可参考 `example/ccb/交易明细_xxxx_2025xxxx_2025xxxx.xls`，字段顺序与建设银行导出一致。
+
+#### 中国工商银行
+
+> [!TIP]
+> 
+> 可自动识别借记卡/信用卡账单。
+
+```bash
+double-entry-generator translate \
+  --config ./example/icbc/config.yaml \
+  --provider icbc \
+  --output ./example/icbc/example-icbc-output.beancount \
+  ./example/icbc/example-icbc-credit-records.csv
+```
+
+
+#### Toronto-Dominion Bank
+
+```bash
+double-entry-generator translate \
+  --config ./example/td/config.yaml \
+  --provider td \
+  --output ./example/td/example-td-output.beancount \
+  ./example/td/example-td-records.csv
+```

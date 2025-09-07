@@ -7,6 +7,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/onsi/ginkgo/v2 v2.23.0
 	github.com/onsi/gomega v1.36.2
+	github.com/shakinm/xlsReader v0.9.12
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.14.0
 	github.com/xuri/excelize/v2 v2.5.0
@@ -25,6 +26,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
+	github.com/metakeule/fmtdate v1.1.2 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
