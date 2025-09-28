@@ -90,7 +90,7 @@ clean: ## Clean all the temporary files
 	@rm -rf ./double-entry-generator
 	@rm -rf ./wasm-dist
 
-test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-huobi-ledger test-htsec-beancount test-htsec-ledger test-icbc-beancount test-icbc-ledger test-td-beancount test-td-ledger test-bmo-beancount test-bmo-ledger test-citic-beancount test-citic-ledger test-hsbchk-beancount test-hsbchk-ledger test-jd-beancount test-jd-ledger test-mt-beancount test-hxsec-beancount ## Run all tests
+test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-huobi-ledger test-htsec-beancount test-htsec-ledger test-icbc-beancount test-icbc-ledger test-ccb-beancount test-ccb-ledger test-td-beancount test-td-ledger test-bmo-beancount test-bmo-ledger test-citic-beancount test-citic-ledger test-hsbchk-beancount test-hsbchk-ledger test-jd-beancount test-jd-ledger test-mt-beancount test-hxsec-beancount ## Run all tests
 
 test-go: ## Run Golang tests
 	@go test ./...
@@ -119,6 +119,11 @@ test-icbc-beancount: ## Run tests for ICBC provider against beancount compiler
 	@$(SHELL) ./test/icbc-test-beancount.sh
 test-icbc-ledger: ## Run tests for ICBC provider against ledger compiler
 	@$(SHELL) ./test/icbc-test-ledger.sh
+
+test-ccb-beancount: ## Run tests for CCB provider against beancount compiler
+	@$(SHELL) ./test/ccb-test-beancount.sh
+test-ccb-ledger: ## Run tests for CCB provider against ledger compiler
+	@$(SHELL) ./test/ccb-test-ledger.sh
 
 test-td-beancount: ## Run tests for TD provider against beancount compiler
 	@$(SHELL) ./test/td-test-beancount.sh

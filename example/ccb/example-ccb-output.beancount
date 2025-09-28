@@ -1,8 +1,34 @@
 option "title" "建设银行账单转换"
 option "operating_currency" "CNY"
 
-1970-01-01 open Assets:Bank:CCB
-1970-01-01 open Expenses:Life:Food:Meal:聚餐
+1970-01-01 open Assets:Bank:CN:CCB:Checking
+1970-01-01 open Assets:Bank:CN:CCB:DebitCard
+1970-01-01 open Assets:Bank:CN:CCB:TimeDeposit
+1970-01-01 open Assets:Bank:CN:Other
+1970-01-01 open Assets:Digital:Alipay:Cash
+1970-01-01 open Assets:Digital:WeChat:Cash
+1970-01-01 open Expenses:Bank:Fees
+1970-01-01 open Expenses:Entertainment:Game
+1970-01-01 open Expenses:Entertainment:Movie
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Expenses:Food:Meal:Breakfast
+1970-01-01 open Expenses:Food:Meal:Dinner
+1970-01-01 open Expenses:Food:Meal:Lunch
+1970-01-01 open Expenses:Food:Meal:Snack
+1970-01-01 open Expenses:Health:Medical
+1970-01-01 open Expenses:Housing:Rent
+1970-01-01 open Expenses:Life:Utilities
+1970-01-01 open Expenses:Shopping:Groceries
+1970-01-01 open Expenses:Shopping:Online
+1970-01-01 open Expenses:Transport:Flight
+1970-01-01 open Expenses:Transport:Public
+1970-01-01 open Expenses:Transport:Taxi
+1970-01-01 open Expenses:Transport:Train
+1970-01-01 open Income:Investment:Dividend
+1970-01-01 open Income:Transfer
+1970-01-01 open Income:Work:Bonus
+1970-01-01 open Income:Work:Salary
+1970-01-01 open Liabilities:CreditCard:CCB
 
 2025-01-01 * "中***融科技有限公司" "支付宝-支付宝外部商户-中移动金融科技有限公司" ; 消费
 	accountNum: "xxxxx*********xxxx"
@@ -17,8 +43,8 @@ option "operating_currency" "CNY"
 	tradeTime: "18:53:19"
 	txType: "消费"
 	type: "支出"
-	Expenses:Life:Food:Meal:聚餐 67.00 CNY
-	Assets:Bank:CCB -67.00 CNY
+	Expenses:FIXME 67.00 CNY
+	Assets:Bank:CN:CCB:Checking -67.00 CNY
 
 2025-01-02 * "**微超" "支付宝-支付宝外部商户-便民微超" ; 消费
 	accountNum: "xxxxx*********xxxx"
@@ -33,8 +59,8 @@ option "operating_currency" "CNY"
 	tradeTime: "19:12:59"
 	txType: "消费"
 	type: "支出"
-	Expenses:Life:Food:Meal:聚餐 16.78 CNY
-	Assets:Bank:CCB -16.78 CNY
+	Expenses:FIXME 16.78 CNY
+	Assets:Bank:CN:CCB:Checking -16.78 CNY
 
 2025-01-02 * "高***技术有限公司" "支付宝-支付宝外部商户-高德打车" ; 消费
 	accountNum: "xxxxx*********xxxx"
@@ -49,8 +75,8 @@ option "operating_currency" "CNY"
 	tradeTime: "21:43:48"
 	txType: "消费"
 	type: "支出"
-	Expenses:Life:Food:Meal:聚餐 20.00 CNY
-	Assets:Bank:CCB -20.00 CNY
+	Expenses:FIXME 20.00 CNY
+	Assets:Bank:CN:CCB:Checking -20.00 CNY
 
 2025-01-05 * "中***网络有限公司" "中国铁路网络有限公司（云闪付APP）" ; 无卡自助交易
 	accountNum: "xxxxx*********xxxx"
@@ -65,8 +91,8 @@ option "operating_currency" "CNY"
 	tradeTime: "17:12:28"
 	txType: "无卡自助交易"
 	type: "支出"
-	Assets:Bank:CCB 515.02 CNY
-	Assets:Bank:CCB -515.02 CNY
+	Expenses:FIXME 515.02 CNY
+	Assets:Bank:CN:CCB:Checking -515.02 CNY
 
 2025-01-06 * "高***技术有限公司" "支付宝-支付宝外部商户-高德打车" ; 消费
 	accountNum: "xxxxx*********xxxx"
@@ -81,8 +107,8 @@ option "operating_currency" "CNY"
 	tradeTime: "09:36:05"
 	txType: "消费"
 	type: "支出"
-	Expenses:Life:Food:Meal:聚餐 18.06 CNY
-	Assets:Bank:CCB -18.06 CNY
+	Expenses:FIXME 18.06 CNY
+	Assets:Bank:CN:CCB:Checking -18.06 CNY
 
 2025-01-06 * "**微超" "支付宝-支付宝-消费-便民微超" ; 消费
 	accountNum: "xxxxx*********xxxx"
@@ -97,6 +123,6 @@ option "operating_currency" "CNY"
 	tradeTime: "12:03:39"
 	txType: "消费"
 	type: "支出"
-	Expenses:Life:Food:Meal:聚餐 66.40 CNY
-	Assets:Bank:CCB -66.40 CNY
+	Expenses:FIXME 66.40 CNY
+	Assets:Bank:CN:CCB:Checking -66.40 CNY
 
