@@ -14,6 +14,7 @@
 - HSBC HK (香港汇丰银行)
 - 京东
 - 中国建设银行（CCB）
+- 中国建设银行（CCB）
 
 目前记账语言支持：
 
@@ -31,6 +32,7 @@
                   huobi                               huobi
                   htsec                               htsec
                   icbc                                icbc
+                  ccb                                 ccb
                   ccb                                 ccb
                   td                                  td
                   bmo                                 bmo
@@ -979,6 +981,65 @@ icbc:
 规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
 
 中国工商银行账单中的记账金额中存在收入/支出之分，通过这个机制就可以判断银行卡账户在交易中的正负关系。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和全局值 `defaultCashAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `defaultCashAccount` 的正负关系，来覆盖默认定义的增减账户。
+
+`targetAccount` 与 `defaultCashAccount` 的增减账户关系如下表：
+
+| 收/支 | minusAccount       | plusAccount        |
+| ----- | ------------------ | ------------------ |
+| 收入  | targetAccount      | defaultCashAccount |
+| 支出  | defaultCashAccount | targetAccount      |
+
+### 中国建设银行
+
+<details>
+<summary>
+  中国建设银行配置文件示例
+</summary>
+
+```yaml
+defaultMinusAccount: Assets:Bank:CCB
+defaultPlusAccount: Assets:Bank:CCB
+defaultCashAccount: Assets:Bank:CCB
+defaultCurrency: CNY
+title: 建设银行账单转换
+ccb:
+  rules:
+    - peer: 支付宝
+      methodAccount: Assets:Bank:CCB
+      targetAccount: Expenses:Payment:Alipay
+      tag: alipay,payment
+    - peer: 高德
+      methodAccount: Assets:Bank:CCB
+      targetAccount: Expenses:Transport:Taxi
+      tag: transport,taxi
+    - peer: 铁路
+      methodAccount: Assets:Bank:CCB
+      targetAccount: Expenses:Transport:Train
+      tag: transport,train
+```
+
+</details></br>
+
+`defaultMinusAccount`, `defaultPlusAccount`, `defaultCashAccount` 和 `defaultCurrency` 是全局的必填默认值。其中 `defaultMinusAccount` 是默认金额减少的账户，`defaultPlusAccount` 是默认金额增加的账户， `defaultCashAccount` 是该配置中默认使用的银行卡账户（等同于支付宝/微信中的 `methodAccount` ）。 `defaultCurrency` 是默认货币。
+
+`ccb` 是中国建设银行相关的配置。它提供基于规则的匹配。可以指定：
+- `peer`（对方户名）的完全/包含匹配。
+- `type`（收/支）的完全/包含匹配。
+- `txType`（摘要）的完全/包含匹配。
+
+在单条规则中可以使用分隔符 `sep` 填写多个关键字，在同一对象中，每个关键字之间是或的关系。
+
+在单条规则中可以使用 `fullMatch` 来设置字符匹配规则，`true` 表示使用完全匹配(full match)，`false` 表示使用包含匹配(partial match)，不设置该项则默认使用包含匹配。
+
+在单条规则中可以使用 `tag` 来设置流水的 [Tag](https://beancount.github.io/docs/beancount_language_syntax.html#tags)，使用 `sep` 作为分隔符。
+
+在单条规则中可以使用 `ignore` 来设置是否忽略匹配上该规则的交易，`true` 表示忽略匹配上该规则的交易，`fasle` 则为不忽略，缺省为 `false` 。
+
+匹配成功则使用规则中定义的 `targetAccount` 账户覆盖默认定义账户。
+
+规则匹配的顺序是：从 `rules` 配置中的第一条开始匹配，如果匹配成功仍继续匹配。也就是后面的规则优先级要**高于**前面的规则。
+
+中国建设银行账单中的记账金额中存在收入/支出之分，通过这个机制就可以判断银行卡账户在交易中的正负关系。如支付宝配置类似，匹配成功则使用规则中定义的 `targetAccount` 和全局值 `defaultCashAccount` ，并通过确认该笔交易是收入还是支出，决定 `targetAccount` 和 `defaultCashAccount` 的正负关系，来覆盖默认定义的增减账户。
 
 `targetAccount` 与 `defaultCashAccount` 的增减账户关系如下表：
 
