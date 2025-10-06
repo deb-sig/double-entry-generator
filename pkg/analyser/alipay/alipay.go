@@ -140,7 +140,10 @@ func (a Alipay) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, prov
 		}
 	}
 
-	if strings.HasPrefix(o.Item, "退款-") && ir.TypeRecv != o.Type {
+	isRefund := strings.HasPrefix(o.Item, "退款-") ||
+		o.Category == "退款" ||
+		o.Metadata["status"] == "退款成功"
+	if isRefund && ir.TypeRecv != o.Type {
 		return ignore, resPlus, resMinus, extraAccounts, tags
 	}
 	return ignore, resMinus, resPlus, extraAccounts, tags
