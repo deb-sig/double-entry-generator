@@ -1453,6 +1453,28 @@ double-entry-generator translate \
   ./example/icbc/example-icbc-credit-records.csv
 ```
 
+#### 中国建设银行
+> [!TIP]
+> 
+> 支持建设银行账单（CSV、XLS、XLSX格式），字段自动识别。
+
+```bash
+double-entry-generator translate \
+  --config ./example/ccb/config.yaml \
+  --provider ccb \
+  --output ./example/ccb/example-ccb-output.beancount \
+  ./example/ccb/交易明细_xxxx_2025xxxx_2025xxxx.xls
+```
+
+windows的powershell下运行:
+
+```sh
+double-entry-generator translate \
+  --config ./example/ccb/config.yaml \
+  --provider ccb \
+  --output ./example/ccb/example-ccb-output.beancount \
+  ./example/ccb/交易明细_xxxx_2025xxxx_2025xxxx.xls
+```
 
 #### Toronto-Dominion Bank
 
