@@ -1,6 +1,3 @@
-//go:build js && wasm
-// +build js,wasm
-
 /*
 Copyright © 2024 BeanBridge Team
 
@@ -25,7 +22,6 @@ import (
 	"syscall/js"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/provider"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/wasm"
 	"github.com/spf13/viper"
 )
@@ -52,6 +48,7 @@ func main() {
 
 	// 注册 JavaScript 函数
 	js.Global().Set("processFileFromInput", js.FuncOf(processFileFromInput))
+	js.Global().Set("processFileFromInputWithFormat", js.FuncOf(processFileFromInputWithFormat))
 	js.Global().Set("processFileContent", js.FuncOf(processFileContent))
 	js.Global().Set("parseYamlConfig", js.FuncOf(parseYamlConfig))
 	js.Global().Set("setProvider", js.FuncOf(setProvider))
@@ -109,11 +106,93 @@ func processFileFromInput(this js.Value, args []js.Value) interface{} {
 			data := make([]byte, length)
 			js.CopyBytesToGo(data, uint8Array)
 
-			// 获取文件名用于判断文件类型
+			// 获取文件名
 			fileName := file.Get("name").String()
+			
+			log.Printf("[WASM-Main] 文件读取完成：%s, 大小: %d bytes", fileName, len(data))
 
-			// 直接处理文件内容（传递原始字节数组）
+			// 处理文件（传递文件名和原始字节）
 			processResult := fileReader.ProcessFile(fileName, data)
+
+			resolve.Invoke(processResult)
+			return nil
+		}))
+
+		reader.Set("onerror", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+			reject.Invoke(map[string]interface{}{
+				"success": false,
+				"error":   "文件读取失败",
+			})
+			return nil
+		}))
+
+		// 使用 readAsArrayBuffer 而不是 readAsText，避免编码问题
+		reader.Call("readAsArrayBuffer", file)
+		return nil
+	}))
+
+	return promise
+}
+
+// processFileFromInputWithFormat 处理文件输入元素，支持指定输出格式
+func processFileFromInputWithFormat(this js.Value, args []js.Value) interface{} {
+	// 第一个参数：fileInputID (string)
+	// 第二个参数：format (string, "beancount" 或 "ledger")
+	fileInputID := "fileInput"
+	format := "beancount"
+	
+	if len(args) > 0 && args[0].Type() == js.TypeString {
+		fileInputID = args[0].String()
+	}
+	if len(args) > 1 && args[1].Type() == js.TypeString {
+		format = args[1].String()
+	}
+
+	fileInput := js.Global().Get("document").Call("getElementById", fileInputID)
+	if fileInput.IsNull() {
+		return map[string]interface{}{
+			"success": false,
+			"error":   "文件输入元素未找到",
+		}
+	}
+
+	files := fileInput.Get("files")
+	if files.Length() == 0 {
+		return map[string]interface{}{
+			"success": false,
+			"error":   "没有选择文件",
+		}
+	}
+
+	file := files.Index(0)
+
+	// 创建 FileReader
+	reader := js.Global().Get("FileReader").New()
+
+	// 创建 Promise 来处理异步读取
+	promise := js.Global().Get("Promise").New(js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		resolve := args[0]
+		reject := args[1]
+
+		reader.Set("onload", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+			result := reader.Get("result")
+			
+			// 获取 ArrayBuffer
+			arrayBuffer := result
+			uint8Array := js.Global().Get("Uint8Array").New(arrayBuffer)
+			length := uint8Array.Get("length").Int()
+			
+			// 转换为 Go 字节数组
+			data := make([]byte, length)
+			js.CopyBytesToGo(data, uint8Array)
+
+			// 获取文件名
+			fileName := file.Get("name").String()
+			
+			log.Printf("[WASM-Main] 文件读取完成：%s, 格式: %s, 大小: %d bytes", fileName, format, len(data))
+
+			// 处理文件（传递文件名、原始字节和格式）
+			processResult := fileReader.ProcessFileWithFormat(fileName, data, format)
 
 			resolve.Invoke(processResult)
 			return nil
@@ -178,10 +257,10 @@ func parseYamlConfig(this js.Value, args []js.Value) interface{} {
 	currentConfig = cfg
 	fileReader = wasm.NewSimpleFileReader(currentConfig)
 	
-	// 恢复之前的 provider 设置（因为创建新实例会重置为默认值）
+	// 重要：恢复之前选择的 provider
 	if currentProvider != "" {
 		fileReader.SetProvider(currentProvider)
-		log.Printf("恢复 Provider 设置: %s", currentProvider)
+		log.Printf("[parseYamlConfig] 恢复 provider: %s", currentProvider)
 	}
 
 	return map[string]interface{}{
@@ -225,8 +304,10 @@ func getCurrentProvider(this js.Value, args []js.Value) interface{} {
 
 // getSupportedProviders 获取支持的 Provider 列表
 func getSupportedProviders(this js.Value, args []js.Value) interface{} {
-	// 从 provider 包动态获取支持的 provider 列表
-	providers := provider.GetSupportedProviders()
+	providers := []string{
+		"alipay", "wechat", "icbc", "ccb", "citic",
+		"hsbchk", "htsec", "huobi", "td", "bmo", "mt", "jd",
+	}
 
 	// 转换为 JavaScript 数组
 	jsProviders := js.Global().Get("Array").New(len(providers))
