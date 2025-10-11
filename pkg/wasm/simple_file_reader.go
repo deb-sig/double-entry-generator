@@ -1,6 +1,3 @@
-//go:build js && wasm
-// +build js,wasm
-
 package wasm
 
 import (
@@ -10,6 +7,7 @@ import (
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/compiler/beancount"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/compiler/ledger"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/io/writer"
@@ -21,6 +19,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hsbchk"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/htsec"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/huobi"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hxsec"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/mt"
@@ -47,57 +46,95 @@ func (fr *SimpleFileReader) SetProvider(provider string) {
 	fr.currentProvider = provider
 }
 
-// ProcessFile 处理文件（WASM 中传递文件名和原始字节）
+// isExcelFile 判断文件是否为 Excel 格式（.xls 或 .xlsx）
+func (fr *SimpleFileReader) isExcelFile(fileName string) bool {
+	lowerName := strings.ToLower(fileName)
+	return strings.HasSuffix(lowerName, ".xls") || strings.HasSuffix(lowerName, ".xlsx")
+}
+
+// ProcessFile 处理文件（WASM 中传递文件名和原始字节），默认输出 Beancount 格式
 func (fr *SimpleFileReader) ProcessFile(fileName string, fileData []byte) interface{} {
-	log.Printf("[FileReader] ProcessFile called with provider: %s, file: %s, size: %d bytes", 
-		fr.currentProvider, fileName, len(fileData))
+	return fr.ProcessFileWithFormat(fileName, fileData, "beancount")
+}
+
+// ProcessFileWithFormat 处理文件并指定输出格式
+func (fr *SimpleFileReader) ProcessFileWithFormat(fileName string, fileData []byte, format string) interface{} {
+	log.Printf("[FileReader] ProcessFileWithFormat called with provider: %s, file: %s, format: %s, size: %d bytes",
+		fr.currentProvider, fileName, format, len(fileData))
 
 	var orders *ir.IR
 	var err error
 
-	// 在 WASM 中，provider 需要根据文件类型选择不同的处理方式
-	// CSV/TXT: 转换为字符串传递
-	// XLS/XLSX: 保持字节数组，使用特殊的 WASM 处理方法
-	
-	// 根据 provider 调用不同的解析器
+	// 根据 provider 和文件类型选择处理方式
 	switch fr.currentProvider {
 	case "alipay":
 		provider := alipay.New()
-		// Alipay 只支持 CSV，转换为字符串
+		// Alipay 只支持 CSV
 		orders, err = provider.Translate(string(fileData))
+		
 	case "wechat":
 		provider := wechat.New()
-		orders, err = provider.Translate(string(fileData))
+		provider.IgnoreInvalidTxTypes = true
+		if fr.isExcelFile(fileName) {
+			orders, err = provider.TranslateFromExcelBytes(fileData)
+		} else {
+			orders, err = provider.Translate(string(fileData))
+		}
+		
+	case "ccb":
+		provider := ccb.New()
+		if fr.isExcelFile(fileName) {
+			orders, err = provider.TranslateFromExcelBytes(fileData)
+		} else {
+			orders, err = provider.Translate(string(fileData))
+		}
+		
+	case "citic":
+		provider := citic.New()
+		// CITIC 只支持 XLS 格式
+		orders, err = provider.TranslateFromExcelBytes(fileData)
+		
+	case "htsec":
+		provider := htsec.New()
+		if fr.isExcelFile(fileName) {
+			orders, err = provider.TranslateFromExcelBytes(fileData)
+		} else {
+			orders, err = provider.Translate(string(fileData))
+		}
+		
 	case "icbc":
 		provider := icbc.New()
 		orders, err = provider.Translate(string(fileData))
-	case "ccb":
-		// CCB 支持 CSV 和 Excel，需要特殊处理
-		orders, err = fr.processCCB(fileName, fileData)
-	case "citic":
-		provider := citic.New()
-		orders, err = provider.Translate(string(fileData))
+		
 	case "hsbchk":
 		provider := hsbchk.New()
 		orders, err = provider.Translate(string(fileData))
-	case "htsec":
-		provider := htsec.New()
-		orders, err = provider.Translate(string(fileData))
+		
 	case "huobi":
 		provider := huobi.New()
 		orders, err = provider.Translate(string(fileData))
+		
 	case "td":
 		provider := td.New()
 		orders, err = provider.Translate(string(fileData))
+		
 	case "bmo":
 		provider := bmo.New()
 		orders, err = provider.Translate(string(fileData))
+		
 	case "mt":
 		provider := mt.New()
 		orders, err = provider.Translate(string(fileData))
+		
 	case "jd":
 		provider := jd.New()
 		orders, err = provider.Translate(string(fileData))
+		
+	case "hxsec":
+		provider := hxsec.New()
+		// hxsec 的 .xls 实际上是 TSV 文本文件，不是真正的 Excel
+		orders, err = provider.Translate(string(fileData))
+		
 	default:
 		return map[string]interface{}{
 			"success": false,
@@ -113,8 +150,17 @@ func (fr *SimpleFileReader) ProcessFile(fileName string, fileData []byte) interf
 		}
 	}
 
-	// 编译为 Beancount
-	beancount, err := fr.compileToBeancount(orders)
+	// 根据格式编译
+	var output string
+	switch format {
+	case "ledger":
+		output, err = fr.compileToLedger(orders)
+	case "beancount":
+		fallthrough
+	default:
+		output, err = fr.compileToBeancount(orders)
+	}
+	
 	if err != nil {
 		return map[string]interface{}{
 			"success": false,
@@ -122,9 +168,13 @@ func (fr *SimpleFileReader) ProcessFile(fileName string, fileData []byte) interf
 		}
 	}
 
+	// 返回结果，字段名统一为 output，但保留 beancount 字段以兼容旧代码
 	return map[string]interface{}{
 		"success":      true,
-		"beancount":    beancount,
+		"output":       output,
+		"beancount":    output, // 兼容字段
+		"ledger":       output, // 兼容字段
+		"format":       format,
 		"transactions": len(orders.Orders),
 		"provider":     fr.currentProvider,
 	}
@@ -167,28 +217,39 @@ func (fr *SimpleFileReader) compileToBeancount(ir *ir.IR) (string, error) {
 	return memWriter.String(), nil
 }
 
-// processCCB 处理 CCB 文件（支持 CSV 和 Excel）
-func (fr *SimpleFileReader) processCCB(fileName string, fileData []byte) (*ir.IR, error) {
-	provider := ccb.New()
-	
-	// 判断文件类型
-	lowerName := strings.ToLower(fileName)
-	if strings.HasSuffix(lowerName, ".xls") {
-		// XLS 文件：使用 xlsReader 从字节流读取
-		return fr.processCCBExcel(provider, fileData)
-	} else if strings.HasSuffix(lowerName, ".xlsx") {
-		// XLSX 文件：暂不支持（需要 excelize.OpenReader）
-		return nil, fmt.Errorf("暂不支持 XLSX 格式，请转换为 XLS 或 CSV")
-	} else {
-		// CSV 文件：直接传递字符串
-		return provider.Translate(string(fileData))
+// compileToLedger 编译 IR 为 Ledger
+func (fr *SimpleFileReader) compileToLedger(ir *ir.IR) (string, error) {
+	// 创建 analyser
+	a, err := analyser.New(fr.currentProvider)
+	if err != nil {
+		return "", fmt.Errorf("创建 analyser 失败: %v", err)
 	}
-}
 
-// processCCBExcel 使用 xlsReader 从字节流读取 XLS 文件
-func (fr *SimpleFileReader) processCCBExcel(provider *ccb.CCB, fileData []byte) (*ir.IR, error) {
-	log.Printf("[WASM-CCB] 开始解析 XLS 文件，大小: %d bytes", len(fileData))
-	
-	// 调用 CCB provider 的 TranslateFromExcelBytes 方法
-	return provider.TranslateFromExcelBytes(fileData)
+	// 创建 ledger compiler，使用 "memory:" 前缀让 writer 返回内存 writer
+	c, err := ledger.New(
+		fr.currentProvider,
+		consts.CompilerLedger,
+		"memory:output", // 使用 "memory:" 前缀触发内存 writer
+		false,           // appendMode
+		fr.config,
+		ir,
+		a,
+	)
+	if err != nil {
+		return "", fmt.Errorf("创建 ledger compiler 失败: %v", err)
+	}
+
+	// 执行编译
+	err = c.Compile()
+	if err != nil {
+		return "", fmt.Errorf("编译失败: %v", err)
+	}
+
+	// 从全局变量获取最后一个内存 writer
+	memWriter := writer.GetLastMemoryWriter()
+	if memWriter == nil {
+		return "", fmt.Errorf("未找到内存 writer")
+	}
+
+	return memWriter.String(), nil
 }
