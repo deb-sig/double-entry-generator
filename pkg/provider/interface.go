@@ -43,6 +43,31 @@ type Interface interface {
 	Translate(filename string) (*ir.IR, error)
 }
 
+// supportedProviders 是所有支持的 provider 列表（按字母排序）
+var supportedProviders = []string{
+	consts.ProviderAlipay,
+	consts.ProviderBmo,
+	consts.ProviderCCB,
+	consts.ProviderCitic,
+	consts.ProviderHsbcHK,
+	consts.ProviderHtsec,
+	consts.ProviderHuobi,
+	consts.ProviderHxsec,
+	consts.ProviderIcbc,
+	consts.ProviderJD,
+	consts.ProviderMT,
+	consts.ProviderTd,
+	consts.ProviderWechat,
+}
+
+// GetSupportedProviders 返回所有支持的 provider 列表
+func GetSupportedProviders() []string {
+	// 返回副本，避免外部修改
+	result := make([]string, len(supportedProviders))
+	copy(result, supportedProviders)
+	return result
+}
+
 // New creates a new interface.
 func New(name string) (Interface, error) {
 	switch name {
