@@ -1,6 +1,7 @@
 package ccb
 
 import (
+	"bytes"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -52,6 +53,81 @@ func (ccb *CCB) Translate(filename string) (*ir.IR, error) {
 
 	// Handle CSV file
 	return ccb.translateCSV(filename)
+}
+
+// TranslateFromExcelBytes translates CCB Excel file from byte array (for WASM)
+func (ccb *CCB) TranslateFromExcelBytes(fileData []byte) (*ir.IR, error) {
+	log.SetPrefix("[Provider-CCB-WASM] ")
+	
+	xlFile, err := xls.OpenReader(bytes.NewReader(fileData))
+	if err != nil {
+		return nil, fmt.Errorf("无法打开Excel文件: %v", err)
+	}
+
+	sheet, err := xlFile.GetSheet(0)
+	if err != nil {
+		return nil, fmt.Errorf("无法获取Excel的第一个工作表: %v", err)
+	}
+
+	for i := 0; i <= int(sheet.GetNumberRows()); i++ {
+		row, err := sheet.GetRow(i)
+		if err != nil {
+			log.Printf("跳过无法读取的行 %d: %v", i, err)
+			continue
+		}
+		if row == nil {
+			continue
+		}
+
+		var rowData []string
+		for _, col := range row.GetCols() {
+			rowData = append(rowData, col.GetString())
+		}
+
+		ccb.LineNum = i + 1
+
+		// Skip empty rows
+		if len(rowData) == 0 || (len(rowData) == 1 && strings.TrimSpace(rowData[0]) == "") {
+			continue
+		}
+
+		// Parse header information
+		if ccb.LineNum == 1 && len(rowData) > 0 && strings.Contains(rowData[0], "China Construction Bank") {
+			continue
+		} else if ccb.LineNum == 2 && len(rowData) > 1 && strings.Contains(rowData[0], "开户机构") {
+			continue
+		} else if ccb.LineNum == 3 && len(rowData) > 1 && strings.Contains(rowData[0], "币") {
+			continue
+		} else if ccb.LineNum == 4 && len(rowData) > 1 && strings.Contains(rowData[0], "账") {
+			if len(rowData) > 1 {
+				ccb.AccountNum = strings.TrimSpace(rowData[1])
+			}
+			continue
+		} else if ccb.LineNum <= 6 {
+			continue
+		}
+
+		// Check if it's the end of data
+		if len(rowData) > 0 && (strings.Contains(rowData[0], "以上数据仅供参考") ||
+			strings.Contains(rowData[0], "具体内容请以柜台为准") ||
+			strings.Contains(strings.Join(rowData, ""), "以上数据仅供参考")) {
+			break
+		}
+
+		// Check if it's the header row
+		if len(rowData) > 0 && strings.Contains(rowData[0], "记账日") {
+			continue
+		}
+
+		err = ccb.translateToOrders(rowData)
+		if err != nil {
+			return nil, fmt.Errorf("failed to translate bill: line %d: %v",
+				ccb.LineNum, err)
+		}
+	}
+
+	log.Printf("Finished to parse the excel file from bytes")
+	return ccb.convertToIR(), nil
 }
 
 // translateCSV handles CSV file parsing
