@@ -15,9 +15,6 @@ func (ccb *CCB) translateToOrders(array []string) error {
 		array[idx] = a
 	}
 
-	// 添加调试日志
-	log.Printf("Processing line %d: %+v", ccb.LineNum, array)
-
 	if len(array) < 5 { // A valid row must have at least date, date, expense, income, currency
 		log.Printf("ignore the invalid line, too short: %+v\n", array)
 		return nil
@@ -175,9 +172,6 @@ func (ccb *CCB) translateToOrders(array []string) error {
 
 	// 设置交易详情
 	bill.Item = bill.Region
-
-	// 添加调试日志
-	log.Printf("Parsed order: %+v", bill)
 
 	// 更新统计信息
 	ccb.updateStatistics(bill)

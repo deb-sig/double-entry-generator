@@ -21,5 +21,7 @@ type Rule struct {
 	CommissionAccount *string `mapstructure:"commissionAccount,omitempty"`
 	FullMatch         bool    `mapstructure:"fullMatch,omitempty"` // default: false
 	Tag               *string `mapstructure:"tag,omitempty"`
-	Ignore            bool    `mapstructure:"ignore,omitempty"` // default: false
-} 
+	Ignore            bool     `mapstructure:"ignore,omitempty"` // default: false
+	MinPrice          *float64 `mapstructure:"minPrice,omitempty"`
+	MaxPrice          *float64 `mapstructure:"maxPrice,omitempty"`
+}
