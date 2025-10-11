@@ -106,11 +106,11 @@ func processFileFromInput(this js.Value, args []js.Value) interface{} {
 			data := make([]byte, length)
 			js.CopyBytesToGo(data, uint8Array)
 
-			// 将字节数组转换为字符串（保持原始编码）
-			text := string(data)
+			// 获取文件名用于判断文件类型
+			fileName := file.Get("name").String()
 
-			// 直接处理文件内容（WASM 中 provider 接受字符串）
-			processResult := fileReader.ProcessFile(text)
+			// 直接处理文件内容（传递原始字节数组）
+			processResult := fileReader.ProcessFile(fileName, data)
 
 			resolve.Invoke(processResult)
 			return nil
@@ -174,6 +174,12 @@ func parseYamlConfig(this js.Value, args []js.Value) interface{} {
 	// 更新全局配置和文件读取器
 	currentConfig = cfg
 	fileReader = wasm.NewSimpleFileReader(currentConfig)
+	
+	// 恢复之前的 provider 设置（因为创建新实例会重置为默认值）
+	if currentProvider != "" {
+		fileReader.SetProvider(currentProvider)
+		log.Printf("恢复 Provider 设置: %s", currentProvider)
+	}
 
 	return map[string]interface{}{
 		"success": true,
