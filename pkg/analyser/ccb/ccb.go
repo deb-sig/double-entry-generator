@@ -1,6 +1,7 @@
 package ccb
 
 import (
+	"log"
 	"strings"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
@@ -56,7 +57,7 @@ func (c CCB) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provide
 		resMinus = cashAccount
 	}
 
-	//var err error
+	var err error
 	for _, r := range cfg.CCB.Rules {
 		match := true
 		// get separator
@@ -76,6 +77,9 @@ func (c CCB) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provide
 		if r.Type != nil {
 			match = matchFunc(*r.Type, o.TypeOriginal, sep, match)
 		}
+		if r.Item != nil {
+			match = matchFunc(*r.Item, o.Item, sep, match)
+		}
 		if r.TxType != nil {
 			match = matchFunc(*r.TxType, o.TxTypeOriginal, sep, match)
 		}
@@ -86,6 +90,24 @@ func (c CCB) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provide
 			} else {
 				match = false
 			}
+		}
+		if r.Time != nil {
+			match, err = util.SplitFindTimeInterval(*r.Time, o.PayTime, match)
+			if err != nil {
+				log.Fatalf("%v", err)
+			}
+		}
+		if r.TimestampRange != nil {
+			match, err = util.SplitFindTimeStampInterval(*r.TimestampRange, o.PayTime, match)
+			if err != nil {
+				log.Fatalf("%v", err)
+			}
+		}
+		if r.MinPrice != nil && o.Money < *r.MinPrice {
+			match = false
+		}
+		if r.MaxPrice != nil && o.Money > *r.MaxPrice {
+			match = false
 		}
 
 		if match {
