@@ -120,3 +120,37 @@ func (w *Wechat) translateExcel(filename string) (*ir.IR, error) {
 	log.Printf("Finished to parse the Excel file %s", filename)
 	return w.convertToIR(), nil
 }
+
+// TranslateFromExcelBytes 从字节数组解析 XLSX 文件（用于 WASM）
+func (w *Wechat) TranslateFromExcelBytes(fileData []byte) (*ir.IR, error) {
+	log.SetPrefix("[Provider-Wechat] ")
+	log.Printf("TranslateFromExcelBytes called with %d bytes", len(fileData))
+	
+	// 使用 excelize.OpenReader 从字节流读取
+	xlsxFile, err := excelize.OpenReader(strings.NewReader(string(fileData)))
+	if err != nil {
+		return nil, fmt.Errorf("无法打开Excel文件。原始错误: %v", err)
+	}
+	
+	rows, err := xlsxFile.GetRows("Sheet1")
+	if err != nil {
+		return nil, fmt.Errorf("无法获取Excel的第一个工作表。原始错误: %v", err)
+	}
+	
+	for _, row := range rows {
+		w.LineNum++
+		if w.LineNum <= 17 {
+			// The first 17 lines are useless for us.
+			continue
+		}
+		
+		err = w.translateToOrders(row)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to translate bill: line %d: %v",
+				w.LineNum, err)
+		}
+	}
+	
+	log.Printf("Finished to parse the Excel file from bytes")
+	return w.convertToIR(), nil
+}
