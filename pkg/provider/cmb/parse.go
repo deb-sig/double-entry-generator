@@ -71,14 +71,14 @@ func (cmb *Cmb) translateCreditToOrders(arr []string) error {
 
 	bill.RmbAmount, err = extractCreditAmount(safeAccessStrList(arr, 3))
 	if err != nil {
-		return fmt.Errorf("parse money %s error: %v", safeAccessStrList(arr, 3), err)
+		return fmt.Errorf("parse credit rmb amount %s error: %v", safeAccessStrList(arr, 3), err)
 	}
 
 	bill.CardNo = safeAccessStrList(arr, 4)
 
 	bill.OriginalTranAmount, err = extractCreditAmount(safeAccessStrList(arr, 5))
 	if err != nil {
-		return fmt.Errorf("parse money %s error: %v", safeAccessStrList(arr, 5), err)
+		return fmt.Errorf("parse credit original tran amount %s error: %v", safeAccessStrList(arr, 5), err)
 	}
 
 	bill.Type = getCreditOrderTypeByTransactionAmount(safeAccessStrList(arr, 3))
