@@ -9,7 +9,15 @@ import (
 	"time"
 )
 
-func getOrderTypeByTransactionAmount(amount string) OrderType {
+func getDebitOrderTypeByTransactionAmount(amount string) OrderType {
+	if strings.HasPrefix(amount, "-") {
+		return OrderTypeSend
+	} else {
+		return OrderTypeRecv
+	}
+}
+
+func getCreditOrderTypeByTransactionAmount(amount string) OrderType {
 	if strings.HasPrefix(amount, "-") {
 		return OrderTypeRecv
 	} else {
