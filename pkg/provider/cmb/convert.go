@@ -1,6 +1,6 @@
 package cmb
 
-import "github.com/deb-sig/double-entry-generator/pkg/ir"
+import "github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 
 func (cmb *Cmb) convertDebitToIR() *ir.IR {
 	i := ir.New()
