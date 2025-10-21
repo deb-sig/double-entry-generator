@@ -59,7 +59,7 @@ func fillDebitRow(realHeaderTitles []string, row []string) []string {
 
 // 从`招商银行信用卡对账单（个人消费卡账户 2025年01月）`标题中提取年月
 func extractYearAndMonthFromCreditTitle(s string) (year, month string) {
-	re := regexp.MustCompile(`(\d{4})年(\d{1,2})月`)
+	re := regexp.MustCompile(`((?:19|20)\d{2})年(0[1-9]|1[0-2])月`)
 	matches := re.FindStringSubmatch(s)
 	if len(matches) != 3 {
 		return "", ""
