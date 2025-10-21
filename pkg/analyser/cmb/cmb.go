@@ -53,7 +53,6 @@ func (c Cmb) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provide
 		resMinus = cashAccount
 	}
 
-	//var err error
 	for _, r := range cfg.Cmb.Rules {
 		match := true
 		// get separator
