@@ -37,7 +37,7 @@ func (cmb *Cmb) translateDebitToOrders(arr []string) error {
 	bill.CounterParty = safeAccessStrList(arr, 5)
 	bill.CustomerType = safeAccessStrList(arr, 6)
 
-	bill.Type = getOrderTypeByTransactionAmount(arr[2])
+	bill.Type = getDebitOrderTypeByTransactionAmount(arr[2])
 
 	cmb.DebitOrders = append(cmb.DebitOrders, bill)
 	return nil
@@ -81,7 +81,7 @@ func (cmb *Cmb) translateCreditToOrders(arr []string) error {
 		return fmt.Errorf("parse money %s error: %v", safeAccessStrList(arr, 5), err)
 	}
 
-	bill.Type = getOrderTypeByTransactionAmount(safeAccessStrList(arr, 3))
+	bill.Type = getCreditOrderTypeByTransactionAmount(safeAccessStrList(arr, 3))
 
 	cmb.CreditOrders = append(cmb.CreditOrders, bill)
 	return nil
