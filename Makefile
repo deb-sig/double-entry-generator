@@ -90,7 +90,7 @@ clean: ## Clean all the temporary files
 	@rm -rf ./double-entry-generator
 	@rm -rf ./wasm-dist
 
-test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-huobi-ledger test-htsec-beancount test-htsec-ledger test-icbc-beancount test-icbc-ledger test-ccb-beancount test-ccb-ledger test-td-beancount test-td-ledger test-bmo-beancount test-bmo-ledger test-citic-beancount test-citic-ledger test-hsbchk-beancount test-hsbchk-ledger test-jd-beancount test-jd-ledger test-mt-beancount test-hxsec-beancount ## Run all tests
+test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-huobi-ledger test-htsec-beancount test-htsec-ledger test-icbc-beancount test-icbc-ledger test-ccb-beancount test-ccb-ledger test-td-beancount test-td-ledger test-bmo-beancount test-bmo-ledger test-citic-beancount test-citic-ledger test-hsbchk-beancount test-hsbchk-ledger test-jd-beancount test-jd-ledger test-mt-beancount test-hxsec-beancount test-cmb-beancount test-cmb-ledger ## Run all tests
 
 test-go: ## Run Golang tests
 	@go test ./...
@@ -155,6 +155,11 @@ test-mt-beancount: ## Run tests for mt provider against beancount compiler
 
 test-hxsec-beancount: ## Run tests for hxsec provider against beancount compiler
 	@$(SHELL) ./test/hxsec-test-beancount.sh
+
+test-cmb-beancount: ## Run tests for cmb provider against beancount compiler
+	@$(SHELL) ./test/cmb-test-beancount.sh
+test-cmb-ledger: ## Run tests for cmb provider against ledger compiler
+	@$(SHELL) ./test/cmb-test-ledger.sh
 
 format: ## Format code
 	@gofmt -s -w pkg
