@@ -6,22 +6,22 @@
     Income:Insurance     0 CNY
     Equity:Opening Balances 
 2024/01/01 * 北京住房公积金管理中心1111111111 - 01月01日约定提取 
-    Expenses:FIXME      1234.00 CNY
-    Assets:DebitCard:CMB   - 1234.00 CNY
+    Assets:DebitCard:CMB      1234.00 CNY
+    Assets:FIXME   - 1234.00 CNY
 
 2024/01/01 * 张三 66666666666666 - 转账 
-    Assets:DebitCard:CMB      1000.00 CNY
-    Assets:FIXME   - 1000.00 CNY
+    Expenses:FIXME      1000.00 CNY
+    Assets:DebitCard:CMB   - 1000.00 CNY
 
 2024/01/20 *  - 银联 ATM 取款，中国银行 
-    Assets:DebitCard:CMB      1000.00 CNY
-    Assets:FIXME   - 1000.00 CNY
+    Expenses:FIXME      1000.00 CNY
+    Assets:DebitCard:CMB   - 1000.00 CNY
 
 2024/01/23 * 抖音电商商家888888888 - 抖音支付-抖音电商商家 
-    Assets:DebitCard:CMB      10.14 CNY
-    Assets:FIXME   - 10.14 CNY
+    Expenses:FIXME      10.14 CNY
+    Assets:DebitCard:CMB   - 10.14 CNY
 
 2024/01/27 * 国网电力有限公司99999999999999 - 供电 
-    Assets:DebitCard:CMB      3.00 CNY
-    Expenses:Electricity   - 3.00 CNY
+    Expenses:Electricity      3.00 CNY
+    Assets:DebitCard:CMB   - 3.00 CNY
 
