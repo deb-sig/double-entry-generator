@@ -492,13 +492,13 @@ double-entry-generator translate \
 
 信用卡账单转换后的结果示例：[example-hsbchk-credit-output.beancount](example/hsbchk/credit/example-hsbchk-credit-output.beancount).
 
-### 招商银行（TODO）
+### 招商银行储蓄卡
 
 #### 下载方式
 1. 打开招商银行 App
 2. 搜索“流水打印”
 3. 右下方切换“高级筛选”
-4. 选择卡号及起止时间
+4. 选择卡号、起始日期、结束日期
 5. 设置账单格式
   - “展示摘要类型”选择“全部”
   - “展示交易对手信息”选择“开启”
@@ -509,7 +509,28 @@ double-entry-generator translate \
   - “交易类型”选择“全部”
   - “仅展示活期户流水”选择“关闭”
 6. 填写接收邮箱地址，确认导出
-7. 转换格式（待完善）
+7. 将导出的 PDF 文件使用 https://github.com/deb-sig/bill-parser 转换为 CSV 文件
+
+#### 格式示例
+账单示例： [example-cmb-records.csv](example/cmb/debit/example-cmb-records.csv)
+
++ Beancount 转换的结果示例: [example-cmb-output.beancount](example/cmb/debit/example-cmb-output.beancount)
++ Ledger 转换的结果示例: [example-cmb-output.ledger](example/cmb/debit/example-cmb-output.ledger)
+
+### 招商银行信用卡
+
+#### 下载方式
+1. 打开掌上生活 App
+2. 搜索“账单补寄”
+3. 选择账单周期
+4. 提交申请，确认导出
+7. 将导出的 PDF 文件使用 https://github.com/deb-sig/bill-parser 转换为 CSV 文件
+
+#### 格式示例
+账单示例： [example-cmb-records.csv](example/cmb/credit/example-cmb-records.csv)
+
++ Beancount 转换的结果示例: [example-cmb-output.beancount](example/cmb/credit/example-cmb-output.beancount)
++ Ledger 转换的结果示例: [example-cmb-output.ledger](example/cmb/credit/example-cmb-output.ledger)
 
 
 ## 配置
