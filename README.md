@@ -166,6 +166,67 @@ double-entry-generator translate \
   ./example/td/example-td-records.csv
 ```
 
+#### 招商银行储蓄卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/cmb/debit/config.yaml \
+  --provider cmb \
+  --output ./example/cmb/debit/example-cmb-output.beancount \
+  ./example/cmb/debit/example-cmb-records.csv
+```
+
+配置文件示例：
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:DebitCard:CMB
+defaultCurrency: CNY
+title: 测试
+cmb:
+  rules:
+    # 消费
+    - peer: 电费,网上国网,国网
+      targetAccount: Expenses:Electricity
+    - peer: 中国移动
+      targetAccount: Expenses:Mobile
+    # 保险赔付
+    - peer: 太平洋健康保险股份有限公司
+      item: 汇入汇款
+      targetAccount: Income:Insurance
+```
+
+#### 招商银行信用卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/cmb/credit/config.yaml \
+  --provider cmb \
+  --output ./example/cmb/credit/example-cmb-output.beancount \
+  ./example/cmb/credit/example-cmb-records.csv
+```
+
+配置文件示例：
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Liabilities:CreditCard:CMB
+defaultCurrency: CNY
+title: 测试
+cmb:
+  rules:
+    - item: 掌上生活影票
+      targetAccount: Expenses:Movie
+    - item: 手机银行饭票
+      targetAccount: Expenses:Food
+    - item: 中国移动
+      targetAccount: Expenses:Mobile
+    - item: 财付通
+      ignore: true
+```
+
 #### Bank of Montreal
 
 ```bash
@@ -1525,4 +1586,65 @@ double-entry-generator translate \
   --provider td \
   --output ./example/td/example-td-output.beancount \
   ./example/td/example-td-records.csv
+```
+
+#### 招商银行储蓄卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/cmb/debit/config.yaml \
+  --provider cmb \
+  --output ./example/cmb/debit/example-cmb-output.beancount \
+  ./example/cmb/debit/example-cmb-records.csv
+```
+
+配置文件示例：
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:DebitCard:CMB
+defaultCurrency: CNY
+title: 测试
+cmb:
+  rules:
+    # 消费
+    - peer: 电费,网上国网,国网
+      targetAccount: Expenses:Electricity
+    - peer: 中国移动
+      targetAccount: Expenses:Mobile
+    # 保险赔付
+    - peer: 太平洋健康保险股份有限公司
+      item: 汇入汇款
+      targetAccount: Income:Insurance
+```
+
+#### 招商银行信用卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/cmb/credit/config.yaml \
+  --provider cmb \
+  --output ./example/cmb/credit/example-cmb-output.beancount \
+  ./example/cmb/credit/example-cmb-records.csv
+```
+
+配置文件示例：
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Liabilities:CreditCard:CMB
+defaultCurrency: CNY
+title: 测试
+cmb:
+  rules:
+    - item: 掌上生活影票
+      targetAccount: Expenses:Movie
+    - item: 手机银行饭票
+      targetAccount: Expenses:Food
+    - item: 中国移动
+      targetAccount: Expenses:Mobile
+    - item: 财付通
+      ignore: true
 ```
