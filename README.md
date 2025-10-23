@@ -166,6 +166,67 @@ double-entry-generator translate \
   ./example/td/example-td-records.csv
 ```
 
+#### 招商银行储蓄卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/cmb/debit/config.yaml \
+  --provider cmb \
+  --output ./example/cmb/debit/example-cmb-output.beancount \
+  ./example/cmb/debit/example-cmb-records.csv
+```
+
+配置文件示例：
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:DebitCard:CMB
+defaultCurrency: CNY
+title: 测试
+cmb:
+  rules:
+    # 消费
+    - peer: 电费,网上国网,国网
+      targetAccount: Expenses:Electricity
+    - peer: 中国移动
+      targetAccount: Expenses:Mobile
+    # 保险赔付
+    - peer: 太平洋健康保险股份有限公司
+      item: 汇入汇款
+      targetAccount: Income:Insurance
+```
+
+#### 招商银行信用卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/cmb/credit/config.yaml \
+  --provider cmb \
+  --output ./example/cmb/credit/example-cmb-output.beancount \
+  ./example/cmb/credit/example-cmb-records.csv
+```
+
+配置文件示例：
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Liabilities:CreditCard:CMB
+defaultCurrency: CNY
+title: 测试
+cmb:
+  rules:
+    - item: 掌上生活影票
+      targetAccount: Expenses:Movie
+    - item: 手机银行饭票
+      targetAccount: Expenses:Food
+    - item: 中国移动
+      targetAccount: Expenses:Mobile
+    - item: 财付通
+      ignore: true
+```
+
 #### Bank of Montreal
 
 ```bash
@@ -491,6 +552,47 @@ double-entry-generator translate \
 信用卡账单示例： [example-hsbchk-credit-records.csv](example/hsbchk/credit/example-hsbchk-credit-records.csv)
 
 信用卡账单转换后的结果示例：[example-hsbchk-credit-output.beancount](example/hsbchk/credit/example-hsbchk-credit-output.beancount).
+
+### 招商银行储蓄卡
+
+#### 下载方式
+1. 打开招商银行 App
+2. 搜索“流水打印”
+3. 右下方切换“高级筛选”
+4. 选择卡号、起始日期、结束日期
+5. 设置账单格式
+  - “展示摘要类型”选择“全部”
+  - “展示交易对手信息”选择“开启”
+  - “展示完整卡号”选择“开启”
+  - “展示收入及支出汇总金额”选择“关闭”
+  - “交易币种”选择“全部”
+  - “金额区间”选择“关闭”
+  - “交易类型”选择“全部”
+  - “仅展示活期户流水”选择“关闭”
+6. 填写接收邮箱地址，确认导出
+7. 将导出的 PDF 文件使用 https://github.com/deb-sig/bill-parser 转换为 CSV 文件
+
+#### 格式示例
+账单示例： [example-cmb-records.csv](example/cmb/debit/example-cmb-records.csv)
+
++ Beancount 转换的结果示例: [example-cmb-output.beancount](example/cmb/debit/example-cmb-output.beancount)
++ Ledger 转换的结果示例: [example-cmb-output.ledger](example/cmb/debit/example-cmb-output.ledger)
+
+### 招商银行信用卡
+
+#### 下载方式
+1. 打开掌上生活 App
+2. 搜索“账单补寄”
+3. 选择账单周期
+4. 提交申请，确认导出
+7. 将导出的 PDF 文件使用 https://github.com/deb-sig/bill-parser 转换为 CSV 文件
+
+#### 格式示例
+账单示例： [example-cmb-records.csv](example/cmb/credit/example-cmb-records.csv)
+
++ Beancount 转换的结果示例: [example-cmb-output.beancount](example/cmb/credit/example-cmb-output.beancount)
++ Ledger 转换的结果示例: [example-cmb-output.ledger](example/cmb/credit/example-cmb-output.ledger)
+
 
 ## 配置
 
@@ -1484,4 +1586,65 @@ double-entry-generator translate \
   --provider td \
   --output ./example/td/example-td-output.beancount \
   ./example/td/example-td-records.csv
+```
+
+#### 招商银行储蓄卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/cmb/debit/config.yaml \
+  --provider cmb \
+  --output ./example/cmb/debit/example-cmb-output.beancount \
+  ./example/cmb/debit/example-cmb-records.csv
+```
+
+配置文件示例：
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:DebitCard:CMB
+defaultCurrency: CNY
+title: 测试
+cmb:
+  rules:
+    # 消费
+    - peer: 电费,网上国网,国网
+      targetAccount: Expenses:Electricity
+    - peer: 中国移动
+      targetAccount: Expenses:Mobile
+    # 保险赔付
+    - peer: 太平洋健康保险股份有限公司
+      item: 汇入汇款
+      targetAccount: Income:Insurance
+```
+
+#### 招商银行信用卡
+
+```bash
+double-entry-generator translate \
+  --config ./example/cmb/credit/config.yaml \
+  --provider cmb \
+  --output ./example/cmb/credit/example-cmb-output.beancount \
+  ./example/cmb/credit/example-cmb-records.csv
+```
+
+配置文件示例：
+
+```yaml
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Liabilities:CreditCard:CMB
+defaultCurrency: CNY
+title: 测试
+cmb:
+  rules:
+    - item: 掌上生活影票
+      targetAccount: Expenses:Movie
+    - item: 手机银行饭票
+      targetAccount: Expenses:Food
+    - item: 中国移动
+      targetAccount: Expenses:Mobile
+    - item: 财付通
+      ignore: true
 ```
