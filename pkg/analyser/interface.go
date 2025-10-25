@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bmo"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocom"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/ccb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/cmb"
@@ -46,6 +47,8 @@ func New(providerName string) (Interface, error) {
 		return td.Td{}, nil
 	case consts.ProviderBmo:
 		return bmo.Bmo{}, nil
+	case consts.ProviderBocom:
+		return bocom.Bocom{}, nil
 	case consts.ProviderJD:
 		return jd.JD{}, nil
 	case consts.ProviderCitic:
