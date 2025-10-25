@@ -23,12 +23,12 @@ func (cmb *Cmb) translateDebitToOrders(arr []string) error {
 
 	bill.Currency = arr[1]
 
-	bill.TransactionAmount, err = strconv.ParseFloat(strings.TrimLeft(strings.ReplaceAll(arr[2], ",", ""), "-"), 64)
+	bill.TransactionAmount, err = parseDebitAmount(arr[2])
 	if err != nil {
 		return fmt.Errorf("parse money %s error: %v", arr[2], err)
 	}
 
-	bill.Balance, err = strconv.ParseFloat(strings.TrimLeft(strings.ReplaceAll(arr[3], ",", ""), "-"), 64)
+	bill.Balance, err = parseDebitAmount(arr[3])
 	if err != nil {
 		return fmt.Errorf("parse money %s error: %v", arr[3], err)
 	}
@@ -53,11 +53,11 @@ func (cmb *Cmb) translateCreditToOrders(arr []string) error {
 	var err error
 
 	if safeAccessStrList(arr, 0) != "" {
-		t, err := convertCreditBillDate(safeAccessStrList(arr, 0), cmb.CreditBillYear, cmb.CreditBillMonth)
-		bill.SoldDate = &t
+		soldDate, err := convertCreditBillDate(safeAccessStrList(arr, 0), cmb.CreditBillYear, cmb.CreditBillMonth)
 		if err != nil {
 			return fmt.Errorf("parse trade time %s error: %v", safeAccessStrList(arr, 0), err)
 		}
+		bill.SoldDate = &soldDate
 	}
 
 	if safeAccessStrList(arr, 1) != "" {
@@ -85,4 +85,9 @@ func (cmb *Cmb) translateCreditToOrders(arr []string) error {
 
 	cmb.CreditOrders = append(cmb.CreditOrders, bill)
 	return nil
+}
+
+func parseDebitAmount(raw string) (float64, error) {
+	cleaned := strings.TrimLeft(strings.ReplaceAll(raw, ",", ""), "-")
+	return strconv.ParseFloat(cleaned, 64)
 }

@@ -154,10 +154,10 @@ func convertCreditBillDate(billDate, yearStr, monthStr string) (time.Time, error
 }
 
 func extractCreditAmount(s string) (float64, error) {
-	// 移除字符串中的逗号
+	// 先移除金额中的逗号，以便兼容带千分位分隔符的数字（例如 "-1,234.56"）
 	s = strings.ReplaceAll(s, ",", "")
 
-	// 定义正则表达式，用于匹配金额部分
+	// 定义正则表达式，用于匹配可选负号和小数部分的金额（例如 "-1234.56" 或 "123"）
 	re := regexp.MustCompile(`^-?\d+(?:\.\d+)?`)
 	match := re.FindString(s)
 	if match == "" {
