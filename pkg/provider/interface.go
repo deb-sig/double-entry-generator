@@ -20,7 +20,7 @@ import (
 	"fmt"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocomdebit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cmb"
@@ -61,8 +61,8 @@ func New(name string) (Interface, error) {
 		return td.New(), nil
 	case consts.ProviderBmo:
 		return bmo.New(), nil
-	case consts.ProviderBocom:
-		return bocom.New(), nil
+	case consts.ProviderBocomDebit:
+		return bocomdebit.New(), nil
 	case consts.ProviderJD:
 		return jd.New(), nil
 	case consts.ProviderCitic:

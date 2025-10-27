@@ -1,4 +1,4 @@
-package bocom
+package bocomdebit
 
 import "time"
 

@@ -1,6 +1,6 @@
-package bocom
+package bocomdebit
 
-// Config defines rule configuration for Bocom.
+// Config defines rule configuration for Bocom debit statements.
 type Config struct {
 	Rules []Rule `mapstructure:"rules,omitempty"`
 }

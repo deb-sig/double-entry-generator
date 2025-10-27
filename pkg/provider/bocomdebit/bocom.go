@@ -1,4 +1,4 @@
-package bocom
+package bocomdebit
 
 import (
 	"encoding/csv"
@@ -31,7 +31,7 @@ func New() *Bocom {
 
 // Translate converts the Bocom CSV statement into IR orders.
 func (b *Bocom) Translate(filename string) (*ir.IR, error) {
-	log.SetPrefix("[Provider-BOCOM] ")
+	log.SetPrefix("[Provider-BOCOM-DEBIT] ")
 
 	billReader, err := reader.GetReader(filename)
 	if err != nil {

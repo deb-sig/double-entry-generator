@@ -1,4 +1,4 @@
-package bocom
+package bocomdebit
 
 import (
 	"strings"
@@ -14,11 +14,11 @@ type Bocom struct{}
 func (b Bocom) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 	uniqMap := make(map[string]bool)
 
-	if cfg.Bocom == nil || len(cfg.Bocom.Rules) == 0 {
+	if cfg.BocomDebit == nil || len(cfg.BocomDebit.Rules) == 0 {
 		return uniqMap
 	}
 
-	for _, r := range cfg.Bocom.Rules {
+	for _, r := range cfg.BocomDebit.Rules {
 		if r.MethodAccount != nil {
 			uniqMap[*r.MethodAccount] = true
 		}
@@ -45,7 +45,7 @@ func (b Bocom) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 func (b Bocom) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (bool, string, string, map[ir.Account]string, []string) {
 	ignore := false
 
-	if cfg.Bocom == nil || len(cfg.Bocom.Rules) == 0 {
+	if cfg.BocomDebit == nil || len(cfg.BocomDebit.Rules) == 0 {
 		minus, plus := defaultAccountsFor(o.Type, cfg)
 		return ignore, minus, plus, nil, nil
 	}
@@ -53,7 +53,7 @@ func (b Bocom) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provi
 	resMinus, resPlus := defaultAccountsFor(o.Type, cfg)
 	var tags []string
 
-	for _, r := range cfg.Bocom.Rules {
+	for _, r := range cfg.BocomDebit.Rules {
 		match := true
 		sep := ","
 		if r.Separator != nil {

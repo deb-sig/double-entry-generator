@@ -82,7 +82,7 @@ func run(args []string) {
 		fallthrough
 	case consts.ProviderWechat:
 		fallthrough
-	case consts.ProviderBocom:
+	case consts.ProviderBocomDebit:
 		fallthrough
 	case consts.ProviderCCB:
 		if c.DefaultCurrency == "" ||
