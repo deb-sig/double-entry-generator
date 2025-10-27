@@ -1,4 +1,4 @@
-package bocomdebit
+package bocom_debit
 
 import (
 	"strings"

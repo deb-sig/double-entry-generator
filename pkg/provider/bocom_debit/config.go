@@ -1,4 +1,4 @@
-package bocomdebit
+package bocom_debit
 
 // Config defines rule configuration for Bocom debit statements.
 type Config struct {

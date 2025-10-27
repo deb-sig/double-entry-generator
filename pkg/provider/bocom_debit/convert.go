@@ -1,4 +1,4 @@
-package bocomdebit
+package bocom_debit
 
 import (
 	"strconv"
@@ -13,13 +13,13 @@ func (b *Bocom) convertToIR() *ir.IR {
 		irOrder := ir.Order{
 			Peer:           o.Peer,
 			Item:           o.Item,
-			Money:          o.Money,
+			Money:          o.TransAmount,
 			PayTime:        o.PayTime,
 			Type:           convertType(o.Type),
-			TypeOriginal:   o.TypeOriginal,
-			TxTypeOriginal: o.TxTypeOriginal,
+			TypeOriginal:   o.DrCr,
+			TxTypeOriginal: o.TradingType,
 			Currency:       b.Currency,
-			Note:           o.TxTypeOriginal,
+			Note:           o.TradingType,
 		}
 		irOrder.Metadata = b.getMetadata(o)
 		irOrders.Orders = append(irOrders.Orders, irOrder)
@@ -40,19 +40,26 @@ func convertType(t OrderType) ir.Type {
 
 func (b *Bocom) getMetadata(o Order) map[string]string {
 	metadata := map[string]string{
-		"source":      "交通银行",
-		"sequence":    o.Sequence,
-		"creditDebit": o.TypeOriginal,
-		"txType":      o.TxTypeOriginal,
-		"location":    o.Location,
-		"summary":     o.Summary,
-		"peerAccount": o.PeerAccount,
-		"peerName":    o.PeerName,
-		"currency":    b.Currency,
+		"source":                    "交通银行",
+		"serialNum":                 o.SerialNum,
+		"drCr":                      o.DrCr,
+		"tradingType":               o.TradingType,
+		"tradingPlace":              o.TradingPlace,
+		"abstract":                  o.Abstract,
+		"paymentReceiptAccount":     o.PaymentReceiptAccount,
+		"paymentReceiptAccountName": o.PaymentReceiptAccountName,
+		"currency":                  b.Currency,
 	}
 
 	if o.Balance != 0 {
 		metadata["balance"] = strconv.FormatFloat(o.Balance, 'f', -1, 64)
+	}
+
+	if o.TransDate != "" {
+		metadata["transDate"] = o.TransDate
+	}
+	if o.TransTime != "" {
+		metadata["transTime"] = o.TransTime
 	}
 
 	return metadata

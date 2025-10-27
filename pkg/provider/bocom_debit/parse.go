@@ -1,4 +1,4 @@
-package bocomdebit
+package bocom_debit
 
 import (
 	"fmt"
@@ -24,9 +24,11 @@ func (b *Bocom) translateLine(row []string) error {
 		err   error
 	)
 
-	order.Sequence = strings.TrimPrefix(row[0], "\ufeff")
+	order.SerialNum = strings.TrimPrefix(row[0], "\ufeff")
+	order.TransDate = row[1]
+	order.TransTime = row[2]
 
-	payTimeStr := strings.TrimSpace(row[1] + " " + row[2])
+	payTimeStr := strings.TrimSpace(order.TransDate + " " + order.TransTime)
 	if payTimeStr != "" {
 		order.PayTime, err = time.Parse(timeLayout, payTimeStr+" +0800 CST")
 		if err != nil {
@@ -34,12 +36,12 @@ func (b *Bocom) translateLine(row []string) error {
 		}
 	}
 
-	order.TxTypeOriginal = row[3]
-	order.TypeOriginal = row[4]
+	order.TradingType = row[3]
+	order.DrCr = row[4]
 
 	amountStr := strings.ReplaceAll(row[5], ",", "")
 	if amountStr != "" {
-		order.Money, err = strconv.ParseFloat(amountStr, 64)
+		order.TransAmount, err = strconv.ParseFloat(amountStr, 64)
 		if err != nil {
 			return fmt.Errorf("parse amount %s error: %v", row[5], err)
 		}
@@ -53,20 +55,20 @@ func (b *Bocom) translateLine(row []string) error {
 		}
 	}
 
-	order.PeerAccount = row[7]
-	order.PeerName = row[8]
-	order.Location = row[9]
+	order.PaymentReceiptAccount = row[7]
+	order.PaymentReceiptAccountName = row[8]
+	order.TradingPlace = row[9]
 	if len(row) > 10 {
-		order.Summary = row[10]
+		order.Abstract = row[10]
 	}
 
-	order.Peer = buildPeer(order.PeerName, order.PeerAccount)
-	order.Item = buildItem(order.Location, order.Summary)
+	order.Peer = buildPeer(order.PaymentReceiptAccountName, order.PaymentReceiptAccount)
+	order.Item = buildItem(order.TradingPlace, order.Abstract)
 
 	switch {
-	case strings.Contains(order.TypeOriginal, "贷"):
+	case strings.Contains(order.DrCr, "贷"):
 		order.Type = OrderTypeRecv
-	case strings.Contains(order.TypeOriginal, "借"):
+	case strings.Contains(order.DrCr, "借"):
 		order.Type = OrderTypeSend
 	default:
 		order.Type = OrderTypeUnknown
@@ -108,10 +110,10 @@ func (b *Bocom) updateStatistics(order Order) {
 
 	if order.Type == OrderTypeRecv {
 		b.Statistics.TotalInRecords++
-		b.Statistics.TotalInMoney += order.Money
+		b.Statistics.TotalInMoney += order.TransAmount
 	} else if order.Type == OrderTypeSend {
 		b.Statistics.TotalOutRecords++
-		b.Statistics.TotalOutMoney += order.Money
+		b.Statistics.TotalOutMoney += order.TransAmount
 	}
 
 	if order.PayTime.IsZero() {

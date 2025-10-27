@@ -1,4 +1,4 @@
-package bocomdebit
+package bocom_debit
 
 import "time"
 
@@ -15,19 +15,21 @@ type Statistics struct {
 
 // Order represents a single Bank of Communications transaction.
 type Order struct {
-	Sequence       string
-	PayTime        time.Time
-	TxTypeOriginal string
-	TypeOriginal   string
-	Type           OrderType
-	Money          float64
-	Balance        float64
-	PeerAccount    string
-	PeerName       string
-	Peer           string
-	Item           string
-	Location       string
-	Summary        string
+	SerialNum                 string
+	TransDate                 string
+	TransTime                 string
+	TradingType               string
+	DrCr                      string
+	TransAmount               float64
+	Balance                   float64
+	PaymentReceiptAccount     string
+	PaymentReceiptAccountName string
+	TradingPlace              string
+	Abstract                  string
+	PayTime                   time.Time
+	Type                      OrderType
+	Peer                      string
+	Item                      string
 }
 
 type OrderType string
