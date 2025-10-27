@@ -1,0 +1,17 @@
+defaultMinusAccount: Income:Unknown
+defaultPlusAccount: Expenses:Unknown
+defaultCashAccount: Assets:DebitCard:BOCOM
+defaultCurrency: CNY
+title: 交通银行借记卡示例
+bocom_debit:
+  rules:
+    - txType: 存款利息
+      targetAccount: Income:Interest
+    - txType: 其他交易
+      targetAccount: Income:Refund
+    - txType: 信用卡转账还款
+      targetAccount: Liabilities:CreditCard:BOCOM
+    - peer: 网上国网
+      targetAccount: Expenses:Utilities
+    - item: 基金理财产品申购
+      targetAccount: Assets:Investments:Funds

@@ -37,7 +37,7 @@ type Config struct {
 	Icbc                            *icbc.Config        `yaml:"icbc,omitempty"`
 	Td                              *td.Config          `yaml:"td,omitempty"`
 	Bmo                             *bmo.Config         `yaml:"bmo,omitempty"`
-	BocomDebit                      *bocom_debit.Config `yaml:"bocom_debit,omitempty"`
+	BocomDebit                      *bocom_debit.Config `yaml:"bocom_debit,omitempty" mapstructure:"bocom_debit,omitempty"`
 	JD                              *jd.Config          `yaml:"jd,omitempty"`
 	Citic                           *citic.Config       `yaml:"citic,omitempty"`
 	HsbcHK                          *hsbchk.Config      `yaml:"hsbchk,omitempty"`
