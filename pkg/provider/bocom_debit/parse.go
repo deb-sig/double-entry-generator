@@ -28,20 +28,12 @@ func (b *Bocom) translateLine(row []string) error {
 	order.TransDate = row[1]
 	order.TransTime = row[2]
 
-	payTimeStr := strings.TrimSpace(order.TransDate + " " + order.TransTime)
-	if payTimeStr != "" {
-		order.PayTime, err = time.Parse(timeLayout, payTimeStr+" +0800 CST")
-		if err != nil {
-			return fmt.Errorf("parse pay time %s error: %v", payTimeStr, err)
-		}
-	}
-
 	order.TradingType = row[3]
-	order.DrCr = row[4]
+	order.DcFlg = row[4]
 
 	amountStr := strings.ReplaceAll(row[5], ",", "")
 	if amountStr != "" {
-		order.TransAmount, err = strconv.ParseFloat(amountStr, 64)
+		order.TransAmt, err = strconv.ParseFloat(amountStr, 64)
 		if err != nil {
 			return fmt.Errorf("parse amount %s error: %v", row[5], err)
 		}
@@ -62,21 +54,39 @@ func (b *Bocom) translateLine(row []string) error {
 		order.Abstract = row[10]
 	}
 
-	order.Peer = buildPeer(order.PaymentReceiptAccountName, order.PaymentReceiptAccount)
-	order.Item = buildItem(order.TradingPlace, order.Abstract)
-
-	switch {
-	case strings.Contains(order.DrCr, "贷"):
-		order.Type = OrderTypeRecv
-	case strings.Contains(order.DrCr, "借"):
-		order.Type = OrderTypeSend
-	default:
-		order.Type = OrderTypeUnknown
+	orderType := determineOrderType(order.DcFlg)
+	payTime, err := parsePayTime(order)
+	if err != nil {
+		return err
 	}
 
-	b.updateStatistics(order)
+	b.updateStatistics(order, orderType, payTime)
 	b.Orders = append(b.Orders, order)
 	return nil
+}
+
+func determineOrderType(dcFlg string) OrderType {
+	dcFlg = strings.TrimSpace(dcFlg)
+	switch {
+	case strings.Contains(dcFlg, "贷"):
+		return OrderTypeRecv
+	case strings.Contains(dcFlg, "借"):
+		return OrderTypeSend
+	default:
+		return OrderTypeUnknown
+	}
+}
+
+func parsePayTime(order Order) (time.Time, error) {
+	payTimeStr := strings.TrimSpace(order.TransDate + " " + order.TransTime)
+	if payTimeStr == "" {
+		return time.Time{}, nil
+	}
+	payTime, err := time.Parse(timeLayout, payTimeStr+" +0800 CST")
+	if err != nil {
+		return time.Time{}, fmt.Errorf("parse pay time %s error: %v", payTimeStr, err)
+	}
+	return payTime, nil
 }
 
 func buildPeer(name, account string) string {
@@ -105,25 +115,25 @@ func buildItem(location, summary string) string {
 }
 
 // updateStatistics updates statistics with the parsed order.
-func (b *Bocom) updateStatistics(order Order) {
+func (b *Bocom) updateStatistics(order Order, orderType OrderType, payTime time.Time) {
 	b.Statistics.ParsedItems++
 
-	if order.Type == OrderTypeRecv {
+	if orderType == OrderTypeRecv {
 		b.Statistics.TotalInRecords++
-		b.Statistics.TotalInMoney += order.TransAmount
-	} else if order.Type == OrderTypeSend {
+		b.Statistics.TotalInMoney += order.TransAmt
+	} else if orderType == OrderTypeSend {
 		b.Statistics.TotalOutRecords++
-		b.Statistics.TotalOutMoney += order.TransAmount
+		b.Statistics.TotalOutMoney += order.TransAmt
 	}
 
-	if order.PayTime.IsZero() {
+	if payTime.IsZero() {
 		return
 	}
 
-	if b.Statistics.Start.IsZero() || order.PayTime.Before(b.Statistics.Start) {
-		b.Statistics.Start = order.PayTime
+	if b.Statistics.Start.IsZero() || payTime.Before(b.Statistics.Start) {
+		b.Statistics.Start = payTime
 	}
-	if b.Statistics.End.IsZero() || order.PayTime.After(b.Statistics.End) {
-		b.Statistics.End = order.PayTime
+	if b.Statistics.End.IsZero() || payTime.After(b.Statistics.End) {
+		b.Statistics.End = payTime
 	}
 }

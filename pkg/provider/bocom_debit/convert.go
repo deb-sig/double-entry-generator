@@ -10,13 +10,15 @@ import (
 func (b *Bocom) convertToIR() *ir.IR {
 	irOrders := ir.New()
 	for _, o := range b.Orders {
+		payTime, _ := parsePayTime(o)
+		orderType := determineOrderType(o.DcFlg)
 		irOrder := ir.Order{
-			Peer:           o.Peer,
-			Item:           o.Item,
-			Money:          o.TransAmount,
-			PayTime:        o.PayTime,
-			Type:           convertType(o.Type),
-			TypeOriginal:   o.DrCr,
+			Peer:           buildPeer(o.PaymentReceiptAccountName, o.PaymentReceiptAccount),
+			Item:           buildItem(o.TradingPlace, o.Abstract),
+			Money:          o.TransAmt,
+			PayTime:        payTime,
+			Type:           convertType(orderType),
+			TypeOriginal:   o.DcFlg,
 			TxTypeOriginal: o.TradingType,
 			Currency:       b.Currency,
 			Note:           o.TradingType,
@@ -42,7 +44,7 @@ func (b *Bocom) getMetadata(o Order) map[string]string {
 	metadata := map[string]string{
 		"source":                    "交通银行",
 		"serialNum":                 o.SerialNum,
-		"drCr":                      o.DrCr,
+		"dcFlg":                     o.DcFlg,
 		"tradingType":               o.TradingType,
 		"tradingPlace":              o.TradingPlace,
 		"abstract":                  o.Abstract,
@@ -60,6 +62,10 @@ func (b *Bocom) getMetadata(o Order) map[string]string {
 	}
 	if o.TransTime != "" {
 		metadata["transTime"] = o.TransTime
+	}
+
+	if payTime, err := parsePayTime(o); err == nil && !payTime.IsZero() {
+		metadata["payTime"] = payTime.Format(timeLayout)
 	}
 
 	return metadata

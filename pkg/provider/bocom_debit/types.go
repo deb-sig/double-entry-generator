@@ -15,21 +15,17 @@ type Statistics struct {
 
 // Order represents a single Bank of Communications transaction.
 type Order struct {
-	SerialNum                 string
-	TransDate                 string
-	TransTime                 string
-	TradingType               string
-	DrCr                      string
-	TransAmount               float64
-	Balance                   float64
-	PaymentReceiptAccount     string
-	PaymentReceiptAccountName string
-	TradingPlace              string
-	Abstract                  string
-	PayTime                   time.Time
-	Type                      OrderType
-	Peer                      string
-	Item                      string
+	SerialNum                 string  // 序号
+	TransDate                 string  // 交易日期
+	TransTime                 string  // 交易时间
+	TradingType               string  // 交易类型
+	DcFlg                     string  // 借贷
+	TransAmt                  float64 // 交易金额
+	Balance                   float64 // 余额
+	PaymentReceiptAccount     string  // 对方账号
+	PaymentReceiptAccountName string  // 对方户名
+	TradingPlace              string  // 交易地点
+	Abstract                  string  // 摘要
 }
 
 type OrderType string
