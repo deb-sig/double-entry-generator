@@ -48,7 +48,7 @@ func New(providerName string) (Interface, error) {
 	case consts.ProviderBmo:
 		return bmo.Bmo{}, nil
 	case consts.ProviderBocomDebit:
-		return bocom_debit.Bocom{}, nil
+		return bocom_debit.BocomDebit{}, nil
 	case consts.ProviderJD:
 		return jd.JD{}, nil
 	case consts.ProviderCitic:

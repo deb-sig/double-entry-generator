@@ -10,7 +10,7 @@ import (
 const timeLayout = "2006-01-02 15:04:05 -0700 MST"
 
 // translateLine parses a single CSV row into an Order.
-func (b *Bocom) translateLine(row []string) error {
+func (b *BocomDebit) translateLine(row []string) error {
 	for idx, col := range row {
 		row[idx] = strings.TrimSpace(col)
 	}
@@ -102,20 +102,20 @@ func buildPeer(name, account string) string {
 	}
 }
 
-func buildItem(location, summary string) string {
-	location = strings.TrimSpace(location)
-	summary = strings.TrimSpace(summary)
-	if summary == "" {
-		return location
+func buildItem(tradingPlace, abstract string) string {
+	tradingPlace = strings.TrimSpace(tradingPlace)
+	abstract = strings.TrimSpace(abstract)
+	if abstract == "" {
+		return tradingPlace
 	}
-	if location == "" {
-		return summary
+	if tradingPlace == "" {
+		return abstract
 	}
-	return strings.TrimSpace(location + " " + summary)
+	return strings.TrimSpace(tradingPlace + " " + abstract)
 }
 
 // updateStatistics updates statistics with the parsed order.
-func (b *Bocom) updateStatistics(order Order, orderType OrderType, payTime time.Time) {
+func (b *BocomDebit) updateStatistics(order Order, orderType OrderType, payTime time.Time) {
 	b.Statistics.ParsedItems++
 
 	if orderType == OrderTypeRecv {

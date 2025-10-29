@@ -8,10 +8,10 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/util"
 )
 
-type Bocom struct{}
+type BocomDebit struct{}
 
 // GetAllCandidateAccounts returns all accounts defined in config rules.
-func (b Bocom) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
+func (b BocomDebit) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 	uniqMap := make(map[string]bool)
 
 	if cfg.BocomDebit == nil || len(cfg.BocomDebit.Rules) == 0 {
@@ -42,7 +42,7 @@ func (b Bocom) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 }
 
 // GetAccountsAndTags determines the accounts and tags for an order.
-func (b Bocom) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (bool, string, string, map[ir.Account]string, []string) {
+func (b BocomDebit) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (bool, string, string, map[ir.Account]string, []string) {
 	ignore := false
 
 	if cfg.BocomDebit == nil || len(cfg.BocomDebit.Rules) == 0 {
@@ -127,22 +127,9 @@ func (b Bocom) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provi
 }
 
 func defaultAccountsFor(t ir.Type, cfg *config.Config) (string, string) {
-	cash := cfg.DefaultCashAccount
-	minus := cfg.DefaultMinusAccount
-	plus := cfg.DefaultPlusAccount
-
-	if cash == "" {
-		cash = plus
-	}
-	if cash == "" {
-		cash = minus
-	}
-	if minus == "" {
-		minus = cash
-	}
-	if plus == "" {
-		plus = cash
-	}
+	cash := firstNonEmpty(cfg.DefaultCashAccount, cfg.DefaultPlusAccount, cfg.DefaultMinusAccount)
+	minus := firstNonEmpty(cfg.DefaultMinusAccount, cash)
+	plus := firstNonEmpty(cfg.DefaultPlusAccount, cash)
 
 	switch t {
 	case ir.TypeRecv:
@@ -152,4 +139,13 @@ func defaultAccountsFor(t ir.Type, cfg *config.Config) (string, string) {
 	default:
 		return minus, plus
 	}
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, v := range values {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
 }

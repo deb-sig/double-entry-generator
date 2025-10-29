@@ -1,5 +1,5 @@
-defaultMinusAccount: Income:Unknown
-defaultPlusAccount: Expenses:Unknown
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
 defaultCashAccount: Assets:DebitCard:BOCOM
 defaultCurrency: CNY
 title: 交通银行借记卡示例

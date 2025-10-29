@@ -11,17 +11,17 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 )
 
-// Bocom is the provider for Bank of Communications debit card statements.
-type Bocom struct {
+// BocomDebit is the provider for Bank of Communications debit card statements.
+type BocomDebit struct {
 	Statistics Statistics `json:"statistics,omitempty"`
 	LineNum    int        `json:"line_num,omitempty"`
 	Orders     []Order    `json:"orders,omitempty"`
 	Currency   string     `json:"currency,omitempty"`
 }
 
-// New creates a new Bocom provider.
-func New() *Bocom {
-	return &Bocom{
+// New creates a new BocomDebit provider.
+func New() *BocomDebit {
+	return &BocomDebit{
 		Statistics: Statistics{},
 		LineNum:    0,
 		Orders:     make([]Order, 0),
@@ -29,8 +29,8 @@ func New() *Bocom {
 	}
 }
 
-// Translate converts the Bocom CSV statement into IR orders.
-func (b *Bocom) Translate(filename string) (*ir.IR, error) {
+// Translate converts the BocomDebit CSV statement into IR orders.
+func (b *BocomDebit) Translate(filename string) (*ir.IR, error) {
 	log.SetPrefix("[Provider-BOCOM-DEBIT] ")
 
 	billReader, err := reader.GetReader(filename)
@@ -60,6 +60,7 @@ func (b *Bocom) Translate(filename string) (*ir.IR, error) {
 		// Skip header row(s)
 		if len(row) > 0 {
 			firstCell := strings.TrimSpace(row[0])
+			// CSV files exported from Office suites may prefix the first cell with a UTF-8 BOM.
 			firstCell = strings.TrimPrefix(firstCell, "\ufeff")
 			if firstCell == "序号" {
 				continue

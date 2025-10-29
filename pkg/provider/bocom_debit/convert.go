@@ -6,8 +6,8 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 )
 
-// convertToIR converts parsed Bocom orders into the intermediate representation.
-func (b *Bocom) convertToIR() *ir.IR {
+// convertToIR converts parsed BocomDebit orders into the intermediate representation.
+func (b *BocomDebit) convertToIR() *ir.IR {
 	irOrders := ir.New()
 	for _, o := range b.Orders {
 		payTime, _ := parsePayTime(o)
@@ -21,7 +21,6 @@ func (b *Bocom) convertToIR() *ir.IR {
 			TypeOriginal:   o.DcFlg,
 			TxTypeOriginal: o.TradingType,
 			Currency:       b.Currency,
-			Note:           o.TradingType,
 		}
 		irOrder.Metadata = b.getMetadata(o)
 		irOrders.Orders = append(irOrders.Orders, irOrder)
@@ -40,7 +39,7 @@ func convertType(t OrderType) ir.Type {
 	}
 }
 
-func (b *Bocom) getMetadata(o Order) map[string]string {
+func (b *BocomDebit) getMetadata(o Order) map[string]string {
 	metadata := map[string]string{
 		"source":                    "交通银行",
 		"serialNum":                 o.SerialNum,
