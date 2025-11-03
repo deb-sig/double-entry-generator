@@ -5,13 +5,15 @@ defaultCurrency: CNY
 title: 交通银行借记卡示例
 bocom_debit:
   rules:
-    - txType: 存款利息
+    - peer: 应付个人活期储蓄存款利息
       targetAccount: Income:Interest
-    - txType: 其他交易
-      targetAccount: Income:Refund
+    - peer: 信用卡还款
+      targetAccount: Equity:Transfers
     - txType: 信用卡转账还款
-      targetAccount: Liabilities:CreditCard:BOCOM
+      targetAccount: Equity:Transfers
     - peer: 网上国网
-      targetAccount: Expenses:Utilities
+      targetAccount: Expenses:Electricity
     - item: 基金理财产品申购
-      targetAccount: Assets:Investments:Funds
+      targetAccount: Assets:Funds
+    - item: 财付通
+      ignore: true

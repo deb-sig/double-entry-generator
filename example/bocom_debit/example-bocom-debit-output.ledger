@@ -1,12 +1,11 @@
 1970/01/01 * Open Balance
     Assets:DebitCard:BOCOM     0 CNY
     Assets:FIXME     0 CNY
-    Assets:Investments:Funds     0 CNY
+    Assets:Funds     0 CNY
+    Equity:Transfers     0 CNY
+    Expenses:Electricity     0 CNY
     Expenses:FIXME     0 CNY
-    Expenses:Utilities     0 CNY
     Income:Interest     0 CNY
-    Income:Refund     0 CNY
-    Liabilities:CreditCard:BOCOM     0 CNY
     Equity:Opening Balances 
 2024/02/02 * 哈哈 6666666666666666 - 其他 
     ; balance: "2334.62"
@@ -21,7 +20,7 @@
     ; tradingType: "信用卡转账还款"
     ; transDate: "2024-02-02"
     ; transTime: "13:15:12"
-    Liabilities:CreditCard:BOCOM      3.21 CNY
+    Equity:Transfers      3.21 CNY
     Assets:DebitCard:BOCOM   - 3.21 CNY
 
 2024/03/03 * 应付个人活期储蓄存款利息 1323132313211331313 - 批处理 
@@ -55,7 +54,7 @@
     ; transDate: "2024-04-04"
     ; transTime: "11:46:44"
     Assets:DebitCard:BOCOM      10.00 CNY
-    Income:Refund   - 10.00 CNY
+    Assets:FIXME   - 10.00 CNY
 
 2024/05/05 * 网上国网 555551312313213123 - 网上国网 
     ; balance: "99.66"
@@ -70,7 +69,7 @@
     ; tradingType: "异地跨行消费"
     ; transDate: "2024-05-05"
     ; transTime: "12:48:15"
-    Expenses:Utilities      10.00 CNY
+    Expenses:Electricity      10.00 CNY
     Assets:DebitCard:BOCOM   - 10.00 CNY
 
 2024/06/06 * 京东肯特瑞基金销售有限公司 11111111111111 - 网银在线（北京）科技有限公司 网上支付 基金理财产品申购 订单编号20250123123213213131321313131 肯特瑞小金库网银平台 交易流水号20250123123213213131321313131 
@@ -87,7 +86,7 @@
     ; tradingType: "网上支付"
     ; transDate: "2024-06-06"
     ; transTime: "11:30:54"
-    Assets:Investments:Funds      100.79 CNY
+    Assets:Funds      100.79 CNY
     Assets:DebitCard:BOCOM   - 100.79 CNY
 
 2025/01/01 * 应付个人活期储蓄存款利息 1323132313211331313 - 批处理 
