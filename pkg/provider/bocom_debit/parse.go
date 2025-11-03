@@ -15,8 +15,9 @@ func (b *BocomDebit) translateLine(row []string) error {
 		row[idx] = strings.TrimSpace(col)
 	}
 
-	if len(row) < 11 {
-		return fmt.Errorf("row length is less than expected(11)")
+	// abstract field is optional
+	if len(row) < 10 {
+		return fmt.Errorf("row length is less than expected(10)")
 	}
 
 	var (
