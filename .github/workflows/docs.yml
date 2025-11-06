@@ -47,8 +47,10 @@ jobs:
         run: |
           rm -f Gemfile.lock  # 删除旧的锁定文件，强制重新解析依赖
           bundle install --without development
-          # 验证使用的是 sassc 而不是 sass-embedded
-          bundle list | grep -E "(sassc|sass-embedded)" || true
+          # 验证关键 gem 是否已安装
+          echo "Verifying installed gems..."
+          bundle list | grep -E "(kramdown|sassc|sass-embedded)" || true
+          bundle show kramdown-parser-gfm || (echo "ERROR: kramdown-parser-gfm not found!" && exit 1)
           bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production
