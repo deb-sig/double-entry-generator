@@ -54,40 +54,40 @@ double-entry-generator translate -p wechat -t ledger wechat_records.xlsx
 double-entry-generator translate -p ccb -t beancount ccb_records.xls
 ```
 
-更多使用说明请参考 [快速开始文档](docs/getting-started.md) 或访问 [在线文档](https://deb-sig.github.io/double-entry-generator/getting-started/)。
+更多使用说明请参考 [快速开始文档](https://deb-sig.github.io/double-entry-generator/getting-started/)。
 
 ## 📋 支持的 Providers
 
 ### 🏦 银行
 
-- [建设银行 (CCB)](docs/providers/banks/ccb.md) - 支持 CSV、XLS、XLSX 格式
-- [工商银行 (ICBC)](docs/providers/banks/icbc.md) - 自动识别借记卡/信用卡
-- [中信银行 (CITIC)](docs/providers/banks/citic.md) - 信用卡账单
-- [汇丰银行香港 (HSBC HK)](docs/providers/banks/hsbchk.md) - 香港汇丰银行
-- [加拿大银行 (BMO)](docs/providers/banks/bmo.md) - Bank of Montreal
-- [道明银行 (TD)](docs/providers/banks/td.md) - Toronto-Dominion Bank
+- [建设银行 (CCB)](https://deb-sig.github.io/double-entry-generator/providers/banks/ccb.html) - 支持 CSV、XLS、XLSX 格式
+- [工商银行 (ICBC)](https://deb-sig.github.io/double-entry-generator/providers/banks/icbc.html) - 自动识别借记卡/信用卡
+- [中信银行 (CITIC)](https://deb-sig.github.io/double-entry-generator/providers/banks/citic.html) - 信用卡账单
+- [汇丰银行香港 (HSBC HK)](https://deb-sig.github.io/double-entry-generator/providers/banks/hsbchk.html) - 香港汇丰银行
+- [加拿大银行 (BMO)](https://deb-sig.github.io/double-entry-generator/providers/banks/bmo.html) - Bank of Montreal
+- [道明银行 (TD)](https://deb-sig.github.io/double-entry-generator/providers/banks/td.html) - Toronto-Dominion Bank
 - 招商银行 (CMB) - 支持储蓄卡和信用卡（示例见 [example/cmb/](example/cmb/)）
 
 ### 💰 支付工具
 
-- [支付宝 (Alipay)](docs/providers/payment/alipay.md) - 支持 CSV 格式
-- [微信 (WeChat)](docs/providers/payment/wechat.md) - 支持 CSV 和 XLSX 格式
+- [支付宝 (Alipay)](https://deb-sig.github.io/double-entry-generator/providers/payment/alipay.html) - 支持 CSV 格式
+- [微信 (WeChat)](https://deb-sig.github.io/double-entry-generator/providers/payment/wechat.html) - 支持 CSV 和 XLSX 格式
 
 ### 📈 证券交易
 
-- [海通证券 (HTSEC)](docs/providers/securities/htsec.md) - 证券交易记录
-- [华西证券 (HXSEC)](docs/providers/securities/hxsec.md) - 证券交易记录
+- [海通证券 (HTSEC)](https://deb-sig.github.io/double-entry-generator/providers/securities/htsec.html) - 证券交易记录
+- [华西证券 (HXSEC)](https://deb-sig.github.io/double-entry-generator/providers/securities/hxsec.html) - 证券交易记录
 
 ### 🪙 加密货币
 
-- [火币 (Huobi)](docs/providers/crypto/huobi.md) - 币币交易记录
+- [火币 (Huobi)](https://deb-sig.github.io/double-entry-generator/providers/crypto/huobi.html) - 币币交易记录
 
 ### 🛒 生活服务
 
-- [美团 (MT)](docs/providers/life/mt.md) - 美团外卖/到店账单
-- [京东 (JD)](docs/providers/life/jd.md) - 京东购物账单
+- [美团 (MT)](https://deb-sig.github.io/double-entry-generator/providers/life/mt.html) - 美团外卖/到店账单
+- [京东 (JD)](https://deb-sig.github.io/double-entry-generator/providers/life/jd.html) - 京东购物账单
 
-完整列表请查看 [Providers 文档](docs/providers.md) 或访问 [在线文档](https://deb-sig.github.io/double-entry-generator/providers/)。
+完整列表请查看 [Providers 文档](https://deb-sig.github.io/double-entry-generator/providers.html)。
 
 ## ⚙️ 配置指南
 
@@ -113,11 +113,9 @@ alipay:
 
 ### 配置文档
 
-- [配置总览](docs/configuration/README.md) - 了解配置文件结构
-- [规则配置](docs/configuration/rules.md) - 学习如何编写匹配规则
-- [账户映射](docs/configuration/accounts.md) - 设置账户对应关系
-
-更多配置详情请访问 [在线配置文档](https://deb-sig.github.io/double-entry-generator/configuration/)。
+- [配置总览](https://deb-sig.github.io/double-entry-generator/configuration/) - 了解配置文件结构
+- [规则配置](https://deb-sig.github.io/double-entry-generator/configuration/rules.html) - 学习如何编写匹配规则
+- [账户映射](https://deb-sig.github.io/double-entry-generator/configuration/accounts.html) - 设置账户对应关系
 
 ## 📖 示例
 
@@ -142,7 +140,7 @@ double-entry-generator translate \
   ./example/wechat/example-wechat-records.csv
 ```
 
-更多示例请查看 [示例文档](docs/examples/README.md) 或访问 [在线示例文档](https://deb-sig.github.io/double-entry-generator/examples/)。
+更多示例请查看 [示例文档](https://deb-sig.github.io/double-entry-generator/examples/)。
 
 ## 🏗️ 架构
 
@@ -170,10 +168,10 @@ double-entry-generator translate \
 完整的文档请访问：
 
 - 🌐 [在线文档站点](https://deb-sig.github.io/double-entry-generator/) - 完整的在线文档
-- 📖 [快速开始](docs/getting-started.md) - 安装和基本使用
-- 📋 [Providers 列表](docs/providers.md) - 所有支持的数据源
-- ⚙️ [配置指南](docs/configuration/README.md) - 详细的配置说明
-- 💡 [示例](docs/examples/README.md) - 使用示例和最佳实践
+- 📖 [快速开始](https://deb-sig.github.io/double-entry-generator/getting-started/) - 安装和基本使用
+- 📋 [Providers 列表](https://deb-sig.github.io/double-entry-generator/providers.html) - 所有支持的数据源
+- ⚙️ [配置指南](https://deb-sig.github.io/double-entry-generator/configuration/) - 详细的配置说明
+- 💡 [示例](https://deb-sig.github.io/double-entry-generator/examples/) - 使用示例和最佳实践
 
 ## 🐛 常见问题
 
@@ -195,7 +193,7 @@ double-entry-generator translate \
 
 ## 🤝 贡献
 
-欢迎贡献代码和文档！请查看 [贡献指南](docs/contributing.md)。
+欢迎贡献代码和文档！请查看 [贡献指南](https://deb-sig.github.io/double-entry-generator/contributing/)。
 
 ### 如何贡献
 
