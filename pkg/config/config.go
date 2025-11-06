@@ -5,6 +5,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_debit"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocomcredit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cmb"
@@ -39,6 +40,7 @@ type Config struct {
 	Td                              *td.Config          `yaml:"td,omitempty"`
 	Bmo                             *bmo.Config         `yaml:"bmo,omitempty"`
 	BocomDebit                      *bocom_debit.Config `yaml:"bocom_debit,omitempty" mapstructure:"bocom_debit,omitempty"`
+	BocomCredit                     *bocomcredit.Config `yaml:"bocom_credit,omitempty" mapstructure:"bocom_credit,omitempty"`
 	JD                              *jd.Config          `yaml:"jd,omitempty"`
 	Citic                           *citic.Config       `yaml:"citic,omitempty"`
 	HsbcHK                          *hsbchk.Config      `yaml:"hsbchk,omitempty"`

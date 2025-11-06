@@ -90,6 +90,13 @@ func run(args []string) {
 			c.DefaultPlusAccount == "" {
 			log.Fatalf("Failed to get default options in config")
 		}
+	case consts.ProviderBocomCredit:
+		if c.DefaultCurrency == "" ||
+			c.DefaultMinusAccount == "" ||
+			c.DefaultPlusAccount == "" ||
+			c.DefaultCashAccount == "" {
+			log.Fatalf("Failed to get default options in config")
+		}
 	case consts.ProviderHuobi:
 		if c.DefaultCurrency == "" ||
 			c.DefaultCashAccount == "" ||
