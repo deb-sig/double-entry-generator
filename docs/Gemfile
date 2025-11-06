@@ -1,7 +1,8 @@
 source "https://rubygems.org"
 
-# 使用 Jekyll 4.2，它使用 sassc 而不是 sass-embedded
-gem "jekyll", "~> 4.2"
+# 使用 Jekyll 4.1，确保使用 sassc 而不是 sass-embedded
+# Jekyll 4.1 默认使用 jekyll-sass-converter 2.x (sassc)
+gem "jekyll", "~> 4.1"
 gem "webrick"
 gem "just-the-docs"
 gem "jekyll-feed", "~> 0.15"
