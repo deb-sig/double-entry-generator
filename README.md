@@ -66,7 +66,7 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 - [汇丰银行香港 (HSBC HK)](https://deb-sig.github.io/double-entry-generator/providers/banks/hsbchk.html) - 香港汇丰银行
 - [加拿大银行 (BMO)](https://deb-sig.github.io/double-entry-generator/providers/banks/bmo.html) - Bank of Montreal
 - [道明银行 (TD)](https://deb-sig.github.io/double-entry-generator/providers/banks/td.html) - Toronto-Dominion Bank
-- 招商银行 (CMB) - 支持储蓄卡和信用卡（示例见 [example/cmb/](example/cmb/)）
+- [招商银行 (CMB)](https://deb-sig.github.io/double-entry-generator/providers/banks/cmb.html) - 支持储蓄卡和信用卡
 
 ### 💰 支付工具
 
