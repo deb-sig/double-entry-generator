@@ -1,7 +1,8 @@
 source "https://rubygems.org"
 
-# 使用 Jekyll 4 和 just-the-docs 主题
-gem "jekyll", "~> 4.4"
+# 使用 Jekyll 4.3 和 just-the-docs 主题
+# Jekyll 4.3 使用 sassc 而不是 sass-embedded，在 GitHub Actions 中更稳定
+gem "jekyll", "~> 4.3"
 gem "webrick"
 gem "just-the-docs"
 gem "jekyll-feed", "~> 0.15"
