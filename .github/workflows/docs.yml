@@ -46,6 +46,7 @@ jobs:
       - name: Build with Jekyll
         working-directory: docs
         run: |
+          rm -f Gemfile.lock  # 删除旧的锁定文件，强制重新解析依赖
           bundle install
           bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
