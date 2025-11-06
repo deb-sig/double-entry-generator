@@ -9,3 +9,4 @@ gem "jekyll-feed", "~> 0.15"
 gem "jekyll-sitemap"
 gem "jekyll-gist"
 gem "jekyll-paginate"
+gem "kramdown-parser-gfm"  # Jekyll 3.9 需要这个 gem 来支持 GFM markdown
