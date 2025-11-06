@@ -34,6 +34,11 @@ jobs:
           cache-version: 0
           working-directory: docs
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libssl-dev
+
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v4
@@ -41,6 +46,7 @@ jobs:
       - name: Build with Jekyll
         working-directory: docs
         run: |
+          bundle install
           bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production
