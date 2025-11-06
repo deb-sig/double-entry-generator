@@ -30,8 +30,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.1'
-          bundler-cache: true
-          cache-version: 0
+          bundler-cache: false  # 禁用缓存，强制重新安装依赖
           working-directory: docs
 
       - name: Install system dependencies
@@ -47,7 +46,9 @@ jobs:
         working-directory: docs
         run: |
           rm -f Gemfile.lock  # 删除旧的锁定文件，强制重新解析依赖
-          bundle install
+          bundle install --without development
+          # 验证使用的是 sassc 而不是 sass-embedded
+          bundle list | grep -E "(sassc|sass-embedded)" || true
           bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production
