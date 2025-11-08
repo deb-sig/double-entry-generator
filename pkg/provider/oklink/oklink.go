@@ -171,16 +171,20 @@ func (e *OKLink) parseRecord(headers, record []string) (Order, error) {
 		order.UnixTimestamp = t.Unix()
 	}
 
-	// 地址统一转小写（支持中英文表头）
-	order.From = strings.ToLower(fieldMap["发送方"])
-	if order.From == "" {
-		order.From = strings.ToLower(fieldMap["from"])
+	// 地址保存原始值和小写值（支持中英文表头）
+	fromOriginal := fieldMap["发送方"]
+	if fromOriginal == "" {
+		fromOriginal = fieldMap["from"]
 	}
+	order.FromOriginal = fromOriginal
+	order.From = strings.ToLower(fromOriginal)
 	
-	order.To = strings.ToLower(fieldMap["接收方"])
-	if order.To == "" {
-		order.To = strings.ToLower(fieldMap["to"])
+	toOriginal := fieldMap["接收方"]
+	if toOriginal == "" {
+		toOriginal = fieldMap["to"]
 	}
+	order.ToOriginal = toOriginal
+	order.To = strings.ToLower(toOriginal)
 
 	// 解析代币数量（支持"数量"和"value"）
 	tokenValueStr := fieldMap["数量"]
@@ -197,11 +201,13 @@ func (e *OKLink) parseRecord(headers, record []string) (Order, error) {
 		order.TokenValue = value
 	}
 
-	// 合约地址和代币符号（支持中英文表头）
-	order.ContractAddress = strings.ToLower(fieldMap["代币地址"])
-	if order.ContractAddress == "" {
-		order.ContractAddress = strings.ToLower(fieldMap["tokenAddress"])
+	// 合约地址保存原始值和小写值（支持中英文表头）
+	contractAddrOriginal := fieldMap["代币地址"]
+	if contractAddrOriginal == "" {
+		contractAddrOriginal = fieldMap["tokenAddress"]
 	}
+	order.ContractAddressOriginal = contractAddrOriginal
+	order.ContractAddress = strings.ToLower(contractAddrOriginal)
 	
 	order.TokenSymbol = fieldMap["代币符号"]
 	if order.TokenSymbol == "" {
@@ -213,15 +219,14 @@ func (e *OKLink) parseRecord(headers, record []string) (Order, error) {
 
 	// 判断方向：优先匹配 from（send），再匹配 to（recv）
 	if e.Config != nil && e.Config.Addresses != nil {
-		fromLower := strings.ToLower(order.From)
-		toLower := strings.ToLower(order.To)
+		// order.From 和 order.To 已经是小写的了
 		
 		// 优先检查 from 地址（send 视角）
 		for addr := range e.Config.Addresses {
 			addrLower := strings.ToLower(addr)
-			if fromLower == addrLower {
+			if order.From == addrLower {
 				order.Direction = "send"
-				order.Peer = order.To
+				order.Peer = order.ToOriginal // 使用原始值
 				return order, nil
 			}
 		}
@@ -229,9 +234,9 @@ func (e *OKLink) parseRecord(headers, record []string) (Order, error) {
 		// 如果 from 不在配置中，检查 to 地址（recv 视角）
 		for addr := range e.Config.Addresses {
 			addrLower := strings.ToLower(addr)
-			if toLower == addrLower {
+			if order.To == addrLower {
 				order.Direction = "recv"
-				order.Peer = order.From
+				order.Peer = order.FromOriginal // 使用原始值
 				return order, nil
 			}
 		}
@@ -247,8 +252,38 @@ func (e *OKLink) convertToIR() (*ir.IR, error) {
 	}
 
 	for i, order := range e.Orders {
-		// 应用规则匹配（返回规则和地址配置）
-		matchedRule, addrConfig := e.matchRule(&order)
+		// 检查两个地址是否都在配置中（自己的账户互转）
+		fromConfig, fromAddr := e.getAddressConfigByAddr(&order, order.From)
+		toConfig, toAddr := e.getAddressConfigByAddr(&order, order.To)
+		
+		// 如果两个地址都在配置中，按资产转移处理（资产账户 A → 资产账户 B）
+		if fromConfig != nil && toConfig != nil {
+			// 匹配两个地址的规则
+			fromRules := e.matchAllRules(&order, fromConfig)
+			toRules := e.matchAllRules(&order, toConfig)
+			
+			// 检查是否有规则标记为 ignore
+			shouldIgnore := false
+			for _, rule := range append(fromRules, toRules...) {
+				if rule.Ignore {
+					log.Printf("[OKLink] Ignoring order %d (tx: %s) due to rule", i, order.TxHash[:10])
+					shouldIgnore = true
+					break
+				}
+			}
+			
+			if shouldIgnore {
+				continue
+			}
+			
+			// 构建资产转移交易（资产账户 A → 资产账户 B）
+			irOrder := e.buildTransferOrder(&order, fromRules, toRules, fromConfig, toConfig, fromAddr, toAddr)
+			result.Orders = append(result.Orders, irOrder)
+			continue
+		}
+		
+		// 如果只有一个地址在配置中，按正常 send/recv 处理
+		addrConfig, _ := e.getAddressConfig(&order)
 		
 		// 如果地址配置不存在，跳过（说明这个交易不属于配置中的任何地址）
 		if addrConfig == nil {
@@ -256,14 +291,25 @@ func (e *OKLink) convertToIR() (*ir.IR, error) {
 			continue
 		}
 		
-		// 如果规则标记为 ignore，则跳过
-		if matchedRule != nil && matchedRule.Ignore {
-			log.Printf("[OKLink] Ignoring order %d (tx: %s) due to rule", i, order.TxHash[:10])
+		// 匹配所有规则（支持多个规则匹配，累加设置）
+		matchedRules := e.matchAllRules(&order, addrConfig)
+		
+		// 检查是否有规则标记为 ignore
+		shouldIgnore := false
+		for _, rule := range matchedRules {
+			if rule.Ignore {
+				log.Printf("[OKLink] Ignoring order %d (tx: %s) due to rule", i, order.TxHash[:10])
+				shouldIgnore = true
+				break
+			}
+		}
+		
+		if shouldIgnore {
 			continue
 		}
 
-		// 构建 IR Order（传入规则和地址配置）
-		irOrder := e.buildIROrder(&order, matchedRule, addrConfig)
+		// 构建 IR Order（传入所有匹配的规则和地址配置）
+		irOrder := e.buildIROrder(&order, matchedRules, addrConfig)
 		result.Orders = append(result.Orders, irOrder)
 	}
 
@@ -275,27 +321,25 @@ func (e *OKLink) convertToIR() (*ir.IR, error) {
 // 逻辑：
 // 1. 优先匹配 from 地址（如果是 send，使用 from 的规则）
 // 2. 如果 from 不在配置中，匹配 to 地址（如果是 recv，使用 to 的规则）
-// 3. 如果两个地址都在配置中，优先使用 from 地址的规则（send 视角）
 func (e *OKLink) getAddressConfig(order *Order) (*AddressConfig, string) {
+	// 优先匹配 from 地址
+	if config, addr := e.getAddressConfigByAddr(order, order.From); config != nil {
+		return config, addr
+	}
+	
+	// 如果 from 不在配置中，匹配 to 地址
+	return e.getAddressConfigByAddr(order, order.To)
+}
+
+// getAddressConfigByAddr 根据指定地址获取对应的配置
+func (e *OKLink) getAddressConfigByAddr(order *Order, address string) (*AddressConfig, string) {
 	if e.Config == nil || e.Config.Addresses == nil {
 		return nil, ""
 	}
 	
-	fromLower := strings.ToLower(order.From)
-	toLower := strings.ToLower(order.To)
-	
-	// 优先匹配 from 地址（send 视角）
+	addrLower := strings.ToLower(address)
 	for addr, addrConfig := range e.Config.Addresses {
-		addrLower := strings.ToLower(addr)
-		if fromLower == addrLower {
-			return addrConfig, addr
-		}
-	}
-	
-	// 如果 from 不在配置中，匹配 to 地址（recv 视角）
-	for addr, addrConfig := range e.Config.Addresses {
-		addrLower := strings.ToLower(addr)
-		if toLower == addrLower {
+		if strings.ToLower(addr) == addrLower {
 			return addrConfig, addr
 		}
 	}
@@ -303,26 +347,22 @@ func (e *OKLink) getAddressConfig(order *Order) (*AddressConfig, string) {
 	return nil, ""
 }
 
-// matchRule 匹配规则
-func (e *OKLink) matchRule(order *Order) (*Rule, *AddressConfig) {
-	// 先获取地址配置
-	addrConfig, _ := e.getAddressConfig(order)
-	if addrConfig == nil {
-		return nil, nil
-	}
-	
-	// 在地址配置的规则中匹配
-	if len(addrConfig.Rules) == 0 {
-		return nil, addrConfig
+// matchAllRules 匹配所有规则（支持多个规则匹配，累加设置）
+// 参考 alipay provider 的实现方式
+func (e *OKLink) matchAllRules(order *Order, addrConfig *AddressConfig) []*Rule {
+	if addrConfig == nil || len(addrConfig.Rules) == 0 {
+		return nil
 	}
 
-	for _, rule := range addrConfig.Rules {
-		if e.ruleMatches(order, &rule) {
-			return &rule, addrConfig
+	var matchedRules []*Rule
+	for i := range addrConfig.Rules {
+		rule := &addrConfig.Rules[i]
+		if e.ruleMatches(order, rule) {
+			matchedRules = append(matchedRules, rule)
 		}
 	}
 
-	return nil, addrConfig
+	return matchedRules
 }
 
 // ruleMatches 检查规则是否匹配
@@ -353,7 +393,7 @@ func (e *OKLink) ruleMatches(order *Order, rule *Rule) bool {
 		}
 	}
 
-	// ContractAddress 匹配（地址统一小写）
+	// ContractAddress 匹配（大小写不敏感）
 	if rule.ContractAddress != nil {
 		ruleAddr := strings.ToLower(*rule.ContractAddress)
 		if order.ContractAddress != ruleAddr {
@@ -361,7 +401,7 @@ func (e *OKLink) ruleMatches(order *Order, rule *Rule) bool {
 		}
 	}
 
-	// From 地址匹配
+	// From 地址匹配（大小写不敏感）
 	if rule.From != nil {
 		ruleFrom := strings.ToLower(*rule.From)
 		if order.From != ruleFrom {
@@ -369,7 +409,7 @@ func (e *OKLink) ruleMatches(order *Order, rule *Rule) bool {
 		}
 	}
 
-	// To 地址匹配
+	// To 地址匹配（大小写不敏感）
 	if rule.To != nil {
 		ruleTo := strings.ToLower(*rule.To)
 		if order.To != ruleTo {
@@ -377,10 +417,12 @@ func (e *OKLink) ruleMatches(order *Order, rule *Rule) bool {
 		}
 	}
 
-	// Peer 地址匹配
+	// Peer 地址匹配（大小写不敏感，但需要比较原始值的小写版本）
 	if rule.Peer != nil {
 		rulePeer := strings.ToLower(*rule.Peer)
-		if order.Peer != rulePeer {
+		// Peer 可能是 FromOriginal 或 ToOriginal，需要比较小写版本
+		peerLower := strings.ToLower(order.Peer)
+		if peerLower != rulePeer {
 			return false
 		}
 	}
@@ -453,13 +495,15 @@ func (e *OKLink) matchTimeRange(t time.Time, timeRange string) bool {
 }
 
 // buildIROrder 构建 IR Order
-func (e *OKLink) buildIROrder(order *Order, rule *Rule, addrConfig *AddressConfig) ir.Order {
+// 支持多个规则匹配，累加设置（参考 alipay provider 的实现方式）
+func (e *OKLink) buildIROrder(order *Order, matchedRules []*Rule, addrConfig *AddressConfig) ir.Order {
 	irOrder := ir.Order{
 		OrderType: ir.OrderTypeCrypto, // 使用加密货币模板（高精度）
 		PayTime:   order.DateTime,
 		Peer:      order.Peer,
 		Money:     order.TokenValue,
 		Currency:  order.TokenSymbol, // 使用代币符号作为货币单位
+		Tags:      make([]string, 0),  // 初始化 tags 切片
 	}
 
 	// 构建描述
@@ -471,21 +515,21 @@ func (e *OKLink) buildIROrder(order *Order, rule *Rule, addrConfig *AddressConfi
 	}
 	irOrder.Item = fmt.Sprintf("%s %s", order.TokenSymbol, direction)
 
-	// 设置账户（根据规则或使用默认）
-	e.setAccounts(&irOrder, order, rule, addrConfig)
+	// 设置账户（支持多个规则匹配，累加设置）
+	e.setAccountsFromRules(&irOrder, order, matchedRules, addrConfig)
 
-	// 应用规则中的其他配置
-	if rule != nil {
+	// 应用规则中的其他配置（tags、note、currency）
+	for _, rule := range matchedRules {
 		e.applyRuleSettings(&irOrder, rule)
 	}
 
-	// 添加元数据
+	// 添加元数据（使用原始值）
 	irOrder.Metadata = map[string]string{
-		"txHash":          order.TxHash,
+		"txHash":          order.TxHash,                    // 原始值
 		"blockNo":         order.BlockNo,
-		"from":            order.From,
-		"to":              order.To,
-		"contractAddress": order.ContractAddress,
+		"from":            order.FromOriginal,               // 原始值
+		"to":              order.ToOriginal,                 // 原始值
+		"contractAddress": order.ContractAddressOriginal,   // 原始值
 		"tokenName":       order.TokenName,
 		"tokenSymbol":     order.TokenSymbol,
 		"direction":       order.Direction,
@@ -494,26 +538,113 @@ func (e *OKLink) buildIROrder(order *Order, rule *Rule, addrConfig *AddressConfi
 	return irOrder
 }
 
-// setAccounts 设置交易的借贷账户
-func (e *OKLink) setAccounts(irOrder *ir.Order, order *Order, rule *Rule, addrConfig *AddressConfig) {
-	var assetAccount, targetAccount string
+// buildTransferOrder 构建资产转移交易（两个地址都在配置中）
+// 资产账户 A（from）→ 资产账户 B（to）
+func (e *OKLink) buildTransferOrder(order *Order, fromRules []*Rule, toRules []*Rule, fromConfig *AddressConfig, toConfig *AddressConfig, fromAddr string, toAddr string) ir.Order {
+	irOrder := ir.Order{
+		OrderType: ir.OrderTypeCrypto, // 使用加密货币模板（高精度）
+		PayTime:   order.DateTime,
+		Peer:      order.ToOriginal, // 使用 to 地址作为 peer
+		Money:     order.TokenValue,
+		Currency:  order.TokenSymbol, // 使用代币符号作为货币单位
+		Tags:      make([]string, 0),  // 初始化 tags 切片
+	}
+
+	// 构建描述
+	irOrder.Item = fmt.Sprintf("%s Transfer", order.TokenSymbol)
+
+	// 设置账户：资产账户 A（from）→ 资产账户 B（to）
+	fromAccount := e.getMethodAccountFromRules(order, fromRules, fromConfig)
+	toAccount := e.getMethodAccountFromRules(order, toRules, toConfig)
 	
-	// 获取资产账户
-	if rule != nil && rule.MethodAccount != nil {
-		assetAccount = *rule.MethodAccount
-	} else {
-		// 如果没有规则指定，使用全局默认账户
-		assetAccount = e.DefaultPlusAccount
+	// 如果找不到，使用默认账户
+	if fromAccount == "" {
+		fromAccount = e.DefaultPlusAccount
+	}
+	if toAccount == "" {
+		toAccount = e.DefaultPlusAccount
 	}
 	
-	// 获取目标账户
-	if rule != nil && rule.TargetAccount != nil {
-		targetAccount = *rule.TargetAccount
+	// 资产转移：from 账户减少，to 账户增加
+	irOrder.MinusAccount = fromAccount
+	irOrder.PlusAccount = toAccount
+
+	// 应用规则中的其他配置（tags、note、currency）
+	// 合并两个地址的规则
+	allRules := append(fromRules, toRules...)
+	for _, rule := range allRules {
+		e.applyRuleSettings(&irOrder, rule)
+	}
+
+	// 添加元数据（使用原始值）
+	irOrder.Metadata = map[string]string{
+		"txHash":          order.TxHash,                    // 原始值
+		"blockNo":         order.BlockNo,
+		"from":            order.FromOriginal,               // 原始值
+		"to":              order.ToOriginal,                 // 原始值
+		"contractAddress": order.ContractAddressOriginal,   // 原始值
+		"tokenName":       order.TokenName,
+		"tokenSymbol":     order.TokenSymbol,
+		"direction":       "transfer", // 标记为资产转移
+	}
+
+	return irOrder
+}
+
+// getMethodAccountFromRules 从规则中获取 methodAccount
+func (e *OKLink) getMethodAccountFromRules(order *Order, matchedRules []*Rule, addrConfig *AddressConfig) string {
+	// 优先从匹配的规则中查找
+	for _, rule := range matchedRules {
+		if rule.MethodAccount != nil {
+			return *rule.MethodAccount
+		}
+	}
+	
+	// 如果规则中没有，从地址配置的其他规则中查找
+	return e.findMethodAccountFromRules(order, addrConfig)
+}
+
+// setAccountsFromRules 设置交易的借贷账户（支持多个规则匹配，累加设置）
+// 参考 alipay provider 的实现方式：Support multiple matches, like one rule matches the
+// minus account, the other rule matches the plus account.
+func (e *OKLink) setAccountsFromRules(irOrder *ir.Order, order *Order, matchedRules []*Rule, addrConfig *AddressConfig) {
+	var assetAccount, targetAccount string
+	
+	// 初始化默认账户
+	if order.Direction == "recv" {
+		assetAccount = e.DefaultPlusAccount
+		targetAccount = e.DefaultMinusAccount
 	} else {
-		// 如果没有规则指定，根据方向自动推断合适的账户类型
+		assetAccount = e.DefaultPlusAccount
+		targetAccount = e.DefaultPlusAccount
+	}
+	
+	// 遍历所有匹配的规则，累加设置账户
+	// 参考 alipay: Support multiple matches, like one rule matches the minus account, the other rule matches the plus account.
+	for _, rule := range matchedRules {
+		// 如果规则有 MethodAccount，设置资产账户
+		if rule.MethodAccount != nil {
+			assetAccount = *rule.MethodAccount
+		}
+		
+		// 如果规则有 TargetAccount，设置目标账户
+		if rule.TargetAccount != nil {
+			targetAccount = *rule.TargetAccount
+		}
+	}
+	
+	// 如果所有规则都没有 MethodAccount，尝试从地址配置的其他规则中查找
+	if assetAccount == e.DefaultPlusAccount {
+		assetAccount = e.findMethodAccountFromRules(order, addrConfig)
+		if assetAccount == "" {
+			assetAccount = e.DefaultPlusAccount
+		}
+	}
+	
+	// 如果所有规则都没有 TargetAccount，根据方向自动推断
+	if targetAccount == e.DefaultPlusAccount || targetAccount == e.DefaultMinusAccount {
 		if order.Direction == "recv" {
 			// 收款：使用收入账户（Income）
-			// 如果全局默认账户是资产账户，则使用默认的收入账户
 			if strings.HasPrefix(e.DefaultMinusAccount, "Income:") {
 				targetAccount = e.DefaultMinusAccount
 			} else {
@@ -521,7 +652,6 @@ func (e *OKLink) setAccounts(irOrder *ir.Order, order *Order, rule *Rule, addrCo
 			}
 		} else {
 			// 发送：使用支出账户（Expenses）
-			// 如果全局默认账户是支出账户，则使用默认的支出账户
 			if strings.HasPrefix(e.DefaultPlusAccount, "Expenses:") {
 				targetAccount = e.DefaultPlusAccount
 			} else {
@@ -540,29 +670,64 @@ func (e *OKLink) setAccounts(irOrder *ir.Order, order *Order, rule *Rule, addrCo
 	}
 }
 
+// findMethodAccountFromRules 从地址配置的其他规则中查找 methodAccount
+// 优先查找匹配相同 tokenSymbol 的规则
+func (e *OKLink) findMethodAccountFromRules(order *Order, addrConfig *AddressConfig) string {
+	if addrConfig == nil || len(addrConfig.Rules) == 0 {
+		return ""
+	}
+	
+	// 优先查找匹配相同 tokenSymbol 的规则
+	for _, r := range addrConfig.Rules {
+		if r.MethodAccount != nil {
+			// 如果规则匹配 tokenSymbol，使用它的 methodAccount
+			if r.TokenSymbol != nil && *r.TokenSymbol == order.TokenSymbol {
+				return *r.MethodAccount
+			}
+		}
+	}
+	
+	// 如果没找到匹配 tokenSymbol 的，查找第一个有 methodAccount 的规则
+	for _, r := range addrConfig.Rules {
+		if r.MethodAccount != nil {
+			return *r.MethodAccount
+		}
+	}
+	
+	return ""
+}
+
 // applyRuleSettings 应用规则中的标签、备注、货币单位等配置
 func (e *OKLink) applyRuleSettings(irOrder *ir.Order, rule *Rule) {
-	// 应用标签
+	// 应用标签（去重）
 	if rule.Tags != nil {
 		sep := ","
 		if rule.Separator != nil {
 			sep = *rule.Separator
 		}
 		tags := strings.Split(*rule.Tags, sep)
+		
+		// 使用 map 去重
+		tagMap := make(map[string]bool)
+		for _, tag := range irOrder.Tags {
+			tagMap[tag] = true
+		}
+		
 		for _, tag := range tags {
 			tag = strings.TrimSpace(tag)
-			if tag != "" {
+			if tag != "" && !tagMap[tag] {
 				irOrder.Tags = append(irOrder.Tags, tag)
+				tagMap[tag] = true
 			}
 		}
 	}
 	
-	// 应用自定义备注
+	// 应用自定义备注（后面的规则覆盖前面的）
 	if rule.Note != nil {
 		irOrder.Item = *rule.Note
 	}
 	
-	// 应用自定义货币单位
+	// 应用自定义货币单位（后面的规则覆盖前面的）
 	if rule.Currency != nil {
 		irOrder.Currency = *rule.Currency
 	}

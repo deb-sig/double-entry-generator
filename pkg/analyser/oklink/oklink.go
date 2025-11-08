@@ -50,7 +50,7 @@ func (e OKLink) GetAccountsForTransaction(o *ir.Order) []string {
 
 // GetAccountsAndTags returns the accounts for analysis.
 func (e OKLink) GetAccountsAndTags(o *ir.Order, c *config.Config, plusAccount string, minusAccount string) (bool, string, string, map[ir.Account]string, []string) {
-	// Use the accounts already set in the Order
-	return false, o.MinusAccount, o.PlusAccount, nil, nil
+	// Use the accounts and tags already set in the Order
+	return false, o.MinusAccount, o.PlusAccount, nil, o.Tags
 }
 

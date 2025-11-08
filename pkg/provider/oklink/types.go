@@ -20,24 +20,23 @@ import "time"
 
 // Order 单个代币交易记录
 type Order struct {
-	TxHash           string    // 交易哈希
+	TxHash           string    // 交易哈希（原始值）
 	BlockNo          string    // 区块号
 	UnixTimestamp    int64     // Unix 时间戳
 	DateTime         time.Time // 时间
-	From             string    // 发送地址
-	To               string    // 接收地址
+	From             string    // 发送地址（小写，用于匹配）
+	FromOriginal     string    // 发送地址（原始值，用于输出）
+	To               string    // 接收地址（小写，用于匹配）
+	ToOriginal       string    // 接收地址（原始值，用于输出）
 	TokenValue       float64   // 代币数量
-	USDValueDayOfTx  string    // 当天美元价值
-	ContractAddress  string    // 合约地址
+	ContractAddress  string    // 合约地址（小写，用于匹配）
+	ContractAddressOriginal string // 合约地址（原始值，用于输出）
 	TokenName        string    // 代币名称
 	TokenSymbol      string    // 代币符号
 	
 	// 解析后填充
 	Direction        string    // "recv" 或 "send"
-	Peer             string    // 对方地址
-	TargetAccount    string    // 目标账户（从规则匹配）
-	MinusAccount     string    // 减少账户
-	PlusAccount      string    // 增加账户
+	Peer             string    // 对方地址（原始值，用于输出）
 	Tags             []string  // 标签
 }
 
