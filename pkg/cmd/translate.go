@@ -27,6 +27,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/erc20"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/wechat"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
@@ -104,6 +105,15 @@ func run(args []string) {
 	if providerName == consts.ProviderWechat {
 		if w, ok := p.(*wechat.Wechat); ok {
 			w.IgnoreInvalidTxTypes = ignoreInvalidWechatTxTypes
+		}
+	}
+
+	// Pass config to ERC20 provider
+	if providerName == consts.ProviderERC20 {
+		if e, ok := p.(*erc20.ERC20); ok {
+			e.Config = c.ERC20
+			e.DefaultMinusAccount = c.DefaultMinusAccount
+			e.DefaultPlusAccount = c.DefaultPlusAccount
 		}
 	}
 

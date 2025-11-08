@@ -5,6 +5,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/erc20"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hsbchk"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/htsec"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/huobi"
@@ -40,4 +41,5 @@ type Config struct {
 	HsbcHK                          *hsbchk.Config `yaml:"hsbchk,omitempty"`
 	MT                              *mt.Config     `yaml:"mt,omitempty"`
 	CCB                             *ccb.Config    `yaml:"ccb,omitempty"`
+	ERC20                           *erc20.Config  `yaml:"erc20,omitempty"`
 }

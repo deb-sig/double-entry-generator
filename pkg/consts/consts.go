@@ -48,4 +48,6 @@ const (
 	ProviderHxsec = "hxsec"
 	//ProviderCCB is the name for CCB provider.
 	ProviderCCB = "ccb"
+	//ProviderERC20 is the name for ERC20 provider.
+	ProviderERC20 = "erc20"
 )
