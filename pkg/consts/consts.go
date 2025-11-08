@@ -48,6 +48,6 @@ const (
 	ProviderHxsec = "hxsec"
 	//ProviderCCB is the name for CCB provider.
 	ProviderCCB = "ccb"
-	//ProviderERC20 is the name for ERC20 provider.
-	ProviderERC20 = "erc20"
+	//ProviderOKLink is the name for OKLink provider (supports multiple chains: ERC20, TRC20, BSC, etc.).
+	ProviderOKLink = "oklink"
 )

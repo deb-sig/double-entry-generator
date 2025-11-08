@@ -22,8 +22,8 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/erc20"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hsbchk"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/oklink"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/mt"
@@ -72,8 +72,8 @@ func New(name string) (Interface, error) {
 		return hxsec.New(), nil
 	case consts.ProviderCCB:
 		return ccb.New(), nil
-	case consts.ProviderERC20:
-		return erc20.New(), nil
+	case consts.ProviderOKLink:
+		return oklink.New(), nil
 	default:
 		return nil, fmt.Errorf("Fail to create the provider for the given name %s", name)
 	}
