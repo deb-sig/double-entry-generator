@@ -225,8 +225,9 @@ func (e *OKLink) parseEthereumRecord(fieldMap map[string]string) (Order, error) 
 		log.Printf("[OKLink] Warning: missing 代币符号 field, using empty string")
 	}
 	
-	// 检查代币符号是否是 ETH 地址格式（OKLink 会将危险代币标记为发送方地址）
+	// 检查代币符号是否是 ETH 地址格式（OKLink 会将未认证/危险代币标记为发送方地址）
 	// ETH 地址格式：0x 开头，后面跟着 40 个十六进制字符（总共 42 个字符）
+	// 注意：不再跳过，而是继续处理，让用户可以通过规则自定义处理方式
 	if len(order.TokenSymbol) == 42 && strings.HasPrefix(order.TokenSymbol, "0x") {
 		// 检查是否全部是十六进制字符
 		isHex := true
@@ -237,8 +238,10 @@ func (e *OKLink) parseEthereumRecord(fieldMap map[string]string) (Order, error) 
 			}
 		}
 		if isHex {
-			// 这是危险代币标记，跳过这条交易
-			return order, fmt.Errorf("skipping dangerous token (代币符号 is an address: %s)", order.TokenSymbol)
+			// 这是未认证代币标记，记录警告但继续处理
+			// 用户可以通过规则（如 contractAddress、tokenSymbol 等）来自定义处理
+			log.Printf("[OKLink] Warning: Token symbol is an address (likely unverified token): tokenSymbol=%s, contractAddress=%s, txHash=%s", 
+				order.TokenSymbol, order.ContractAddressOriginal, order.TxHash)
 		}
 	}
 	
