@@ -3,7 +3,6 @@ package htsec
 import (
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 	"github.com/xuri/excelize/v2"
@@ -73,37 +72,5 @@ func (h *Htsec) Translate(filename string) (*ir.IR, error) {
 	}
 
 	log.Printf("Finished to parse the file %s", filename)
-	return h.convertToIR(), nil
-}
-
-// TranslateFromExcelBytes 从字节数组解析 XLSX 文件（用于 WASM）
-func (h *Htsec) TranslateFromExcelBytes(fileData []byte) (*ir.IR, error) {
-	log.SetPrefix("[Provider-Htsec] ")
-	log.Printf("TranslateFromExcelBytes called with %d bytes", len(fileData))
-	
-	// 使用 excelize.OpenReader 从字节流读取
-	f, err := excelize.OpenReader(strings.NewReader(string(fileData)))
-	if err != nil {
-		return nil, fmt.Errorf("无法打开Excel文件。原始错误: %v", err)
-	}
-	
-	rows, err := f.GetRows("Sheet1")
-	if err != nil {
-		return nil, fmt.Errorf("无法获取Excel的第一个工作表。原始错误: %v", err)
-	}
-	
-	for _, row := range rows {
-		h.LineNum++
-		if h.LineNum == 1 {
-			// 第一行是表头，跳过
-			continue
-		}
-		
-		if err := h.translateToOrders(row); err != nil {
-			return nil, fmt.Errorf("Failed to translate bill: line %d: %v", h.LineNum, err)
-		}
-	}
-	
-	log.Printf("Finished to parse the Excel file from bytes")
 	return h.convertToIR(), nil
 }

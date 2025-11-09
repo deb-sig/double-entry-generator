@@ -47,6 +47,3 @@ node_modules/
 
 # Log files
 *.log
-# WASM 构建产物
-wasm/*.wasm
-wasm/wasm_exec.js
