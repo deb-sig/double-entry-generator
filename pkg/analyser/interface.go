@@ -6,6 +6,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bmo"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/ccb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/citic"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/cmb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/hsbchk"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/oklink"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/hxsec"
@@ -58,6 +59,8 @@ func New(providerName string) (Interface, error) {
 		return hxsec.Hxsec{}, nil
 	case consts.ProviderCCB:
 		return ccb.CCB{}, nil
+	case consts.ProviderCmb:
+		return cmb.Cmb{}, nil
 	case consts.ProviderOKLink:
 		return oklink.OKLink{}, nil
 	default:

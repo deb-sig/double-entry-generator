@@ -1,0 +1,15 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Liabilities:CreditCard:CMB
+defaultCurrency: CNY
+title: 测试
+cmb:
+  rules:
+    - item: 掌上生活影票
+      targetAccount: Expenses:Movie
+    - item: 手机银行饭票
+      targetAccount: Expenses:Food
+    - item: 中国移动
+      targetAccount: Expenses:Mobile
+    - item: 财付通
+      ignore: true

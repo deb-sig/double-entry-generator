@@ -5,6 +5,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cmb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hsbchk"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/oklink"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/htsec"
@@ -41,5 +42,6 @@ type Config struct {
 	HsbcHK                          *hsbchk.Config `yaml:"hsbchk,omitempty"`
 	MT                              *mt.Config     `yaml:"mt,omitempty"`
 	CCB                             *ccb.Config    `yaml:"ccb,omitempty"`
+	Cmb                             *cmb.Config    `yaml:"cmb,omitempty"`
 	OKLink                          *oklink.Config `yaml:"oklink,omitempty"`
 }

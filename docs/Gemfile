@@ -1,10 +1,14 @@
 source "https://rubygems.org"
 
-# 使用 Jekyll 4 和 just-the-docs 主题
-gem "jekyll", "~> 4.4"
+# 使用 Jekyll 3.9，它使用 sassc 而不是 sass-embedded
+# 这是最稳定的版本，在 GitHub Actions 中经过充分测试
+gem "jekyll", "~> 3.9"
 gem "webrick"
 gem "just-the-docs"
 gem "jekyll-feed", "~> 0.15"
 gem "jekyll-sitemap"
 gem "jekyll-gist"
 gem "jekyll-paginate"
+# kramdown 和 GFM 支持
+gem "kramdown", "~> 2.3"
+gem "kramdown-parser-gfm", "~> 1.1"

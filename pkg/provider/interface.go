@@ -22,6 +22,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cmb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hsbchk"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/oklink"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
@@ -72,6 +73,8 @@ func New(name string) (Interface, error) {
 		return hxsec.New(), nil
 	case consts.ProviderCCB:
 		return ccb.New(), nil
+	case consts.ProviderCmb:
+		return cmb.New(), nil
 	case consts.ProviderOKLink:
 		return oklink.New(), nil
 	default:
