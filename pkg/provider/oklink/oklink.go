@@ -114,6 +114,11 @@ func (e *OKLink) Translate(filename string) (*ir.IR, error) {
 
 		order, err := e.parseRecord(headers, record)
 		if err != nil {
+			// 如果是危险代币标记，记录日志并跳过
+			if strings.Contains(err.Error(), "skipping dangerous token") {
+				log.Printf("[OKLink] Skipping row %d: dangerous token detected (token symbol is an address)", i+2)
+				continue
+			}
 			log.Printf("[OKLink] Warning: failed to parse row %d: %v", i+2, err)
 			continue
 		}
@@ -129,8 +134,6 @@ func (e *OKLink) Translate(filename string) (*ir.IR, error) {
 
 // parseRecord 解析单行记录
 func (e *OKLink) parseRecord(headers, record []string) (Order, error) {
-	order := Order{}
-
 	// 创建字段映射
 	fieldMap := make(map[string]string)
 	for i, header := range headers {
@@ -139,58 +142,66 @@ func (e *OKLink) parseRecord(headers, record []string) (Order, error) {
 		}
 	}
 
-	// 解析各个字段（支持中文和英文表头）
+	// 检测 CSV 格式类型（ETH 中文表头 vs TRON 英文表头）
+	isEthereumFormat := fieldMap["交易哈希"] != "" || fieldMap["发送方"] != "" || fieldMap["代币符号"] != ""
+	
+	if isEthereumFormat {
+		// ETH 格式（中文表头）
+		return e.parseEthereumRecord(fieldMap)
+	} else {
+		// TRON 格式（英文表头）
+		return e.parseTronRecord(fieldMap)
+	}
+}
+
+// parseEthereumRecord 解析以太坊格式的 CSV 记录（中文表头）
+func (e *OKLink) parseEthereumRecord(fieldMap map[string]string) (Order, error) {
+	order := Order{}
+
 	// 交易哈希
 	order.TxHash = fieldMap["交易哈希"]
 	if order.TxHash == "" {
-		order.TxHash = fieldMap["Tx Hash"]
+		return order, fmt.Errorf("missing 交易哈希 field")
 	}
 	
 	// 区块高度
 	order.BlockNo = fieldMap["区块高度"]
-	if order.BlockNo == "" {
-		order.BlockNo = fieldMap["blockHeight"]
-	}
 	
-	// 解析 UTC 时间（支持两种格式）
-	utcTimeStr := fieldMap["UTC时间"]
-	if utcTimeStr == "" {
-		utcTimeStr = fieldMap["blockTime(UTC)"]
+	// 解析时间（优先使用本地时间 UTC+8，这是用户实际入账的时间）
+	timeStr := fieldMap["本地时间(UTC+8)"]
+	if timeStr == "" {
+		// 如果没有本地时间，使用 UTC 时间
+		timeStr = fieldMap["UTC时间"]
 	}
-	if utcTimeStr != "" {
-		// OKLink 格式: "2025/11/07 15:14:23" 或 "2025-11-07 15:14:23"
-		t, err := time.Parse("2006/01/02 15:04:05", utcTimeStr)
+	if timeStr != "" {
+		// OKLink ETH 格式: "2025/11/07 23:14:23" 或 "2025-11-07 23:14:23"
+		t, err := time.Parse("2006/01/02 15:04:05", timeStr)
 		if err != nil {
 			// 尝试另一种格式
-			t, err = time.Parse("2006-01-02 15:04:05", utcTimeStr)
+			t, err = time.Parse("2006-01-02 15:04:05", timeStr)
 			if err != nil {
-				return order, fmt.Errorf("invalid UTC time: %w", err)
+				return order, fmt.Errorf("invalid time: %w", err)
 			}
 		}
-		order.DateTime = t
-		order.UnixTimestamp = t.Unix()
+		// 注意：本地时间(UTC+8) 需要转换为 UTC 时间存储
+		// 因为 time.Time 内部使用 UTC，所以需要减去 8 小时
+		loc, _ := time.LoadLocation("Asia/Shanghai")
+		tLocal := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), loc)
+		order.DateTime = tLocal
+		order.UnixTimestamp = tLocal.Unix()
 	}
 
-	// 地址保存原始值和小写值（支持中英文表头）
+	// 地址保存原始值和小写值
 	fromOriginal := fieldMap["发送方"]
-	if fromOriginal == "" {
-		fromOriginal = fieldMap["from"]
-	}
 	order.FromOriginal = fromOriginal
 	order.From = strings.ToLower(fromOriginal)
 	
 	toOriginal := fieldMap["接收方"]
-	if toOriginal == "" {
-		toOriginal = fieldMap["to"]
-	}
 	order.ToOriginal = toOriginal
 	order.To = strings.ToLower(toOriginal)
 
-	// 解析代币数量（支持"数量"和"value"）
+	// 解析代币数量
 	tokenValueStr := fieldMap["数量"]
-	if tokenValueStr == "" {
-		tokenValueStr = fieldMap["value"]
-	}
 	if tokenValueStr != "" {
 		// 移除千位分隔符逗号（如 "5,586" -> "5586"）
 		tokenValueStr = strings.ReplaceAll(tokenValueStr, ",", "")
@@ -201,17 +212,126 @@ func (e *OKLink) parseRecord(headers, record []string) (Order, error) {
 		order.TokenValue = value
 	}
 
-	// 合约地址保存原始值和小写值（支持中英文表头）
+	// 合约地址保存原始值和小写值
 	contractAddrOriginal := fieldMap["代币地址"]
-	if contractAddrOriginal == "" {
-		contractAddrOriginal = fieldMap["tokenAddress"]
-	}
 	order.ContractAddressOriginal = contractAddrOriginal
 	order.ContractAddress = strings.ToLower(contractAddrOriginal)
 	
-	order.TokenSymbol = fieldMap["代币符号"]
+	// 代币符号（ETH 格式）- 必须存在
+	order.TokenSymbol = strings.TrimSpace(fieldMap["代币符号"])
 	if order.TokenSymbol == "" {
-		order.TokenSymbol = fieldMap["symbol"]
+		// 如果代币符号为空，可能是 ETH 主币转账，使用 "ETH" 作为默认值
+		// 但这种情况在代币转账 CSV 中不应该出现，所以记录警告
+		log.Printf("[OKLink] Warning: missing 代币符号 field, using empty string")
+	}
+	
+	// 检查代币符号是否是 ETH 地址格式（OKLink 会将危险代币标记为发送方地址）
+	// ETH 地址格式：0x 开头，后面跟着 40 个十六进制字符（总共 42 个字符）
+	if len(order.TokenSymbol) == 42 && strings.HasPrefix(order.TokenSymbol, "0x") {
+		// 检查是否全部是十六进制字符
+		isHex := true
+		for _, c := range order.TokenSymbol[2:] {
+			if !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
+				isHex = false
+				break
+			}
+		}
+		if isHex {
+			// 这是危险代币标记，跳过这条交易
+			return order, fmt.Errorf("skipping dangerous token (代币符号 is an address: %s)", order.TokenSymbol)
+		}
+	}
+	
+	// OKLink 没有单独的 TokenName 字段，使用 TokenSymbol
+	order.TokenName = order.TokenSymbol
+
+	// 判断方向：优先匹配 from（send），再匹配 to（recv）
+	if e.Config != nil && e.Config.Addresses != nil {
+		// order.From 和 order.To 已经是小写的了
+		
+		// 优先检查 from 地址（send 视角）
+		for addr := range e.Config.Addresses {
+			addrLower := strings.ToLower(addr)
+			if order.From == addrLower {
+				order.Direction = "send"
+				order.Peer = order.ToOriginal // 使用原始值
+				return order, nil
+			}
+		}
+		
+		// 如果 from 不在配置中，检查 to 地址（recv 视角）
+		for addr := range e.Config.Addresses {
+			addrLower := strings.ToLower(addr)
+			if order.To == addrLower {
+				order.Direction = "recv"
+				order.Peer = order.FromOriginal // 使用原始值
+				return order, nil
+			}
+		}
+	}
+
+	return order, nil
+}
+
+// parseTronRecord 解析 TRON 格式的 CSV 记录（英文表头）
+func (e *OKLink) parseTronRecord(fieldMap map[string]string) (Order, error) {
+	order := Order{}
+
+	// 交易哈希
+	order.TxHash = fieldMap["Tx Hash"]
+	if order.TxHash == "" {
+		return order, fmt.Errorf("missing Tx Hash field")
+	}
+	
+	// 区块高度
+	order.BlockNo = fieldMap["blockHeight"]
+	
+	// 解析 UTC 时间
+	utcTimeStr := fieldMap["blockTime(UTC)"]
+	if utcTimeStr != "" {
+		// OKLink TRON 格式: "2025/11/07 15:14:23" 或 "2025-11-07 15:14:23"
+		t, err := time.Parse("2006/01/02 15:04:05", utcTimeStr)
+		if err != nil {
+			// 尝试横杠格式
+			t, err = time.Parse("2006-01-02 15:04:05", utcTimeStr)
+			if err != nil {
+				return order, fmt.Errorf("invalid UTC time: %w", err)
+			}
+		}
+		order.DateTime = t
+		order.UnixTimestamp = t.Unix()
+	}
+
+	// 地址保存原始值和小写值
+	fromOriginal := fieldMap["from"]
+	order.FromOriginal = fromOriginal
+	order.From = strings.ToLower(fromOriginal)
+	
+	toOriginal := fieldMap["to"]
+	order.ToOriginal = toOriginal
+	order.To = strings.ToLower(toOriginal)
+
+	// 解析代币数量
+	tokenValueStr := fieldMap["value"]
+	if tokenValueStr != "" {
+		// 移除千位分隔符逗号（如 "5,586" -> "5586"）
+		tokenValueStr = strings.ReplaceAll(tokenValueStr, ",", "")
+		value, err := strconv.ParseFloat(tokenValueStr, 64)
+		if err != nil {
+			return order, fmt.Errorf("invalid token value: %w", err)
+		}
+		order.TokenValue = value
+	}
+
+	// 合约地址保存原始值和小写值
+	contractAddrOriginal := fieldMap["tokenAddress"]
+	order.ContractAddressOriginal = contractAddrOriginal
+	order.ContractAddress = strings.ToLower(contractAddrOriginal)
+	
+	// 代币符号（TRON 格式）
+	order.TokenSymbol = strings.TrimSpace(fieldMap["symbol"])
+	if order.TokenSymbol == "" {
+		return order, fmt.Errorf("missing symbol field")
 	}
 	
 	// OKLink 没有单独的 TokenName 字段，使用 TokenSymbol
@@ -497,12 +617,19 @@ func (e *OKLink) matchTimeRange(t time.Time, timeRange string) bool {
 // buildIROrder 构建 IR Order
 // 支持多个规则匹配，累加设置（参考 alipay provider 的实现方式）
 func (e *OKLink) buildIROrder(order *Order, matchedRules []*Rule, addrConfig *AddressConfig) ir.Order {
+	// 确保 TokenSymbol 不为空
+	tokenSymbol := order.TokenSymbol
+	if tokenSymbol == "" {
+		tokenSymbol = "UNKNOWN"
+		log.Printf("[OKLink] Warning: TokenSymbol is empty for tx %s, using UNKNOWN", order.TxHash[:10])
+	}
+	
 	irOrder := ir.Order{
 		OrderType: ir.OrderTypeCrypto, // 使用加密货币模板（高精度）
 		PayTime:   order.DateTime,
 		Peer:      order.Peer,
 		Money:     order.TokenValue,
-		Currency:  order.TokenSymbol, // 使用代币符号作为货币单位
+		Currency:  tokenSymbol, // 使用代币符号作为货币单位
 		Tags:      make([]string, 0),  // 初始化 tags 切片
 	}
 
@@ -513,7 +640,7 @@ func (e *OKLink) buildIROrder(order *Order, matchedRules []*Rule, addrConfig *Ad
 	} else if order.Direction == "send" {
 		direction = "Send"
 	}
-	irOrder.Item = fmt.Sprintf("%s %s", order.TokenSymbol, direction)
+	irOrder.Item = fmt.Sprintf("%s %s", tokenSymbol, direction)
 
 	// 设置账户（支持多个规则匹配，累加设置）
 	e.setAccountsFromRules(&irOrder, order, matchedRules, addrConfig)
@@ -541,17 +668,24 @@ func (e *OKLink) buildIROrder(order *Order, matchedRules []*Rule, addrConfig *Ad
 // buildTransferOrder 构建资产转移交易（两个地址都在配置中）
 // 资产账户 A（from）→ 资产账户 B（to）
 func (e *OKLink) buildTransferOrder(order *Order, fromRules []*Rule, toRules []*Rule, fromConfig *AddressConfig, toConfig *AddressConfig, fromAddr string, toAddr string) ir.Order {
+	// 确保 TokenSymbol 不为空
+	tokenSymbol := order.TokenSymbol
+	if tokenSymbol == "" {
+		tokenSymbol = "UNKNOWN"
+		log.Printf("[OKLink] Warning: TokenSymbol is empty for transfer tx %s, using UNKNOWN", order.TxHash[:10])
+	}
+	
 	irOrder := ir.Order{
 		OrderType: ir.OrderTypeCrypto, // 使用加密货币模板（高精度）
 		PayTime:   order.DateTime,
 		Peer:      order.ToOriginal, // 使用 to 地址作为 peer
 		Money:     order.TokenValue,
-		Currency:  order.TokenSymbol, // 使用代币符号作为货币单位
+		Currency:  tokenSymbol, // 使用代币符号作为货币单位
 		Tags:      make([]string, 0),  // 初始化 tags 切片
 	}
 
 	// 构建描述
-	irOrder.Item = fmt.Sprintf("%s Transfer", order.TokenSymbol)
+	irOrder.Item = fmt.Sprintf("%s Transfer", tokenSymbol)
 
 	// 设置账户：资产账户 A（from）→ 资产账户 B（to）
 	fromAccount := e.getMethodAccountFromRules(order, fromRules, fromConfig)
