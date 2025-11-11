@@ -1,0 +1,95 @@
+# OKLink 多链代币账单配置文件
+# 支持: Ethereum (ERC20), TRON (TRC20)
+
+title: "OKLink 代币账本"
+defaultCurrency: "CNY"  # 不影响 OKLink，OKLink 自动使用代币符号
+defaultMinusAccount: "Assets:FIXME"
+defaultPlusAccount: "Expenses:FIXME"
+
+oklink:
+  # ===== 单地址配置示例 =====
+  # 地址作为 key，单地址时也使用相同格式
+  "0x1429****7f855c":  # Ethereum 地址示例（已脱敏）
+    rules:
+      # ===== 1. 稳定币配置 =====
+      # USDT 转账
+      - tokenSymbol: "USDT"
+        methodAccount: "Assets:Crypto:Software:Ethereum:0x1429****7f855c"
+        tags: "Stablecoin,USDT"
+      
+      # USDC 配置（可填写其他 bean 账户，或者和上面的一样就是一个账户不同币种的记法）
+      - tokenSymbol: "USDC"
+        methodAccount: "Assets:Crypto:Ethereum:USDC"
+        tags: "Stablecoin,USDC"
+      
+      # ===== 2. 按交易方向匹配（可选）=====
+      # USDT 入账（根据地址、交易方向来匹配）
+      - tokenSymbol: "USDT"
+        peer: "0xd854****c172b3"
+        direction: "recv"
+        methodAccount: "Assets:Crypto:Ethereum:USDT"
+        targetAccount: "Income:Crypto:Transfer"
+        tags: "USDT,Receive"
+        
+      # USDT 出账（根据地址、交易方向对应到支出账户，设置货币单位为 CNY、USD 等，默认使用 tokenSymbol）
+      - tokenSymbol: "USDT"
+        peer: "0x3ef4****f2768a"
+        direction: "send"
+        methodAccount: "Assets:Crypto:Ethereum:USDT"
+        targetAccount: "Expenses:Food:Meal"
+        currency: "CNY"
+        tags: "USDT,Send"
+      
+      # ===== 3. 按金额区分（可选）=====
+      # 空投（按金额范围区分空投）
+      - maxAmount: 10
+        minAmount: 1
+        targetAccount: "Income:Crypto:Airdrop"
+        tags: "SmallAirdrop"
+
+
+# ===== 多地址配置示例 =====
+# 如果需要配置多个地址，可以这样写：
+#
+# oklink:
+#   "0x1429****7f855c":  # Ethereum 地址示例（已脱敏）
+#     rules:
+#       - tokenSymbol: "USDT"
+#         methodAccount: "Assets:Crypto:Ethereum:USDT"
+#         tags: "Stablecoin,USDT"
+#   "TExam****7890":  # TRON 地址示例（已脱敏）
+#     rules:
+#       - tokenSymbol: "USDT"
+#         methodAccount: "Assets:Crypto:TRON:USDT"
+#         tags: "Stablecoin,USDT,TRON"
+
+# ===== 配置说明 =====
+# 
+# 字段说明：
+# - 地址作为 key：使用地址作为配置的 key
+# - methodAccount: 代币资产账户（如 Assets:Crypto:Ethereum:USDT）
+# - targetAccount: 收入/支出账户
+#   * 收款时：Income:xxx（收入账户）
+#   * 付款时：Expenses:xxx（支出账户）
+# - currency: 货币单位（可选，默认使用 tokenSymbol）
+# - from/to: 发送方/接收方地址
+# - peer: 对方地址（收款时匹配 from，付款时匹配 to）
+# - minAmount/maxAmount: 金额范围筛选
+# - tokenSymbol: 代币符号（如 USDT、UNI）
+# - tokenName: 代币名称（如 Tether USD）
+# - contractAddress: 合约地址
+# - txHash: 交易哈希（精确匹配）
+# - tags: 标签，多个用逗号分隔
+# - ignore: 是否忽略此交易（默认 false）
+# 
+# 匹配优先级（从高到低）：
+# 1. txHash（交易哈希）
+# 2. contractAddress + tokenSymbol
+# 3. from/to（具体地址）
+# 4. tokenSymbol + minAmount/maxAmount
+# 5. peer
+# 6. time/blockNo
+# 
+# 货币单位说明：
+# - 默认：自动使用 tokenSymbol（USDT、UNI、ETH 等）
+# - 可在规则中指定 currency 字段覆盖
