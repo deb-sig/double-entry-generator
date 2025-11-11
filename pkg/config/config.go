@@ -13,6 +13,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/mt"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/oklink"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/td"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/wechat"
 )
@@ -42,4 +43,5 @@ type Config struct {
 	MT                              *mt.Config     `yaml:"mt,omitempty"`
 	CCB                             *ccb.Config    `yaml:"ccb,omitempty"`
 	Cmb                             *cmb.Config    `yaml:"cmb,omitempty"`
+	OKLink                          *oklink.Config `yaml:"oklink,omitempty"`
 }
