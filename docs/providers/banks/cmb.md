@@ -128,7 +128,7 @@ cmb:
    - "交易类型"选择"全部"
    - "仅展示活期户流水"选择"关闭"
 6. 填写接收邮箱地址，确认导出
-7. 将导出的 PDF 文件使用 [bill-parser](https://github.com/deb-sig/bill-parser) 转换为 CSV 文件
+7. 将导出的 PDF 文件使用 [bill-file-converter](https://github.com/deb-sig/bill-file-converter) 转换为 CSV 文件
 
 ### 信用卡账单
 
@@ -136,7 +136,7 @@ cmb:
 2. 搜索"账单补寄"
 3. 选择账单周期
 4. 提交申请，确认导出
-5. 将导出的 PDF 文件使用 [bill-parser](https://github.com/deb-sig/bill-parser) 转换为 CSV 文件
+5. 将导出的 PDF 文件使用 [bill-file-converter](https://github.com/deb-sig/bill-file-converter) 转换为 CSV 文件
 
 ## 示例文件
 
