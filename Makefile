@@ -30,6 +30,9 @@ OUTPUT_DIR := ./bin
 # Build direcotory.
 BUILD_DIR := ./build
 
+# Shell tests under ./test
+TEST_SHELL_SCRIPTS := $(sort $(wildcard test/*.sh))
+
 # Current version of the project.
 GIT_COMMIT = $(shell git describe --tags --always --dirty)
 VERSION ?= ${GIT_COMMIT}
@@ -60,7 +63,7 @@ else
 endif
 
 # All targets.
-.PHONY: lint test build container push help clean test-go test-wechat test-alipay test-huobi test-htsec format check-format goreleaser-build-test install-golangci-lint clean-cache gen-doc before-commit-check
+.PHONY: lint test build container push help clean test-go format check-format goreleaser-build-test install-golangci-lint clean-cache gen-doc before-commit-check test-providers test-provider
 
 help:  ## Display this help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
@@ -90,76 +93,31 @@ clean: ## Clean all the temporary files
 	@rm -rf ./double-entry-generator
 	@rm -rf ./wasm-dist
 
-test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-huobi-ledger test-htsec-beancount test-htsec-ledger test-icbc-beancount test-icbc-ledger test-ccb-beancount test-ccb-ledger test-td-beancount test-td-ledger test-bmo-beancount test-bmo-ledger test-citic-beancount test-citic-ledger test-hsbchk-beancount test-hsbchk-ledger test-jd-beancount test-jd-ledger test-mt-beancount test-hxsec-beancount test-cmb-beancount test-cmb-ledger ## Run all tests
+test: test-go test-providers ## Run Golang unit tests and provider shell tests
 
 test-go: ## Run Golang tests
 	@go test ./...
 
-test-alipay-beancount: ## Run tests for Alipay provider against beancount compiler
-	@$(SHELL) ./test/alipay-test-beancount.sh
-test-alipay-ledger: ## Run tests for Alipay provider against ledger compiler
-	@$(SHELL) ./test/alipay-test-ledger.sh
+test-providers: ## Run all provider shell tests
+	@set -euo pipefail; \
+	for script in $(TEST_SHELL_SCRIPTS); do \
+		echo ">> Running $$script"; \
+		$(SHELL) "$$script"; \
+	done
 
-test-wechat-beancount: ## Run tests for WeChat provider against beancount compiler
-	@$(SHELL) ./test/wechat-test-beancount.sh
-test-wechat-ledger: ## Run tests for WeChat provider against ledger compiler
-	@$(SHELL) ./test/wechat-test-ledger.sh
-
-test-huobi-beancount: ## Run tests for huobi provider against beancount compiler
-	@$(SHELL) ./test/huobi-test-beancount.sh
-test-huobi-ledger: ## Run tests for huobi provider against ledger compiler
-	@$(SHELL) ./test/huobi-test-ledger.sh
-
-test-htsec-beancount: ## Run tests for htsec provider against beancount compiler
-	@$(SHELL) ./test/htsec-test-beancount.sh
-test-htsec-ledger: ## Run tests for htsec provider against ledger compiler
-	@$(SHELL) ./test/htsec-test-ledger.sh
-
-test-icbc-beancount: ## Run tests for ICBC provider against beancount compiler
-	@$(SHELL) ./test/icbc-test-beancount.sh
-test-icbc-ledger: ## Run tests for ICBC provider against ledger compiler
-	@$(SHELL) ./test/icbc-test-ledger.sh
-
-test-ccb-beancount: ## Run tests for CCB provider against beancount compiler
-	@$(SHELL) ./test/ccb-test-beancount.sh
-test-ccb-ledger: ## Run tests for CCB provider against ledger compiler
-	@$(SHELL) ./test/ccb-test-ledger.sh
-
-test-td-beancount: ## Run tests for TD provider against beancount compiler
-	@$(SHELL) ./test/td-test-beancount.sh
-test-td-ledger: ## Run tests for TD provider against ledger compiler
-	@$(SHELL) ./test/td-test-ledger.sh
-
-test-bmo-beancount: ## Run tests for BMO provider against beancount compiler
-	@$(SHELL) ./test/bmo-test-beancount.sh
-test-bmo-ledger: ## Run tests for BMO provider against ledger compiler
-	@$(SHELL) ./test/bmo-test-ledger.sh
-
-test-citic-beancount: ## Run tests for CITIC provider against beancount compiler
-	@$(SHELL) ./test/citic-test-beancount.sh
-test-citic-ledger: ## Run tests for CITIC provider against ledger compiler
-	@$(SHELL) ./test/citic-test-ledger.sh
-
-test-hsbchk-beancount: ## Run tests for HSBC HK provider against beancount compiler
-	@$(SHELL) ./test/hsbchk-test-beancount.sh
-test-hsbchk-ledger: ## Run tests for HSBC HK provider against ledger compiler
-	@$(SHELL) ./test/hsbchk-test-ledger.sh
-
-test-jd-beancount: ## Run tests for jd provider against beancount compiler
-	@$(SHELL) ./test/jd-test-beancount.sh
-test-jd-ledger: ## Run tests for jd provider against ledger compiler
-	@$(SHELL) ./test/jd-test-ledger.sh
-
-test-mt-beancount: ## Run tests for mt provider against beancount compiler
-	@$(SHELL) ./test/mt-test-beancount.sh
-
-test-hxsec-beancount: ## Run tests for hxsec provider against beancount compiler
-	@$(SHELL) ./test/hxsec-test-beancount.sh
-
-test-cmb-beancount: ## Run tests for cmb provider against beancount compiler
-	@$(SHELL) ./test/cmb-test-beancount.sh
-test-cmb-ledger: ## Run tests for cmb provider against ledger compiler
-	@$(SHELL) ./test/cmb-test-ledger.sh
+test-provider: ## Run a provider shell test (PROVIDER=<name> TARGET=<beancount|ledger>)
+	@if [ -z "$(PROVIDER)" ] || [ -z "$(TARGET)" ]; then \
+		echo "PROVIDER and TARGET must be set, e.g. make test-provider PROVIDER=wechat TARGET=beancount" >&2; \
+		exit 1; \
+	fi
+	@set -euo pipefail; \
+	script="test/$(PROVIDER)-test-$(TARGET).sh"; \
+	if [ ! -f "$$script" ]; then \
+		echo "Test script $$script not found" >&2; \
+		exit 1; \
+	fi; \
+	echo ">> Running $$script"; \
+	$(SHELL) "$$script"
 
 format: ## Format code
 	@gofmt -s -w pkg
