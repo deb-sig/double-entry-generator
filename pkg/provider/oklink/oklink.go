@@ -102,9 +102,9 @@ func (e *OKLink) validateConfig() error {
 		return fmt.Errorf("配置错误：必须配置至少一个地址\n" +
 			"使用地址作为 key，例如:\n" +
 			"oklink:\n" +
-			"  \"0x1429****7f855c\":\n" +
+			"  \"0x... (your Ethereum address)\":\n" +
 			"    rules: [...]\n" +
-			"  \"TExam****7890\":\n" +
+			"  \"T... (your TRON address)\":\n" +
 			"    rules: [...]")
 	}
 
@@ -162,21 +162,34 @@ var (
 	shanghaiLocation = time.FixedZone("UTC+8", 8*3600)
 )
 
-func parseOKLinkTime(timeStr string) (time.Time, error) {
-	if strings.Contains(timeStr, "/") {
-		if t, err := time.ParseInLocation("2006/01/02 15:04:05", timeStr, shanghaiLocation); err == nil {
-			return t.UTC(), nil
+// findLocalTimeField 查找 CSV 中的本地时间字段
+func findLocalTimeField(fieldMap map[string]string) (string, bool) {
+	for key, value := range fieldMap {
+		if value == "" {
+			continue
 		}
-		if t, err := time.ParseInLocation("2006/1/2 15:04:05", timeStr, shanghaiLocation); err == nil {
-			return t.UTC(), nil
+		if strings.Contains(key, "本地时间") {
+			return value, true
+		}
+		if strings.Contains(strings.ToLower(key), "blocktime(") && strings.Contains(key, "UTC") {
+			return value, true
 		}
 	}
-	if strings.Contains(timeStr, "-") {
-		if t, err := time.ParseInLocation("2006-01-02 15:04:05", timeStr, shanghaiLocation); err == nil {
-			return t.UTC(), nil
-		}
-		if t, err := time.ParseInLocation("2006-1-2 15:04:05", timeStr, shanghaiLocation); err == nil {
-			return t.UTC(), nil
+	return "", false
+}
+
+// parseOKLinkTime 按照 CSV 中的本地时间直接解析为时间对象
+func parseOKLinkTime(timeStr string) (time.Time, error) {
+	layouts := []string{
+		"2006/01/02 15:04:05",
+		"2006/1/2 15:04:05",
+		"2006-01-02 15:04:05",
+		"2006-1-2 15:04:05",
+	}
+
+	for _, layout := range layouts {
+		if t, err := time.ParseInLocation(layout, timeStr, shanghaiLocation); err == nil {
+			return t, nil
 		}
 	}
 
@@ -218,20 +231,17 @@ func (e *OKLink) parseEthereumRecord(fieldMap map[string]string) (Order, error) 
 	// 区块高度
 	order.BlockNo = fieldMap["区块高度"]
 
-	// 解析时间（优先使用本地时间 UTC+8，这是用户实际入账的时间）
-	timeStr := fieldMap["本地时间(UTC+8)"]
-	if timeStr == "" {
-		// 如果没有本地时间，使用 UTC 时间
-		timeStr = fieldMap["UTC时间"]
+	// 解析时间（使用 CSV 中的本地时间字段）
+	timeStr, found := findLocalTimeField(fieldMap)
+	if !found {
+		return order, fmt.Errorf("missing local time field for tx %s", order.TxHash)
 	}
-	if timeStr != "" {
-		t, err := parseOKLinkTime(timeStr)
-		if err != nil {
-			return order, err
-		}
-		order.DateTime = t
-		order.UnixTimestamp = t.Unix()
+	t, err := parseOKLinkTime(timeStr)
+	if err != nil {
+		return order, err
 	}
+	order.DateTime = t
+	order.UnixTimestamp = t.Unix()
 
 	// 地址保存原始值和小写值
 	fromOriginal := fieldMap["发送方"]
@@ -331,21 +341,17 @@ func (e *OKLink) parseTronRecord(fieldMap map[string]string) (Order, error) {
 	// 区块高度
 	order.BlockNo = fieldMap["blockHeight"]
 
-	// 解析 UTC 时间
-	utcTimeStr := fieldMap["blockTime(UTC)"]
-	if utcTimeStr != "" {
-		// OKLink TRON 格式: "2025/11/07 15:14:23" 或 "2025-11-07 15:14:23"
-		t, err := time.Parse("2006/01/02 15:04:05", utcTimeStr)
-		if err != nil {
-			// 尝试横杠格式
-			t, err = time.Parse("2006-01-02 15:04:05", utcTimeStr)
-			if err != nil {
-				return order, fmt.Errorf("invalid UTC time: %w", err)
-			}
-		}
-		order.DateTime = t
-		order.UnixTimestamp = t.Unix()
+	// 解析时间（使用 CSV 中的本地时间字段）
+	timeStr, found := findLocalTimeField(fieldMap)
+	if !found {
+		return order, fmt.Errorf("missing local time field for tx %s", order.TxHash)
 	}
+	t, err := parseOKLinkTime(timeStr)
+	if err != nil {
+		return order, fmt.Errorf("invalid time: %w", err)
+	}
+	order.DateTime = t
+	order.UnixTimestamp = t.Unix()
 
 	// 地址保存原始值和小写值
 	fromOriginal := fieldMap["from"]
