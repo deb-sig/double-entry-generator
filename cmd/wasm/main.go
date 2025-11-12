@@ -309,7 +309,7 @@ func getCurrentProvider(this js.Value, args []js.Value) interface{} {
 func getSupportedProviders(this js.Value, args []js.Value) interface{} {
 	providers := []string{
 		"alipay", "wechat", "icbc", "ccb", "citic",
-		"hsbchk", "htsec", "huobi", "td", "bmo", "mt", "jd",
+		"hsbchk", "htsec", "huobi", "td", "bmo", "mt", "jd", "oklink",
 	}
 
 	// 转换为 JavaScript 数组

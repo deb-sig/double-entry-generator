@@ -27,6 +27,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/oklink"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/wechat"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
@@ -104,6 +105,43 @@ func run(args []string) {
 	if providerName == consts.ProviderWechat {
 		if w, ok := p.(*wechat.Wechat); ok {
 			w.IgnoreInvalidTxTypes = ignoreInvalidWechatTxTypes
+		}
+	}
+
+	// Pass config to OKLink provider
+	if providerName == consts.ProviderOKLink {
+		if e, ok := p.(*oklink.OKLink); ok {
+			e.Config = c.OKLink
+			e.DefaultMinusAccount = c.DefaultMinusAccount
+			e.DefaultPlusAccount = c.DefaultPlusAccount
+			
+			// 处理多地址配置：从 viper 中提取地址作为 key 的配置
+			if c.OKLink != nil && c.OKLink.Addresses == nil {
+				// 从 viper 中获取 oklink 的所有设置
+				oklinkSettings := viper.GetStringMap("oklink")
+				if len(oklinkSettings) > 0 {
+					addresses := make(map[string]*oklink.AddressConfig)
+					
+					for key := range oklinkSettings {
+						// 检查是否是地址格式（0x 开头或 T 开头）
+						isAddress := (len(key) >= 2 && key[0:2] == "0x") || (len(key) >= 1 && key[0] == 'T')
+						if isAddress {
+							// 解析地址配置（使用 viper 的子配置）
+							subViper := viper.Sub("oklink." + key)
+							if subViper != nil {
+								var addrConfig oklink.AddressConfig
+								if err := subViper.Unmarshal(&addrConfig); err == nil {
+									addresses[key] = &addrConfig
+								}
+							}
+						}
+					}
+					
+					if len(addresses) > 0 {
+						c.OKLink.Addresses = addresses
+					}
+				}
+			}
 		}
 	}
 

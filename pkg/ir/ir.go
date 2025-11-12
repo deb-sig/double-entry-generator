@@ -90,6 +90,7 @@ const (
 	OrderTypeNormal          OrderType = "Normal"          // 流水交易
 	OrderTypeHuobiTrade      OrderType = "HuobiTrade"      // 火币交易
 	OrderTypeSecuritiesTrade OrderType = "SecuritiesTrade" // 证券交易
+	OrderTypeCrypto          OrderType = "Crypto"          // 加密货币交易（需要高精度）
 
 	// China Securities specific
 	OrderTypeChinaSecuritiesBankTransferToBroker   OrderType = "ChinaSecuritiesBankTransferToBroker"   // 银行转证券

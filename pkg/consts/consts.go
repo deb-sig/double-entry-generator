@@ -50,4 +50,6 @@ const (
 	ProviderCCB = "ccb"
 	//ProviderCmb is the name for cmb provider
 	ProviderCmb = "cmb"
+	//ProviderOKLink is the name for OKLink provider (supports multiple chains: ERC20, TRC20, BSC, etc.).
+	ProviderOKLink = "oklink"
 )
