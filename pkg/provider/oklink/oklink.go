@@ -17,6 +17,7 @@ limitations under the License.
 package oklink
 
 import (
+	"bytes"
 	"encoding/csv"
 	"fmt"
 	"log"
@@ -47,9 +48,37 @@ func New() *OKLink {
 func (e *OKLink) Translate(filename string) (*ir.IR, error) {
 	log.Printf("[OKLink] Reading CSV file: %s", filename)
 
-	// 检查配置
+	if err := e.validateConfig(); err != nil {
+		return nil, err
+	}
+
+	// 读取 CSV 文件
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %w", err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	return e.translateFromCSVReader(reader)
+}
+
+// TranslateFromCSVBytes 通过字节数据解析 CSV（用于 WASM 环境）
+func (e *OKLink) TranslateFromCSVBytes(filename string, data []byte) (*ir.IR, error) {
+	log.Printf("[OKLink] Reading CSV bytes: %s (%d bytes)", filename, len(data))
+
+	if err := e.validateConfig(); err != nil {
+		return nil, err
+	}
+
+	reader := csv.NewReader(bytes.NewReader(data))
+	return e.translateFromCSVReader(reader)
+}
+
+// validateConfig 校验配置
+func (e *OKLink) validateConfig() error {
 	if e.Config == nil {
-		return nil, fmt.Errorf("配置缺失：请在 config.yaml 中添加 oklink 配置段\n" +
+		return fmt.Errorf("配置缺失：请在 config.yaml 中添加 oklink 配置段\n" +
 			"示例:\n" +
 			"oklink:\n" +
 			"  \"0x你的地址\":  # 地址作为 key\n" +
@@ -69,30 +98,28 @@ func (e *OKLink) Translate(filename string) (*ir.IR, error) {
 			"    rules: [...]")
 	}
 
-	// 检查是否有地址配置
 	if len(e.Config.Addresses) == 0 {
-		return nil, fmt.Errorf("配置错误：必须配置至少一个地址\n" +
+		return fmt.Errorf("配置错误：必须配置至少一个地址\n" +
 			"使用地址作为 key，例如:\n" +
 			"oklink:\n" +
-			"  \"0x95222290dd7278aa3ddd389cc1e1d165cc4bafe5\":\n" +
+			"  \"0x1429****7f855c\":\n" +
 			"    rules: [...]\n" +
-			"  \"TFGqVkQCdHxMEZd7Ys6MbvTh8MwPuB7Lkh\":\n" +
+			"  \"TExam****7890\":\n" +
 			"    rules: [...]")
 	}
 
-	// 读取 CSV 文件
-	file, err := os.Open(filename)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open file: %w", err)
-	}
-	defer file.Close()
+	return nil
+}
 
-	reader := csv.NewReader(file)
+// translateFromCSVReader 从 CSV reader 解析记录
+func (e *OKLink) translateFromCSVReader(reader *csv.Reader) (*ir.IR, error) {
 	reader.LazyQuotes = true       // 允许不规范的引号
 	reader.TrimLeadingSpace = true // 去除前导空格
 	reader.FieldsPerRecord = -1    // 允许字段数不一致
 
-	// 读取所有记录
+	// 重置已有订单
+	e.Orders = e.Orders[:0]
+
 	records, err := reader.ReadAll()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read CSV: %w", err)
@@ -128,8 +155,32 @@ func (e *OKLink) Translate(filename string) (*ir.IR, error) {
 
 	log.Printf("[OKLink] Parsed %d orders", len(e.Orders))
 
-	// 转换为 IR
 	return e.convertToIR()
+}
+
+var (
+	shanghaiLocation = time.FixedZone("UTC+8", 8*3600)
+)
+
+func parseOKLinkTime(timeStr string) (time.Time, error) {
+	if strings.Contains(timeStr, "/") {
+		if t, err := time.ParseInLocation("2006/01/02 15:04:05", timeStr, shanghaiLocation); err == nil {
+			return t.UTC(), nil
+		}
+		if t, err := time.ParseInLocation("2006/1/2 15:04:05", timeStr, shanghaiLocation); err == nil {
+			return t.UTC(), nil
+		}
+	}
+	if strings.Contains(timeStr, "-") {
+		if t, err := time.ParseInLocation("2006-01-02 15:04:05", timeStr, shanghaiLocation); err == nil {
+			return t.UTC(), nil
+		}
+		if t, err := time.ParseInLocation("2006-1-2 15:04:05", timeStr, shanghaiLocation); err == nil {
+			return t.UTC(), nil
+		}
+	}
+
+	return time.Time{}, fmt.Errorf("invalid time format: %s", timeStr)
 }
 
 // parseRecord 解析单行记录
@@ -174,21 +225,12 @@ func (e *OKLink) parseEthereumRecord(fieldMap map[string]string) (Order, error) 
 		timeStr = fieldMap["UTC时间"]
 	}
 	if timeStr != "" {
-		// OKLink ETH 格式: "2025/11/07 23:14:23" 或 "2025-11-07 23:14:23"
-		t, err := time.Parse("2006/01/02 15:04:05", timeStr)
+		t, err := parseOKLinkTime(timeStr)
 		if err != nil {
-			// 尝试另一种格式
-			t, err = time.Parse("2006-01-02 15:04:05", timeStr)
-			if err != nil {
-				return order, fmt.Errorf("invalid time: %w", err)
-			}
+			return order, err
 		}
-		// 注意：本地时间(UTC+8) 需要转换为 UTC 时间存储
-		// 因为 time.Time 内部使用 UTC，所以需要减去 8 小时
-		loc, _ := time.LoadLocation("Asia/Shanghai")
-		tLocal := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), loc)
-		order.DateTime = tLocal
-		order.UnixTimestamp = tLocal.Unix()
+		order.DateTime = t
+		order.UnixTimestamp = t.Unix()
 	}
 
 	// 地址保存原始值和小写值

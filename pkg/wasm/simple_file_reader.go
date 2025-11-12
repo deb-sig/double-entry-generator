@@ -26,6 +26,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/mt"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/oklink"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/td"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/wechat"
 )
@@ -128,6 +129,24 @@ func (fr *SimpleFileReader) ProcessFileWithFormat(fileName string, fileData []by
 	case "mt":
 		provider := mt.New()
 		orders, err = provider.Translate(string(fileData))
+		
+	case "oklink":
+		provider := oklink.New()
+		// 将配置传递给 provider
+		if fr.config != nil {
+			provider.Config = fr.config.OKLink
+			provider.DefaultMinusAccount = fr.config.DefaultMinusAccount
+			provider.DefaultPlusAccount = fr.config.DefaultPlusAccount
+		}
+
+		if provider.Config == nil {
+			return map[string]interface{}{
+				"success": false,
+				"error":   "未找到 OKLink 配置，请在 YAML 中添加 oklink 配置段",
+			}
+		}
+
+		orders, err = provider.TranslateFromCSVBytes(fileName, fileData)
 		
 	case "jd":
 		provider := jd.New()
