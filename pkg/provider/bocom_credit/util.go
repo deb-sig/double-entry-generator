@@ -45,16 +45,26 @@ func splitCurrencyAmount(value string) (string, float64, error) {
 	return currency, amount, nil
 }
 
-func inferOrderType(description string) OrderType {
+func splitDescription(description string) (string, string) {
 	desc := strings.TrimSpace(description)
-	switch {
-	case strings.HasPrefix(desc, "退货"):
-		return OrderTypeRecv
-	case strings.HasPrefix(desc, "信用卡还款"):
-		return OrderTypeRecv
-	case strings.HasPrefix(desc, "消费"):
-		return OrderTypeSend
+	if desc == "" {
+		return "", ""
+	}
+	parts := strings.SplitN(desc, " ", 2)
+	prefix := strings.TrimSpace(parts[0])
+	if len(parts) == 1 {
+		return prefix, ""
+	}
+	return prefix, strings.TrimSpace(parts[1])
+}
+
+func inferOrderType(typeOriginal string) (OrderType, error) {
+	switch strings.TrimSpace(typeOriginal) {
+	case "退货", "信用卡还款", "红包还款", "刷卡金返还":
+		return OrderTypeRecv, nil
+	case "消费", "刷卡金扣回":
+		return OrderTypeSend, nil
 	default:
-		return OrderTypeUnknown
+		return OrderTypeUnknown, fmt.Errorf("unsupported transaction type: %s", typeOriginal)
 	}
 }

@@ -15,10 +15,10 @@ func (bc *BocomCredit) convertToIR() *ir.IR {
 			PayTime:        order.TradeDate,
 			Type:           convertType(order.Type),
 			TypeOriginal:   order.TypeOriginal,
-			TxTypeOriginal: order.TypeOriginal,
+			TxTypeOriginal: order.TxTypeOriginal,
 			Money:          order.Amount,
 			Currency:       order.Currency,
-			Note:           order.TypeOriginal,
+			Note:           order.Description,
 		}
 		irOrder.Metadata = map[string]string{
 			"source":     "交通银行信用卡",

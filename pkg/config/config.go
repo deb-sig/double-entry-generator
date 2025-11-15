@@ -4,6 +4,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/abc_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
+	bocomcredit "github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_credit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocomcredit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"

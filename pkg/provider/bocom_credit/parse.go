@@ -33,16 +33,25 @@ func (bc *BocomCredit) translateToOrders(record []string) error {
 	}
 
 	description := record[2]
-	orderType := inferOrderType(description)
+	typeOriginal, _ := splitDescription(description)
+	if typeOriginal == "" {
+		return fmt.Errorf("missing transaction type in description: %s", description)
+	}
+
+	orderType, err := inferOrderType(typeOriginal)
+	if err != nil {
+		return fmt.Errorf("infer order type from %q: %w", description, err)
+	}
 
 	order := Order{
-		TradeDate:    tradeDate,
-		RecordDate:   recordDate,
-		Description:  description,
-		Amount:       amount,
-		Currency:     currency,
-		Type:         orderType,
-		TypeOriginal: description,
+		TradeDate:      tradeDate,
+		RecordDate:     recordDate,
+		Description:    description,
+		Amount:         amount,
+		Currency:       currency,
+		Type:           orderType,
+		TypeOriginal:   typeOriginal,
+		TxTypeOriginal: typeOriginal,
 	}
 
 	bc.Orders = append(bc.Orders, order)

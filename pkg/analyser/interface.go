@@ -6,6 +6,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/abc_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bmo"
+	bocomcredit "github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocom_credit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocom_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocomcredit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/ccb"

@@ -29,11 +29,12 @@ const (
 
 // Order represents a parsed CSV row.
 type Order struct {
-	TradeDate    time.Time
-	RecordDate   time.Time
-	Description  string
-	Amount       float64
-	Currency     string
-	Type         OrderType
-	TypeOriginal string
+	TradeDate      time.Time
+	RecordDate     time.Time
+	Description    string
+	Amount         float64
+	Currency       string
+	Type           OrderType
+	TypeOriginal   string
+	TxTypeOriginal string
 }
