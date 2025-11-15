@@ -1,13 +1,11 @@
 title: bocom_credit
 defaultCurrency: CNY
-defaultMinusAccount: Income:Unknown:bocom_credit
-defaultPlusAccount: Expenses:Unknown:bocom_credit
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
 defaultCashAccount: Liabilities:BOCOM:CreditCard
 bocom_credit:
   rules:
-    - item: 退货
-      targetAccount: Income:Refund:bocom_credit
     - item: 信用卡还款
-      targetAccount: Assets:BOCOM:Checking
-    - item: 消费
-      targetAccount: Expenses:Food:Delivery
+      targetAccount: Equity:Transfers
+    - item: 美团,饿了么
+      targetAccount: Expenses:Food

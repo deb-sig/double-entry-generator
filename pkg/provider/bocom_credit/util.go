@@ -9,6 +9,8 @@ import (
 
 var beijingLocation = time.FixedZone("CST", 8*3600)
 
+// parseDate trims whitespace and parses a trade or record date in the
+// statement-provided layout within the Beijing time zone.
 func parseDate(value string) (time.Time, error) {
 	value = strings.TrimSpace(value)
 	if value == "" {
@@ -17,6 +19,8 @@ func parseDate(value string) (time.Time, error) {
 	return time.ParseInLocation(dateLayout, value, beijingLocation)
 }
 
+// splitCurrencyAmount splits a string like "CNY 12.34" into its currency and
+// absolute numeric amount components.
 func splitCurrencyAmount(value string) (string, float64, error) {
 	value = strings.TrimSpace(value)
 	if value == "" {
@@ -45,6 +49,8 @@ func splitCurrencyAmount(value string) (string, float64, error) {
 	return currency, amount, nil
 }
 
+// splitDescription extracts the leading transaction type token and the
+// remaining description from a statement description field.
 func splitDescription(description string) (string, string) {
 	desc := strings.TrimSpace(description)
 	if desc == "" {
