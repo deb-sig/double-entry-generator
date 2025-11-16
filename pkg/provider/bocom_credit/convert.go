@@ -2,7 +2,6 @@ package bocomcredit
 
 import (
 	"fmt"
-	"math"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 )
@@ -41,17 +40,13 @@ func originalTransactionAmount(order Order) string {
 	if order.TxnCurrency == "" {
 		return ""
 	}
-	if order.TxnCurrency == order.Currency && amountsEqual(order.TxnAmount, order.Amount) {
+	if order.TxnCurrency == order.Currency && order.TxnAmount == order.Amount {
 		return ""
 	}
 	if order.TxnAmountRaw != "" {
 		return order.TxnAmountRaw
 	}
 	return fmt.Sprintf("%s %.2f", order.TxnCurrency, order.TxnAmount)
-}
-
-func amountsEqual(a, b float64) bool {
-	return math.Abs(a-b) < 0.000001
 }
 
 func convertType(t OrderType) ir.Type {
