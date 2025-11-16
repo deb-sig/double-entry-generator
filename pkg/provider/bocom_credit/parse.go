@@ -27,7 +27,12 @@ func (bc *BocomCredit) translateToOrders(record []string) error {
 		return fmt.Errorf("parse record date error: %w", err)
 	}
 
-	currency, amount, err := splitCurrencyAmount(record[3])
+	txnCurrency, txnAmount, err := splitCurrencyAmount(record[3])
+	if err != nil {
+		return err
+	}
+
+	settleCurrency, settleAmount, err := splitCurrencyAmount(record[4])
 	if err != nil {
 		return err
 	}
@@ -47,8 +52,11 @@ func (bc *BocomCredit) translateToOrders(record []string) error {
 		TradeDate:      tradeDate,
 		RecordDate:     recordDate,
 		Description:    description,
-		Amount:         amount,
-		Currency:       currency,
+		Amount:         settleAmount,
+		Currency:       settleCurrency,
+		TxnAmount:      txnAmount,
+		TxnCurrency:    txnCurrency,
+		TxnAmountRaw:   record[3],
 		Type:           orderType,
 		TypeOriginal:   typeOriginal,
 		TxTypeOriginal: typeOriginal,
@@ -66,10 +74,10 @@ func (bc *BocomCredit) translateToOrders(record []string) error {
 	switch order.Type {
 	case OrderTypeRecv:
 		bc.Statistics.TotalInRecords++
-		bc.Statistics.TotalInMoney += amount
+		bc.Statistics.TotalInMoney += settleAmount
 	case OrderTypeSend:
 		bc.Statistics.TotalOutRecords++
-		bc.Statistics.TotalOutMoney += amount
+		bc.Statistics.TotalOutMoney += settleAmount
 	}
 
 	return nil

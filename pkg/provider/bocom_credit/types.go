@@ -34,6 +34,9 @@ type Order struct {
 	Description    string
 	Amount         float64
 	Currency       string
+	TxnAmount      float64
+	TxnCurrency    string
+	TxnAmountRaw   string
 	Type           OrderType
 	TypeOriginal   string
 	TxTypeOriginal string

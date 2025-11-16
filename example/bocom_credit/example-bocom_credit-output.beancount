@@ -33,14 +33,21 @@ option "operating_currency" "CNY"
 	Liabilities:BOCOM:CreditCard -10.00 CNY
 
 2025-01-17 * "BOCOM Credit" "消费 饿了么平台商户" ; 消费 饿了么平台商户
-	recordDate: "2025-01-17"
-	source: "交通银行信用卡"
-	Expenses:Food:Delivery 10.74 CNY
-	Liabilities:BOCOM:CreditCard -10.74 CNY
+        recordDate: "2025-01-17"
+        source: "交通银行信用卡"
+        Expenses:Food:Delivery 10.74 CNY
+        Liabilities:BOCOM:CreditCard -10.74 CNY
+
+2025-01-18 * "BOCOM Credit" "消费 Suica Charge" ; 消费 Suica Charge
+        recordDate: "2025-01-18"
+        source: "交通银行信用卡"
+        transactionAmount: "JPY 1000.00"
+        Expenses:Food:Delivery 49.85 CNY
+        Liabilities:BOCOM:CreditCard -49.85 CNY
 
 2025-01-29 * "BOCOM Credit" "信用卡还款 转账还款-哈哈 6666 支付宝-哈哈" ; 信用卡还款 转账还款-哈哈 6666 支付宝-哈哈
-	recordDate: "2025-01-29"
-	source: "交通银行信用卡"
-	Liabilities:BOCOM:CreditCard 666.60 CNY
+        recordDate: "2025-01-29"
+        source: "交通银行信用卡"
+        Liabilities:BOCOM:CreditCard 666.60 CNY
 	Assets:BOCOM:Checking -666.60 CNY
 
