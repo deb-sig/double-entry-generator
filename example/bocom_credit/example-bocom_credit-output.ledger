@@ -1,51 +1,50 @@
 1970/01/01 * Open Balance
-    Assets:BOCOM:Checking     0 CNY
-    Expenses:Food:Delivery     0 CNY
-    Expenses:Unknown:bocom_credit     0 CNY
-    Income:Refund:bocom_credit     0 CNY
-    Income:Unknown:bocom_credit     0 CNY
+    Assets:FIXME     0 CNY
+    Equity:Transfers     0 CNY
+    Expenses:FIXME     0 CNY
+    Expenses:Food     0 CNY
     Liabilities:BOCOM:CreditCard     0 CNY
     Equity:Opening Balances 
-2025/01/10 * BOCOM Credit - 退货 支付宝-滴滴顺风车 ; 退货 支付宝-滴滴顺风车
+2025/01/10 * BOCOM Credit - 退货 支付宝-滴滴顺风车 
     ; recordDate: "2025-01-10"
     ; source: "交通银行信用卡"
     Liabilities:BOCOM:CreditCard      123.18 CNY
-    Income:Refund:bocom_credit   - 123.18 CNY
+    Assets:FIXME   - 123.18 CNY
 
-2025/01/11 * BOCOM Credit - 退货 美团 ; 退货 美团
+2025/01/11 * BOCOM Credit - 退货 美团 
     ; recordDate: "2025-01-11"
     ; source: "交通银行信用卡"
     Liabilities:BOCOM:CreditCard      1.99 CNY
-    Income:Refund:bocom_credit   - 1.99 CNY
+    Expenses:Food   - 1.99 CNY
 
-2025/01/11 * BOCOM Credit - 消费 美团 ; 消费 美团
+2025/01/11 * BOCOM Credit - 消费 美团 
     ; recordDate: "2025-01-12"
     ; source: "交通银行信用卡"
-    Expenses:Food:Delivery      2.99 CNY
+    Expenses:Food      2.99 CNY
     Liabilities:BOCOM:CreditCard   - 2.99 CNY
 
-2025/01/13 * BOCOM Credit - 消费 京东商城平台商户 ; 消费 京东商城平台商户
+2025/01/13 * BOCOM Credit - 消费 京东商城平台商户 
     ; recordDate: "2025-01-13"
     ; source: "交通银行信用卡"
-    Expenses:Food:Delivery      10.00 CNY
+    Expenses:FIXME      10.00 CNY
     Liabilities:BOCOM:CreditCard   - 10.00 CNY
 
-2025/01/17 * BOCOM Credit - 消费 饿了么平台商户 ; 消费 饿了么平台商户
+2025/01/17 * BOCOM Credit - 消费 饿了么平台商户 
     ; recordDate: "2025-01-17"
     ; source: "交通银行信用卡"
-    Expenses:Food:Delivery      10.74 CNY
+    Expenses:Food      10.74 CNY
     Liabilities:BOCOM:CreditCard   - 10.74 CNY
 
-2025/01/18 * BOCOM Credit - 消费 Suica Charge ; 消费 Suica Charge
+2025/01/18 * BOCOM Credit - 消费 Suica Charge 
     ; recordDate: "2025-01-18"
     ; source: "交通银行信用卡"
     ; transactionAmount: "JPY 1000.00"
-    Expenses:Food:Delivery      49.85 CNY
+    Expenses:FIXME      49.85 CNY
     Liabilities:BOCOM:CreditCard   - 49.85 CNY
 
-2025/01/29 * BOCOM Credit - 信用卡还款 转账还款-哈哈 6666 支付宝-哈哈 ; 信用卡还款 转账还款-哈哈 6666 支付宝-哈哈
+2025/01/29 * BOCOM Credit - 信用卡还款 转账还款-哈哈 6666 支付宝-哈哈 
     ; recordDate: "2025-01-29"
     ; source: "交通银行信用卡"
     Liabilities:BOCOM:CreditCard      666.60 CNY
-    Assets:BOCOM:Checking   - 666.60 CNY
+    Equity:Transfers   - 666.60 CNY
 
