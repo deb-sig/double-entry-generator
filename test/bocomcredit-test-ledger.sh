@@ -13,7 +13,7 @@ mkdir -p "$ROOT_DIR/test/output"
 
 # generate Bocom Credit bills output in ledger format
 "$ROOT_DIR/bin/double-entry-generator" translate \
-    --provider bocom_credit \
+    --provider bocomcredit \
     --target ledger \
     --config "$ROOT_DIR/example/bocomcredit/config.yaml" \
     --output "$ROOT_DIR/test/output/test-bocomcredit-output.ledger" \

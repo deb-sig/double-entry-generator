@@ -37,7 +37,7 @@ const (
 	//ProviderBmo is the name for BMO provider.
 	ProviderBmo = "bmo"
 	//ProviderBocomCredit is the name for Bocom credit card provider.
-	ProviderBocomCredit = "bocom_credit"
+	ProviderBocomCredit = "bocomcredit"
 	//ProviderJD is the name for JD provider
 	ProviderJD = "jd"
 	//ProviderCitic is the name for citic provider

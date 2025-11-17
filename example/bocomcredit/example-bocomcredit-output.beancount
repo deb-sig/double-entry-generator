@@ -1,4 +1,4 @@
-option "title" "bocom_credit"
+option "title" "bocomcredit"
 option "operating_currency" "CNY"
 
 1970-01-01 open Assets:FIXME
