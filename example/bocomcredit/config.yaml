@@ -1,0 +1,11 @@
+title: bocomcredit
+defaultCurrency: CNY
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Liabilities:BOCOM:CreditCard
+bocomcredit:
+  rules:
+    - item: 信用卡还款
+      targetAccount: Equity:Transfers
+    - item: 美团,饿了么
+      targetAccount: Expenses:Food

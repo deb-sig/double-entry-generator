@@ -90,7 +90,7 @@ clean: ## Clean all the temporary files
 	@rm -rf ./double-entry-generator
 	@rm -rf ./wasm-dist
 
-test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-huobi-ledger test-htsec-beancount test-htsec-ledger test-icbc-beancount test-icbc-ledger test-ccb-beancount test-ccb-ledger test-td-beancount test-td-ledger test-bmo-beancount test-bmo-ledger test-citic-beancount test-citic-ledger test-hsbchk-beancount test-hsbchk-ledger test-jd-beancount test-jd-ledger test-mt-beancount test-hxsec-beancount test-cmb-beancount test-cmb-ledger ## Run all tests
+test: test-go test-alipay-beancount test-alipay-ledger test-wechat-beancount test-wechat-ledger test-huobi-beancount test-huobi-ledger test-htsec-beancount test-htsec-ledger test-icbc-beancount test-icbc-ledger test-ccb-beancount test-ccb-ledger test-td-beancount test-td-ledger test-bmo-beancount test-bmo-ledger test-bocomcredit-beancount test-bocomcredit-ledger test-citic-beancount test-citic-ledger test-hsbchk-beancount test-hsbchk-ledger test-jd-beancount test-jd-ledger test-mt-beancount test-hxsec-beancount test-cmb-beancount test-cmb-ledger ## Run all tests
 
 test-go: ## Run Golang tests
 	@go test ./...
@@ -134,6 +134,11 @@ test-bmo-beancount: ## Run tests for BMO provider against beancount compiler
 	@$(SHELL) ./test/bmo-test-beancount.sh
 test-bmo-ledger: ## Run tests for BMO provider against ledger compiler
 	@$(SHELL) ./test/bmo-test-ledger.sh
+
+test-bocomcredit-beancount: ## Run tests for Bocom Credit provider against beancount compiler
+	@$(SHELL) ./test/bocomcredit-test-beancount.sh
+test-bocomcredit-ledger: ## Run tests for Bocom Credit provider against ledger compiler
+	@$(SHELL) ./test/bocomcredit-test-ledger.sh
 
 test-citic-beancount: ## Run tests for CITIC provider against beancount compiler
 	@$(SHELL) ./test/citic-test-beancount.sh

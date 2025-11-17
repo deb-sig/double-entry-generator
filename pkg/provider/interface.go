@@ -19,22 +19,22 @@ package provider
 import (
 	"fmt"
 
+	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocomcredit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cmb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hsbchk"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/htsec"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/huobi"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hxsec"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/mt"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/td"
-
-	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/htsec"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/huobi"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hxsec"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/wechat"
 )
 
@@ -60,6 +60,8 @@ func New(name string) (Interface, error) {
 		return td.New(), nil
 	case consts.ProviderBmo:
 		return bmo.New(), nil
+	case consts.ProviderBocomCredit:
+		return bocomcredit.New(), nil
 	case consts.ProviderJD:
 		return jd.New(), nil
 	case consts.ProviderCitic:
