@@ -16,12 +16,12 @@ mkdir -p "$ROOT_DIR/test/output"
     --provider bocom_credit \
     --target ledger \
     --config "$ROOT_DIR/example/bocomcredit/config.yaml" \
-    --output "$ROOT_DIR/test/output/test-bocom_credit-output.ledger" \
-    "$ROOT_DIR/example/bocomcredit/example-bocom_credit-records.csv"
+    --output "$ROOT_DIR/test/output/test-bocomcredit-output.ledger" \
+    "$ROOT_DIR/example/bocomcredit/example-bocomcredit-records.csv"
 
 diff -u --color \
-    "$ROOT_DIR/example/bocomcredit/example-bocom_credit-output.ledger" \
-    "$ROOT_DIR/test/output/test-bocom_credit-output.ledger"
+    "$ROOT_DIR/example/bocomcredit/example-bocomcredit-output.ledger" \
+    "$ROOT_DIR/test/output/test-bocomcredit-output.ledger"
 
 if [ $? -ne 0 ]; then
     echo "[FAIL] Bocom Credit provider output is different from expected output."
