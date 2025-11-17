@@ -15,12 +15,12 @@ mkdir -p "$ROOT_DIR/test/output"
 "$ROOT_DIR/bin/double-entry-generator" translate \
     --provider bocom_credit \
     --target ledger \
-    --config "$ROOT_DIR/example/bocom_credit/config.yaml" \
+    --config "$ROOT_DIR/example/bocomcredit/config.yaml" \
     --output "$ROOT_DIR/test/output/test-bocom_credit-output.ledger" \
-    "$ROOT_DIR/example/bocom_credit/example-bocom_credit-records.csv"
+    "$ROOT_DIR/example/bocomcredit/example-bocom_credit-records.csv"
 
 diff -u --color \
-    "$ROOT_DIR/example/bocom_credit/example-bocom_credit-output.ledger" \
+    "$ROOT_DIR/example/bocomcredit/example-bocom_credit-output.ledger" \
     "$ROOT_DIR/test/output/test-bocom_credit-output.ledger"
 
 if [ $? -ne 0 ]; then
