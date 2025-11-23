@@ -50,3 +50,9 @@ option "operating_currency" "CNY"
 	Liabilities:BOCOM:CreditCard 666.60 CNY
 	Equity:Transfers -666.60 CNY
 
+2025-01-29 * "BOCOM Credit" "信用卡还款 跨行自助转账还款-哈哈 1234 跨行自助还款"
+	recordDate: "2025-01-29"
+	source: "交通银行信用卡"
+	Liabilities:BOCOM:CreditCard 13.50 CNY
+	Equity:Transfers -13.50 CNY
+

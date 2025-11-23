@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 )
 
 var beijingLocation = time.FixedZone("CST", 8*3600)
@@ -20,8 +21,8 @@ func parseDate(value string) (time.Time, error) {
 	return time.ParseInLocation(dateLayout, value, beijingLocation)
 }
 
-// splitCurrencyAmount splits a string like "CNY 12.34" into its currency and
-// absolute numeric amount components, e.g. ("CNY", 12.34).
+// splitCurrencyAmount splits a string like "CNY 12.34" or "CNY12.34" into its
+// currency and absolute numeric amount components, e.g. ("CNY", 12.34).
 func splitCurrencyAmount(value string) (string, float64, error) {
 	value = strings.TrimSpace(value)
 	if value == "" {
@@ -31,11 +32,23 @@ func splitCurrencyAmount(value string) (string, float64, error) {
 	if len(fields) == 0 {
 		return "", 0, fmt.Errorf("invalid amount field: %s", value)
 	}
+
 	currency := fields[0]
 	amountField := ""
+
 	if len(fields) > 1 {
 		amountField = fields[1]
+	} else {
+		// Handle compact forms like "CNY13.50" where the currency and amount are
+		// concatenated without whitespace.
+		idx := strings.IndexFunc(currency, func(r rune) bool { return !unicode.IsLetter(r) })
+		if idx <= 0 || idx >= len(currency) {
+			return "", 0, fmt.Errorf("invalid amount field: %s", value)
+		}
+		amountField = currency[idx:]
+		currency = currency[:idx]
 	}
+
 	if amountField == "" {
 		return currency, 0, fmt.Errorf("invalid amount field: %s", value)
 	}

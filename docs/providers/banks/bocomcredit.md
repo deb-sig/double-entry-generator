@@ -41,7 +41,7 @@ defaultCurrency: CNY
 defaultMinusAccount: Assets:FIXME
 defaultPlusAccount: Expenses:FIXME
 defaultCashAccount: Liabilities:BOCOM:CreditCard
-bocom_credit:
+bocomcredit:
   rules:
     - item: 信用卡还款
       targetAccount: Equity:Transfers
