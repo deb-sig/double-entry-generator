@@ -69,5 +69,5 @@ func (ad *AbcDebit) Translate(filename string) (*ir.IR, error) {
 	}
 
 	log.Printf("Finished to parse the file %s", filename)
-	return ad.convertToIR(), nil
+	return ad.convertToIR()
 }

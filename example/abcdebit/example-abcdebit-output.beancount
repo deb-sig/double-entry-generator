@@ -11,7 +11,7 @@ option "operating_currency" "CNY"
 1970-01-01 open Liabilities:Loans:Personal
 
 2024-01-01 * "哈哈" "转存 - 转账"
-	amountRaw: "+10000.00"
+	amount: "+10000.00"
 	balance: "11000.00"
 	channel: "超级网银"
 	logNumber: "369396693"
@@ -21,7 +21,7 @@ option "operating_currency" "CNY"
 	Equity:Transfers -10000.00 CNY
 
 2024-01-02 * "微信支付北京一卡通" "财付通 - UA01234123412341234微信支付-北京一卡通"
-	amountRaw: "-10.00"
+	amount: "-10.00"
 	balance: "11000.00"
 	channel: "电子商务"
 	logNumber: "369333999"
@@ -31,7 +31,7 @@ option "operating_currency" "CNY"
 	Assets:ABC:DebitCard -10.00 CNY
 
 2024-01-03 * "12341234123412341" "正常还款"
-	amountRaw: "-12345.89"
+	amount: "-12345.89"
 	balance: "1943.12"
 	logNumber: "111222333"
 	source: "中国农业银行储蓄卡"
@@ -39,7 +39,7 @@ option "operating_currency" "CNY"
 	Assets:ABC:DebitCard -12345.89 CNY
 
 2024-01-04 * "ABC Debit" "结息 - 个人活期结息"
-	amountRaw: "+0.01"
+	amount: "+0.01"
 	balance: "123.35"
 	logNumber: "0000000000"
 	postscript: "个人活期结息"
@@ -48,7 +48,7 @@ option "operating_currency" "CNY"
 	Income:Interest -0.01 CNY
 
 2024-01-04 * "ABC Debit" "利息税 - 个人活期结息"
-	amountRaw: "+0.00"
+	amount: "+0.00"
 	balance: "123.35"
 	logNumber: "0000000000"
 	postscript: "个人活期结息"

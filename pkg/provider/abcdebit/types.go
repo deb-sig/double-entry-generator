@@ -33,14 +33,13 @@ const (
 
 // Order represents a parsed CSV row.
 type Order struct {
-	PayTime    time.Time // 交易日期,交易时间
-	Summary    string    // 交易摘要
-	Amount     float64   // 交易金额
-	RawAmount  string    // 交易金额原始值
-	Balance    string    // 本次余额
-	Peer       string    // 对手信息
-	LogNumber  string    // 日志号
-	Channel    string    // 交易渠道
-	Postscript string    // 交易附言
-	Type       OrderType // 收/支
+	TradeDate  string // 交易日期
+	TradeTime  string // 交易时间
+	Summary    string // 交易摘要
+	Amount     string // 交易金额原始值
+	Balance    string // 本次余额
+	Peer       string // 对手信息
+	LogNumber  string // 日志号
+	Channel    string // 交易渠道
+	Postscript string // 交易附言
 }

@@ -2,21 +2,28 @@ package abcdebit
 
 import "github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 
-func (ad *AbcDebit) convertToIR() *ir.IR {
+func (ad *AbcDebit) convertToIR() (*ir.IR, error) {
 	i := ir.New()
 	for _, order := range ad.Orders {
-		if order.Type == OrderTypeUnknown {
-			continue
+		payTime, err := parseTradeTime(order.TradeDate, order.TradeTime)
+		if err != nil {
+			return nil, err
 		}
+
+		money, txType, err := parseMoneyAndType(order.Amount)
+		if err != nil {
+			return nil, err
+		}
+
 		irOrder := ir.Order{
 			OrderType:      ir.OrderTypeNormal,
-			Peer:           order.Peer,
+			Peer:           normalizePeer(order.Peer),
 			Item:           normalizeItem(order.Summary, order.Postscript),
-			PayTime:        order.PayTime,
-			Type:           convertType(order.Type),
-			TypeOriginal:   string(order.Type),
+			PayTime:        payTime,
+			Type:           convertType(txType),
+			TypeOriginal:   string(txType),
 			TxTypeOriginal: order.Summary,
-			Money:          order.Amount,
+			Money:          money,
 			Currency:       defaultCurrency,
 		}
 		metadata := map[string]string{
@@ -34,14 +41,14 @@ func (ad *AbcDebit) convertToIR() *ir.IR {
 		if order.Balance != "" {
 			metadata["balance"] = order.Balance
 		}
-		if order.RawAmount != "" {
-			metadata["amountRaw"] = order.RawAmount
+		if order.Amount != "" {
+			metadata["amount"] = order.Amount
 		}
 		irOrder.Metadata = metadata
 
 		i.Orders = append(i.Orders, irOrder)
 	}
-	return i
+	return i, nil
 }
 
 func convertType(t OrderType) ir.Type {

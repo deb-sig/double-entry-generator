@@ -18,46 +18,19 @@ func (ad *AbcDebit) translateToOrders(record []string) error {
 		return nil
 	}
 
-	payTime, err := parseTradeTime(record[0], safeAccess(record, 1))
-	if err != nil {
-		return err
-	}
-
-	amount, txType, err := parseAmountAndType(record[3])
-	if err != nil {
-		return err
-	}
-
 	order := Order{
-		PayTime:    payTime,
+		TradeDate:  safeAccess(record, 0),
+		TradeTime:  safeAccess(record, 1),
 		Summary:    safeAccess(record, 2),
-		Postscript: safeAccess(record, 8),
-		Amount:     amount,
+		Amount:     safeAccess(record, 3),
 		Balance:    safeAccess(record, 4),
-		Peer:       normalizePeer(safeAccess(record, 5)),
-		Channel:    safeAccess(record, 7),
+		Peer:       safeAccess(record, 5),
 		LogNumber:  safeAccess(record, 6),
-		Type:       txType,
-		RawAmount:  record[3],
+		Channel:    safeAccess(record, 7),
+		Postscript: safeAccess(record, 8),
 	}
 
 	ad.Orders = append(ad.Orders, order)
-	ad.Statistics.ParsedItems++
-	if ad.Statistics.Start.IsZero() || payTime.Before(ad.Statistics.Start) {
-		ad.Statistics.Start = payTime
-	}
-	if ad.Statistics.End.IsZero() || payTime.After(ad.Statistics.End) {
-		ad.Statistics.End = payTime
-	}
-
-	switch txType {
-	case OrderTypeRecv:
-		ad.Statistics.TotalInRecords++
-		ad.Statistics.TotalInMoney += amount
-	case OrderTypeSend:
-		ad.Statistics.TotalOutRecords++
-		ad.Statistics.TotalOutMoney += amount
-	}
 
 	return nil
 }
