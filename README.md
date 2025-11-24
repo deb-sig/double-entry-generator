@@ -67,6 +67,7 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 - [加拿大银行 (BMO)](https://deb-sig.github.io/double-entry-generator/providers/banks/bmo.html) - Bank of Montreal
 - [道明银行 (TD)](https://deb-sig.github.io/double-entry-generator/providers/banks/td.html) - Toronto-Dominion Bank
 - [招商银行 (CMB)](https://deb-sig.github.io/double-entry-generator/providers/banks/cmb.html) - 支持储蓄卡和信用卡
+- [农业银行储蓄卡 (ABC Debit)](https://deb-sig.github.io/double-entry-generator/providers/banks/abcdebit.html) - 借记卡账单
 
 ### 💰 支付工具
 

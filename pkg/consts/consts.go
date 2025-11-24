@@ -50,4 +50,6 @@ const (
 	ProviderCCB = "ccb"
 	//ProviderCmb is the name for cmb provider
 	ProviderCmb = "cmb"
+	// ProviderAbcDebit is the name for Agricultural Bank of China debit card provider.
+	ProviderAbcDebit = "abcdebit"
 )
