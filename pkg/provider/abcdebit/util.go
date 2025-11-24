@@ -59,7 +59,7 @@ func parseTradeTime(dateStr, timeStr string) (time.Time, error) {
 //	parseAmountAndType("+100.00") -> 100.00, OrderTypeRecv, nil
 //	parseAmountAndType("-200.00") -> 200.00, OrderTypeSend, nil
 //	parseAmountAndType("+1200.00") -> 1200.00, OrderTypeRecv, nil
-func parseAmountAndType(raw string) (float64, OrderType, error) {
+func parseMoneyAndType(raw string) (float64, OrderType, error) {
 	value := strings.TrimSpace(raw)
 	if len(value) < 2 {
 		return 0, OrderTypeUnknown, fmt.Errorf("invalid amount value: %s", value)
