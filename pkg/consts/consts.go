@@ -50,4 +50,6 @@ const (
 	ProviderCCB = "ccb"
 	//ProviderCmb is the name for cmb provider
 	ProviderCmb = "cmb"
+	// ProviderBocomDebit is the name for Bank of Communications debit provider
+	ProviderBocomDebit = "bocom_debit"
 )
