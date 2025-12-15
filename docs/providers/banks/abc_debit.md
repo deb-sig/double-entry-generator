@@ -26,21 +26,21 @@ nav_order: 10
 
 ```bash
 double-entry-generator translate \
-  --config ./example/abcdebit/config.yaml \
-  --provider abcdebit \
-  --output ./example/abcdebit/example-abcdebit-output.beancount \
-  ./example/abcdebit/example-abcdebit-records.csv
+  --config ./example/abc_debit/config.yaml \
+  --provider abc_debit \
+  --output ./example/abc_debit/example-abc_debit-output.beancount \
+  ./example/abc_debit/example-abc_debit-records.csv
 ```
 
 ### Ledger
 
 ```bash
 double-entry-generator translate \
-  --config ./example/abcdebit/config.yaml \
-  --provider abcdebit \
+  --config ./example/abc_debit/config.yaml \
+  --provider abc_debit \
   --target ledger \
-  --output ./example/abcdebit/example-abcdebit-output.ledger \
-  ./example/abcdebit/example-abcdebit-records.csv
+  --output ./example/abc_debit/example-abc_debit-output.ledger \
+  ./example/abc_debit/example-abc_debit-records.csv
 ```
 
 ## 配置文件示例
@@ -50,8 +50,8 @@ defaultMinusAccount: Assets:FIXME
 defaultPlusAccount: Expenses:FIXME
 defaultCashAccount: Assets:ABC:DebitCard
 defaultCurrency: CNY
-title: abcdebit
-abcdebit:
+title: abc_debit
+abc_debit:
   rules:
     - item: 转存
       targetAccount: Equity:Transfers
@@ -68,7 +68,7 @@ abcdebit:
 
 ## 示例文件
 
-- [交易明细 CSV 示例](../../example/abcdebit/example-abcdebit-records.csv)
-- [转换后 Beancount 示例](../../example/abcdebit/example-abcdebit-output.beancount)
-- [转换后 Ledger 示例](../../example/abcdebit/example-abcdebit-output.ledger)
-- [配置文件示例](../../example/abcdebit/config.yaml)
+- [交易明细 CSV 示例](../../example/abc_debit/example-abc_debit-records.csv)
+- [转换后 Beancount 示例](../../example/abc_debit/example-abc_debit-output.beancount)
+- [转换后 Ledger 示例](../../example/abc_debit/example-abc_debit-output.ledger)
+- [配置文件示例](../../example/abc_debit/config.yaml)

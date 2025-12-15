@@ -1,4 +1,4 @@
-package abcdebit
+package abc_debit
 
 import "github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 

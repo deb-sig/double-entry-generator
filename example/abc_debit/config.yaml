@@ -2,8 +2,8 @@ defaultMinusAccount: Assets:FIXME
 defaultPlusAccount: Expenses:FIXME
 defaultCashAccount: Assets:ABC:DebitCard
 defaultCurrency: CNY
-title: abcdebit
-abcdebit:
+title: abc_debit
+abc_debit:
   rules:
     - item: 转存
       targetAccount: Equity:Transfers

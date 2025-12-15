@@ -1,4 +1,4 @@
-package abcdebit
+package abc_debit
 
 import (
 	"fmt"

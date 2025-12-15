@@ -21,7 +21,7 @@ import (
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/abcdebit"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/abc_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_debit"
@@ -78,7 +78,7 @@ func New(name string) (Interface, error) {
 	case consts.ProviderCmb:
 		return cmb.New(), nil
 	case consts.ProviderAbcDebit:
-		return abcdebit.New(), nil
+		return abc_debit.New(), nil
 	default:
 		return nil, fmt.Errorf("Fail to create the provider for the given name %s", name)
 	}

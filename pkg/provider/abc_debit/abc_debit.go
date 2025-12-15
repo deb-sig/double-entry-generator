@@ -1,4 +1,4 @@
-package abcdebit
+package abc_debit
 
 import (
 	"encoding/csv"
@@ -28,7 +28,7 @@ func New() *AbcDebit {
 
 // Translate converts the CSV statement to IR.
 func (ad *AbcDebit) Translate(filename string) (*ir.IR, error) {
-	log.SetPrefix("[Provider-ABCdebit] ")
+	log.SetPrefix("[Provider-ABC_debit] ")
 
 	billReader, err := reader.GetReader(filename)
 	if err != nil {

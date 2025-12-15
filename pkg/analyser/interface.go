@@ -3,7 +3,7 @@ package analyser
 import (
 	"fmt"
 
-	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/abcdebit"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/abc_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bmo"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocom_debit"
@@ -64,7 +64,7 @@ func New(providerName string) (Interface, error) {
 	case consts.ProviderCmb:
 		return cmb.Cmb{}, nil
 	case consts.ProviderAbcDebit:
-		return abcdebit.AbcDebit{}, nil
+		return abc_debit.AbcDebit{}, nil
 
 	default:
 		return nil, fmt.Errorf("Fail to create the analyser for the given name %s", providerName)

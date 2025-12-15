@@ -1,4 +1,4 @@
-package abcdebit
+package abc_debit
 
 // Config is the configuration for AbcDebit.
 type Config struct {
