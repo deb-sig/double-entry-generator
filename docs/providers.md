@@ -15,6 +15,7 @@ Double Entry Generator 支持以下金融服务提供商的数据转换：
 - [中国工商银行 (ICBC)](/double-entry-generator/providers/banks/icbc/)  
 - [中信银行 (CITIC)](/double-entry-generator/providers/banks/citic/)
 - [招商银行 (CMB)](/double-entry-generator/providers/banks/cmb/) - 支持储蓄卡和信用卡
+- [中国农业银行储蓄卡 (ABC Debit)](/double-entry-generator/providers/banks/abc_debit/)
 - [香港上海汇丰银行 (HSBCHK)](/double-entry-generator/providers/banks/hsbchk/)
 - [蒙特利尔银行 (BMO)](/double-entry-generator/providers/banks/bmo/)
 - [道明银行 (TD)](/double-entry-generator/providers/banks/td/)

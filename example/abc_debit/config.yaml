@@ -1,0 +1,17 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:ABC:DebitCard
+defaultCurrency: CNY
+title: abc_debit
+abc_debit:
+  rules:
+    - item: 转存
+      targetAccount: Equity:Transfers
+    - item: 财付通
+      targetAccount: Expenses:Transport:Transit
+    - item: 正常还款
+      targetAccount: Liabilities:Loans:Personal
+    - item: 结息
+      targetAccount: Income:Interest
+    - item: 利息税
+      targetAccount: Expenses:Tax

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/abc_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_debit"
@@ -44,4 +45,5 @@ type Config struct {
 	MT                              *mt.Config          `yaml:"mt,omitempty"`
 	CCB                             *ccb.Config         `yaml:"ccb,omitempty"`
 	Cmb                             *cmb.Config         `yaml:"cmb,omitempty"`
+	AbcDebit                        *abc_debit.Config   `yaml:"abc_debit,omitempty" mapstructure:"abc_debit,omitempty"`
 }
