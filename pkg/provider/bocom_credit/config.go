@@ -1,4 +1,4 @@
-package bocomcredit
+package bocom_credit
 
 // Config is the configuration for BocomCredit.
 type Config struct {

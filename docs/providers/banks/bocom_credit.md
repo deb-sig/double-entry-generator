@@ -26,10 +26,10 @@ nav_order: 9
 
 ```bash
 double-entry-generator translate \
-  --config ./example/bocomcredit/config.yaml \
-  --provider bocomcredit \
-  --output ./example/bocomcredit/example-bocomcredit-output.beancount \
-  ./example/bocomcredit/example-bocomcredit-records.csv
+  --config ./example/bocom_credit/config.yaml \
+  --provider bocom_credit \
+  --output ./example/bocom_credit/example-bocom_credit-output.beancount \
+  ./example/bocom_credit/example-bocom_credit-records.csv
 ```
 
 ### 配置文件
@@ -41,7 +41,7 @@ defaultCurrency: CNY
 defaultMinusAccount: Assets:FIXME
 defaultPlusAccount: Expenses:FIXME
 defaultCashAccount: Liabilities:BOCOM:CreditCard
-bocomcredit:
+bocom_credit:
   rules:
     - item: 信用卡还款
       targetAccount: Equity:Transfers
@@ -51,6 +51,6 @@ bocomcredit:
 
 ## 示例文件
 
-- [交易明细 CSV 示例](../../example/bocomcredit/example-bocomcredit-records.csv)
-- [转换后 Beancount 示例](../../example/bocomcredit/example-bocomcredit-output.beancount)
-- [配置文件示例](../../example/bocomcredit/config.yaml)
+- [交易明细 CSV 示例](../../example/bocom_credit/example-bocom_credit-records.csv)
+- [转换后 Beancount 示例](../../example/bocom_credit/example-bocom_credit-output.beancount)
+- [配置文件示例](../../example/bocom_credit/config.yaml)

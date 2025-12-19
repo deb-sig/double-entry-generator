@@ -24,8 +24,8 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/abc_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_credit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_debit"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocomcredit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cmb"
@@ -65,7 +65,7 @@ func New(name string) (Interface, error) {
 	case consts.ProviderBocomDebit:
 		return bocom_debit.New(), nil
 	case consts.ProviderBocomCredit:
-		return bocomcredit.New(), nil
+		return bocom_credit.New(), nil
 	case consts.ProviderJD:
 		return jd.New(), nil
 	case consts.ProviderCitic:

@@ -13,15 +13,15 @@ mkdir -p "$ROOT_DIR/test/output"
 
 # generate Bocom Credit bills output in ledger format
 "$ROOT_DIR/bin/double-entry-generator" translate \
-    --provider bocomcredit \
+    --provider bocom_credit \
     --target ledger \
-    --config "$ROOT_DIR/example/bocomcredit/config.yaml" \
-    --output "$ROOT_DIR/test/output/test-bocomcredit-output.ledger" \
-    "$ROOT_DIR/example/bocomcredit/example-bocomcredit-records.csv"
+    --config "$ROOT_DIR/example/bocom_credit/config.yaml" \
+    --output "$ROOT_DIR/test/output/test-bocom_credit-output.ledger" \
+    "$ROOT_DIR/example/bocom_credit/example-bocom_credit-records.csv"
 
 diff -u --color \
-    "$ROOT_DIR/example/bocomcredit/example-bocomcredit-output.ledger" \
-    "$ROOT_DIR/test/output/test-bocomcredit-output.ledger"
+    "$ROOT_DIR/example/bocom_credit/example-bocom_credit-output.ledger" \
+    "$ROOT_DIR/test/output/test-bocom_credit-output.ledger"
 
 if [ $? -ne 0 ]; then
     echo "[FAIL] Bocom Credit provider output is different from expected output."

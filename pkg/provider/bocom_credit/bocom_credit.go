@@ -1,4 +1,4 @@
-package bocomcredit
+package bocom_credit
 
 import (
 	"encoding/csv"
