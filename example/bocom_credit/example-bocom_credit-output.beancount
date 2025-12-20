@@ -55,3 +55,4 @@ option "operating_currency" "CNY"
 	source: "交通银行信用卡"
 	Liabilities:BOCOM:CreditCard 13.50 CNY
 	Equity:Transfers -13.50 CNY
+
