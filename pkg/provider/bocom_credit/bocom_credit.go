@@ -62,9 +62,24 @@ func (bc *BocomCredit) Translate(filename string) (*ir.IR, error) {
 
 		bc.LineNum++
 
-		if err := bc.translateToOrders(record); err != nil {
-			return nil, fmt.Errorf("failed to translate bill: line %d: %w", bc.LineNum, err)
+		// Step 1: Parse raw fields from CSV
+		raw, err := bc.parseRecord(record)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse record: line %d: %w", bc.LineNum, err)
 		}
+		if raw == nil {
+			continue // Skip empty rows
+		}
+
+		// Step 2: Convert raw record to order with business logic
+		order, err := bc.convertRawRecord(raw)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert record: line %d: %w", bc.LineNum, err)
+		}
+
+		// Step 3: Update statistics and append order
+		bc.Orders = append(bc.Orders, *order)
+		bc.updateStatistics(order)
 	}
 
 	log.Printf("Finished to parse the file %s", filename)

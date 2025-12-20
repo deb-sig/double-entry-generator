@@ -27,6 +27,15 @@ const (
 	OrderTypeUnknown OrderType = "未知"
 )
 
+// RawRecord represents the raw CSV row fields before parsing.
+type RawRecord struct {
+	TradeDate            string // 交易日期
+	RecordDate           string // 记账日期
+	TradeDescription     string // 交易说明
+	TxnCurrencyAmount    string // 交易币种/金额
+	SettleCurrencyAmount string // 入账币种/金额
+}
+
 // Order represents a parsed CSV row.
 type Order struct {
 	TradeDate      time.Time
