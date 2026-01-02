@@ -56,4 +56,6 @@ const (
 	ProviderBocomDebit = "bocom_debit"
 	// ProviderAbcDebit is the name for Agricultural Bank of China debit card provider.
 	ProviderAbcDebit = "abc_debit"
+	// ProviderSpdbDebit is the name for Shanghai Pudong Development Bank debit card provider.
+	ProviderSpdbDebit = "spdb_debit"
 )

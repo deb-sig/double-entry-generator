@@ -1,0 +1,35 @@
+2024-01-01 * "某餐厅" "转账消费 午餐"
+  Assets:FIXME  -100.00 CNY
+  Expenses:FIXME  100.00 CNY
+  metadata:
+    source: 浦发银行借记卡
+    postscript: 午餐
+    channel: 网上银行
+    balance: 9000.00
+    amount: 100.00
+    transactionId: 202401010001
+    account: 1234567890
+
+2024-01-02 * "某公司" "转账收入 工资"
+  Assets:FIXME  500.00 CNY
+  Expenses:FIXME  -500.00 CNY
+  metadata:
+    source: 浦发银行借记卡
+    postscript: 工资
+    channel: 手机银行
+    balance: 9500.00
+    amount: -500.00
+    transactionId: 202401020002
+    account: 9876543210
+
+2024-01-03 * "地铁" "转账消费 地铁充值"
+  Assets:FIXME  -20.00 CNY
+  Expenses:FIXME  20.00 CNY
+  metadata:
+    source: 浦发银行借记卡
+    postscript: 地铁充值
+    channel: 自动柜员机
+    balance: 9480.00
+    amount: 20.00
+    transactionId: 202401030003
+    account: 1122334455
