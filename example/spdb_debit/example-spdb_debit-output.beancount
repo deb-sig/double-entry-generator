@@ -1,35 +1,45 @@
-2024-01-01 * "某餐厅" "转账消费 午餐"
-  Assets:FIXME  -100.00 CNY
-  Expenses:FIXME  100.00 CNY
-  metadata:
-    source: 浦发银行借记卡
-    postscript: 午餐
-    channel: 网上银行
-    balance: 9000.00
-    amount: 100.00
-    transactionId: 202401010001
-    account: 1234567890
+option "title" "浦发银行借记卡配置"
+option "operating_currency" "CNY"
 
-2024-01-02 * "某公司" "转账收入 工资"
-  Assets:FIXME  500.00 CNY
-  Expenses:FIXME  -500.00 CNY
-  metadata:
-    source: 浦发银行借记卡
-    postscript: 工资
-    channel: 手机银行
-    balance: 9500.00
-    amount: -500.00
-    transactionId: 202401020002
-    account: 9876543210
+1970-01-01 open Assets:DebitCard:SPB1234
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Expenses:Food:Restaurant
+1970-01-01 open Expenses:Investment:Funds
+1970-01-01 open Expenses:Shopping:Supermarket
+1970-01-01 open Expenses:Transport:Metro
 
-2024-01-03 * "地铁" "转账消费 地铁充值"
-  Assets:FIXME  -20.00 CNY
-  Expenses:FIXME  20.00 CNY
-  metadata:
-    source: 浦发银行借记卡
-    postscript: 地铁充值
-    channel: 自动柜员机
-    balance: 9480.00
-    amount: 20.00
-    transactionId: 202401030003
-    account: 1122334455
+2025-12-03 * "基金销售有限公司" "网上支付-支付宝"
+        account: "12345678901236500"
+        amount: "3.88"
+        balance: "1981.33"
+        source: "浦发银行借记卡"
+        time: "14:06:51"
+        Expenses:Investment:Funds 3.88 CNY
+        Assets:DebitCard:SPB1234 -3.88 CNY
+
+2025-12-05 * "基金销售有限公司" "汇入外"
+        account: "12345678901236500"
+        amount: "-10.00"
+        balance: "1991.33"
+        source: "浦发银行借记卡"
+        time: "07:22:32"
+        Assets:DebitCard:SPB1234 10.00 CNY
+        Expenses:Investment:Funds -10.00 CNY
+
+2025-12-05 * "基金销售有限公司" "网上支付-支付宝"
+        account: "12345678901236500"
+        amount: "3.88"
+        balance: "1987.45"
+        source: "浦发银行借记卡"
+        time: "19:03:07"
+        Expenses:Investment:Funds 3.88 CNY
+        Assets:DebitCard:SPB1234 -3.88 CNY
+
+2025-12-05 * "基金销售有限公司" "网上支付-支付宝"
+        account: "12345678901236500"
+        amount: "3.88"
+        balance: "1983.57"
+        source: "浦发银行借记卡"
+        time: "20:37:39"
+        Expenses:Investment:Funds 3.88 CNY
+        Assets:DebitCard:SPB1234 -3.88 CNY
