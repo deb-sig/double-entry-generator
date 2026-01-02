@@ -98,13 +98,7 @@ func (sd *SpdbDebit) translateToOrders(row []string) error {
 	return nil
 }
 
-// safeAccess safely accesses an array index.
-func safeAccess(arr []string, idx int) string {
-	if idx >= 0 && idx < len(arr) {
-		return arr[idx]
-	}
-	return ""
-}
+
 
 // parseTradeTime parses the trade time.
 func parseTradeTime(dateStr, timeStr string) (time.Time, error) {
