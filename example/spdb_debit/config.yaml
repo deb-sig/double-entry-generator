@@ -1,0 +1,19 @@
+defaultMinusAccount: Assets:DebitCard:SPB1234
+defaultPlusAccount: Expenses:FIXME
+defaultCurrency: CNY
+title: 浦发银行借记卡配置
+
+# Provider 特定配置
+spdb_debit:
+  rules:
+    - peer: 基金销售有限公司
+      targetAccount: Expenses:Investment:Funds
+    - category: 餐饮美食
+      peer: 餐厅
+      targetAccount: Expenses:Food:Restaurant
+    - category: 交通出行
+      peer: 地铁
+      targetAccount: Expenses:Transport:Metro
+    - category: 购物消费
+      peer: 超市
+      targetAccount: Expenses:Shopping:Supermarket
