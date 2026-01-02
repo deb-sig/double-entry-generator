@@ -43,3 +43,4 @@ option "operating_currency" "CNY"
 	time: "20:37:39"
 	Expenses:Investment:Funds 3.88 CNY
 	Assets:DebitCard:SPB1234 -3.88 CNY
+
