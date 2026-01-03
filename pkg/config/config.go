@@ -16,6 +16,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/mt"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/spdb_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/td"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/wechat"
 )
@@ -48,4 +49,5 @@ type Config struct {
 	CCB                             *ccb.Config          `yaml:"ccb,omitempty"`
 	Cmb                             *cmb.Config          `yaml:"cmb,omitempty"`
 	AbcDebit                        *abc_debit.Config    `yaml:"abc_debit,omitempty" mapstructure:"abc_debit,omitempty"`
+	SpdbDebit                       *spdb_debit.Config   `yaml:"spdb_debit,omitempty" mapstructure:"spdb_debit,omitempty"`
 }

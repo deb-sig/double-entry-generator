@@ -18,6 +18,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/mt"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/spdb_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/td"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/wechat"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
@@ -68,6 +69,8 @@ func New(providerName string) (Interface, error) {
 		return cmb.Cmb{}, nil
 	case consts.ProviderAbcDebit:
 		return abc_debit.AbcDebit{}, nil
+	case consts.ProviderSpdbDebit:
+		return spdb_debit.SpdbDebit{}, nil
 
 	default:
 		return nil, fmt.Errorf("Fail to create the analyser for the given name %s", providerName)
