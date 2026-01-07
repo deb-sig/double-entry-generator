@@ -13,6 +13,10 @@ nav_order: 2
 
 - CSV 格式
 
+## 账单下载方式
+
+中国工商银行账单的下载方式[见此](https://blog.triplez.cn/posts/bills-export-methods/#%e4%b8%ad%e5%9b%bd%e5%b7%a5%e5%95%86%e9%93%b6%e8%a1%8c)。
+
 ## 使用方法
 
 ### 基本命令
