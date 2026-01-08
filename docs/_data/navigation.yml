@@ -6,7 +6,7 @@ main:
   - title: 配置指南
     children:
       - title: 配置总览
-        url: /double-entry-generator/configuration/readme/
+        url: /double-entry-generator/configuration/
       - title: 规则配置
         url: /double-entry-generator/configuration/rules/
       - title: 账户映射
@@ -16,41 +16,41 @@ main:
       - title: 银行
         children:
           - title: 建设银行 (CCB)
-            url: /double-entry-generator/providers/ccb/
+            url: /double-entry-generator/providers/banks/ccb/
           - title: 工商银行 (ICBC)
-            url: /double-entry-generator/providers/icbc/
+            url: /double-entry-generator/providers/banks/icbc/
           - title: 中信银行 (CITIC)
-            url: /double-entry-generator/providers/citic/
+            url: /double-entry-generator/providers/banks/citic/
           - title: 农业银行储蓄卡 (ABC Debit)
-            url: /double-entry-generator/providers/abc_debit/
+            url: /double-entry-generator/providers/banks/abc_debit/
           - title: 汇丰银行香港 (HSBC HK)
-            url: /double-entry-generator/providers/hsbchk/
+            url: /double-entry-generator/providers/banks/hsbchk/
           - title: 加拿大银行 (BMO)
-            url: /double-entry-generator/providers/bmo/
+            url: /double-entry-generator/providers/banks/bmo/
           - title: 道明银行 (TD)
-            url: /double-entry-generator/providers/td/
+            url: /double-entry-generator/providers/banks/td/
       - title: 支付工具
         children:
           - title: 支付宝 (Alipay)
-            url: /double-entry-generator/providers/alipay/
+            url: /double-entry-generator/providers/payment/alipay/
           - title: 微信 (WeChat)
-            url: /double-entry-generator/providers/wechat/
+            url: /double-entry-generator/providers/payment/wechat/
       - title: 证券交易
         children:
           - title: 海通证券 (HTSEC)
-            url: /double-entry-generator/providers/htsec/
+            url: /double-entry-generator/providers/securities/htsec/
           - title: 华西证券 (HXSEC)
-            url: /double-entry-generator/providers/hxsec/
+            url: /double-entry-generator/providers/securities/hxsec/
       - title: 加密货币
         children:
           - title: 火币 (Huobi)
-            url: /double-entry-generator/providers/huobi/
+            url: /double-entry-generator/providers/crypto/huobi/
       - title: 生活服务
         children:
           - title: 美团 (MT)
-            url: /double-entry-generator/providers/mt/
+            url: /double-entry-generator/providers/life/mt/
           - title: 京东 (JD)
-            url: /double-entry-generator/providers/jd/
+            url: /double-entry-generator/providers/life/jd/
   - title: 示例
     children:
       - title: 基本使用

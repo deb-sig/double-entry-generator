@@ -2,7 +2,7 @@ name: Build and Deploy Documentation
 
 on:
   push:
-    branches: [ main, master, feat/docs ]
+    branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
     paths:

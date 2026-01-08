@@ -43,7 +43,7 @@ description: "Double Entry Generator 使用示例和最佳实践"
 
 ## 📖 相关文档
 
-- [配置指南](/double-entry-generator/configuration/readme/) - 了解配置文件结构
+- [配置指南](/double-entry-generator/configuration/) - 了解配置文件结构
 - [提供商支持](/double-entry-generator/providers/) - 查看支持的数据源
 - [快速开始](/double-entry-generator/getting-started/) - 安装和基本使用
 

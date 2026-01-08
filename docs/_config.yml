@@ -1,7 +1,7 @@
 title: Double Entry Generator 文档  
 description: 基于规则的复式记账导入器文档
 baseurl: "/double-entry-generator"
-url: "https://fatsheep2.github.io"
+url: "https://deb-sig.github.io"
 
 # 主题设置 - 使用本地主题（GitHub Actions 构建）
 theme: "just-the-docs"
@@ -65,7 +65,7 @@ back_to_top_text: "回到顶部"
 # 现代化功能
 aux_links:
   快速开始: "/double-entry-generator/getting-started/"
-  配置指南: "/double-entry-generator/configuration/readme/"
+  配置指南: "/double-entry-generator/configuration/"
 
 # 代码高亮 - GitHub Pages兼容设置
 highlighter: rouge
@@ -84,10 +84,10 @@ mathjax: true
 collections:
   providers:
     output: true
-    permalink: /:collection/:name/
+    permalink: /:collection/:path/
   configuration:
-    output: true  
-    permalink: /:collection/:name/
+    output: true
+    permalink: /:collection/:path/
 
 # 插件 - 只包含 Gemfile 中存在的插件
 plugins:
