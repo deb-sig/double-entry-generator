@@ -65,7 +65,7 @@ back_to_top_text: "回到顶部"
 # 现代化功能
 aux_links:
   快速开始: "/double-entry-generator/getting-started/"
-  配置指南: "/double-entry-generator/configuration/"
+  配置指南: "/double-entry-generator/configuration/readme/"
 
 # 代码高亮 - GitHub Pages兼容设置
 highlighter: rouge

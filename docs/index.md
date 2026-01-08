@@ -73,31 +73,31 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 ## 支持的 Providers
 
 ### 🏦 银行
-- [建设银行 (CCB)](/double-entry-generator/providers/banks/ccb/) - 支持 CSV、XLS、XLSX 格式
-- [工商银行 (ICBC)](/double-entry-generator/providers/banks/icbc/) - 自动识别借记卡/信用卡
-- [中信银行 (CITIC)](/double-entry-generator/providers/banks/citic/) - 信用卡账单
-- [汇丰银行香港 (HSBC HK)](/double-entry-generator/providers/banks/hsbchk/) - 香港汇丰银行
-- [加拿大银行 (BMO)](/double-entry-generator/providers/banks/bmo/) - Bank of Montreal
-- [道明银行 (TD)](/double-entry-generator/providers/banks/td/) - Toronto-Dominion Bank
+- [建设银行 (CCB)](/double-entry-generator/providers/ccb/) - 支持 CSV、XLS、XLSX 格式
+- [工商银行 (ICBC)](/double-entry-generator/providers/icbc/) - 自动识别借记卡/信用卡
+- [中信银行 (CITIC)](/double-entry-generator/providers/citic/) - 信用卡账单
+- [汇丰银行香港 (HSBC HK)](/double-entry-generator/providers/hsbchk/) - 香港汇丰银行
+- [加拿大银行 (BMO)](/double-entry-generator/providers/bmo/) - Bank of Montreal
+- [道明银行 (TD)](/double-entry-generator/providers/td/) - Toronto-Dominion Bank
 
 ### 💰 支付工具
-- [支付宝 (Alipay)](/double-entry-generator/providers/payment/alipay/) - 支持 CSV 格式
-- [微信 (WeChat)](/double-entry-generator/providers/payment/wechat/) - 支持 CSV 和 XLSX 格式
+- [支付宝 (Alipay)](/double-entry-generator/providers/alipay/) - 支持 CSV 格式
+- [微信 (WeChat)](/double-entry-generator/providers/wechat/) - 支持 CSV 和 XLSX 格式
 
 ### 📈 证券交易
-- [海通证券 (HTSEC)](/double-entry-generator/providers/securities/htsec/) - 证券交易记录
-- [华西证券 (HXSEC)](/double-entry-generator/providers/securities/hxsec/) - 证券交易记录
+- [海通证券 (HTSEC)](/double-entry-generator/providers/htsec/) - 证券交易记录
+- [华西证券 (HXSEC)](/double-entry-generator/providers/hxsec/) - 证券交易记录
 
 ### 🪙 加密货币
-- [火币 (Huobi)](/double-entry-generator/providers/crypto/huobi/) - 币币交易记录
+- [火币 (Huobi)](/double-entry-generator/providers/huobi/) - 币币交易记录
 
 ### 🛒 生活服务
-- [美团 (MT)](/double-entry-generator/providers/food/mt/) - 美团外卖/到店账单
-- [京东 (JD)](/double-entry-generator/providers/food/jd/) - 京东购物账单
+- [美团 (MT)](/double-entry-generator/providers/mt/) - 美团外卖/到店账单
+- [京东 (JD)](/double-entry-generator/providers/jd/) - 京东购物账单
 
 ## 配置指南
 
-- [配置总览](/double-entry-generator/configuration/) - 了解配置文件结构
+- [配置总览](/double-entry-generator/configuration/readme/) - 了解配置文件结构
 - [规则配置](/double-entry-generator/configuration/rules/) - 学习如何编写匹配规则
 - [账户映射](/double-entry-generator/configuration/accounts/) - 设置账户对应关系
 
