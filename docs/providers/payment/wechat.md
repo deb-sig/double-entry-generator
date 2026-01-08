@@ -14,6 +14,10 @@ nav_order: 8
 - CSV 格式（默认）
 - XLSX 格式（新增支持）
 
+## 账单下载方式
+
+微信支付的下载方式[见此](https://blog.triplez.cn/posts/bills-export-methods/#%e5%be%ae%e4%bf%a1%e6%94%af%e4%bb%98)。
+
 ## 使用方法
 
 ### 基本命令

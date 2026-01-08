@@ -13,6 +13,12 @@ TD (Toronto-Dominion Bank) Provider 支持将加拿大道明银行账单转换�
 
 - CSV 格式
 
+## 账单下载方式
+
+1. 登录 TD 网页版本: https://easyweb.td.com/
+2. 点击指定的账户
+3. 选择账单范围 -> "Select Download Format" -> Spreadsheet(.csv) -> Download
+
 ## 使用方法
 
 ### 基本命令
