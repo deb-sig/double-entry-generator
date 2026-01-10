@@ -50,7 +50,8 @@ TEST_CONFIGS := \
 	abc_debit:beancount,ledger:. \
 	ccb:beancount,ledger:. \
 	citic:beancount,ledger:credit \
-	hxsec:beancount:.
+	hxsec:beancount:. \
+	spdb_debit:beancount:.
 
 # Current version of the project.
 GIT_COMMIT = $(shell git describe --tags --always --dirty)
