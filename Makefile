@@ -30,8 +30,27 @@ OUTPUT_DIR := ./bin
 # Build direcotory.
 BUILD_DIR := ./build
 
-# Shell tests under ./test
-TEST_SHELL_SCRIPTS := $(sort $(wildcard test/*.sh))
+# Test configurations: PROVIDER:TARGETS:CASES
+# TARGETS and CASES are comma-separated
+# Use "." to indicate no subdirectory (root level)
+TEST_CONFIGS := \
+	alipay:beancount,ledger:. \
+	cmb:beancount,ledger:credit,debit \
+	icbc:beancount,ledger:credit,debit-v1,debit-v2 \
+	hsbchk:beancount,ledger:debit,credit \
+	bmo:beancount,ledger:credit,debit \
+	jd:beancount,ledger:. \
+	wechat:beancount,ledger:. \
+	td:beancount,ledger:. \
+	mt:beancount:. \
+	huobi:beancount,ledger:. \
+	htsec:beancount,ledger:. \
+	bocom_credit:beancount,ledger:. \
+	bocom_debit:beancount,ledger:. \
+	abc_debit:beancount,ledger:. \
+	ccb:beancount,ledger:. \
+	citic:beancount,ledger:credit \
+	hxsec:beancount:.
 
 # Current version of the project.
 GIT_COMMIT = $(shell git describe --tags --always --dirty)
@@ -99,25 +118,18 @@ test-go: ## Run Golang tests
 	@go test ./...
 
 test-providers: ## Run all provider shell tests
-	@set -euo pipefail; \
-	for script in $(TEST_SHELL_SCRIPTS); do \
-		echo ">> Running $$script"; \
-		$(SHELL) "$$script"; \
-	done
+	@export TEST_CONFIGS='$(TEST_CONFIGS)' && \
+	source test/e2e.sh && \
+	run_all_tests
 
 test-provider: ## Run a provider shell test (PROVIDER=<name> TARGET=<beancount|ledger>)
 	@if [ -z "$(PROVIDER)" ] || [ -z "$(TARGET)" ]; then \
 		echo "PROVIDER and TARGET must be set, e.g. make test-provider PROVIDER=wechat TARGET=beancount" >&2; \
 		exit 1; \
 	fi
-	@set -euo pipefail; \
-	script="test/$(PROVIDER)-test-$(TARGET).sh"; \
-	if [ ! -f "$$script" ]; then \
-		echo "Test script $$script not found" >&2; \
-		exit 1; \
-	fi; \
-	echo ">> Running $$script"; \
-	$(SHELL) "$$script"
+	@export TEST_CONFIGS='$(TEST_CONFIGS)' && \
+	source test/e2e.sh && \
+	run_single_test "$(PROVIDER)" "$(TARGET)"
 
 format: ## Format code
 	@gofmt -s -w pkg
