@@ -9,6 +9,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocom_credit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocom_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/ccb"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/boc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/cmb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/hsbchk"
@@ -71,7 +72,8 @@ func New(providerName string) (Interface, error) {
 		return abc_debit.AbcDebit{}, nil
 	case consts.ProviderSpdbDebit:
 		return spdb_debit.SpdbDebit{}, nil
-
+	case consts.ProviderBoc:
+		return boc.Boc{}, nil
 	default:
 		return nil, fmt.Errorf("Fail to create the analyser for the given name %s", providerName)
 	}
