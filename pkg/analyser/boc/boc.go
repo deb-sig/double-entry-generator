@@ -90,7 +90,15 @@ func (boc Boc) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provi
 
 		if match {
 			if r.Ignore {
-				log.Println("boc: ignore alipay or wechat or mt or jd", o.Item)
+				itemStr := ""
+				if r.Item != nil {
+					itemStr = *r.Item
+				}
+				peerStr := ""
+				if r.Peer != nil {
+					peerStr = *r.Peer
+				}
+				log.Println("boc: ignore ", itemStr, peerStr, o.Item)
 				ignore = true
 				break
 			}
