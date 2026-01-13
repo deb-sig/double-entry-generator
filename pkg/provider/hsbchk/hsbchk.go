@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/io/reader"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
@@ -37,7 +38,15 @@ func (h *HsbcHK) Translate(filename string) (*ir.IR, error) {
 		return nil, fmt.Errorf("can't get bill reader, err: %v", err)
 	}
 
-	csvReader := csv.NewReader(billReader)
+	// Remove all tab characters from the CSV content to avoid Go csv library errors
+	content, err := io.ReadAll(billReader)
+	if err != nil {
+		return nil, fmt.Errorf("can't read bill content, err: %v", err)
+	}
+
+	cleanContent := strings.ReplaceAll(string(content), "\t", "")
+
+	csvReader := csv.NewReader(strings.NewReader(cleanContent))
 	csvReader.LazyQuotes = true
 	// If FieldsPerRecord is negative, no check is made and records
 	// may have a variable number of fields.
