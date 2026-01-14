@@ -52,7 +52,8 @@ TEST_CONFIGS := \
 	citic:beancount,ledger:credit \
 	hxsec:beancount:. \
 	spdb_debit:beancount:. \
-	boc:beancount:credit,debit
+	boc:beancount:credit,debit \
+	oklink:beancount:.
 
 # Current version of the project.
 GIT_COMMIT = $(shell git describe --tags --always --dirty)
@@ -162,8 +163,15 @@ clean-wasm: ## Clean wasm-dist dir
 
 build-wasm: clean-wasm ## Build WebAssembly's version
 	@mkdir -p wasm-dist
-	GOOS=js GOARCH=wasm go build -o wasm-dist/double-entry-generator.wasm $(LD_FLAGS) $(CMD_DIR)/
-	@cp "$$(go env GOROOT)/misc/wasm/wasm_exec.js" wasm-dist/
+	GOOS=js GOARCH=wasm go build -o wasm-dist/double-entry-generator.wasm $(LD_FLAGS) ./cmd/wasm
+	@if [ -f "$$(go env GOROOT)/lib/wasm/wasm_exec.js" ]; then \
+		cp "$$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm-dist/; \
+	elif [ -f "$$(go env GOROOT)/misc/wasm/wasm_exec.js" ]; then \
+		cp "$$(go env GOROOT)/misc/wasm/wasm_exec.js" wasm-dist/; \
+	else \
+		echo "Error: wasm_exec.js not found in GOROOT"; \
+		exit 1; \
+	fi
 	@cp wasm/* wasm-dist/
 	@echo "Build wasm completed! Type \`make run-wasm-server\` to run wasm."
 
