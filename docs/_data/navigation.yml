@@ -21,6 +21,8 @@ main:
             url: /double-entry-generator/providers/banks/icbc/
           - title: 中信银行 (CITIC)
             url: /double-entry-generator/providers/banks/citic/
+          - title: 农业银行储蓄卡 (ABC Debit)
+            url: /double-entry-generator/providers/banks/abc_debit/
           - title: 汇丰银行香港 (HSBC HK)
             url: /double-entry-generator/providers/banks/hsbchk/
           - title: 加拿大银行 (BMO)

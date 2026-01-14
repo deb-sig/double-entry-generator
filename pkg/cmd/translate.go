@@ -27,13 +27,13 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/wechat"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/htsec"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/hxsec"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/wechat"
 )
 
 var (
@@ -82,10 +82,19 @@ func run(args []string) {
 		fallthrough
 	case consts.ProviderWechat:
 		fallthrough
+	case consts.ProviderBocomDebit:
+		fallthrough
 	case consts.ProviderCCB:
 		if c.DefaultCurrency == "" ||
 			c.DefaultMinusAccount == "" ||
 			c.DefaultPlusAccount == "" {
+			log.Fatalf("Failed to get default options in config")
+		}
+	case consts.ProviderBocomCredit:
+		if c.DefaultCurrency == "" ||
+			c.DefaultMinusAccount == "" ||
+			c.DefaultPlusAccount == "" ||
+			c.DefaultCashAccount == "" {
 			log.Fatalf("Failed to get default options in config")
 		}
 	case consts.ProviderHuobi:

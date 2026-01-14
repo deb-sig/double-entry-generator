@@ -13,6 +13,10 @@ nav_order: 11
 
 - CSV 格式
 
+## 账单下载方式
+
+登录[火币 Global 网站](https://www.huobi.com/)，进入[币币订单的成交明细](https://www.huobi.com/zh-cn/transac/?tab=2&type=0)页面，选择合适的时间区间后，点击成交明细右上角的导出按钮即可。
+
 ## 使用方法
 
 ### 基本命令

@@ -1,0 +1,107 @@
+1970/01/01 * Open Balance
+    Assets:DebitCard:BOCOM     0 CNY
+    Assets:FIXME     0 CNY
+    Assets:Funds     0 CNY
+    Equity:Transfers     0 CNY
+    Expenses:Electricity     0 CNY
+    Expenses:FIXME     0 CNY
+    Income:Interest     0 CNY
+    Equity:Opening Balances 
+2024/02/02 * 哈哈 6666666666666666 - 其他 
+    ; balance: "2334.62"
+    ; currency: "CNY"
+    ; dcFlg: "借 Dr"
+    ; payTime: "2024-02-02 13:15:12 &#43;0800 CST"
+    ; paymentReceiptAccount: "6666666666666666"
+    ; paymentReceiptAccountName: "哈哈"
+    ; serialNum: "2"
+    ; source: "交通银行"
+    ; tradingPlace: "其他"
+    ; tradingType: "信用卡转账还款"
+    ; transDate: "2024-02-02"
+    ; transTime: "13:15:12"
+    Equity:Transfers      3.21 CNY
+    Assets:DebitCard:BOCOM   - 3.21 CNY
+
+2024/03/03 * 应付个人活期储蓄存款利息 1323132313211331313 - 批处理 
+    ; balance: "45.67"
+    ; currency: "CNY"
+    ; dcFlg: "贷 Cr"
+    ; payTime: "2024-03-03 09:20:43 &#43;0800 CST"
+    ; paymentReceiptAccount: "1323132313211331313"
+    ; paymentReceiptAccountName: "应付个人活期储蓄存款利息"
+    ; serialNum: "3"
+    ; source: "交通银行"
+    ; tradingPlace: "批处理"
+    ; tradingType: "存款利息"
+    ; transDate: "2024-03-03"
+    ; transTime: "09:20:43"
+    Assets:DebitCard:BOCOM      0.02 CNY
+    Income:Interest   - 0.02 CNY
+
+2024/04/04 * 哈哈 6666666666666666 - 网络支付 银联入账(哈哈/其它)转账 
+    ; abstract: "银联入账(哈哈/其它)转账"
+    ; balance: "184.69"
+    ; currency: "CNY"
+    ; dcFlg: "贷 Cr"
+    ; payTime: "2024-04-04 11:46:44 &#43;0800 CST"
+    ; paymentReceiptAccount: "6666666666666666"
+    ; paymentReceiptAccountName: "哈哈"
+    ; serialNum: "4"
+    ; source: "交通银行"
+    ; tradingPlace: "网络支付"
+    ; tradingType: "其他交易"
+    ; transDate: "2024-04-04"
+    ; transTime: "11:46:44"
+    Assets:DebitCard:BOCOM      10.00 CNY
+    Assets:FIXME   - 10.00 CNY
+
+2024/05/05 * 网上国网 555551312313213123 - 网上国网 
+    ; balance: "99.66"
+    ; currency: "CNY"
+    ; dcFlg: "借 Dr"
+    ; payTime: "2024-05-05 12:48:15 &#43;0800 CST"
+    ; paymentReceiptAccount: "555551312313213123"
+    ; paymentReceiptAccountName: "网上国网"
+    ; serialNum: "5"
+    ; source: "交通银行"
+    ; tradingPlace: "网上国网"
+    ; tradingType: "异地跨行消费"
+    ; transDate: "2024-05-05"
+    ; transTime: "12:48:15"
+    Expenses:Electricity      10.00 CNY
+    Assets:DebitCard:BOCOM   - 10.00 CNY
+
+2024/06/06 * 京东肯特瑞基金销售有限公司 11111111111111 - 网银在线（北京）科技有限公司 网上支付 基金理财产品申购 订单编号20250123123213213131321313131 肯特瑞小金库网银平台 交易流水号20250123123213213131321313131 
+    ; abstract: "网上支付 基金理财产品申购 订单编号20250123123213213131321313131 肯特瑞小金库网银平台 交易流水号20250123123213213131321313131"
+    ; balance: "3154.93"
+    ; currency: "CNY"
+    ; dcFlg: "借 Dr"
+    ; payTime: "2024-06-06 11:30:54 &#43;0800 CST"
+    ; paymentReceiptAccount: "11111111111111"
+    ; paymentReceiptAccountName: "京东肯特瑞基金销售有限公司"
+    ; serialNum: "6"
+    ; source: "交通银行"
+    ; tradingPlace: "网银在线（北京）科技有限公司"
+    ; tradingType: "网上支付"
+    ; transDate: "2024-06-06"
+    ; transTime: "11:30:54"
+    Assets:Funds      100.79 CNY
+    Assets:DebitCard:BOCOM   - 100.79 CNY
+
+2025/01/01 * 应付个人活期储蓄存款利息 1323132313211331313 - 批处理 
+    ; balance: "1334.63"
+    ; currency: "CNY"
+    ; dcFlg: "贷 Cr"
+    ; payTime: "2025-01-01 00:00:00 &#43;0800 CST"
+    ; paymentReceiptAccount: "1323132313211331313"
+    ; paymentReceiptAccountName: "应付个人活期储蓄存款利息"
+    ; serialNum: "1"
+    ; source: "交通银行"
+    ; tradingPlace: "批处理"
+    ; tradingType: "存款利息"
+    ; transDate: "2025-01-01"
+    ; transTime: "00:00:00"
+    Assets:DebitCard:BOCOM      1.23 CNY
+    Income:Interest   - 1.23 CNY
+

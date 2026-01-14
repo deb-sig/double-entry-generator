@@ -3,20 +3,24 @@ package analyser
 import (
 	"fmt"
 
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/abc_debit"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bmo"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocom_credit"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocom_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/ccb"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/boc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/cmb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/hsbchk"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/htsec"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/huobi"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/hxsec"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/mt"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/spdb_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/td"
-
-	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/alipay"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/htsec"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/huobi"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/wechat"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
@@ -46,6 +50,10 @@ func New(providerName string) (Interface, error) {
 		return td.Td{}, nil
 	case consts.ProviderBmo:
 		return bmo.Bmo{}, nil
+	case consts.ProviderBocomCredit:
+		return bocom_credit.BocomCredit{}, nil
+	case consts.ProviderBocomDebit:
+		return bocom_debit.BocomDebit{}, nil
 	case consts.ProviderJD:
 		return jd.JD{}, nil
 	case consts.ProviderCitic:
@@ -60,7 +68,12 @@ func New(providerName string) (Interface, error) {
 		return ccb.CCB{}, nil
 	case consts.ProviderCmb:
 		return cmb.Cmb{}, nil
-
+	case consts.ProviderAbcDebit:
+		return abc_debit.AbcDebit{}, nil
+	case consts.ProviderSpdbDebit:
+		return spdb_debit.SpdbDebit{}, nil
+	case consts.ProviderBoc:
+		return boc.Boc{}, nil
 	default:
 		return nil, fmt.Errorf("Fail to create the analyser for the given name %s", providerName)
 	}
