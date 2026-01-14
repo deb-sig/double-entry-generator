@@ -13,6 +13,12 @@ BMO (Bank of Montreal) Provider 支持将加拿大蒙特利尔银行账单转换
 
 - CSV 格式
 
+## 账单下载方式
+
+1. 登录 BMO 网页版本: https://www.bmo.com/en-ca/main/personal/
+2. 选择指定账户
+3. Transactions -> Download 选择时间范围
+
 ## 使用方法
 
 ### 基本命令

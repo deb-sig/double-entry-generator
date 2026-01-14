@@ -30,17 +30,19 @@ const (
 	ProviderHuobi = "huobi"
 	// ProviderHtsec is the name for htsec provider.
 	ProviderHtsec = "htsec"
-	//ProviderIcbc is the name for ICBC provider.
+	// ProviderIcbc is the name for ICBC provider.
 	ProviderIcbc = "icbc"
-	//ProviderTd is the name for TD provider.
+	// ProviderTd is the name for TD provider.
 	ProviderTd = "td"
-	//ProviderBmo is the name for BMO provider.
+	// ProviderBmo is the name for BMO provider.
 	ProviderBmo = "bmo"
+	//ProviderBocomCredit is the name for Bocom credit card provider.
+	ProviderBocomCredit = "bocom_credit"
 	//ProviderJD is the name for JD provider
 	ProviderJD = "jd"
-	//ProviderCitic is the name for citic provider
+	// ProviderCitic is the name for citic provider
 	ProviderCitic = "citic"
-	//ProviderHsbcHK is the name for HSBC HK provider
+	// ProviderHsbcHK is the name for HSBC HK provider
 	ProviderHsbcHK = "hsbchk"
 	// ProvderMT is the name for mt provider
 	ProviderMT = "mt"
@@ -52,4 +54,12 @@ const (
 	ProviderCmb = "cmb"
 	//ProviderOKLink is the name for OKLink provider (supports multiple chains: ERC20, TRC20, BSC, etc.).
 	ProviderOKLink = "oklink"
+	// ProviderBocomDebit is the name for Bank of Communications debit provider
+	ProviderBocomDebit = "bocom_debit"
+	// ProviderAbcDebit is the name for Agricultural Bank of China debit card provider.
+	ProviderAbcDebit = "abc_debit"
+	// ProviderSpdbDebit is the name for Shanghai Pudong Development Bank debit card provider.
+	ProviderSpdbDebit = "spdb_debit"
+	// ProviderBoc is the name for boc provider.
+	ProviderBoc = "boc"
 )

@@ -1,0 +1,47 @@
+option "title" "boc"
+option "operating_currency" "CNY"
+
+1970-01-01 open Assets:DC:BCM:0258
+1970-01-01 open Assets:DC:BoC:3167
+1970-01-01 open Assets:FIXME
+1970-01-01 open Expenses:Education:Training
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Expenses:Relax:Game
+1970-01-01 open Expenses:Reside:Rent
+1970-01-01 open Expenses:Transport:Subway
+1970-01-01 open Income:BoC:Rebate
+1970-01-01 open Income:BoC:Salary
+1970-01-01 open Liabilities:CC:BCM:4664
+1970-01-01 open Liabilities:CC:BoC:2875
+1970-01-01 open Liabilities:CC:BoC:4260
+1970-01-01 open Liabilities:CC:CMB:4294
+1970-01-01 open Liabilities:CC:CMBC:5669
+
+2024-12-14 * "" "上海公共交通卡股份有限CHN"
+	Expenses:Transport:Subway 50.00 CNY
+	Liabilities:CC:BoC:4260 -50.00 CNY
+
+2024-12-20 * "" "存款利息"
+	Expenses:FIXME 0.01 CNY
+	Assets:FIXME -0.01 CNY
+
+2024-12-24 * "" "MICROSOFT*XBOXJPN"
+	Expenses:FIXME 3.72 USD
+	Liabilities:CC:BoC:2875 -3.72 USD
+
+2024-12-25 * "" "网银在线CHN"
+	Liabilities:CC:BoC:2875 70.48 CNY
+	Income:BoC:Rebate -70.48 CNY
+
+2024-12-25 * "" "网银在线CHN"
+	Liabilities:CC:BoC:2875 397.84 CNY
+	Income:BoC:Rebate -397.84 CNY
+
+2024-12-25 * "" "网银在线CHN"
+	Liabilities:CC:BoC:2875 70.48 CNY
+	Income:BoC:Rebate -70.48 CNY
+
+2024-12-29 * "" "网银在线CHN"
+	Liabilities:CC:BoC:2875 89.84 CNY
+	Income:BoC:Rebate -89.84 CNY
+

@@ -21,8 +21,12 @@ import (
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/abc_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/boc"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_credit"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cmb"
@@ -34,6 +38,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/mt"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/oklink"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/spdb_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/td"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/wechat"
 )
@@ -60,6 +65,10 @@ func New(name string) (Interface, error) {
 		return td.New(), nil
 	case consts.ProviderBmo:
 		return bmo.New(), nil
+	case consts.ProviderBocomDebit:
+		return bocom_debit.New(), nil
+	case consts.ProviderBocomCredit:
+		return bocom_credit.New(), nil
 	case consts.ProviderJD:
 		return jd.New(), nil
 	case consts.ProviderCitic:
@@ -76,6 +85,12 @@ func New(name string) (Interface, error) {
 		return cmb.New(), nil
 	case consts.ProviderOKLink:
 		return oklink.New(), nil
+	case consts.ProviderAbcDebit:
+		return abc_debit.New(), nil
+	case consts.ProviderSpdbDebit:
+		return spdb_debit.New(), nil
+	case consts.ProviderBoc:
+		return boc.New(), nil
 	default:
 		return nil, fmt.Errorf("Fail to create the provider for the given name %s", name)
 	}

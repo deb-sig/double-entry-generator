@@ -1,0 +1,19 @@
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:DebitCard:BOCOM
+defaultCurrency: CNY
+title: 交通银行借记卡示例
+bocom_debit:
+  rules:
+    - peer: 应付个人活期储蓄存款利息
+      targetAccount: Income:Interest
+    - peer: 信用卡还款
+      targetAccount: Equity:Transfers
+    - txType: 信用卡转账还款
+      targetAccount: Equity:Transfers
+    - peer: 网上国网
+      targetAccount: Expenses:Electricity
+    - item: 基金理财产品申购
+      targetAccount: Assets:Funds
+    - item: 财付通
+      ignore: true
