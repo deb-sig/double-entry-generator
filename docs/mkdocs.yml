@@ -1,0 +1,219 @@
+site_name: Double Entry Generator
+# site_url is set for production (GitHub Pages)
+# For local development, mkdocs serve will use http://127.0.0.1:8000
+site_url: https://deb-sig.github.io/double-entry-generator
+site_description: Rule-based double-entry bookkeeping importer documentation
+
+# Documentation directory
+docs_dir: docs
+
+# Repository information
+repo_name: deb-sig/double-entry-generator
+repo_url: https://github.com/deb-sig/double-entry-generator
+edit_uri: edit/master/docs/docs/
+
+# Copyright
+copyright: Copyright &copy; 2024 deb-sig
+
+# Theme configuration
+theme:
+  name: material
+  language: zh
+  locale: zh_CN
+  palette:
+    # Light mode
+    - scheme: default
+      primary: blue
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - scheme: slate
+      primary: blue
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - navigation.tracking
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
+    - content.tooltips
+  icon:
+    repo: fontawesome/brands/github
+
+# Plugins
+plugins:
+  - search:
+      lang: [zh, en]
+  - i18n:
+      docs_structure: folder
+      languages:
+        - locale: zh
+          default: true
+          name: 中文
+          build: true
+          nav:
+            - 首页: index.md
+            - 快速开始: getting-started.md
+            - 配置指南:
+              - 配置总览: configuration/README.md
+              - 规则配置: configuration/rules.md
+              - 账户映射: configuration/accounts.md
+            - 提供商支持: providers.md
+            - 银行:
+              - 建设银行 (CCB): providers/banks/ccb.md
+              - 工商银行 (ICBC): providers/banks/icbc.md
+              - 中信银行 (CITIC): providers/banks/citic.md
+              - 农业银行储蓄卡 (ABC Debit): providers/banks/abc_debit.md
+              - 汇丰银行香港 (HSBC HK): providers/banks/hsbchk.md
+              - 加拿大银行 (BMO): providers/banks/bmo.md
+              - 道明银行 (TD): providers/banks/td.md
+            - 支付工具:
+              - 支付宝 (Alipay): providers/payment/alipay.md
+              - 微信 (WeChat): providers/payment/wechat.md
+            - 证券交易:
+              - 海通证券 (HTSEC): providers/securities/htsec.md
+              - 华西证券 (HXSEC): providers/securities/hxsec.md
+            - 加密货币:
+              - 火币 (Huobi): providers/crypto/huobi.md
+            - 生活服务:
+              - 美团 (MT): providers/life/mt.md
+              - 京东 (JD): providers/life/jd.md
+            - 示例:
+              - 基本使用: examples/basic-usage.md
+              - 高级规则: examples/advanced-rules.md
+            - 贡献指南: contributing.md
+        - locale: en
+          name: English
+          build: true
+          nav:
+            - Home: en/index.md
+            - Getting Started: en/getting-started.md
+            - Configuration Guide:
+              - Configuration Overview: en/configuration/README.md
+              - Rules Configuration: en/configuration/rules.md
+              - Account Mapping: en/configuration/accounts.md
+            - Providers: en/providers.md
+            - Banks:
+              - China Construction Bank (CCB): en/providers/banks/ccb.md
+              - Industrial and Commercial Bank of China (ICBC): en/providers/banks/icbc.md
+              - China CITIC Bank (CITIC): en/providers/banks/citic.md
+              - Agricultural Bank of China Debit Card (ABC Debit): en/providers/banks/abc_debit.md
+              - HSBC Hong Kong: en/providers/banks/hsbchk.md
+              - Bank of Montreal (BMO): en/providers/banks/bmo.md
+              - Toronto-Dominion Bank (TD): en/providers/banks/td.md
+              - China Merchants Bank (CMB): en/providers/banks/cmb.md
+              - Bank of Communications Debit Card (BOCOM Debit): en/providers/banks/bocom-debit.md
+              - Bank of Communications Credit Card (BOCOM Credit): en/providers/banks/bocom_credit.md
+            - Payment Tools:
+              - Alipay: en/providers/payment/alipay.md
+              - WeChat: en/providers/payment/wechat.md
+            - Securities Trading:
+              - Haitong Securities (HTSEC): en/providers/securities/htsec.md
+              - Huaxi Securities (HXSEC): en/providers/securities/hxsec.md
+            - Cryptocurrency:
+              - Huobi: en/providers/crypto/huobi.md
+            - Life Services:
+              - Meituan (MT): en/providers/life/mt.md
+              - JD.com (JD): en/providers/life/jd.md
+            - Examples:
+              - Basic Usage: en/examples/basic-usage.md
+              - Advanced Rules: en/examples/advanced-rules.md
+            - Contributing Guide: en/contributing.md
+
+# Markdown extensions
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      baselevel: 2
+
+# Navigation (Chinese - default)
+nav:
+  - 首页: index.md
+  - 快速开始: getting-started.md
+  - 配置指南:
+    - 配置总览: configuration/README.md
+    - 规则配置: configuration/rules.md
+    - 账户映射: configuration/accounts.md
+  - 提供商支持: providers.md
+  - 银行:
+    - 建设银行 (CCB): providers/banks/ccb.md
+    - 工商银行 (ICBC): providers/banks/icbc.md
+    - 中信银行 (CITIC): providers/banks/citic.md
+    - 农业银行储蓄卡 (ABC Debit): providers/banks/abc_debit.md
+    - 汇丰银行香港 (HSBC HK): providers/banks/hsbchk.md
+    - 加拿大银行 (BMO): providers/banks/bmo.md
+    - 道明银行 (TD): providers/banks/td.md
+  - 支付工具:
+    - 支付宝 (Alipay): providers/payment/alipay.md
+    - 微信 (WeChat): providers/payment/wechat.md
+  - 证券交易:
+    - 海通证券 (HTSEC): providers/securities/htsec.md
+    - 华西证券 (HXSEC): providers/securities/hxsec.md
+  - 加密货币:
+    - 火币 (Huobi): providers/crypto/huobi.md
+  - 生活服务:
+    - 美团 (MT): providers/life/mt.md
+    - 京东 (JD): providers/life/jd.md
+  - 示例:
+    - 基本使用: examples/basic-usage.md
+    - 高级规则: examples/advanced-rules.md
+  - 贡献指南: contributing.md
+
+# Extra configuration
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/deb-sig/double-entry-generator
+      name: GitHub 仓库
+    - icon: fontawesome/solid/bug
+      link: https://github.com/deb-sig/double-entry-generator/issues
+      name: 问题反馈
+    - icon: fontawesome/solid/comments
+      link: https://github.com/deb-sig/double-entry-generator/discussions
+      name: 讨论区
+  alternate:
+    - name: 中文
+      link: /
+      lang: zh
+    - name: English
+      link: /en/
+      lang: en
+
+# Extra CSS
+extra_css:
+  - assets/css/custom.css
