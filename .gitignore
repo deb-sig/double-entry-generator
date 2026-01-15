@@ -31,9 +31,13 @@ test/output
 .devcontainer
 
 # doc  build files
-
 docs/.venv/
 docs/site/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
 
 
 # Node.js dependencies (if any)
