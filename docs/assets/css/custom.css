@@ -1,257 +1,245 @@
-/* 自定义样式 - 美化 just-the-docs 主题 */
+/* 自定义样式美化 */
 
-/* Hero 区域样式 */
-.hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 4rem 0;
-  margin: -1rem -1rem 2rem -1rem;
-  text-align: center;
+/* 代码块样式优化 */
+.highlight {
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 1rem 0;
 }
 
-.hero-content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 2rem;
+/* 表格样式优化 */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 6px;
+  overflow: hidden;
 }
 
-.hero-title {
-  font-size: 3rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  line-height: 1.2;
-}
-
-.hero-description {
-  font-size: 1.25rem;
-  margin-bottom: 2rem;
-  opacity: 0.9;
-  line-height: 1.6;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.btn {
-  display: inline-block;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  text-decoration: none;
+.md-typeset table:not([class]) th {
+  background-color: var(--md-primary-fg-color--light);
+  color: var(--md-primary-bg-color);
   font-weight: 600;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
+  padding: 0.8rem 1rem;
 }
 
-.btn-primary {
-  background-color: #ffffff;
-  color: #667eea;
-  border-color: #ffffff;
+.md-typeset table:not([class]) td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
 }
 
-.btn-primary:hover {
-  background-color: transparent;
-  color: #ffffff;
-  border-color: #ffffff;
+.md-typeset table:not([class]) tr:hover {
+  background-color: var(--md-default-fg-color--lightest);
 }
 
-.btn-secondary {
-  background-color: transparent;
-  color: #ffffff;
-  border-color: #ffffff;
-}
-
-.btn-secondary:hover {
-  background-color: #ffffff;
-  color: #667eea;
-}
-
-/* 特性网格样式 */
+/* 特性卡片样式 */
 .features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin: 3rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
 }
 
 .feature {
-  background: #f8fafc;
-  padding: 2rem;
-  border-radius: 1rem;
-  border: 1px solid #e2e8f0;
-  transition: all 0.3s ease;
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .feature:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .feature h3 {
-  color: #1e293b;
-  margin-bottom: 1rem;
-  font-size: 1.25rem;
-  font-weight: 600;
+  margin-top: 0;
+  color: var(--md-primary-fg-color);
+  font-size: 1.2em;
 }
 
 .feature p {
-  color: #64748b;
-  line-height: 1.6;
-  margin: 0;
+  margin-bottom: 0;
+  color: var(--md-default-fg-color--light);
 }
 
-/* 深色模式支持 */
-@media (prefers-color-scheme: dark) {
-  .hero {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+/* 按钮样式优化 */
+.md-typeset .btn {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+  border: none;
+}
+
+.md-typeset .btn-primary {
+  background-color: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
+
+.md-typeset .btn-primary:hover {
+  background-color: var(--md-primary-fg-color--dark);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.md-typeset .btn-secondary {
+  background-color: var(--md-default-fg-color--lighter);
+  color: var(--md-default-fg-color);
+}
+
+.md-typeset .btn-secondary:hover {
+  background-color: var(--md-default-fg-color--light);
+}
+
+/* 警告框样式优化 */
+.md-typeset .admonition {
+  border-radius: 6px;
+  border-left-width: 4px;
+}
+
+/* 代码行号样式 */
+.md-typeset .highlight .linenos {
+  padding-right: 1rem;
+  border-right: 1px solid var(--md-default-fg-color--lightest);
+}
+
+/* 导航栏优化 - 固定在顶部 */
+.md-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--md-default-bg-color);
+}
+
+/* 侧边栏优化 - 固定在左侧 */
+.md-sidebar {
+  position: sticky;
+  top: 3.6rem; /* 导航栏高度 */
+  height: calc(100vh - 3.6rem);
+  overflow-y: auto;
+  border-right: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.md-sidebar--primary {
+  position: sticky;
+  top: 3.6rem;
+  height: calc(100vh - 3.6rem);
+  overflow-y: auto;
+}
+
+/* 确保侧边栏在桌面端始终显示 */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar {
+    display: block;
   }
   
-  .feature {
-    background: #1e293b;
-    border-color: #334155;
-  }
-  
-  .feature h3 {
-    color: #f1f5f9;
-  }
-  
-  .feature p {
-    color: #cbd5e1;
+  .md-sidebar--primary {
+    position: sticky;
+    top: 3.6rem;
+    height: calc(100vh - 3.6rem);
+    overflow-y: auto;
   }
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .hero {
-    padding: 2rem 0;
-    margin: -1rem -1rem 1.5rem -1rem;
+/* 确保侧边栏导航始终可见且固定 */
+.md-nav {
+  position: sticky;
+}
+
+.md-nav--primary {
+  position: sticky;
+  top: 3.6rem;
+  max-height: calc(100vh - 3.6rem);
+  overflow-y: auto;
+}
+
+/* 移动端侧边栏优化 */
+@media screen and (max-width: 76.1875em) {
+  .md-nav--primary {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 14.4rem;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 3;
   }
   
-  .hero-title {
-    font-size: 2rem;
+  .md-nav--primary[data-md-state="open"] {
+    transform: translateX(0);
   }
-  
-  .hero-description {
-    font-size: 1rem;
-  }
-  
-  .hero-actions {
-    flex-direction: column;
-    align-items: center;
-  }
-  
+}
+
+/* 内容区域优化 */
+.md-content {
+  max-width: 1200px;
+}
+
+/* 标题样式优化 */
+.md-typeset h1 {
+  font-weight: 700;
+  border-bottom: 2px solid var(--md-primary-fg-color);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.md-typeset h2 {
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: var(--md-primary-fg-color);
+}
+
+.md-typeset h3 {
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+}
+
+/* 链接样式优化 */
+.md-typeset a {
+  color: var(--md-primary-fg-color);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--md-primary-fg-color--light);
+  transition: all 0.2s;
+}
+
+.md-typeset a:hover {
+  color: var(--md-primary-fg-color--dark);
+  border-bottom-style: solid;
+}
+
+/* 列表样式优化 */
+.md-typeset ul li,
+.md-typeset ol li {
+  margin: 0.5rem 0;
+}
+
+/* 引用块样式 */
+.md-typeset blockquote {
+  border-left: 4px solid var(--md-primary-fg-color);
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: var(--md-default-fg-color--light);
+  font-style: italic;
+}
+
+/* 搜索框优化 */
+.md-search__form {
+  border-radius: 6px;
+}
+
+/* 响应式优化 */
+@media screen and (max-width: 768px) {
   .features {
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
   
   .feature {
-    padding: 1.5rem;
+    padding: 1rem;
   }
-}
-
-/* 代码块美化 */
-.highlight {
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* 导航美化 */
-.site-nav {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* 页脚美化 */
-.site-footer {
-  background: #f8fafc;
-  border-top: 1px solid #e2e8f0;
-  margin-top: 3rem;
-}
-
-/* 搜索框美化 */
-.search-input {
-  border-radius: 0.5rem;
-  border: 2px solid #e2e8f0;
-  transition: border-color 0.3s ease;
-}
-
-.search-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-/* 链接美化 */
-a {
-  color: #667eea;
-  transition: color 0.3s ease;
-}
-
-a:hover {
-  color: #5a67d8;
-}
-
-/* 表格美化 */
-table {
-  border-radius: 0.5rem;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-th {
-  background: #667eea;
-  color: white;
-  font-weight: 600;
-}
-
-/* 警告框样式 */
-.alert {
-  padding: 1rem 1.5rem;
-  border-radius: 0.5rem;
-  margin: 1rem 0;
-  border-left: 4px solid;
-}
-
-.alert-info {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  color: #1e40af;
-}
-
-.alert-warning {
-  background: #fffbeb;
-  border-color: #f59e0b;
-  color: #92400e;
-}
-
-.alert-success {
-  background: #f0fdf4;
-  border-color: #10b981;
-  color: #065f46;
-}
-
-/* 徽章样式 */
-.badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  background: #667eea;
-  color: white;
-}
-
-.badge-secondary {
-  background: #64748b;
-}
-
-.badge-success {
-  background: #10b981;
-}
-
-.badge-warning {
-  background: #f59e0b;
 }

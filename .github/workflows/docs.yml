@@ -2,11 +2,19 @@ name: Build and Deploy Documentation
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+    # 所有分支都可以触发构建，但只有 main/master 会部署
     paths:
       - 'docs/**'
+      - 'docs/mkdocs.yml'
+      - 'docs/pyproject.toml'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    # PR 也会触发构建（用于检查）
+    paths:
+      - 'docs/**'
+      - 'docs/mkdocs.yml'
+      - 'docs/pyproject.toml'
+      - '.github/workflows/docs.yml'
 
 permissions:
   contents: write
@@ -26,42 +34,67 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
         with:
-          ruby-version: '3.1'
-          bundler-cache: false  # 禁用缓存，强制重新安装依赖
-          working-directory: docs
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libssl-dev
-
+          version: "latest"
+      
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v4
-
-      - name: Build with Jekyll
+      
+      - name: Install dependencies
+        working-directory: docs
+        run: uv sync
+      
+      - name: Configure MkDocs for repository
         working-directory: docs
         run: |
-          rm -f Gemfile.lock  # 删除旧的锁定文件，强制重新解析依赖
-          bundle install --without development
-          # 验证关键 gem 是否已安装
-          echo "Verifying installed gems..."
-          bundle list | grep -E "(kramdown|sassc|sass-embedded)" || true
-          bundle show kramdown-parser-gfm || (echo "ERROR: kramdown-parser-gfm not found!" && exit 1)
-          bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+          uv run python3 << 'PYEOF'
+          import yaml
+          import os
+          import re
+          
+          REPO_OWNER = os.environ['REPO_OWNER']
+          REPO_NAME = os.environ['REPO_NAME']
+          SITE_URL = os.environ['SITE_URL']
+          DEFAULT_BRANCH = os.environ['DEFAULT_BRANCH']
+          
+          # 读取文件内容
+          with open('mkdocs.yml', 'r', encoding='utf-8') as f:
+              content = f.read()
+          
+          # 使用字符串替换更新配置，避免解析 Python 对象标签
+          content = re.sub(r"^site_url:\s*.*$", f"site_url: {SITE_URL}", content, flags=re.MULTILINE)
+          content = re.sub(r"^repo_url:\s*.*$", f"repo_url: https://github.com/{REPO_OWNER}/{REPO_NAME}", content, flags=re.MULTILINE)
+          content = re.sub(r"^repo_name:\s*.*$", f"repo_name: {REPO_OWNER}/{REPO_NAME}", content, flags=re.MULTILINE)
+          content = re.sub(r"^edit_uri:\s*.*$", f"edit_uri: edit/{DEFAULT_BRANCH}/docs/docs/", content, flags=re.MULTILINE)
+          
+          # 写回文件
+          with open('mkdocs.yml', 'w', encoding='utf-8') as f:
+              f.write(content)
+          PYEOF
         env:
-          JEKYLL_ENV: production
-
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          PYTHONIOENCODING: utf-8
+      
+      - name: Build with MkDocs
+        working-directory: docs
+        run: uv run mkdocs build --site-dir ../site
+        env:
+          BASE_URL: "${{ steps.pages.outputs.base_path }}"
+      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/_site
+          path: site
 
-  # Deployment job - deploy for both main/master and feat/docs branches
+  # Deployment job
   deploy:
+    # 在 fork 仓库中也允许部署（如果启用了 GitHub Pages）
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/feat/docs'
     environment:
       name: github-pages
@@ -71,4 +104,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 
+        uses: actions/deploy-pages@v4

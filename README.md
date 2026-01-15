@@ -6,7 +6,8 @@
 
 基于规则的复式记账导入器，支持将各种账单格式智能转换为 [Beancount](https://beancount.github.io/) 或 [Ledger](https://www.ledger-cli.org/) 格式。
 
-> 📖 **完整文档**: 访问 [在线文档站点](https://deb-sig.github.io/double-entry-generator/) 获取详细的使用指南和配置说明。
+> 📖 **完整文档**: 访问 [在线文档站点](https://deb-sig.github.io/double-entry-generator/) 获取详细的使用指南和配置说明。  
+> 🌍 **English**: See [README in English](README.en.md) for English documentation.
 
 ## ✨ 特性
 
@@ -54,7 +55,9 @@ double-entry-generator translate -p wechat -t ledger wechat_records.xlsx
 double-entry-generator translate -p ccb -t beancount ccb_records.xls
 ```
 
-更多使用说明请参考 [快速开始文档](https://deb-sig.github.io/double-entry-generator/getting-started/)。
+更多使用说明请参考：
+- [快速开始指南](https://deb-sig.github.io/double-entry-generator/quick-start/) - 通过简单示例快速上手
+- [快速开始文档](https://deb-sig.github.io/double-entry-generator/getting-started/) - 详细的安装和使用说明
 
 ## 📋 支持的 Providers
 

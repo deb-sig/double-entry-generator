@@ -30,13 +30,15 @@ test/output
 # Development containers
 .devcontainer
 
-# Jekyll build files
-docs/_site/
-docs/vendor/
-docs/.bundle/
-docs/.jekyll-cache/
-docs/.sass-cache/
-docs/Gemfile.lock
+# doc  build files
+docs/.venv/
+docs/site/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
 
 # Node.js dependencies (if any)
 node_modules/
