@@ -2,13 +2,19 @@ name: Build and Deploy Documentation
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+    # 所有分支都可以触发构建，但只有 main/master 会部署
     paths:
       - 'docs/**'
       - 'docs/mkdocs.yml'
       - 'docs/pyproject.toml'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    # PR 也会触发构建（用于检查）
+    paths:
+      - 'docs/**'
+      - 'docs/mkdocs.yml'
+      - 'docs/pyproject.toml'
+      - '.github/workflows/docs.yml'
 
 permissions:
   contents: write
@@ -47,27 +53,26 @@ jobs:
           uv run python3 << 'PYEOF'
           import yaml
           import os
+          import re
           
           REPO_OWNER = os.environ['REPO_OWNER']
           REPO_NAME = os.environ['REPO_NAME']
           SITE_URL = os.environ['SITE_URL']
           DEFAULT_BRANCH = os.environ['DEFAULT_BRANCH']
           
+          # 读取文件内容
           with open('mkdocs.yml', 'r', encoding='utf-8') as f:
-              config = yaml.safe_load(f)
+              content = f.read()
           
-          # 更新 site_url
-          config['site_url'] = SITE_URL
+          # 使用字符串替换更新配置，避免解析 Python 对象标签
+          content = re.sub(r"^site_url:\s*.*$", f"site_url: {SITE_URL}", content, flags=re.MULTILINE)
+          content = re.sub(r"^repo_url:\s*.*$", f"repo_url: https://github.com/{REPO_OWNER}/{REPO_NAME}", content, flags=re.MULTILINE)
+          content = re.sub(r"^repo_name:\s*.*$", f"repo_name: {REPO_OWNER}/{REPO_NAME}", content, flags=re.MULTILINE)
+          content = re.sub(r"^edit_uri:\s*.*$", f"edit_uri: edit/{DEFAULT_BRANCH}/docs/docs/", content, flags=re.MULTILINE)
           
-          # 更新 repo_url 和 repo_name
-          config['repo_url'] = f'https://github.com/{REPO_OWNER}/{REPO_NAME}'
-          config['repo_name'] = f'{REPO_OWNER}/{REPO_NAME}'
-          
-          # 更新 edit_uri
-          config['edit_uri'] = f'edit/{DEFAULT_BRANCH}/docs/docs/'
-          
+          # 写回文件
           with open('mkdocs.yml', 'w', encoding='utf-8') as f:
-              yaml.dump(config, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+              f.write(content)
           PYEOF
         env:
           REPO_OWNER: ${{ github.repository_owner }}
