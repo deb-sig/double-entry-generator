@@ -208,10 +208,10 @@ extra:
       name: 讨论区
   alternate:
     - name: 中文
-      link: /
+      link: ""
       lang: zh
     - name: English
-      link: /en/
+      link: en
       lang: en
 
 # Extra CSS
