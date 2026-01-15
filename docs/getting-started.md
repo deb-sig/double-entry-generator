@@ -99,69 +99,116 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 double-entry-generator translate -p icbc -t beancount icbc_records.csv
 ```
 
-## 配置文件
+## 完整示例：支付宝账单转换
 
-### 基本配置结构
+下面通过一个完整的支付宝账单转换示例，展示如何使用 Double Entry Generator。
+
+### 1. 准备账单文件
+
+从支付宝下载 CSV 格式的账单文件。支付宝账单通常包含以下字段：
+- 交易时间
+- 交易分类
+- 交易对方
+- 商品说明
+- 收/支
+- 金额
+- 账户余额
+- 交易渠道
+- 交易订单号
+
+### 2. 创建配置文件
+
+创建 `alipay_config.yaml` 配置文件：
 
 ```yaml
-# config.yaml
-default:
-  # 默认账户设置
-  default_minus_account: "Assets:Bank:Checking"
-  default_plus_account: "Expenses:Unknown"
-  
-  # 默认货币
-  default_currency: "CNY"
-  
-  # 默认标签
-  default_tags: ["imported"]
+defaultMinusAccount: Assets:Alipay:Cash
+defaultPlusAccount: Expenses:FIXME
+defaultCurrency: CNY
+title: 我的支付宝账单
 
-# 规则配置
-rules:
-  - name: "餐饮消费"
-    conditions:
-      - field: "description"
-        contains: ["美团", "饿了么", "餐厅"]
-    target_account: "Expenses:Food"
-    tags: ["food", "dining"]
-
-# 账户映射
-accounts:
-  "支付宝": "Assets:Alipay"
-  "微信": "Assets:WeChat"
+alipay:
+  rules:
+    # 餐饮按时间分类
+    - category: 餐饮美食
+      time: "07:00-11:00"
+      targetAccount: Expenses:Food:Breakfast
+    - category: 餐饮美食
+      time: "11:00-15:00"
+      targetAccount: Expenses:Food:Lunch
+    - category: 餐饮美食
+      time: "17:00-22:00"
+      targetAccount: Expenses:Food:Dinner
+    
+    # 交通出行
+    - peer: "滴滴出行,高德打车"
+      sep: ","
+      targetAccount: Expenses:Transport:Taxi
+    
+    # 网购
+    - peer: "天猫,京东"
+      sep: ","
+      targetAccount: Expenses:Shopping:Online
+    
+    # 支付方式账户映射
+    - method: "余额宝"
+      methodAccount: Assets:Alipay:YuEBao
+    - method: "余额"
+      methodAccount: Assets:Alipay:Cash
 ```
+
+### 3. 执行转换
+
+```bash
+double-entry-generator translate \
+  --provider alipay \
+  --target beancount \
+  --config alipay_config.yaml \
+  --output my_alipay.beancount \
+  alipay_202501.csv
+```
+
+### 4. 查看结果
+
+生成的 `my_alipay.beancount` 文件示例：
+
+```beancount
+option "title" "我的支付宝账单"
+option "operating_currency" "CNY"
+
+1970-01-01 open Assets:Alipay:Cash
+1970-01-01 open Assets:Alipay:YuEBao
+1970-01-01 open Expenses:Food:Lunch
+1970-01-01 open Expenses:Transport:Taxi
+
+2025-01-15 * "滴滴出行" "快车" 
+    Expenses:Transport:Taxi     23.50 CNY
+    Assets:Alipay:Cash         -23.50 CNY
+
+2025-01-15 * "某餐厅" "午餐" 
+    Expenses:Food:Lunch         35.00 CNY
+    Assets:Alipay:YuEBao       -35.00 CNY
+```
+
+### 配置文件说明
+
+- **defaultMinusAccount**: 默认的资产账户（钱从哪里来）
+- **defaultPlusAccount**: 默认的支出账户（钱花到哪里去）
+- **defaultCurrency**: 默认货币单位
+- **alipay.rules**: 匹配规则列表，按顺序匹配，后面的规则会覆盖前面的设置
 
 ### 配置文件位置
 
+配置文件可以放在以下位置：
 1. 当前目录的 `config.yaml`
 2. 用户主目录的 `~/.double-entry-generator/config.yaml`
-3. 通过 `-c` 参数指定
-
-## 输出格式
-
-### Beancount 格式
-
-```beancount
-2024-01-15 * "美团外卖" "午餐"
-  Assets:Alipay  -25.00 CNY
-  Expenses:Food   25.00 CNY
-  # imported
-```
-
-### Ledger 格式
-
-```ledger
-2024-01-15 * 美团外卖 午餐
-    Assets:Alipay  -25.00 CNY
-    Expenses:Food   25.00 CNY
-    ; imported
-```
+3. 通过 `-c` 参数指定路径
 
 ## 下一步
 
-- 查看 [配置指南]({{ '/configuration/' | relative_url }}) 了解详细配置
-- 浏览 [支持的 Providers]({{ '/providers/' | relative_url }}) 查看所有支持的数据源
-- 查看 [示例]({{ '/examples/' | relative_url }}) 学习高级用法
+- 📖 查看 [基本使用示例]({{ '/examples/basic-usage/' | relative_url }}) - 了解更多实际使用场景（微信、银行账单等）
+- ⚙️ 查看 [配置指南]({{ '/configuration/' | relative_url }}) - 了解详细的配置选项和规则编写
+- 📋 浏览 [支持的 Providers]({{ '/providers/' | relative_url }}) - 查看所有支持的数据源
+- 🔧 查看 [高级规则配置]({{ '/examples/advanced-rules/' | relative_url }}) - 学习复杂规则编写技巧
 
 ## 常见问题
 

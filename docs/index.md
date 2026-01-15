@@ -10,7 +10,7 @@ permalink: /
 
 将各种账单格式智能转换为 Beancount 或 Ledger 格式，让复式记账变得简单高效
 
-[快速开始]({{ site.baseurl }}{% link getting-started.md %}){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [GitHub](https://github.com/deb-sig/double-entry-generator){: .btn .fs-5 .mb-4 .mb-md-0 }
+[快速开始]({{ site.baseurl }}{% link getting-started.md %}){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [English]({{ site.baseurl }}/en/){: .btn .btn-secondary .fs-5 .mb-4 .mb-md-0 .mr-2 } [GitHub](https://github.com/deb-sig/double-entry-generator){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ---
 

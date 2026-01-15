@@ -66,6 +66,8 @@ back_to_top_text: "回到顶部"
 aux_links:
   快速开始: "/double-entry-generator/getting-started/"
   配置指南: "/double-entry-generator/configuration/"
+  English: "/double-entry-generator/en/"
+  English README: "https://github.com/deb-sig/double-entry-generator/blob/master/README.en.md"
 
 # 代码高亮 - GitHub Pages兼容设置
 highlighter: rouge
