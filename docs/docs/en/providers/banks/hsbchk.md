@@ -60,6 +60,6 @@ Default support for Hong Kong Dollar (HKD), other currencies can also be configu
 
 ## Example Files
 
-- [HSBC HK Debit Card Example](../../example/hsbchk/debit/example-hsbchk-debit-records.csv)
-- [HSBC HK Credit Card Example](../../example/hsbchk/credit/example-hsbchk-credit-records.csv)
-- [Configuration Example](../../example/hsbchk/credit/config.yaml)
+- [HSBC HK Debit Card Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/hsbchk/debit/example-hsbchk-debit-records.csv)
+- [HSBC HK Credit Card Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/hsbchk/credit/example-hsbchk-credit-records.csv)
+- [Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/hsbchk/credit/config.yaml)

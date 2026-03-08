@@ -88,5 +88,5 @@ mt:
 
 ## 示例文件
 
-- [美团消费示例](../../example/mt/example-mt-output.bean)
-- [配置示例](../../example/mt/config.yaml)
+- [美团消费示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/mt/example-mt-output.beancount)
+- [配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/mt/config.yaml)

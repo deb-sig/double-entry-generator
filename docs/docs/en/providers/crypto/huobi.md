@@ -76,6 +76,6 @@ Supports mainstream cryptocurrencies:
 
 ## Example Files
 
-- [Huobi Trading Example](../../example/huobi/example-huobi-records.csv)
-- [Configuration Example](../../example/huobi/config.yaml)
-- [Output Example](../../example/huobi/example-huobi-output.beancount)
+- [Huobi Trading Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/huobi/example-huobi-records.csv)
+- [Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/huobi/config.yaml)
+- [Output Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/huobi/example-huobi-output.beancount)

@@ -67,7 +67,7 @@ abc_debit:
 
 ## Example Files
 
-- [Transaction Detail CSV Example](../../example/abc_debit/example-abc_debit-records.csv)
-- [Converted Beancount Example](../../example/abc_debit/example-abc_debit-output.beancount)
-- [Converted Ledger Example](../../example/abc_debit/example-abc_debit-output.ledger)
-- [Configuration File Example](../../example/abc_debit/config.yaml)
+- [Transaction Detail CSV Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/abc_debit/example-abc_debit-records.csv)
+- [Converted Beancount Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/abc_debit/example-abc_debit-output.beancount)
+- [Converted Ledger Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/abc_debit/example-abc_debit-output.ledger)
+- [Configuration File Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/abc_debit/config.yaml)

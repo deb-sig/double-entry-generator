@@ -60,6 +60,6 @@ bocom_debit:
 
 ## Example Files
 
-- [Transaction Detail CSV Example](../../example/bocom_debit/example-bocom-debit-records.csv)
-- [Converted Beancount Example](../../example/bocom_debit/example-bocom-debit-output.beancount)
-- [Configuration File Example](../../example/bocom_debit/config.yaml)
+- [Transaction Detail CSV Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_debit/example-bocom-debit-records.csv)
+- [Converted Beancount Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_debit/example-bocom-debit-output.beancount)
+- [Configuration File Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_debit/config.yaml)

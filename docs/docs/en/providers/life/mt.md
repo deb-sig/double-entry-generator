@@ -88,5 +88,5 @@ Supports records of coupons, discounts, and other promotional activities.
 
 ## Example Files
 
-- [Meituan Consumption Example](../../example/mt/example-mt-output.bean)
-- [Configuration Example](../../example/mt/config.yaml)
+- [Meituan Consumption Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/mt/example-mt-output.beancount)
+- [Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/mt/config.yaml)

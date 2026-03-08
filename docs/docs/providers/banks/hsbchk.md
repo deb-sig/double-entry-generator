@@ -60,6 +60,6 @@ hsbchk:
 
 ## 示例文件
 
-- [汇丰银行香港借记卡示例](../../example/hsbchk/debit/example-hsbchk-debit-records.csv)
-- [汇丰银行香港信用卡示例](../../example/hsbchk/credit/example-hsbchk-credit-records.csv)
-- [配置示例](../../example/hsbchk/credit/config.yaml)
+- [汇丰银行香港借记卡示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/hsbchk/debit/example-hsbchk-debit-records.csv)
+- [汇丰银行香港信用卡示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/hsbchk/credit/example-hsbchk-credit-records.csv)
+- [配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/hsbchk/credit/config.yaml)

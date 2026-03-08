@@ -8,7 +8,7 @@ description: Rule-based double-entry bookkeeping importer
 
 Intelligently convert various bill formats to Beancount or Ledger formats, making double-entry bookkeeping simple and efficient
 
-[:material-rocket: Getting Started](getting-started.md){ .md-button .md-button--primary }  [:material-github: GitHub](https://github.com/deb-sig/double-entry-generator){ .md-button }
+[Getting Started](getting-started.md){ .md-button .md-button--primary } [GitHub](https://github.com/deb-sig/double-entry-generator){ .md-button }
 
 ---
 
@@ -102,7 +102,6 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 ## Examples
 
 - [Basic Usage Examples](examples/basic-usage.md)
-- [Advanced Rules Configuration](examples/advanced-rules.md)
 
 ## Output Formats
 

@@ -95,6 +95,6 @@ The WeChat Provider provides rule-based matching, you can specify:
 
 ## Example Files
 
-- [WeChat Bill Example (CSV)](../../example/wechat/example-wechat-records.csv)
-- [WeChat Bill Example (XLSX)](../../example/wechat/example-wechat-records.xlsx)
-- [Configuration Example](../../example/wechat/config.yaml)
+- [WeChat Bill Example (CSV)](https://github.com/deb-sig/double-entry-generator/blob/master/example/wechat/example-wechat-records.csv)
+- [WeChat Bill Example (XLSX)](https://github.com/deb-sig/double-entry-generator/blob/master/example/wechat/example-wechat-records.xlsx)
+- [Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/wechat/config.yaml)

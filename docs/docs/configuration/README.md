@@ -1,12 +1,11 @@
 ---
-title: 配置指南
-description: 详细的配置和规则设置指南
+title: 配置总览
+description: 配置与规则编写说明
 ---
-
 
 # 配置总览
 
-Double Entry Generator 使用 YAML 格式的配置文件来定义转换规则。
+Double Entry Generator 使用 YAML 格式的配置文件定义转换规则。
 
 ## 基本结构
 
@@ -19,29 +18,29 @@ defaultCurrency: CNY
 title: 示例配置
 layout: default
 
-# Provider 特定配置
+# 各 provider 配置
 providerName:
   rules:
-    - # 规则1
-    - # 规则2
+    - # 规则 1
+    - # 规则 2
 ```
 
 ## 全局配置字段
 
-### 必需字段
+### 必填字段
 
-- `defaultMinusAccount`: 默认的金额减少账户
-- `defaultPlusAccount`: 默认的金额增加账户
-- `defaultCurrency`: 默认货币代码（如 CNY, USD, EUR）
+- `defaultMinusAccount`: 金额减少时的默认账户
+- `defaultPlusAccount`: 金额增加时的默认账户
+- `defaultCurrency`: 默认货币代码（如 CNY、USD、EUR）
 - `title`: 配置文件标题
 
 ### 可选字段
 
-- `defaultCashAccount`: 默认现金账户（部分 provider 使用）
+- `defaultCashAccount`: 默认现金/资金账户（部分 provider 使用）
 
 ## Provider 配置
 
-每个 provider 都有自己的配置节，节名与 provider 名称相同：
+每个 provider 有独立配置段，段名与 provider 名称一致：
 
 ```yaml
 alipay:
@@ -56,14 +55,14 @@ ccb:
 
 ## 规则优先级
 
-规则按照在配置文件中的顺序进行匹配：
+规则按配置中出现的顺序匹配：
 
-1. **从上到下依次匹配**
-2. **后面的规则优先级更高**
-3. **一笔交易可以匹配多个规则**
-4. **最后匹配的规则会覆盖前面的设置**
+1. **自上而下匹配**
+2. **后出现的规则优先级更高**
+3. **一笔交易可匹配多条规则**
+4. **最后匹配到的规则覆盖之前的设置**
 
-## 常见配置模式
+## 常见配置方式
 
 ### 按时间分类
 
@@ -89,7 +88,7 @@ rules:
     targetAccount: Expenses:Groceries
 ```
 
-### 按商家分类
+### 按商户分类
 
 ```yaml
 rules:
@@ -103,5 +102,5 @@ rules:
 
 ## 下一步
 
-- [规则配置详解](rules.html) - 学习如何编写匹配规则
-- [账户映射](accounts.html) - 了解账户设置最佳实践
+- [规则配置详解](rules.md) - 编写匹配规则
+- [账户映射](accounts.md) - 账户设置与最佳实践

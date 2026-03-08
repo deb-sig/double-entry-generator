@@ -61,6 +61,6 @@ The BMO Provider is based on North American bank bill format, supporting English
 
 ## Example Files
 
-- [BMO Debit Card Example](../../example/bmo/debit/example-bmo-records.csv)
-- [BMO Credit Card Example](../../example/bmo/credit/example-bmo-records.csv)
-- [Configuration Example](../../example/bmo/credit/config.yaml)
+- [BMO Debit Card Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/bmo/debit/example-bmo-records.csv)
+- [BMO Credit Card Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/bmo/credit/example-bmo-records.csv)
+- [Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/bmo/credit/config.yaml)

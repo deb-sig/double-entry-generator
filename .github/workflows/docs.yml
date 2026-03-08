@@ -46,6 +46,13 @@ jobs:
       - name: Install dependencies
         working-directory: docs
         run: uv sync
+
+      # Node 仅用于构建时预生成搜索索引（prebuild_index: true），部署后的静态站无需 Node
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
       
       - name: Configure MkDocs for repository
         working-directory: docs
@@ -86,6 +93,10 @@ jobs:
         run: uv run mkdocs build --site-dir ../site
         env:
           BASE_URL: "${{ steps.pages.outputs.base_path }}"
+
+      - name: Patch search (CJK index + worker/main.js)
+        working-directory: docs
+        run: uv run python scripts/patch_search_worker.py ../site
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -95,7 +106,7 @@ jobs:
   # Deployment job
   deploy:
     # 在 fork 仓库中也允许部署（如果启用了 GitHub Pages）
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/feat/docs'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/feat/docs' || github.ref == 'refs/heads/docs/i18n-and-quickstart'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

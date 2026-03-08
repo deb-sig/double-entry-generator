@@ -9,9 +9,7 @@ title: 规则配置
 
 ## 规则匹配字段
 
-### 通用字段
-
-所有 provider 都支持的字段：
+以下为常见的规则匹配字段；**各 provider 支持的字段不同**，具体以各 provider 文档为准。
 
 - `type`: 交易类型（如：支出、收入、其他）
 - `peer`: 交易对方（商家名称、个人姓名等）
@@ -101,11 +99,20 @@ title: 规则配置
 
 ### 添加标签
 
+支付宝使用 `tags`，微信使用 `tag`（均为可选，分隔符用 `sep`）：
+
 ```yaml
+# 支付宝 (alipay)
 - peer: "滴滴出行"
   targetAccount: Expenses:Transport:Taxi
-  tag: "transport,taxi"  # 添加标签
-  sep: ","              # 标签分隔符
+  tags: "transport,taxi"
+  sep: ","
+
+# 微信 (wechat)
+- peer: "滴滴出行"
+  targetAccount: Expenses:Transport:Taxi
+  tag: "transport,taxi"
+  sep: ","
 ```
 
 ## 规则优先级和覆盖
@@ -118,16 +125,18 @@ title: 规则配置
 
 ### 示例
 
+以下为规则列表内容，需写在对应 provider 的 `rules` 下（如 `alipay.rules`、`wechat.rules`）：
+
 ```yaml
-rules:
-  # 通用规则（优先级低）
-  - peer: "美团"
-    targetAccount: Expenses:Food
-  
-  # 特定时间规则（优先级高）
-  - peer: "美团"
-    time: "11:00-14:00"
-    targetAccount: Expenses:Food:Lunch  # 覆盖上面的设置
+alipay:
+  rules:
+    # 通用规则（优先级低）
+    - peer: "美团"
+      targetAccount: Expenses:Food
+    # 特定时间规则（优先级高，写后面会覆盖前面）
+    - peer: "美团"
+      time: "11:00-14:00"
+      targetAccount: Expenses:Food:Lunch
 ```
 
 ## 最佳实践
@@ -135,18 +144,18 @@ rules:
 ### 1. 从宽泛到具体
 
 ```yaml
-rules:
-  # 先设置大类
-  - category: 餐饮美食
-    targetAccount: Expenses:Food
-  
-  # 再细化特定情况
-  - category: 餐饮美食
-    time: "11:00-14:00"
-    targetAccount: Expenses:Food:Lunch
+alipay:
+  rules:
+    - category: 餐饮美食
+      targetAccount: Expenses:Food
+    - category: 餐饮美食
+      time: "11:00-14:00"
+      targetAccount: Expenses:Food:Lunch
 ```
 
 ### 2. 使用多关键字
+
+在单条规则内用 `peer`（或 `item`、`category` 等）配合 `sep` 写多个关键字，命中其一即匹配：
 
 ```yaml
 - peer: "美团,饿了么,肯德基,麦当劳"

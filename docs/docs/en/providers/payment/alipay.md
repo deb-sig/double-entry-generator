@@ -156,6 +156,6 @@ Built-in support for profit and loss accounting for fund and gold trading.
 
 ## Example Files
 
-- [Alipay Bill Example](../../example/alipay/example-alipay-records.csv)
-- [Configuration Example](../../example/alipay/config.yaml)
-- [Output Example](../../example/alipay/example-alipay-output.beancount)
+- [Alipay Bill Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/alipay/example-alipay-records.csv)
+- [Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/alipay/config.yaml)
+- [Output Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/alipay/example-alipay-output.beancount)

@@ -65,5 +65,5 @@ htsec:
 
 ## 示例文件
 
-- [海通证券示例](../../example/htsec/example-htsec-output.beancount)
-- [配置示例](../../example/htsec/config.yaml)
+- [海通证券示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/htsec/example-htsec-output.beancount)
+- [配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/htsec/config.yaml)

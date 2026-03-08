@@ -101,39 +101,40 @@ double-entry-generator translate -p icbc -t beancount icbc_records.csv
 
 ### Basic Configuration Structure
 
+The configuration file is YAML. Top-level keys include default accounts, default currency, and **per-provider** sections (e.g. `alipay`, `wechat`). Rules are defined under the provider they apply to, not in a global `rules` or `conditions` block.
+
+Example (Alipay): default accounts and currency, then `alipay.rules` with match fields and `targetAccount` / `methodAccount`:
+
 ```yaml
-# config.yaml
-default:
-  # Default account settings
-  default_minus_account: "Assets:Bank:Checking"
-  default_plus_account: "Expenses:Unknown"
-  
-  # Default currency
-  default_currency: "CNY"
-  
-  # Default tags
-  default_tags: ["imported"]
+# config.yaml (example for Alipay)
+defaultMinusAccount: Assets:Alipay:Cash
+defaultPlusAccount: Expenses:FIXME
+defaultCurrency: CNY
+title: My Alipay Ledger
 
-# Rule configuration
-rules:
-  - name: "Food & Dining"
-    conditions:
-      - field: "description"
-        contains: ["Meituan", "Ele.me", "Restaurant"]
-    target_account: "Expenses:Food"
-    tags: ["food", "dining"]
-
-# Account mapping
-accounts:
-  "Alipay": "Assets:Alipay"
-  "WeChat": "Assets:WeChat"
+alipay:
+  rules:
+    - category: "餐饮美食"
+      time: "07:00-11:00"
+      targetAccount: Expenses:Food:Breakfast
+    - category: "餐饮美食"
+      time: "11:00-15:00"
+      targetAccount: Expenses:Food:Lunch
+    - peer: "DiDi,Amap"
+      sep: ","
+      targetAccount: Expenses:Transport:Taxi
+    - method: "Yu'e Bao"
+      methodAccount: Assets:Alipay:YuEBao
+    - method: "Balance"
+      methodAccount: Assets:Alipay:Cash
 ```
+
+Match fields (`peer`, `category`, `type`, `item`, `method`, `time`, `minPrice`, `maxPrice`, etc.) are **top-level keys in each rule**; there is no nested `conditions` block. See [Rules Configuration](configuration/rules.md) for all supported fields per provider.
 
 ### Configuration File Locations
 
-1. `config.yaml` in the current directory
-2. `~/.double-entry-generator/config.yaml` in the user's home directory
-3. Specified via the `-c` parameter
+1. Specified via the `-c` / `--config` parameter (e.g. `-c config.yaml` in the current directory).
+2. If not specified: the program looks for a file named `.double-entry-generator` (with extension such as `.yaml` or `.yml`) in your home directory, e.g. `~/.double-entry-generator.yaml`.
 
 ## Output Formats
 
@@ -172,7 +173,7 @@ A: You can:
 
 ### Q: How to customize account mapping?
 
-A: Add mapping relationships in the `accounts` section of the configuration file, supporting regular expression matching.
+A: Use the **default account** keys (`defaultMinusAccount`, `defaultPlusAccount`, `defaultCashAccount`, etc.) for fallbacks, and use **rules** under each provider (e.g. `alipay.rules`) to set `targetAccount`, `methodAccount`, or `pnlAccount` per match. There is no separate `accounts` section; account assignment is done via these rule fields and defaults. See [Configuration Guide](configuration/README.md) and [Account Mapping](configuration/accounts.md).
 
 ### Q: Output file encoding issues?
 

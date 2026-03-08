@@ -58,5 +58,5 @@ hxsec:
 
 ## 示例文件
 
-- [华西证券示例](../../example/hxsec/example-hxsec-output.beancount)
-- [配置示例](../../example/hxsec/config.yaml)
+- [华西证券示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/hxsec/example-hxsec-output.beancount)
+- [配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/hxsec/config.yaml)

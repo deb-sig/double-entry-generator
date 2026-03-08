@@ -225,5 +225,4 @@ bean-report main.beancount balances
 
 ## Next Steps
 
-- [Advanced Rules Configuration](../advanced-rules/) - Learn more complex rule configuration techniques
-- [Configuration Overview](../../configuration/) - Understand detailed configuration file instructions
+- [Configuration Overview](../configuration/README.md) - Understand detailed configuration file instructions

@@ -77,5 +77,5 @@ As a credit card bill, the account relationships are:
 
 ## Example Files
 
-- [CITIC Bank Credit Card Example](../../example/citic/credit/example-citic-output.beancount)
-- [Configuration Example](../../example/citic/credit/config.yaml)
+- [CITIC Bank Credit Card Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/citic/credit/example-citic-credit-output.beancount)
+- [Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/citic/credit/config.yaml)

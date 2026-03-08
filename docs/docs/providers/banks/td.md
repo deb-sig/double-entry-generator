@@ -61,6 +61,6 @@ TD Provider 针对加拿大本土商户进行了优化，如 Loblaws、Canadian 
 
 ## 示例文件
 
-- [TD银行示例](../../example/td/example-td-records.csv)
-- [配置示例](../../example/td/config.yaml)
-- [输出示例](../../example/td/example-td-output.beancount)
+- [TD银行示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/td/example-td-records.csv)
+- [配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/td/config.yaml)
+- [输出示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/td/example-td-output.beancount)

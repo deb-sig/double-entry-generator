@@ -99,6 +99,6 @@ jd:
 
 ## 示例文件
 
-- [京东购物示例](../../example/jd/example-jd-records.csv)
-- [配置示例](../../example/jd/config.yaml)
-- [输出示例](../../example/jd/example-jd-output.beancount)
+- [京东购物示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/jd/example-jd-records.csv)
+- [配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/jd/config.yaml)
+- [输出示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/jd/example-jd-output.beancount)

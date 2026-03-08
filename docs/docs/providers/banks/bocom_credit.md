@@ -49,6 +49,6 @@ bocom_credit:
 
 ## 示例文件
 
-- [交易明细 CSV 示例](../../example/bocom_credit/example-bocom_credit-records.csv)
-- [转换后 Beancount 示例](../../example/bocom_credit/example-bocom_credit-output.beancount)
-- [配置文件示例](../../example/bocom_credit/config.yaml)
+- [交易明细 CSV 示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_credit/example-bocom_credit-records.csv)
+- [转换后 Beancount 示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_credit/example-bocom_credit-output.beancount)
+- [配置文件示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_credit/config.yaml)

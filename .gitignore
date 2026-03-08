@@ -33,6 +33,7 @@ test/output
 # doc  build files
 docs/.venv/
 docs/site/
+docs/docs.egg-info/
 __pycache__/
 *.pyc
 *.pyo

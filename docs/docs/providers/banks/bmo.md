@@ -61,6 +61,6 @@ BMO Provider 基于北美银行账单格式，支持英文商户名称匹配。
 
 ## 示例文件
 
-- [BMO借记卡示例](../../example/bmo/debit/example-bmo-records.csv)
-- [BMO信用卡示例](../../example/bmo/credit/example-bmo-records.csv)
-- [配置示例](../../example/bmo/credit/config.yaml)
+- [BMO借记卡示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/bmo/debit/example-bmo-records.csv)
+- [BMO信用卡示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/bmo/credit/example-bmo-records.csv)
+- [配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/bmo/credit/config.yaml)

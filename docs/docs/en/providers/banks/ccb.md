@@ -107,6 +107,6 @@ CCB bill files typically contain the following information:
 
 ## Example Files
 
-- [CCB Bill Example](../../example/ccb/建设银行_xxxx_2025xxxx_2025xxxx.xls)
-- [Configuration Example](../../example/ccb/config.yaml)
-- [Output Example](../../example/ccb/example-ccb-output.beancount)
+- [CCB Bill Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/ccb/交易明细_xxxx_2025xxxx_2025xxxx.xls)
+- [Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/ccb/config.yaml)
+- [Output Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/ccb/example-ccb-output.beancount)

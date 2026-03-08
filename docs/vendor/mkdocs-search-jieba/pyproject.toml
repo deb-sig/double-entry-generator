@@ -1,0 +1,18 @@
+[project]
+name = "mkdocs-search-jieba"
+version = "0.1.0"
+description = "MkDocs search plugin: jieba Chinese segmentation for search index"
+requires-python = ">=3.11"
+dependencies = [
+    "jieba>=0.42.1",
+]
+
+[project.entry-points."mkdocs.plugins"]
+search_jieba = "mkdocs_search_jieba:SearchJiebaPlugin"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mkdocs_search_jieba"]

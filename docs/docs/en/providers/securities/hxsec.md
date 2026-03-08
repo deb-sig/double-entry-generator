@@ -58,5 +58,5 @@ Huaxi Securities uses Tongdaxin trading system, file format is similar to other 
 
 ## Example Files
 
-- [HXSEC Example](../../example/hxsec/example-hxsec-output.beancount)
-- [Configuration Example](../../example/hxsec/config.yaml)
+- [HXSEC Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/hxsec/example-hxsec-output.beancount)
+- [Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/hxsec/config.yaml)

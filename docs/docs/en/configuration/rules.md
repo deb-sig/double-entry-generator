@@ -9,9 +9,7 @@ Rules are the core functionality of Double Entry Generator, used to automaticall
 
 ## Rule Matching Fields
 
-### Common Fields
-
-Fields supported by all providers:
+The following are common rule-matching fields. **Support varies by provider**; see each provider’s documentation for details.
 
 - `type`: Transaction type (e.g., expense, income, other)
 - `peer`: Transaction counterpart (merchant name, personal name, etc.)
@@ -101,11 +99,20 @@ Special fields supported by different providers:
 
 ### Add Tags
 
+Alipay uses `tags`; WeChat uses `tag`. Both are optional; `sep` is the separator.
+
 ```yaml
+# Alipay
 - peer: "滴滴出行"
   targetAccount: Expenses:Transport:Taxi
-  tag: "transport,taxi"  # Add tags
-  sep: ","              # Tag separator
+  tags: "transport,taxi"
+  sep: ","
+
+# WeChat
+- peer: "滴滴出行"
+  targetAccount: Expenses:Transport:Taxi
+  tag: "transport,taxi"
+  sep: ","
 ```
 
 ## Rule Priority and Override
@@ -118,16 +125,16 @@ Special fields supported by different providers:
 
 ### Example
 
+Rules are listed under the provider’s `rules` key (e.g. `alipay.rules`, `wechat.rules`):
+
 ```yaml
-rules:
-  # General rule (lower priority)
-  - peer: "美团"
-    targetAccount: Expenses:Food
-  
-  # Specific time rule (higher priority)
-  - peer: "美团"
-    time: "11:00-14:00"
-    targetAccount: Expenses:Food:Lunch  # Overrides the above setting
+alipay:
+  rules:
+    - peer: "美团"
+      targetAccount: Expenses:Food
+    - peer: "美团"
+      time: "11:00-14:00"
+      targetAccount: Expenses:Food:Lunch  # Later rule overrides
 ```
 
 ## Best Practices
@@ -135,18 +142,18 @@ rules:
 ### 1. From General to Specific
 
 ```yaml
-rules:
-  # Set general category first
-  - category: 餐饮美食
-    targetAccount: Expenses:Food
-  
-  # Then refine specific cases
-  - category: 餐饮美食
-    time: "11:00-14:00"
-    targetAccount: Expenses:Food:Lunch
+alipay:
+  rules:
+    - category: 餐饮美食
+      targetAccount: Expenses:Food
+    - category: 餐饮美食
+      time: "11:00-14:00"
+      targetAccount: Expenses:Food:Lunch
 ```
 
 ### 2. Use Multiple Keywords
+
+Use one of the match fields (e.g. `peer`) with multiple values separated by `sep`; a transaction matching any of them triggers the rule:
 
 ```yaml
 - peer: "美团,饿了么,肯德基,麦当劳"

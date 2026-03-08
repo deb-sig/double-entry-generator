@@ -8,7 +8,7 @@ description: 基于规则的复式记账导入器
 
 将各种账单格式智能转换为 Beancount 或 Ledger 格式，让复式记账变得简单高效
 
-[:material-rocket: 快速开始](getting-started.md){ .md-button .md-button--primary } [:material-github: GitHub](https://github.com/deb-sig/double-entry-generator){ .md-button }
+[快速开始](getting-started.md){ .md-button .md-button--primary } [GitHub](https://github.com/deb-sig/double-entry-generator){ .md-button }
 
 ---
 
@@ -102,7 +102,6 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 ## 示例
 
 - [基本使用示例](examples/basic-usage.md)
-- [高级规则配置](examples/advanced-rules.md)
 
 ## 输出格式
 

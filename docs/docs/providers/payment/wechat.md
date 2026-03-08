@@ -95,6 +95,6 @@ wechat:
 
 ## 示例文件
 
-- [微信账单示例 (CSV)](../../example/wechat/example-wechat-records.csv)
-- [微信账单示例 (XLSX)](../../example/wechat/example-wechat-records.xlsx)
-- [配置示例](../../example/wechat/config.yaml) 
+- [微信账单示例 (CSV)](https://github.com/deb-sig/double-entry-generator/blob/master/example/wechat/example-wechat-records.csv)
+- [微信账单示例 (XLSX)](https://github.com/deb-sig/double-entry-generator/blob/master/example/wechat/example-wechat-records.xlsx)
+- [配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/wechat/config.yaml) 

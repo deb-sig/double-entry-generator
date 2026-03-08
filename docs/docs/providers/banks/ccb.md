@@ -107,6 +107,6 @@ ccb:
 
 ## 示例文件
 
-- [建设银行账单示例](../../example/ccb/建设银行_xxxx_2025xxxx_2025xxxx.xls)
-- [配置示例](../../example/ccb/config.yaml)
-- [输出示例](../../example/ccb/example-ccb-output.beancount) 
+- [建设银行账单示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/ccb/交易明细_xxxx_2025xxxx_2025xxxx.xls)
+- [配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/ccb/config.yaml)
+- [输出示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/ccb/example-ccb-output.beancount) 

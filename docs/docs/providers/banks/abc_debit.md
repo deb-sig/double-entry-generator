@@ -66,7 +66,7 @@ abc_debit:
 
 ## 示例文件
 
-- [交易明细 CSV 示例](../../example/abc_debit/example-abc_debit-records.csv)
-- [转换后 Beancount 示例](../../example/abc_debit/example-abc_debit-output.beancount)
-- [转换后 Ledger 示例](../../example/abc_debit/example-abc_debit-output.ledger)
-- [配置文件示例](../../example/abc_debit/config.yaml)
+- [交易明细 CSV 示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/abc_debit/example-abc_debit-records.csv)
+- [转换后 Beancount 示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/abc_debit/example-abc_debit-output.beancount)
+- [转换后 Ledger 示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/abc_debit/example-abc_debit-output.ledger)
+- [配置文件示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/abc_debit/config.yaml)

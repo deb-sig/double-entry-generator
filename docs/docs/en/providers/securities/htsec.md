@@ -65,5 +65,5 @@ HTSEC supports various transaction types:
 
 ## Example Files
 
-- [HTSEC Example](../../example/htsec/example-htsec-output.beancount)
-- [Configuration Example](../../example/htsec/config.yaml)
+- [HTSEC Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/htsec/example-htsec-output.beancount)
+- [Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/htsec/config.yaml)

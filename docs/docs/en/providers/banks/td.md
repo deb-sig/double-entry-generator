@@ -61,6 +61,6 @@ The TD Provider is optimized for Canadian local merchants, such as Loblaws, Cana
 
 ## Example Files
 
-- [TD Bank Example](../../example/td/example-td-records.csv)
-- [Configuration Example](../../example/td/config.yaml)
-- [Output Example](../../example/td/example-td-output.beancount)
+- [TD Bank Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/td/example-td-records.csv)
+- [Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/td/config.yaml)
+- [Output Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/td/example-td-output.beancount)

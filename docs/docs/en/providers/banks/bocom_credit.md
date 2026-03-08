@@ -49,6 +49,6 @@ bocom_credit:
 
 ## Example Files
 
-- [Transaction Detail CSV Example](../../example/bocom_credit/example-bocom_credit-records.csv)
-- [Converted Beancount Example](../../example/bocom_credit/example-bocom_credit-output.beancount)
-- [Configuration File Example](../../example/bocom_credit/config.yaml)
+- [Transaction Detail CSV Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_credit/example-bocom_credit-records.csv)
+- [Converted Beancount Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_credit/example-bocom_credit-output.beancount)
+- [Configuration File Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_credit/config.yaml)

@@ -256,5 +256,4 @@ bean-report main.beancount balances
 
 ## 下一步
 
-- [高级规则配置](../advanced-rules/) - 学习更复杂的规则配置技巧
-- [配置总览](../../configuration/) - 了解配置文件的详细说明
+- [配置总览](../configuration/README.md) - 了解配置文件的详细说明

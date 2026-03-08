@@ -196,18 +196,14 @@ option "operating_currency" "CNY"
 
 ### 配置文件位置
 
-配置文件可以放在以下位置：
-1. 当前目录的 `config.yaml`
-2. 用户主目录的 `~/.double-entry-generator/config.yaml`
-3. 通过 `-c` 参数指定路径
+- 通过 `-c` / `--config` 参数指定路径时，使用该文件（例如当前目录的 `config.yaml`）。
+- 未指定时，程序在用户主目录下查找名为 `.double-entry-generator` 的文件（扩展名可为 `.yaml` 或 `.yml`），例如 `~/.double-entry-generator.yaml`。
 
 ## 下一步
 
 - 📖 查看 [基本使用示例](examples/basic-usage.md) - 了解更多实际使用场景（微信、银行账单等）
 - ⚙️ 查看 [配置指南](configuration/README.md) - 了解详细的配置选项和规则编写
 - 📋 浏览 [支持的 Providers](providers.md) - 查看所有支持的数据源
-- 🔧 查看 [高级规则配置](examples/advanced-rules.md) - 学习复杂规则编写技巧
-
 ## 常见问题
 
 ### Q: 如何处理不支持的账单格式？
@@ -219,7 +215,7 @@ A: 可以：
 
 ### Q: 如何自定义账户映射？
 
-A: 在配置文件的 `accounts` 部分添加映射关系，支持正则表达式匹配。
+A: 通过**默认账户**配置（`defaultMinusAccount`、`defaultPlusAccount`、`defaultCashAccount` 等）设置兜底账户，通过各 provider 下的**规则**（如 `alipay.rules`）中的 `targetAccount`、`methodAccount`、`pnlAccount` 等字段按匹配结果指定账户。没有单独的 `accounts` 配置段，账户由规则与默认值共同决定。详见 [配置指南](configuration/README.md) 与 [账户映射](configuration/accounts.md)。
 
 ### Q: 输出文件编码问题？
 

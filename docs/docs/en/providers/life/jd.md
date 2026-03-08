@@ -79,6 +79,6 @@ JD.com supports multiple payment methods:
 
 ## Example Files
 
-- [JD.com Shopping Example](../../example/jd/example-jd-records.csv)
-- [Configuration Example](../../example/jd/config.yaml)
-- [Output Example](../../example/jd/example-jd-output.beancount)
+- [JD.com Shopping Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/jd/example-jd-records.csv)
+- [Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/jd/config.yaml)
+- [Output Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/jd/example-jd-output.beancount)

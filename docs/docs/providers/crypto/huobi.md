@@ -76,6 +76,6 @@ huobi:
 
 ## 示例文件
 
-- [火币交易示例](../../example/huobi/example-huobi-records.csv)
-- [配置示例](../../example/huobi/config.yaml)
-- [输出示例](../../example/huobi/example-huobi-output.beancount)
+- [火币交易示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/huobi/example-huobi-records.csv)
+- [配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/huobi/config.yaml)
+- [输出示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/huobi/example-huobi-output.beancount)

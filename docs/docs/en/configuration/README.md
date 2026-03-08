@@ -103,5 +103,5 @@ rules:
 
 ## Next Steps
 
-- [Rules Configuration Details](rules.html) - Learn how to write matching rules
-- [Account Mapping](accounts.html) - Learn account setup best practices
+- [Rules Configuration Details](rules.md) - Learn how to write matching rules
+- [Account Mapping](accounts.md) - Learn account setup best practices

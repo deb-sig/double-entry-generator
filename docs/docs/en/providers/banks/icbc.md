@@ -88,6 +88,6 @@ The ICBC Provider can automatically identify bill types:
 
 ## Example Files
 
-- [ICBC Debit Card Example](../../example/icbc/debit-v1/example-icbc-debit-v1-records.csv)
-- [ICBC Credit Card Example](../../example/icbc/credit/example-icbc-credit-records.csv)
-- [Configuration Example](../../example/icbc/credit/config.yaml)
+- [ICBC Debit Card Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/icbc/debit-v1/example-icbc-debit-v1-records.csv)
+- [ICBC Credit Card Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/icbc/credit/example-icbc-credit-records.csv)
+- [Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/icbc/credit/config.yaml)

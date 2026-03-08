@@ -156,6 +156,6 @@ alipay:
 
 ## 示例文件
 
-- [支付宝账单示例](../../example/alipay/example-alipay-records.csv)
-- [配置示例](../../example/alipay/config.yaml)
-- [输出示例](../../example/alipay/example-alipay-output.beancount)
+- [支付宝账单示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/alipay/example-alipay-records.csv)
+- [配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/alipay/config.yaml)
+- [输出示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/alipay/example-alipay-output.beancount)

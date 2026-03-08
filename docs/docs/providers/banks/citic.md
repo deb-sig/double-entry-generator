@@ -77,5 +77,5 @@ citic:
 
 ## 示例文件
 
-- [中信银行信用卡示例](../../example/citic/credit/example-citic-output.beancount)
-- [配置示例](../../example/citic/credit/config.yaml)
+- [中信银行信用卡示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/citic/credit/example-citic-credit-output.beancount)
+- [配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/citic/credit/config.yaml)

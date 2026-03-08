@@ -88,6 +88,6 @@ ICBC Provider 可以自动识别账单类型：
 
 ## 示例文件
 
-- [工商银行借记卡示例](../../example/icbc/debit-v1/example-icbc-debit-v1-records.csv)
-- [工商银行信用卡示例](../../example/icbc/credit/example-icbc-credit-records.csv)
-- [配置示例](../../example/icbc/credit/config.yaml)
+- [工商银行借记卡示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/icbc/debit-v1/example-icbc-debit-v1-records.csv)
+- [工商银行信用卡示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/icbc/credit/example-icbc-credit-records.csv)
+- [配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/icbc/credit/config.yaml)
