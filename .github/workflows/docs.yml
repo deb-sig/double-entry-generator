@@ -47,12 +47,7 @@ jobs:
         working-directory: docs
         run: uv sync
 
-      # Node 仅用于构建时预生成搜索索引（prebuild_index: true），部署后的静态站无需 Node
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      
+      # Node 仅用于 MkDocs 构建时预生成搜索索引（prebuild_index），使用 runner 自带 Node，无需 setup-node（避免无 package-lock 时的 cache 报错）
       - name: Configure MkDocs for repository
         working-directory: docs
         run: |
