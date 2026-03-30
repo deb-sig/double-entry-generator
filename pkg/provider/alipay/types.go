@@ -35,6 +35,7 @@ type Order struct {
 	Category     string    `json:"category,omitempty"`    // 交易分类
 	DealNo       string    `json:"dealNo,omitempty"`      // 交易订单号
 	MerchantId   string    `json:"merchantId,omitempty"`  // 商家订单号
+	Note         string    `json:"note,omitempty"`        // 备注
 	PayTime      time.Time `json:"payTime,omitempty"`     // 交易时间
 
 	// below is filled at runtime

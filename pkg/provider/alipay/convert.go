@@ -19,6 +19,7 @@ func (a *Alipay) convertToIR() *ir.IR {
 			OrderID:      &o.DealNo,
 			Type:         convertType(o.Type),
 			TypeOriginal: o.TypeOriginal,
+			Note:         o.Note,
 		}
 		irO.Metadata = getMetadata(o)
 		if o.MerchantId != "" {

@@ -44,6 +44,7 @@ func (a *Alipay) translateToOrders(array []string) error {
 		log.Println("parse create time error:", array[0], err)
 		return err
 	}
+	bill.Note = array[11]
 
 	a.Orders = append(a.Orders, bill)
 	return nil
