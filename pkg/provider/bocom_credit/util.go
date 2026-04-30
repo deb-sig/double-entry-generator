@@ -81,9 +81,9 @@ func splitDescription(description string) (string, string) {
 
 func inferOrderType(typeOriginal string) (OrderType, error) {
 	switch strings.TrimSpace(typeOriginal) {
-	case "退货", "信用卡还款", "红包还款", "刷卡金返还":
+	case "退货", "信用卡还款", "红包还款", "刷卡金返还", "自动购汇还款":
 		return OrderTypeRecv, nil
-	case "消费", "刷卡金扣回":
+	case "消费", "刷卡金扣回", "分期扣款", "自动购汇扣款":
 		return OrderTypeSend, nil
 	default:
 		return OrderTypeUnknown, fmt.Errorf("unsupported transaction type: %s", typeOriginal)
