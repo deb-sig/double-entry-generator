@@ -14,6 +14,7 @@ Double Entry Generator supports data conversion from the following financial ser
 - [China CITIC Bank (CITIC)](en/providers/banks/citic.md )
 - [China Merchants Bank (CMB)](en/providers/banks/cmb.md ) - Supports savings and credit cards
 - [Agricultural Bank of China Debit Card (ABC Debit)](en/providers/banks/abc_debit.md )
+- [Industrial Bank Debit Card (CIB Debit)](en/providers/banks/cib_debit.md )
 - [HSBC Hong Kong (HSBCHK)](en/providers/banks/hsbchk.md )
 - [Bank of Montreal (BMO)](en/providers/banks/bmo.md )
 - [Toronto-Dominion Bank (TD)](en/providers/banks/td.md )
@@ -25,6 +26,7 @@ Double Entry Generator supports data conversion from the following financial ser
 ## 📈 Securities
 - [Haitong Securities (HTSEC)](en/providers/securities/htsec.md )
 - [Huaxi Securities (HXSEC)](en/providers/securities/hxsec.md )
+- [Interactive Brokers (IBKR)](en/providers/securities/ibkr.md )
 
 ## 🪙 Cryptocurrency
 - [Huobi](en/providers/crypto/huobi.md )

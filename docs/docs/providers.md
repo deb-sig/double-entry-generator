@@ -14,6 +14,7 @@ Double Entry Generator 支持以下金融服务提供商的数据转换：
 - [中信银行 (CITIC)](providers/banks/citic.md )
 - [招商银行 (CMB)](providers/banks/cmb.md ) - 支持储蓄卡和信用卡
 - [中国农业银行储蓄卡 (ABC Debit)](providers/banks/abc_debit.md )
+- [兴业银行借记卡 (CIB Debit)](providers/banks/cib_debit.md )
 - [香港上海汇丰银行 (HSBCHK)](providers/banks/hsbchk.md )
 - [蒙特利尔银行 (BMO)](providers/banks/bmo.md )
 - [道明银行 (TD)](providers/banks/td.md )
@@ -25,6 +26,7 @@ Double Entry Generator 支持以下金融服务提供商的数据转换：
 ## 📈 证券
 - [海通证券 (HTSEC)](providers/securities/htsec.md )
 - [华西证券 (HXSEC)](providers/securities/hxsec.md )
+- [Interactive Brokers (IBKR)](providers/securities/ibkr.md )
 
 ## 🪙 加密货币
 - [火币 (Huobi)](providers/crypto/huobi.md )

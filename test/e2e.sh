@@ -49,7 +49,7 @@ collect_input_files() {
         # Root-level case: only consider input files directly under the provider
         # directory (e.g. `example/wechat/example-wechat-records.csv`). This keeps
         # provider root tests independent from `credit/`, `debit/` sub-cases.
-        for ext in csv xls xlsx; do
+        for ext in csv xls xlsx xml; do
             for file in "$example_dir"/*."$ext"; do
                 [ -f "$file" ] && INPUT_FILES+=("$file")
             done
@@ -57,7 +57,7 @@ collect_input_files() {
         return 0
     fi
 
-    for ext in csv xls xlsx; do
+    for ext in csv xls xlsx xml; do
         while IFS= read -r file; do
             [ -f "$file" ] && INPUT_FILES+=("$file")
         done < <(find "$example_dir" -type f -name "*.$ext" 2>/dev/null || true)
