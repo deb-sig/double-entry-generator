@@ -52,6 +52,8 @@ const (
 	ProviderCCB = "ccb"
 	//ProviderCmb is the name for cmb provider
 	ProviderCmb = "cmb"
+	//ProviderOKLink is the name for OKLink provider (supports multiple chains: ERC20, TRC20, BSC, etc.).
+	ProviderOKLink = "oklink"
 	// ProviderBocomDebit is the name for Bank of Communications debit provider
 	ProviderBocomDebit = "bocom_debit"
 	// ProviderAbcDebit is the name for Agricultural Bank of China debit card provider.

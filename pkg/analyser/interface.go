@@ -19,6 +19,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/mt"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/oklink"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/spdb_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/td"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/wechat"
@@ -68,6 +69,8 @@ func New(providerName string) (Interface, error) {
 		return ccb.CCB{}, nil
 	case consts.ProviderCmb:
 		return cmb.Cmb{}, nil
+	case consts.ProviderOKLink:
+		return oklink.OKLink{}, nil
 	case consts.ProviderAbcDebit:
 		return abc_debit.AbcDebit{}, nil
 	case consts.ProviderSpdbDebit:

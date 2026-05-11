@@ -86,6 +86,7 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 ### 🪙 加密货币
 
 - [火币 (Huobi)](https://deb-sig.github.io/double-entry-generator/providers/crypto/huobi.html) - 币币交易记录
+- [OKLink](https://deb-sig.github.io/double-entry-generator/providers/crypto/oklink.html) - 多链代币转账记录（ERC20、TRC20 等）
 
 ### 🛒 生活服务
 
