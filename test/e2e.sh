@@ -153,6 +153,21 @@ run_test_case() {
         return 0
     fi
 
+    if [ "$provider" = "cib_debit" ] && [ "$case_name" = "." ]; then
+        local output_file="$ROOT_DIR/test/output/test-$file_suffix-output.$target"
+        local translate_args=(
+            "--provider" "$provider"
+            "--config" "$config_file"
+            "--output" "$output_file"
+        )
+        [ "$target" != "beancount" ] && translate_args+=("--target" "$target")
+        translate_args+=("${INPUT_FILES[@]}")
+
+        "$ROOT_DIR/bin/double-entry-generator" translate "${translate_args[@]}" || return 1
+        diff_expected_output "$expected_file" "$output_file" || return 1
+        return 0
+    fi
+
     # Default behavior: pick the first input file by extension priority
     # (`csv > xls > xlsx`) and run once.
     local input_file="${INPUT_FILES[0]}"

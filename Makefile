@@ -52,6 +52,7 @@ TEST_CONFIGS := \
 	citic:beancount,ledger:credit \
 	hxsec:beancount:. \
 	spdb_debit:beancount:. \
+	cib_debit:beancount,ledger:. \
 	boc:beancount:credit,debit
 
 # Current version of the project.

@@ -58,6 +58,10 @@ const (
 	ProviderAbcDebit = "abc_debit"
 	// ProviderSpdbDebit is the name for Shanghai Pudong Development Bank debit card provider.
 	ProviderSpdbDebit = "spdb_debit"
+	// ProviderCibDebit is the name for Industrial Bank debit card provider.
+	ProviderCibDebit = "cib_debit"
 	// ProviderBoc is the name for boc provider.
 	ProviderBoc = "boc"
+	// ProviderIbkr is the name for Interactive Brokers provider.
+	ProviderIbkr = "ibkr"
 )

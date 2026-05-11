@@ -57,6 +57,10 @@ func (ledger *Ledger) initTemplates() error {
 	if err != nil {
 		return fmt.Errorf("Failed to init the normalOrder Template. %v", err)
 	}
+	currencyExchangeOrderTemplate, err = template.New("currencyExchangeOrder").Funcs(funcMap).Parse(currencyExchangeOrder)
+	if err != nil {
+		return fmt.Errorf("Failed to init the currencyExchangeOrder template. %v", err)
+	}
 
 	huobiTradeBuyOrderTemplate, err = template.New("tradeBuyOrder").Funcs(funcMap).Parse((huobiTradeBuyOrder))
 	if err != nil {
@@ -204,6 +208,19 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 			Metadata:          order.Metadata,
 			Currency:          currency,
 			Tags:              order.Tags,
+		})
+	case ir.OrderTypeCurrencyExchange:
+		err = currencyExchangeOrderTemplate.Execute(&buf, &CurrencyExchangeOrderVars{
+			PayTime:        order.PayTime,
+			Peer:           order.Peer,
+			Item:           order.Item,
+			SourceAmount:   order.Money,
+			SourceCurrency: order.Currency,
+			TargetAmount:   order.Amount,
+			TargetCurrency: order.Units[ir.TargetUnit],
+			PlusAccount:    order.PlusAccount,
+			MinusAccount:   order.MinusAccount,
+			Metadata:       order.Metadata,
 		})
 	case ir.OrderTypeHuobiTrade: // Huobi trades
 		switch order.Type {
