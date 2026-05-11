@@ -37,6 +37,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/mt"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/oklink"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/spdb_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/td"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/wechat"
@@ -82,6 +83,8 @@ func New(name string) (Interface, error) {
 		return ccb.New(), nil
 	case consts.ProviderCmb:
 		return cmb.New(), nil
+	case consts.ProviderOKLink:
+		return oklink.New(), nil
 	case consts.ProviderAbcDebit:
 		return abc_debit.New(), nil
 	case consts.ProviderSpdbDebit:

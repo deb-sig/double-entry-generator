@@ -26,6 +26,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/mt"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/oklink"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/td"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/wechat"
 )
@@ -74,7 +75,7 @@ func (fr *SimpleFileReader) ProcessFileWithFormat(fileName string, fileData []by
 		provider := alipay.New()
 		// Alipay 只支持 CSV
 		orders, err = provider.Translate(string(fileData))
-		
+
 	case "wechat":
 		provider := wechat.New()
 		provider.IgnoreInvalidTxTypes = true
@@ -83,7 +84,7 @@ func (fr *SimpleFileReader) ProcessFileWithFormat(fileName string, fileData []by
 		} else {
 			orders, err = provider.Translate(string(fileData))
 		}
-		
+
 	case "ccb":
 		provider := ccb.New()
 		if fr.isExcelFile(fileName) {
@@ -91,12 +92,12 @@ func (fr *SimpleFileReader) ProcessFileWithFormat(fileName string, fileData []by
 		} else {
 			orders, err = provider.Translate(string(fileData))
 		}
-		
+
 	case "citic":
 		provider := citic.New()
 		// CITIC 只支持 XLS 格式
 		orders, err = provider.TranslateFromExcelBytes(fileData)
-		
+
 	case "htsec":
 		provider := htsec.New()
 		if fr.isExcelFile(fileName) {
@@ -104,40 +105,49 @@ func (fr *SimpleFileReader) ProcessFileWithFormat(fileName string, fileData []by
 		} else {
 			orders, err = provider.Translate(string(fileData))
 		}
-		
+
 	case "icbc":
 		provider := icbc.New()
 		orders, err = provider.Translate(string(fileData))
-		
+
 	case "hsbchk":
 		provider := hsbchk.New()
 		orders, err = provider.Translate(string(fileData))
-		
+
 	case "huobi":
 		provider := huobi.New()
 		orders, err = provider.Translate(string(fileData))
-		
+
 	case "td":
 		provider := td.New()
 		orders, err = provider.Translate(string(fileData))
-		
+
 	case "bmo":
 		provider := bmo.New()
 		orders, err = provider.Translate(string(fileData))
-		
+
 	case "mt":
 		provider := mt.New()
 		orders, err = provider.Translate(string(fileData))
-		
+
+	case "oklink":
+		provider := oklink.New()
+		if fr.config != nil {
+			provider.Config = fr.config.OKLink
+			provider.DefaultMinusAccount = fr.config.DefaultMinusAccount
+			provider.DefaultPlusAccount = fr.config.DefaultPlusAccount
+		}
+		orders, err = provider.TranslateFromCSVBytes(fileName, fileData)
+
 	case "jd":
 		provider := jd.New()
 		orders, err = provider.Translate(string(fileData))
-		
+
 	case "hxsec":
 		provider := hxsec.New()
 		// hxsec 的 .xls 实际上是 TSV 文本文件，不是真正的 Excel
 		orders, err = provider.Translate(string(fileData))
-		
+
 	default:
 		return map[string]interface{}{
 			"success": false,
@@ -163,7 +173,7 @@ func (fr *SimpleFileReader) ProcessFileWithFormat(fileName string, fileData []by
 	default:
 		output, err = fr.compileToBeancount(orders)
 	}
-	
+
 	if err != nil {
 		return map[string]interface{}{
 			"success": false,

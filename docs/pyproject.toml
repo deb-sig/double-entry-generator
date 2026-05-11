@@ -1,0 +1,16 @@
+[project]
+name = "docs"
+version = "0.1.0"
+description = "Documentation dependencies for Double Entry Generator"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "mkdocs-shadcn>=0.9.0",
+    "mkdocs-static-i18n>=1.0.0",
+    "pyyaml>=6.0.0",
+    "pymdown-extensions>=10.0",
+    "mkdocs-search-jieba",
+]
+
+[tool.uv.sources]
+mkdocs-search-jieba = { path = "vendor/mkdocs-search-jieba" }

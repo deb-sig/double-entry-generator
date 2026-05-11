@@ -1,0 +1,118 @@
+/* 自定义样式 (shadcn 主题) - 仅保留与 shadcn 兼容的规则，避免错位 */
+
+/* ========== 代码块：底色 + 复制按钮区域 ========== */
+.highlight,
+pre code.hljs,
+div.highlight pre {
+  border-radius: 8px;
+  padding: 1rem 1rem 1rem 0.75rem;
+  margin: 1rem 0;
+  background: hsl(var(--muted)) !important;
+  border: 1px solid hsl(var(--border));
+  overflow-x: auto;
+}
+.highlight pre,
+div.highlight > pre {
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+}
+.code-block-wrapper {
+  position: relative;
+  margin: 1rem 0;
+}
+.code-block-wrapper .highlight,
+.code-block-wrapper > pre {
+  padding-top: 2.25rem;
+}
+.code-block-wrapper .copy-code-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  opacity: 0.9;
+}
+.code-block-wrapper .copy-code-btn:hover {
+  opacity: 1;
+  background: hsl(var(--accent));
+}
+.code-block-wrapper .copy-code-btn.copied {
+  opacity: 1;
+}
+
+/* ========== 首页按钮（.md-button）：紫底主按钮 + 白底紫边次按钮，无图标 ========== */
+a.md-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border-radius: 8px;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  margin-right: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+a.md-button--primary {
+  background: #6c47ff;
+  color: #fff;
+  border: none;
+}
+a.md-button--primary:hover {
+  background: #5a3ae6;
+}
+a.md-button:not(.md-button--primary) {
+  background: hsl(var(--background));
+  color: #6c47ff;
+  border: 1px solid #6c47ff;
+}
+a.md-button:not(.md-button--primary):hover {
+  background: hsl(var(--muted));
+  border-color: #5a3ae6;
+  color: #5a3ae6;
+}
+
+/* ========== 首页特性卡片（仅用 shadcn 变量） ========== */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+.feature {
+  background: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.feature:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px hsl(var(--foreground) / 0.08);
+}
+.feature h3 {
+  margin-top: 0;
+  color: hsl(var(--foreground));
+  font-size: 1.2em;
+}
+.feature p {
+  margin-bottom: 0;
+  color: hsl(var(--muted-foreground));
+}
+@media screen and (max-width: 768px) {
+  .features {
+    grid-template-columns: 1fr;
+  }
+  .feature {
+    padding: 1rem;
+  }
+}
