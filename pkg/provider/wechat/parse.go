@@ -16,7 +16,7 @@ func init() {
 }
 
 // translateToOrders translates csv file to []Order.
-func (w *Wechat) translateToOrders(array []string) error {
+func (w *Wechat) translateToOrders(array []string, isCSV bool) error {
 	for idx, a := range array {
 		a = strings.Trim(a, " ")
 		a = strings.Trim(a, "\t")
@@ -51,7 +51,11 @@ func (w *Wechat) translateToOrders(array []string) error {
 		bill.Type = OrderTypeRecv
 	}
 
-	bill.Money, err = strconv.ParseFloat(array[5][2:], 64)
+	if (isCSV) {
+		bill.Money, err = strconv.ParseFloat(array[5][2:], 64)
+	} else {
+		bill.Money, err = strconv.ParseFloat(array[5], 64)
+	}
 	if err != nil {
 		return fmt.Errorf("parse money %s error: %v", array[5], err)
 	}

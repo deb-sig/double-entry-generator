@@ -79,7 +79,7 @@ func (w *Wechat) translateCSV(filename string) (*ir.IR, error) {
 			continue
 		}
 
-		err = w.translateToOrders(line)
+		err = w.translateToOrders(line, true)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to translate bill: line %d: %v",
 				w.LineNum, err)
@@ -105,12 +105,12 @@ func (w *Wechat) translateExcel(filename string) (*ir.IR, error) {
 
 	for _, row := range rows {
 		w.LineNum++
-		if w.LineNum <= 17 {
-			// The first 17 lines are useless for us.
+		if w.LineNum <= 18 {
+			// The first 18 lines are useless for us.
 			continue
 		}
 
-		err = w.translateToOrders(row)
+		err = w.translateToOrders(row, false)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to translate bill: line %d: %v",
 				w.LineNum, err)
@@ -139,12 +139,12 @@ func (w *Wechat) TranslateFromExcelBytes(fileData []byte) (*ir.IR, error) {
 	
 	for _, row := range rows {
 		w.LineNum++
-		if w.LineNum <= 17 {
-			// The first 17 lines are useless for us.
+		if w.LineNum <= 18 {
+			// The first 18 lines are useless for us.
 			continue
 		}
 		
-		err = w.translateToOrders(row)
+		err = w.translateToOrders(row, false)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to translate bill: line %d: %v",
 				w.LineNum, err)
