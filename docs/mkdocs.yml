@@ -23,7 +23,7 @@ theme:
   show_stargazers: true
   topbar_sections: false
   show_datetime: false
-  icon: heroicons:book-open
+  icon: img/book-open.svg
   pygments_style:
     light: shadcn-light
     dark: github-dark
