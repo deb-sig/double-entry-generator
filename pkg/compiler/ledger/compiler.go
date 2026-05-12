@@ -302,6 +302,7 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 		}
 
 	case ir.OrderTypeSecuritiesTrade:
+		currency := ledger.getCurrency(order)
 		switch order.Type {
 		case ir.TypeSend: // buy
 			err = htsecTradeBuyOrderTemplate.Execute(&buf, &HtsecTradeBuyOrderVars{
@@ -318,7 +319,7 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 				PositionAccount:   order.ExtraAccounts[ir.PositionAccount],
 				CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
 				PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
-				Currency:          ledger.Config.DefaultCurrency,
+				Currency:          currency,
 			})
 		case ir.TypeRecv: // sell
 			err = htsecTradeSellOrderTemplate.Execute(&buf, &HtsecTradeSellOrderVars{
@@ -335,7 +336,7 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 				PositionAccount:   order.ExtraAccounts[ir.PositionAccount],
 				CommissionAccount: order.ExtraAccounts[ir.CommissionAccount],
 				PnlAccount:        order.ExtraAccounts[ir.PnlAccount],
-				Currency:          ledger.Config.DefaultCurrency,
+				Currency:          currency,
 			})
 		default:
 			err = fmt.Errorf("Failed to get the TxType.")
