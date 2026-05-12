@@ -171,3 +171,22 @@ func TestTranslateRowHandlesSignedDebitAndCreditColumns(t *testing.T) {
 		}
 	}
 }
+
+func TestTranslateRowReturnsMalformedAmountError(t *testing.T) {
+	provider := New()
+
+	err := provider.translateRow([]string{
+		"2024-01-01 00:00:00",
+		"2024-01-01",
+		"not-a-number",
+		"",
+		"90.00",
+		"转账转出",
+	})
+	if err == nil {
+		t.Fatal("translateRow returned nil error for malformed amount")
+	}
+	if len(provider.Orders) != 0 {
+		t.Fatalf("len(orders) = %d, want 0", len(provider.Orders))
+	}
+}

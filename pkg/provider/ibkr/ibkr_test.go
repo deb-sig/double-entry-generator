@@ -80,3 +80,20 @@ func TestTranslateParsesFlexStatementTradesAndCashTransactions(t *testing.T) {
 		t.Fatalf("tax = %#v", tax)
 	}
 }
+
+func TestCashTradeToOrderRejectsUnknownBuySell(t *testing.T) {
+	_, ok, err := cashTradeToOrder(map[string]string{
+		"tradeDate":  "2025-01-18",
+		"quantity":   "10",
+		"tradeMoney": "78",
+		"symbol":     "USD.HKD",
+		"currency":   "HKD",
+		"buySell":    "UNKNOWN",
+	})
+	if err == nil {
+		t.Fatal("cashTradeToOrder returned nil error for unsupported buySell")
+	}
+	if ok {
+		t.Fatal("cashTradeToOrder returned ok=true for unsupported buySell")
+	}
+}

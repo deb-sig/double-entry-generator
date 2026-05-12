@@ -63,6 +63,10 @@ func (b *BeanCount) initTemplates() error {
 	if err != nil {
 		return fmt.Errorf("Failed to init the currencyExchangeOrder template. %v", err)
 	}
+	cryptoOrderTemplate, err = template.New("cryptoOrder").Funcs(funcMap).Parse(cryptoOrder)
+	if err != nil {
+		return fmt.Errorf("Failed to init the cryptoOrder template. %v", err)
+	}
 	huobiTradeBuyOrderTemplate, err = template.New("tradeBuyOrder").Funcs(funcMap).Parse(huobiTradeBuyOrder)
 	if err != nil {
 		return fmt.Errorf("Failed to init the tradeBuyOrder template. %v", err)
@@ -234,6 +238,23 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 			PlusAccount:    o.PlusAccount,
 			MinusAccount:   o.MinusAccount,
 			Metadata:       o.Metadata,
+		})
+	case ir.OrderTypeCrypto: // Crypto transactions (high precision)
+		currency := b.getCurrency(o)
+		err = cryptoOrderTemplate.Execute(&buf, &NormalOrderVars{
+			PayTime:           o.PayTime,
+			Peer:              o.Peer,
+			Item:              o.Item,
+			Note:              o.Note,
+			Money:             o.Money,
+			Commission:        o.Commission,
+			PlusAccount:       o.PlusAccount,
+			MinusAccount:      o.MinusAccount,
+			PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
+			CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
+			Metadata:          o.Metadata,
+			Currency:          currency,
+			Tags:              o.Tags,
 		})
 	case ir.OrderTypeHuobiTrade: // Huobi trades
 		switch o.Type {

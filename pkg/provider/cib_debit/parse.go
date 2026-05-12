@@ -57,7 +57,7 @@ func (c *CibDebit) translateRow(row []string) error {
 
 	money, orderType, err := parseMoneyAndType(order.Expense, order.Income)
 	if err != nil {
-		return nil
+		return fmt.Errorf("parse CIB debit amount at trade time %q: %w", order.TradeTime, err)
 	}
 	if orderType == OrderTypeUnknown || money == 0 {
 		return nil

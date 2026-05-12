@@ -152,13 +152,17 @@ func cashTradeToOrder(attrs map[string]string) (ir.Order, bool, error) {
 	if err != nil {
 		return ir.Order{}, false, err
 	}
+	orderType, err := convertBuySell(attrs["buySell"])
+	if err != nil {
+		return ir.Order{}, false, err
+	}
 
 	baseCurrency, quoteCurrency := splitForexSymbol(attrs["symbol"], attrs["currency"])
 	sourceCurrency := quoteCurrency
 	sourceAmount := math.Abs(tradeMoney)
 	targetCurrency := baseCurrency
 	targetAmount := math.Abs(quantity)
-	if attrs["buySell"] == "SELL" {
+	if orderType == ir.TypeRecv {
 		sourceCurrency = baseCurrency
 		sourceAmount = math.Abs(quantity)
 		targetCurrency = quoteCurrency
