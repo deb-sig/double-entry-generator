@@ -142,5 +142,4 @@ cmb:
 - [招商银行信用卡示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/cmb/credit/example-cmb-records.csv)
 - [储蓄卡配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/cmb/debit/config.yaml)
 - [信用卡配置示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/cmb/credit/config.yaml)
-- [输出示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/cmb/debit/example-cmb-output.beancount)
-
+- [输出示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/cmb/debit/example-cmb-debit-output.beancount)

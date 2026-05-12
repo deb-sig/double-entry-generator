@@ -176,6 +176,6 @@ git commit -m "docs: update installation guide"
 
 如果您有任何问题，请：
 
-1. 查看 [FAQ](/faq/)
+1. 查看 [常见问题](getting-started.md#common-questions)
 2. 在 [GitHub Discussions](https://github.com/deb-sig/double-entry-generator/discussions) 提问
 3. 创建 [Issue](https://github.com/deb-sig/double-entry-generator/issues)

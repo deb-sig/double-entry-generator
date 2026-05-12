@@ -176,6 +176,6 @@ Thank you to all developers who have contributed to the project! Your contributi
 
 If you have any questions, please:
 
-1. Check the [FAQ](/en/faq/)
+1. Check the [Common Questions](getting-started.md#common-questions)
 2. Ask in [GitHub Discussions](https://github.com/deb-sig/double-entry-generator/discussions)
 3. Create an [Issue](https://github.com/deb-sig/double-entry-generator/issues)
