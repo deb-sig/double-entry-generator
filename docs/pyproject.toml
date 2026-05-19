@@ -8,7 +8,7 @@ dependencies = [
     "mkdocs-shadcn>=0.9.0",
     "mkdocs-static-i18n>=1.0.0",
     "pyyaml>=6.0.0",
-    "pymdown-extensions>=10.0",
+    "pymdown-extensions>=10.21.3",
     "mkdocs-search-jieba",
 ]
 
