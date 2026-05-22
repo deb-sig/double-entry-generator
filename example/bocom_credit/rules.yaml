@@ -1,0 +1,9 @@
+personalRules:
+    - id: rule-001
+      when: narration ~ "信用卡还款"
+      actions:
+        to: Equity:Transfers
+    - id: rule-002
+      when: (narration ~ "美团" || narration ~ "饿了么")
+      actions:
+        to: Expenses:Food

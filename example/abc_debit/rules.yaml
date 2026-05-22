@@ -1,0 +1,21 @@
+personalRules:
+    - id: rule-001
+      when: narration ~ "转存"
+      actions:
+        to: Equity:Transfers
+    - id: rule-002
+      when: narration ~ "财付通"
+      actions:
+        to: Expenses:Transport:Transit
+    - id: rule-003
+      when: narration ~ "正常还款"
+      actions:
+        to: Liabilities:Loans:Personal
+    - id: rule-004
+      when: narration ~ "结息"
+      actions:
+        to: Income:Interest
+    - id: rule-005
+      when: narration ~ "利息税"
+      actions:
+        to: Expenses:Tax

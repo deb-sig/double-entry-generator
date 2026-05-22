@@ -1,0 +1,13 @@
+personalRules:
+    - id: rule-001
+      when: (payee ~ "财付通" || payee ~ "支付宝")
+      actions:
+        ignore: true
+    - id: rule-002
+      when: payee ~ "广东联合电子收费股份"
+      actions:
+        to: Expenses:Transport:Highway
+    - id: rule-003
+      when: metadata.txType ~ "人民币自动转帐还款"
+      actions:
+        to: Assets:Bank:CN:ICBC:Savings

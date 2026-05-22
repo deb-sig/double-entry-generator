@@ -1,0 +1,29 @@
+personalRules:
+    - id: rule-001
+      when: payee ~ "MEITUAN" && narration ~ "APPLEPAY MEITUAN"
+      actions:
+        to: Expenses:Food:Delivery
+    - id: rule-002
+      when: narration ~ "PAYMENT - THANK YOU"
+      actions:
+        to: Assets:Bank:HK:HSBC:Savings
+    - id: rule-003
+      when: (payee ~ "KFC RESTAURANT" || payee ~ "MCDONALDS")
+      actions:
+        to: Expenses:Food:FastFood
+    - id: rule-004
+      when: payee ~ "7-ELEVEN"
+      actions:
+        to: Expenses:Groceries
+    - id: rule-005
+      when: payee ~ "METRO"
+      actions:
+        to: Expenses:Transport
+    - id: rule-006
+      when: narration ~ "RETURN"
+      actions:
+        to: Assets:Refund
+    - id: rule-007
+      when: payee ~ "UNIONPAY MERCHANT"
+      actions:
+        to: Expenses:Shopping

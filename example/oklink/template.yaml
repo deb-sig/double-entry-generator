@@ -1,0 +1,25 @@
+schema: https://deg.dev/template-profile/v1
+id: oklink
+name: oklink
+template:
+    fileFormat: csv
+    delimiter: ','
+    sourceHeaders:
+        - 交易哈希
+        - 区块高度
+        - 本地时间(UTC+8)
+        - UTC时间
+        - 发送方
+        - 发送方ENS
+        - 接收方
+        - 接收方ENS
+        - 数量
+        - 代币符号
+        - 代币地址
+    columns:
+        date: UTC时间
+        amount: 数量
+        currency: 代币符号
+    defaultMinusAccount: Assets:FIXME
+    defaultPlusAccount: Expenses:FIXME
+    defaultCurrency: CNY

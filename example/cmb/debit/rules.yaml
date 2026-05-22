@@ -1,0 +1,13 @@
+personalRules:
+    - id: rule-001
+      when: (payee ~ "电费" || payee ~ "网上国网" || payee ~ "国网")
+      actions:
+        to: Expenses:Electricity
+    - id: rule-002
+      when: payee ~ "中国移动"
+      actions:
+        to: Expenses:Mobile
+    - id: rule-003
+      when: payee ~ "太平洋健康保险股份有限公司" && narration ~ "汇入汇款"
+      actions:
+        to: Income:Insurance

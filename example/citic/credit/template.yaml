@@ -1,0 +1,25 @@
+schema: https://deg.dev/template-profile/v1
+id: citic-credit
+name: citic-credit
+template:
+    fileFormat: xls
+    delimiter: ','
+    skipLeadingRows: 1
+    sourceHeaders:
+        - 交易日期
+        - 入账日期
+        - 交易描述
+        - 卡末四位
+        - 交易币种
+        - 结算币种
+        - 交易金额
+        - 结算金额
+    columns:
+        date: 交易日期
+        amount: 交易金额
+        payee: 交易描述
+        narration: 交易描述
+        currency: 结算币种
+    defaultMinusAccount: Assets:FIXME
+    defaultPlusAccount: Expenses:FIXME
+    defaultCurrency: CNY

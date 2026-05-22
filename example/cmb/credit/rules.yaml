@@ -1,0 +1,17 @@
+personalRules:
+    - id: rule-001
+      when: narration ~ "掌上生活影票"
+      actions:
+        to: Expenses:Movie
+    - id: rule-002
+      when: narration ~ "手机银行饭票"
+      actions:
+        to: Expenses:Food
+    - id: rule-003
+      when: narration ~ "中国移动"
+      actions:
+        to: Expenses:Mobile
+    - id: rule-004
+      when: narration ~ "财付通"
+      actions:
+        ignore: true

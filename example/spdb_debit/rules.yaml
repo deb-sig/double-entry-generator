@@ -1,0 +1,17 @@
+personalRules:
+    - id: rule-001
+      when: payee ~ "基金销售有限公司"
+      actions:
+        to: Expenses:Investment:Funds
+    - id: rule-002
+      when: payee ~ "餐厅" && metadata.category ~ "餐饮美食"
+      actions:
+        to: Expenses:Food:Restaurant
+    - id: rule-003
+      when: payee ~ "地铁" && metadata.category ~ "交通出行"
+      actions:
+        to: Expenses:Transport:Metro
+    - id: rule-004
+      when: payee ~ "超市" && metadata.category ~ "购物消费"
+      actions:
+        to: Expenses:Shopping:Supermarket

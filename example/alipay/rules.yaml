@@ -1,0 +1,83 @@
+personalRules:
+    - id: rule-001
+      when: type ~ "收入"
+      actions:
+        from: Income:FIXME
+        to: Assets:Alipay
+    - id: rule-002
+      when: narration ~ "商品" && type ~ "收入"
+      actions:
+        from: Income:Alipay:ShouKuanMa
+        to: Assets:Alipay
+    - id: rule-003
+      when: metadata.category ~ "日用百货" && amount >= 10
+      actions:
+        to: Expenses:Groceries
+    - id: rule-004
+      when: metadata.category ~ "日用百货" && amount >= 0 && amount <= 9.99
+      actions:
+        to: Expenses:Food:Drink
+    - id: rule-005
+      when: metadata.category ~ "餐饮美食" && date.time >= "11:00" && date.time <= "14:00"
+      actions:
+        to: Expenses:Food:Lunch
+    - id: rule-006
+      when: metadata.category ~ "餐饮美食" && date.time >= "16:00" && date.time <= "22:00"
+      actions:
+        to: Expenses:Food:Dinner
+    - id: rule-007
+      when: payee ~ "滴露"
+      actions:
+        to: Expenses:Groceries
+    - id: rule-008
+      when: payee ~ "苏宁"
+      actions:
+        to: Expenses:Electronics
+    - id: rule-009
+      when: narration ~ "相互宝"
+      actions:
+        to: Expenses:Insurance
+    - id: rule-010
+      when: metadata.method == "余额"
+      actions:
+        from: Assets:Alipay
+    - id: rule-011
+      when: metadata.method == "余额宝"
+      actions:
+        from: Assets:Alipay
+    - id: rule-012
+      when: metadata.method == "交通银行信用卡(7449)"
+      actions:
+        from: Liabilities:CC:COMM:7449
+    - id: rule-013
+      when: narration ~ "收益发放" && type ~ "其他"
+      actions:
+        from: Income:Alipay:YuEBao:PnL
+        to: Assets:Alipay
+    - id: rule-014
+      when: narration ~ "余额宝-单次转入" && type ~ "其他"
+      actions:
+        from: Assets:Alipay
+        to: Assets:Alipay
+    - id: rule-015
+      when: payee ~ "基金" && narration ~ "黄金-买入" && type ~ "其他"
+      actions:
+        from: Assets:Alipay
+        to: Assets:Alipay:Invest:Gold
+    - id: rule-016
+      when: payee ~ "基金" && narration ~ "黄金-卖出" && type ~ "其他"
+      actions:
+        from: Assets:Alipay:Invest:Gold
+        pnlAccount: Income:Alipay:Invest:PnL
+        to: Assets:Alipay
+    - id: rule-017
+      when: payee ~ "基金" && narration ~ "买入" && type ~ "其他"
+      actions:
+        from: Assets:Alipay
+        to: Assets:Alipay:Invest:Fund
+    - id: rule-018
+      when: payee ~ "基金" && narration ~ "卖出" && type ~ "其他"
+      actions:
+        from: Assets:Alipay:Invest:Fund
+        pnlAccount: Income:Alipay:Invest:PnL
+        to: Assets:Alipay

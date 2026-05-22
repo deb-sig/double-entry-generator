@@ -1,0 +1,22 @@
+schema: https://deg.dev/template-profile/v1
+id: bmo-credit
+name: bmo-credit
+template:
+    fileFormat: csv
+    delimiter: ','
+    skipLeadingRows: 1
+    sourceHeaders:
+        - 'Item #'
+        - 'Card #'
+        - Transaction Date
+        - Posting Date
+        - Transaction Amount
+        - Description
+    columns:
+        date: Transaction Date
+        amount: Transaction Amount
+        payee: Description
+        narration: Description
+    defaultMinusAccount: Assets:FIXME
+    defaultPlusAccount: Expenses:FIXME
+    defaultCurrency: CAD

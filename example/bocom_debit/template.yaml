@@ -1,0 +1,31 @@
+schema: https://deg.dev/template-profile/v1
+id: bocom_debit
+name: bocom_debit
+template:
+    fileFormat: csv
+    delimiter: ','
+    sourceHeaders:
+        - 序号
+        - 交易日期
+        - 交易时间
+        - 交易类型
+        - 借贷
+        - 交易金额
+        - 余额
+        - 对方账号
+        - 对方户名
+        - 交易地点
+        - 摘要
+    columns:
+        date: 交易日期
+        time: 交易时间
+        amount: 交易金额
+        payee: 对方户名
+        narration: 摘要
+        type: 借贷
+    metadata:
+        method: 交易地点
+        txType: 摘要
+    defaultMinusAccount: Assets:FIXME
+    defaultPlusAccount: Expenses:FIXME
+    defaultCurrency: CNY

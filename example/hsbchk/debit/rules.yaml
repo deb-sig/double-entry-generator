@@ -1,0 +1,29 @@
+personalRules:
+    - id: rule-001
+      when: payee ~ "WITHDRAWAL"
+      actions:
+        to: Assets:Cash
+    - id: rule-002
+      when: payee ~ "SALARY PAYMENT"
+      actions:
+        to: Income:Salary
+    - id: rule-003
+      when: payee ~ "TRANSFER FROM"
+      actions:
+        to: Income:Transfer
+    - id: rule-004
+      when: payee ~ "BILL PAYMENT"
+      actions:
+        to: Expenses:Utilities
+    - id: rule-005
+      when: (payee ~ "POS PURCHASE" || payee ~ "SUPERMARKET")
+      actions:
+        to: Expenses:Groceries
+    - id: rule-006
+      when: payee ~ "INTEREST CREDIT"
+      actions:
+        to: Income:Interest
+    - id: rule-007
+      when: payee ~ "TRIPLE Z"
+      actions:
+        ignore: true

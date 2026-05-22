@@ -1,0 +1,31 @@
+schema: https://deg.dev/template-profile/v1
+id: mt
+name: mt
+template:
+    fileFormat: csv
+    delimiter: ','
+    skipLeadingRows: 19
+    sourceHeaders:
+        - 交易创建时间
+        - 交易成功时间
+        - 交易类型
+        - 订单标题
+        - 收/支
+        - 支付方式
+        - 订单金额
+        - 实付金额
+        - 交易单号
+        - 商家单号
+        - 备注
+    columns:
+        date: 交易创建时间
+        amount: 实付金额
+        payee: 订单标题
+        narration: 订单标题
+        type: 收/支
+    metadata:
+        method: 支付方式
+        txType: 交易类型
+    defaultMinusAccount: Assets:FIXME
+    defaultPlusAccount: Expenses:FIXME
+    defaultCurrency: CNY

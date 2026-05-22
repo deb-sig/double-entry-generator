@@ -1,0 +1,25 @@
+schema: https://deg.dev/template-profile/v1
+id: cmb-debit
+name: cmb-debit
+template:
+    fileFormat: csv
+    delimiter: ','
+    sourceHeaders:
+        - 记账日期
+        - 货币
+        - 交易金额
+        - 联机余额
+        - 交易摘要
+        - 对手信息
+        - 客户摘要
+    columns:
+        date: 记账日期
+        amount: 交易金额
+        payee: 对手信息
+        narration: 交易摘要
+        currency: 货币
+    metadata:
+        txType: 客户摘要
+    defaultMinusAccount: Assets:FIXME
+    defaultPlusAccount: Expenses:FIXME
+    defaultCurrency: CNY

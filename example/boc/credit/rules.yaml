@@ -1,0 +1,65 @@
+personalRules:
+    - id: rule-001
+      when: narration ~ "公共交通"
+      actions:
+        to: Expenses:Transport:Subway
+    - id: rule-002
+      when: (narration ~ "xbox" || narration ~ "steam" || narration ~ "游戏")
+      actions:
+        to: Expenses:Relax:Game
+    - id: rule-003
+      when: payee ~ "顾问有限公司"
+      actions:
+        to: Expenses:Education:Training
+    - id: rule-004
+      when: payee ~ "张林"
+      actions:
+        to: Expenses:Reside:Rent
+    - id: rule-005
+      when: payee ~ "0258"
+      actions:
+        to: Assets:DC:BCM:0258
+    - id: rule-006
+      when: payee ~ "5669"
+      actions:
+        to: Liabilities:CC:CMBC:5669
+    - id: rule-007
+      when: payee ~ "4664"
+      actions:
+        to: Liabilities:CC:BCM:4664
+    - id: rule-008
+      when: payee ~ "4294"
+      actions:
+        to: Liabilities:CC:CMB:4294
+    - id: rule-009
+      when: (payee ~ "支付宝" || payee ~ "微信" || payee ~ "钱袋宝" || payee ~ "京东")
+      actions:
+        ignore: true
+    - id: rule-010
+      when: (narration ~ "支付宝" || narration ~ "微信" || narration ~ "钱袋宝" || narration ~ "京东")
+      actions:
+        ignore: true
+    - id: rule-011
+      when: narration ~ "曾三"
+      actions:
+        ignore: true
+    - id: rule-012
+      when: metadata.method ~ "3167"
+      actions:
+        from: Assets:DC:BoC:3167
+    - id: rule-013
+      when: metadata.method ~ "2875"
+      actions:
+        from: Liabilities:CC:BoC:2875
+    - id: rule-014
+      when: metadata.method ~ "4260"
+      actions:
+        from: Liabilities:CC:BoC:4260
+    - id: rule-015
+      when: narration ~ "网银在线CHN" && type ~ "收入"
+      actions:
+        from: Income:BoC:Rebate
+    - id: rule-016
+      when: narration ~ "工资" && type ~ "收入"
+      actions:
+        from: Income:BoC:Salary

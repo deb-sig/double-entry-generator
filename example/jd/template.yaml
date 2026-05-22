@@ -1,0 +1,32 @@
+schema: https://deg.dev/template-profile/v1
+id: jd
+name: jd
+template:
+    fileFormat: csv
+    delimiter: ','
+    skipLeadingRows: 19
+    sourceHeaders:
+        - 交易时间
+        - 商户名称
+        - 交易说明
+        - 金额
+        - 收/付款方式
+        - 交易状态
+        - 收/支
+        - 交易分类
+        - 交易订单号
+        - 商家订单号
+        - 备注
+    columns:
+        date: 交易时间
+        amount: 金额
+        payee: 商户名称
+        narration: 交易说明
+        type: 收/支
+    metadata:
+        category: 交易分类
+        method: 收/付款方式
+        status: 交易状态
+    defaultMinusAccount: Assets:FIXME
+    defaultPlusAccount: Expenses:FIXME
+    defaultCurrency: CNY

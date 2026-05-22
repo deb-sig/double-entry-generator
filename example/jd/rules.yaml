@@ -1,0 +1,106 @@
+personalRules:
+    - id: rule-001
+      when: (narration ~ "椰子" || narration ~ "红薯" || narration ~ "膳" || narration ~ "食用油" || narration ~ "挂面" || narration ~ "食盐")
+      actions:
+        to: Expenses:Food:Snacks
+    - id: rule-002
+      when: metadata.category ~ "美妆个护"
+      actions:
+        to: Expenses:MakeUp
+    - id: rule-003
+      when: metadata.category == "食品酒饮"
+      actions:
+        to: Expenses:Food:Snacks
+    - id: rule-004
+      when: metadata.category ~ "医疗保健"
+      actions:
+        to: Expenses:Hospital:Medicine
+    - id: rule-005
+      when: (metadata.category ~ "数码电器" || metadata.category ~ "电脑办公" || metadata.category ~ "手机通讯")
+      actions:
+        to: Expenses:Electronics
+    - id: rule-006
+      when: (metadata.category ~ "日用百货" || metadata.category ~ "清洁纸品" || metadata.category ~ "生活服务" || metadata.category ~ "家居家装" || metadata.category ~ "其他网购" || metadata.category ~ "1号店")
+      actions:
+        to: Expenses:Groceries
+    - id: rule-007
+      when: metadata.category ~ "运动户外"
+      actions:
+        to: Expenses:Sports
+    - id: rule-008
+      when: (metadata.category ~ "鞋服箱包" || metadata.category ~ "服饰内衣")
+      actions:
+        to: Expenses:Clothes
+    - id: rule-009
+      when: metadata.category ~ "收发快递"
+      actions:
+        to: Expenses:Reside:Express
+    - id: rule-010
+      when: narration ~ "转入" && type ~ "收入"
+      actions:
+        from: Income:Rebate
+    - id: rule-011
+      when: payee ~ "亲密卡"
+      actions:
+        to: Expenses:Prpaid
+    - id: rule-012
+      when: (narration ~ "白条" || narration ~ "还款")
+      actions:
+        to: Liabilities:Baitiao
+    - id: rule-013
+      when: narration == "京东小金库收益"
+      actions:
+        from: Assets:EPay:JD
+        to: Income:PnL:JD
+    - id: rule-014
+      when: metadata.method ~ "京东白条"
+      actions:
+        from: Liabilities:JD:Baitiao
+    - id: rule-015
+      when: metadata.method ~ "小金库零用钱"
+      actions:
+        from: Assets:EPay:JD
+    - id: rule-016
+      when: metadata.method ~ "钱包余额"
+      actions:
+        from: Assets:JD:Balance
+    - id: rule-017
+      when: metadata.method ~ "(0354)"
+      actions:
+        from: Liabilities:CC:BCM:0354
+    - id: rule-018
+      when: metadata.method ~ "(1341)"
+      actions:
+        from: Liabilities:CC:BoC:1341
+    - id: rule-019
+      when: metadata.method ~ "(1875)"
+      actions:
+        from: Liabilities:CC:BoC:1875
+    - id: rule-020
+      when: metadata.method ~ "(2189)"
+      actions:
+        from: Liabilities:CC:BoNB:2189
+    - id: rule-021
+      when: metadata.method ~ "(0924)"
+      actions:
+        from: Liabilities:CC:CMB:0924
+    - id: rule-022
+      when: metadata.method ~ "(0073)"
+      actions:
+        from: Liabilities:CC:CMBC:0073
+    - id: rule-023
+      when: metadata.method ~ "(5559)"
+      actions:
+        from: Liabilities:CC:CMBC:5559
+    - id: rule-024
+      when: metadata.method ~ "微信-"
+      actions:
+        ignore: true
+    - id: rule-025
+      when: metadata.method ~ "先享后付"
+      actions:
+        ignore: true
+    - id: rule-026
+      when: type ~ "不计收支" && metadata.category ~ "网购"
+      actions:
+        to: Income:Rebate

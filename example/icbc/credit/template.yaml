@@ -1,0 +1,34 @@
+schema: https://deg.dev/template-profile/v1
+id: icbc-credit
+name: icbc-credit
+template:
+    fileFormat: csv
+    delimiter: ','
+    skipLeadingRows: 3
+    skipInvalidRows: true
+    sourceHeaders:
+        - 交易日期
+        - 记账日期
+        - 摘要
+        - 交易场所
+        - 交易国家或地区简称
+        - 交易金额(收入)
+        - 交易金额(支出)
+        - 交易币种
+        - 记账金额(收入)
+        - 记账金额(支出)
+        - 记账币种
+        - 余额
+        - 对方户名
+    columns:
+        date: 交易日期
+        amountIn: 记账金额(收入)
+        amountOut: 记账金额(支出)
+        payee: 对方户名
+        narration: 摘要
+        currency: 记账币种
+    metadata:
+        txType: 摘要
+    defaultMinusAccount: Assets:FIXME
+    defaultPlusAccount: Expenses:FIXME
+    defaultCurrency: CNY

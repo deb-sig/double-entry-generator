@@ -1,0 +1,22 @@
+personalRules:
+    - id: rule-001
+      when: narration ~ "T T"
+      actions:
+        tags:
+            - tt_tag
+        to: Expenses:Grocery
+    - id: rule-002
+      when: narration ~ "DOLLARAMA"
+      actions:
+        tags:
+            - grocery_tag1
+            - cheap_tag2
+        to: Expenses:Grocery
+    - id: rule-003
+      when: narration ~ "DEVELOPM MSP"
+      actions:
+        to: Income:Salary
+    - id: rule-004
+      when: narration ~ "SEND E-TFR" && type ~ "收入"
+      actions:
+        from: Income:FIXME

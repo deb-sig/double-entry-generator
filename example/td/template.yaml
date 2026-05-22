@@ -1,0 +1,21 @@
+schema: https://deg.dev/template-profile/v1
+id: td
+name: td
+template:
+    fileFormat: csv
+    delimiter: ','
+    sourceHeaders:
+        - date
+        - narration
+        - amountOut
+        - amountIn
+        - balance
+    columns:
+        date: date
+        amountIn: amountIn
+        amountOut: amountOut
+        payee: narration
+        narration: narration
+    defaultMinusAccount: Assets:FIXME
+    defaultPlusAccount: Expenses:FIXME
+    defaultCurrency: CAD

@@ -1,0 +1,5 @@
+personalRules:
+    - id: rule-001
+      when: (narration == "BTC/USDT" || narration == "BTC1S/USDT") && type == "买入" && metadata.txType == "币币交易"
+      actions:
+        pnlAccount: Income:Rule1:PnL

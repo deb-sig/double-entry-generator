@@ -1,0 +1,5 @@
+personalRules:
+    - id: rule-001
+      when: narration ~ "HS300ETF"
+      actions:
+        pnlAccount: Income:Rule1:PnL

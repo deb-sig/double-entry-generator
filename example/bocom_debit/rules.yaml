@@ -1,0 +1,25 @@
+personalRules:
+    - id: rule-001
+      when: payee ~ "应付个人活期储蓄存款利息"
+      actions:
+        to: Income:Interest
+    - id: rule-002
+      when: payee ~ "信用卡还款"
+      actions:
+        to: Equity:Transfers
+    - id: rule-003
+      when: metadata.txType ~ "信用卡转账还款"
+      actions:
+        to: Equity:Transfers
+    - id: rule-004
+      when: payee ~ "网上国网"
+      actions:
+        to: Expenses:Electricity
+    - id: rule-005
+      when: narration ~ "基金理财产品申购"
+      actions:
+        to: Assets:Funds
+    - id: rule-006
+      when: narration ~ "财付通"
+      actions:
+        ignore: true

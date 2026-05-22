@@ -1,0 +1,211 @@
+personalRules:
+    - id: rule-001
+      when: (payee ~ "工资" || payee ~ "薪金" || payee ~ "月薪" || payee ~ "年薪")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - salary
+        to: Income:Work:Salary
+    - id: rule-002
+      when: (payee ~ "奖金" || payee ~ "年终奖" || payee ~ "绩效")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - bonus
+        to: Income:Work:Bonus
+    - id: rule-003
+      when: (payee ~ "基金" || payee ~ "理财" || payee ~ "投资")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - investment
+        to: Income:Investment:Dividend
+    - id: rule-004
+      when: payee ~ "转账" && type ~ "收入"
+      actions:
+        from: Income:Transfer
+        to: Assets:Bank:CN:CCB:Checking
+    - id: rule-005
+      when: (payee ~ "美团" || payee ~ "饿了么" || payee ~ "肯德基" || payee ~ "麦当劳" || payee ~ "星巴克" || payee ~ "咖啡" || payee ~ "奶茶" || payee ~ "餐厅" || payee ~ "饭店" || payee ~ "食堂") && date.time >= "06:00" && date.time <= "11:00"
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - food
+            - breakfast
+        to: Expenses:Food:Meal:Breakfast
+    - id: rule-006
+      when: (payee ~ "美团" || payee ~ "饿了么" || payee ~ "肯德基" || payee ~ "麦当劳" || payee ~ "星巴克" || payee ~ "咖啡" || payee ~ "奶茶" || payee ~ "餐厅" || payee ~ "饭店" || payee ~ "食堂") && date.time >= "11:00" && date.time <= "15:00"
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - food
+            - lunch
+        to: Expenses:Food:Meal:Lunch
+    - id: rule-007
+      when: (payee ~ "美团" || payee ~ "饿了么" || payee ~ "肯德基" || payee ~ "麦当劳" || payee ~ "星巴克" || payee ~ "咖啡" || payee ~ "奶茶" || payee ~ "餐厅" || payee ~ "饭店" || payee ~ "食堂") && date.time >= "17:00" && date.time <= "22:00"
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - food
+            - dinner
+        to: Expenses:Food:Meal:Dinner
+    - id: rule-008
+      when: (payee ~ "美团" || payee ~ "饿了么" || payee ~ "肯德基" || payee ~ "麦当劳" || payee ~ "星巴克" || payee ~ "咖啡" || payee ~ "奶茶" || payee ~ "餐厅" || payee ~ "饭店" || payee ~ "食堂") && (date.time >= "22:00" || date.time <= "06:00")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - food
+            - snack
+        to: Expenses:Food:Meal:Snack
+    - id: rule-009
+      when: (payee ~ "滴滴" || payee ~ "高德打车" || payee ~ "出租车" || payee ~ "快车" || payee ~ "专车")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - transport
+            - taxi
+        to: Expenses:Transport:Taxi
+    - id: rule-010
+      when: (payee ~ "地铁" || payee ~ "公交" || payee ~ "巴士" || payee ~ "公交车")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - transport
+            - public
+        to: Expenses:Transport:Public
+    - id: rule-011
+      when: (payee ~ "中国铁路" || payee ~ "12306" || payee ~ "火车" || payee ~ "高铁")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - transport
+            - train
+        to: Expenses:Transport:Train
+    - id: rule-012
+      when: (payee ~ "航空公司" || payee ~ "机场" || payee ~ "机票")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - transport
+            - flight
+        to: Expenses:Transport:Flight
+    - id: rule-013
+      when: (payee ~ "淘宝" || payee ~ "天猫" || payee ~ "京东" || payee ~ "拼多多" || payee ~ "苏宁" || payee ~ "国美")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - shopping
+            - online
+        to: Expenses:Shopping:Online
+    - id: rule-014
+      when: (payee ~ "超市" || payee ~ "便利店" || payee ~ "沃尔玛" || payee ~ "家乐福" || payee ~ "永辉")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - shopping
+            - groceries
+        to: Expenses:Shopping:Groceries
+    - id: rule-015
+      when: (payee ~ "水电费" || payee ~ "电费" || payee ~ "水费" || payee ~ "燃气费" || payee ~ "物业费")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - life
+            - utilities
+        to: Expenses:Life:Utilities
+    - id: rule-016
+      when: (payee ~ "房租" || payee ~ "租金" || payee ~ "押金")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - housing
+            - rent
+        to: Expenses:Housing:Rent
+    - id: rule-017
+      when: (payee ~ "医院" || payee ~ "诊所" || payee ~ "药店" || payee ~ "医药")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - health
+            - medical
+        to: Expenses:Health:Medical
+    - id: rule-018
+      when: (payee ~ "电影院" || payee ~ "影院" || payee ~ "电影")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - entertainment
+            - movie
+        to: Expenses:Entertainment:Movie
+    - id: rule-019
+      when: (payee ~ "游戏" || payee ~ "手游" || payee ~ "网游")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - entertainment
+            - game
+        to: Expenses:Entertainment:Game
+    - id: rule-020
+      when: (payee ~ "手续费" || payee ~ "年费" || payee ~ "管理费")
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - bank
+            - fees
+        to: Expenses:Bank:Fees
+    - id: rule-021
+      when: payee ~ "信用卡还款"
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - creditcard
+            - payment
+        to: Liabilities:CreditCard:CCB
+    - id: rule-022
+      when: payee ~ "微信零钱提现"
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - transfer
+            - wechat
+        to: Assets:Digital:WeChat:Cash
+    - id: rule-023
+      when: payee ~ "支付宝提现"
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - transfer
+            - alipay
+        to: Assets:Digital:Alipay:Cash
+    - id: rule-024
+      when: (payee ~ "工商银行" || payee ~ "中国银行" || payee ~ "农业银行" || payee ~ "招商银行") && type ~ "转账"
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+        tags:
+            - transfer
+            - bank
+        to: Assets:Bank:CN:Other
+    - id: rule-025
+      when: (payee ~ "微信支付" || payee ~ "支付宝" || payee ~ "财付通")
+      actions:
+        ignore: true
+    - id: rule-026
+      when: (payee ~ "系统维护" || payee ~ "对账" || payee ~ "冲正")
+      actions:
+        ignore: true
+    - id: rule-027
+      when: metadata.method == "借记卡"
+      actions:
+        from: Assets:Bank:CN:CCB:DebitCard
+    - id: rule-028
+      when: metadata.method == "信用卡"
+      actions:
+        from: Liabilities:CreditCard:CCB
+    - id: rule-029
+      when: metadata.method == "活期"
+      actions:
+        from: Assets:Bank:CN:CCB:Checking
+    - id: rule-030
+      when: metadata.method == "定期"
+      actions:
+        from: Assets:Bank:CN:CCB:TimeDeposit

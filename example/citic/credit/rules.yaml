@@ -1,0 +1,29 @@
+personalRules:
+    - id: rule-001
+      when: narration ~ "三快"
+      actions:
+        to: Expenses:Food
+    - id: rule-002
+      when: (narration ~ "电子商务" || narration ~ "天猫" || narration ~ "京东" || narration ~ "特约商户")
+      actions:
+        to: Expenses:Shopping
+    - id: rule-003
+      when: (narration ~ "电费" || narration ~ "网上国网")
+      actions:
+        to: Expenses:Electricity
+    - id: rule-004
+      when: (narration ~ "滴滴出行" || narration ~ "嘀嘀" || narration ~ "中国石油")
+      actions:
+        to: Expenses:Transport
+    - id: rule-005
+      when: narration ~ "现金奖励"
+      actions:
+        to: Income:Rewards
+    - id: rule-006
+      when: narration ~ "财付通(银联云闪付)"
+      actions:
+        ignore: true
+    - id: rule-007
+      when: narration ~ "财付通还款"
+      actions:
+        to: Assets:WeChat

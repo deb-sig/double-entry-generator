@@ -1,0 +1,25 @@
+personalRules:
+    - id: rule-001
+      when: (payee ~ "财付通-" || payee ~ "支付宝-")
+      actions:
+        ignore: true
+    - id: rule-002
+      when: payee ~ "支付宝" && metadata.txType ~ "蚂蚁基金赎回到银行"
+      actions:
+        ignore: true
+    - id: rule-003
+      when: payee ~ "总行信用卡合伙人"
+      actions:
+        to: Income:Bank:ICBC:CreditCard
+    - id: rule-004
+      when: payee ~ "掌上生活还款"
+      actions:
+        to: Liabilities:Bank:CMB:CreditCard
+    - id: rule-005
+      when: payee ~ "广东XX分行银行卡中心" && metadata.txType ~ "自动还款"
+      actions:
+        ignore: true
+    - id: rule-006
+      when: (payee ~ "张三" || payee ~ "李四" || payee ~ "王五")
+      actions:
+        to: Assets:Borrow

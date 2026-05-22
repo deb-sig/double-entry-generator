@@ -1,0 +1,20 @@
+schema: https://deg.dev/template-profile/v1
+id: bocom_credit
+name: bocom_credit
+template:
+    fileFormat: csv
+    delimiter: ','
+    sourceHeaders:
+        - 交易日期
+        - 记账日期
+        - 交易说明
+        - 交易币种/金额
+        - 入账币种/金额
+    columns:
+        date: 交易日期
+        amount: 入账币种/金额
+        narration: 交易说明
+        currency: 交易币种/金额
+    defaultMinusAccount: Assets:FIXME
+    defaultPlusAccount: Expenses:FIXME
+    defaultCurrency: CNY

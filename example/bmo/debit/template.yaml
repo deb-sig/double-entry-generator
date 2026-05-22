@@ -1,0 +1,21 @@
+schema: https://deg.dev/template-profile/v1
+id: bmo-debit
+name: bmo-debit
+template:
+    fileFormat: csv
+    delimiter: ','
+    skipLeadingRows: 1
+    sourceHeaders:
+        - First Bank Card
+        - Transaction Type
+        - Date Posted
+        - Transaction Amount
+        - Description
+    columns:
+        date: Date Posted
+        amount: Transaction Amount
+        payee: Description
+        narration: Description
+    defaultMinusAccount: Assets:FIXME
+    defaultPlusAccount: Expenses:FIXME
+    defaultCurrency: CAD

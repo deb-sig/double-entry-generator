@@ -1,0 +1,101 @@
+personalRules:
+    - id: rule-001
+      when: narration ~ "/" && type ~ "收入" && metadata.method ~ "/"
+      actions:
+        from: Income:Wechat:RedPacket
+    - id: rule-002
+      when: payee ~ "/" && narration ~ "/" && type ~ "/" && metadata.txType ~ "转入零钱通"
+      actions:
+        to: Assets:Digital:Wechat:MiniFund
+    - id: rule-003
+      when: type ~ "/" && metadata.txType ~ "零钱提现"
+      actions:
+        commissionAccount: Expenses:Wechat:Commission
+        to: Assets:Digital:Wechat:Cash
+    - id: rule-004
+      when: type ~ "/" && metadata.txType ~ "零钱充值"
+      actions:
+        to: Assets:Digital:Wechat:Cash
+    - id: rule-005
+      when: type ~ "/" && metadata.txType ~ "零钱通转出-到零钱"
+      actions:
+        to: Assets:Digital:Wechat:Cash
+    - id: rule-006
+      when: type ~ "/" && metadata.txType ~ "零钱通转出-到工商银行(9876)"
+      actions:
+        to: Assets:Bank:CN:ICBC:Savings
+    - id: rule-007
+      when: type ~ "支出" && metadata.txType ~ "赞赏码"
+      actions:
+        to: Expenses:Wechat:Sponsor
+    - id: rule-008
+      when: (payee ~ "云膳过桥米线" || payee ~ "餐厅") && date.time >= "11:00" && date.time <= "15:00"
+      actions:
+        to: Expenses:Food:Meal:Lunch
+    - id: rule-009
+      when: (payee ~ "云膳过桥米线" || payee ~ "餐厅") && date.time >= "16:30" && date.time <= "21:30"
+      actions:
+        to: Expenses:Food:Meal:Dinner
+    - id: rule-010
+      when: payee ~ "餐厅" && (date.time >= "23:55" || date.time <= "00:10")
+      actions:
+        to: Expenses:Food:Meal:MidNight
+    - id: rule-011
+      when: payee ~ "餐厅" && (date.time >= "23:50" || date.time <= "00:05")
+      actions:
+        to: Expenses:Food:Meal:MidNight
+    - id: rule-012
+      when: payee ~ "美团平台商户" && type ~ "支出" && amount >= 0 && amount <= 9.99
+      actions:
+        to: Expenses:Food:Drink
+    - id: rule-013
+      when: payee ~ "美团平台商户" && type ~ "支出" && amount >= 10
+      actions:
+        to: Expenses:Food:Meal
+    - id: rule-014
+      when: payee ~ "房东" && type ~ "支出"
+      actions:
+        to: Expenses:Housing:Rent
+    - id: rule-015
+      when: payee ~ "用户" && type ~ "收入"
+      actions:
+        from: Income:Service
+        tags:
+            - income
+            - service
+    - id: rule-016
+      when: payee ~ "理财通" && type ~ "/"
+      actions:
+        to: Assets:Trade:Tencent:LiCaiTong
+    - id: rule-017
+      when: payee ~ "建设银行" && metadata.txType ~ "信用卡还款"
+      actions:
+        to: Liabilities:Bank:CN:CCB
+    - id: rule-018
+      when: metadata.method ~ "/"
+      actions:
+        from: Assets:Digital:Wechat:Cash
+    - id: rule-019
+      when: metadata.method == "零钱"
+      actions:
+        from: Assets:Digital:Wechat:Cash
+    - id: rule-020
+      when: metadata.method == "零钱通"
+      actions:
+        from: Assets:Digital:Wechat:MiniFund
+    - id: rule-021
+      when: metadata.method ~ "工商银行"
+      actions:
+        from: Assets:Bank:CN:ICBC:Savings
+    - id: rule-022
+      when: metadata.method ~ "中国银行"
+      actions:
+        from: Assets:Bank:CN:BOC:Savings
+    - id: rule-023
+      when: payee ~ "测试时间戳" && date.timestamp >= "1658112487" && date.timestamp <= "1658112490"
+      actions:
+        to: Expenses:Travel
+    - id: rule-024
+      when: type ~ "支出" && metadata.txType ~ "分分捐"
+      actions:
+        to: Expenses:Charity:Donation

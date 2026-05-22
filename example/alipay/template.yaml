@@ -1,0 +1,35 @@
+schema: https://deg.dev/template-profile/v1
+id: alipay
+name: alipay
+template:
+    fileFormat: csv
+    encoding: gb18030
+    delimiter: ','
+    skipLeadingRows: 22
+    sourceHeaders:
+        - 交易时间
+        - 交易分类
+        - 交易对方
+        - 对方账号
+        - 商品说明
+        - 收/支
+        - 金额
+        - 收/付款方式
+        - 交易状态
+        - 交易订单号
+        - 商家订单号
+        - 备注
+        - ""
+    columns:
+        date: 交易时间
+        amount: 金额
+        payee: 交易对方
+        narration: 商品说明
+        type: 收/支
+    metadata:
+        category: 交易分类
+        method: 收/付款方式
+        status: 交易状态
+    defaultMinusAccount: Assets:FIXME
+    defaultPlusAccount: Expenses:FIXME
+    defaultCurrency: CNY
