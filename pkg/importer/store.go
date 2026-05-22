@@ -21,16 +21,17 @@ type Registry struct {
 }
 
 type RegistryTemplate struct {
-	ID          string   `json:"id" yaml:"id"`
-	Name        string   `json:"name,omitempty" yaml:"name,omitempty"`
-	Category    string   `json:"category,omitempty" yaml:"category,omitempty"`
-	Tags        []string `json:"tags,omitempty" yaml:"tags,omitempty"`
-	Version     string   `json:"version,omitempty" yaml:"version,omitempty"`
-	Latest      string   `json:"latest,omitempty" yaml:"latest,omitempty"`
-	Path        string   `json:"path" yaml:"path"`
-	URL         string   `json:"url,omitempty" yaml:"url,omitempty"`
-	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
-	SHA256      string   `json:"sha256,omitempty" yaml:"sha256,omitempty"`
+	ID           string   `json:"id" yaml:"id"`
+	Name         string   `json:"name,omitempty" yaml:"name,omitempty"`
+	Category     string   `json:"category,omitempty" yaml:"category,omitempty"`
+	Tags         []string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Version      string   `json:"version,omitempty" yaml:"version,omitempty"`
+	Latest       string   `json:"latest,omitempty" yaml:"latest,omitempty"`
+	Path         string   `json:"path" yaml:"path"`
+	StarterRules string   `json:"starterRules,omitempty" yaml:"starterRules,omitempty"`
+	URL          string   `json:"url,omitempty" yaml:"url,omitempty"`
+	Description  string   `json:"description,omitempty" yaml:"description,omitempty"`
+	SHA256       string   `json:"sha256,omitempty" yaml:"sha256,omitempty"`
 }
 
 func LoadProfileRef(ref string) (*Profile, error) {
@@ -101,6 +102,10 @@ func LoadRemoteRegistry(rawURL string) (*Registry, error) {
 	return &registry, nil
 }
 
+func ReadURL(rawURL string) ([]byte, error) {
+	return readURL(rawURL)
+}
+
 func readURL(rawURL string) ([]byte, error) {
 	resp, err := http.Get(rawURL)
 	if err != nil {
@@ -158,6 +163,30 @@ func TemplateURLFromRegistry(id string) (string, error) {
 			path = strings.Replace(path, template.Latest, version, 1)
 		}
 		return strings.TrimSuffix(DefaultRegistryURL, "registry.yaml") + path, nil
+	}
+	return "", fmt.Errorf("template %q not found in registry", id)
+}
+
+func StarterRulesURLFromRegistry(id string) (string, error) {
+	registry, err := LoadRemoteRegistry("")
+	if err != nil {
+		return "", err
+	}
+	name := id
+	if base, _, ok := strings.Cut(id, "@"); ok {
+		name = base
+	}
+	for _, template := range registry.Templates {
+		if template.ID != name {
+			continue
+		}
+		if template.StarterRules == "" {
+			return "", fmt.Errorf("template %q has no starterRules in registry", id)
+		}
+		if IsHTTPURL(template.StarterRules) {
+			return template.StarterRules, nil
+		}
+		return strings.TrimSuffix(DefaultRegistryURL, "registry.yaml") + template.StarterRules, nil
 	}
 	return "", fmt.Errorf("template %q not found in registry", id)
 }
