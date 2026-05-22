@@ -28,8 +28,8 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "deg",
-	Short: "Generate Double-Entry Bookkeeping Code From Bills",
+	Use:   "double-entry-generator",
+	Short: msg("Generate double-entry bookkeeping files from bills", "从账单生成复式记账文件"),
 	Long:  ``,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -56,7 +56,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.double-entry-generator.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", msg("config file (default is $HOME/.double-entry-generator.yaml)", "配置文件，默认 $HOME/.double-entry-generator.yaml"))
 	_ = rootCmd.RegisterFlagCompletionFunc("config", completeYAMLFiles)
 
 }

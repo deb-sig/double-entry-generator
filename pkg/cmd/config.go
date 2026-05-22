@@ -17,17 +17,17 @@ var (
 
 var configCmd = &cobra.Command{
 	Use:   "config",
-	Short: "Manage DEG local config / 管理 DEG 本地配置",
+	Short: msg("Manage DEG local config", "管理 DEG 本地配置"),
 }
 
 var configInitCmd = &cobra.Command{
 	Use:   "init <template>",
-	Short: "Create a personal rule skeleton / 生成个人规则骨架",
+	Short: msg("Create a personal rule skeleton", "生成个人规则骨架"),
 	Long: strings.TrimSpace(`
 Download starter rules for a registry template. Supports version pinning:
 
-  deg config init wechat
-  deg config init wechat@2026.05 -o wechat-rules.yaml
+  double-entry-generator config init wechat
+  double-entry-generator config init wechat@2026.05 -o wechat-rules.yaml
 `),
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
@@ -46,8 +46,8 @@ Download starter rules for a registry template. Supports version pinning:
 func init() {
 	rootCmd.AddCommand(configCmd)
 	configCmd.AddCommand(configInitCmd)
-	configInitCmd.Flags().StringVarP(&configInitOutput, "output", "o", "", "output personal rules YAML path")
-	configInitCmd.Flags().BoolVarP(&configInitForce, "force", "f", false, "overwrite existing output file")
+	configInitCmd.Flags().StringVarP(&configInitOutput, "output", "o", "", msg("output personal rules YAML path", "个人规则 YAML 输出路径"))
+	configInitCmd.Flags().BoolVarP(&configInitForce, "force", "f", false, msg("overwrite existing output file", "覆盖已有输出文件"))
 	_ = configInitCmd.RegisterFlagCompletionFunc("output", completeYAMLFiles)
 }
 

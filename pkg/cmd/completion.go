@@ -12,7 +12,7 @@ import (
 
 var completionCmd = &cobra.Command{
 	Use:   "completion [bash|zsh|powershell]",
-	Short: "Generate shell completion scripts / 生成 shell 补全脚本",
+	Short: msg("Generate shell completion scripts", "生成 shell 补全脚本"),
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return fmt.Errorf("accepts 1 arg, received %d", len(args))
@@ -37,9 +37,9 @@ var completionCmd = &cobra.Command{
 		logErrorIfNotNil(err)
 	},
 	ValidArgsFunction: cobra.FixedCompletions([]cobra.Completion{
-		"bash\tGenerate bash completion",
-		"zsh\tGenerate zsh completion",
-		"powershell\tGenerate PowerShell completion",
+		cobra.CompletionWithDesc("bash", msg("Generate bash completion", "生成 bash 补全脚本")),
+		cobra.CompletionWithDesc("zsh", msg("Generate zsh completion", "生成 zsh 补全脚本")),
+		cobra.CompletionWithDesc("powershell", msg("Generate PowerShell completion", "生成 PowerShell 补全脚本")),
 	}, cobra.ShellCompDirectiveNoFileComp),
 }
 
@@ -57,7 +57,7 @@ func completeTemplateRefs(toComplete string) ([]cobra.Completion, cobra.ShellCom
 	}
 	completions := make([]cobra.Completion, 0, len(registry.Templates))
 	for _, template := range registry.Templates {
-		desc := firstNonEmpty(template.Name, template.Description, template.ID)
+		desc := templateCompletionDescription(template)
 		if template.Latest != "" {
 			desc += " latest " + template.Latest
 		}
@@ -88,7 +88,7 @@ func completeTemplateVersions(toComplete string) []cobra.Completion {
 			if prefix != "" && !strings.HasPrefix(version, prefix) {
 				continue
 			}
-			desc := template.Name
+			desc := templateCompletionDescription(template)
 			if version == template.Latest {
 				desc = strings.TrimSpace(desc + " latest")
 			}
@@ -104,6 +104,11 @@ func completeImportArgs(cmd *cobra.Command, args []string, toComplete string) ([
 	case 0:
 		return completeTemplateRefs(toComplete)
 	case 1:
+		if cmd.Flag("rules") != nil && !cmd.Flag("rules").Changed {
+			return []cobra.Completion{
+				cobra.CompletionWithDesc("--rules", msg("required: personal rules YAML, then bill file", "必填：个人规则 YAML，然后补全账单文件")),
+			}, cobra.ShellCompDirectiveNoFileComp
+		}
 		return []cobra.Completion{"csv", "xlsx", "xls"}, cobra.ShellCompDirectiveFilterFileExt
 	default:
 		return nil, cobra.ShellCompDirectiveNoFileComp
@@ -127,4 +132,11 @@ func completeOutputFiles(cmd *cobra.Command, args []string, toComplete string) (
 		return nil, cobra.ShellCompDirectiveDefault
 	}
 	return []cobra.Completion{"bean", "beancount", "ledger"}, cobra.ShellCompDirectiveFilterFileExt
+}
+
+func templateCompletionDescription(template importer.RegistryTemplate) string {
+	if isChineseLocale() {
+		return firstNonEmpty(template.Name, template.Description, template.ID)
+	}
+	return firstNonEmpty(template.ID, template.Name, template.Description)
 }

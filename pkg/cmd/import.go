@@ -31,7 +31,7 @@ type projectImportConfig struct {
 
 var importCmd = &cobra.Command{
 	Use:   "import [flags] <template> <path to bill file>",
-	Short: "Import bills with a runtime template / 使用运行时模板导入账单",
+	Short: msg("Import bills with a runtime template", "使用运行时模板导入账单"),
 	Long: strings.TrimSpace(`
 Import bills using a template from the online registry, a pinned version, or a local profile YAML.
 
@@ -44,8 +44,8 @@ Template reference:
 Omit @version to follow registry "latest"; pin @version to keep old bill formats working after the default template changes.
 
 Examples:
-  deg import wechat bill.csv -o out.bean
-  deg import wechat@2025.12 bill.csv --rules rules.yaml -o out.bean
+  double-entry-generator import wechat --rules rules.yaml bill.csv -o out.bean
+  double-entry-generator import wechat@2025.12 --rules rules.yaml bill.csv -o out.bean
 `),
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 2 {
@@ -61,10 +61,10 @@ Examples:
 
 func init() {
 	rootCmd.AddCommand(importCmd)
-	importCmd.Flags().StringVar(&importRules, "rules", "", "personal rules YAML file / 个人规则 YAML 文件")
-	importCmd.Flags().StringVarP(&importTarget, "target", "t", "", "target output format / 输出格式")
-	importCmd.Flags().StringVarP(&importOutput, "output", "o", "", "output file / 输出文件")
-	importCmd.Flags().BoolVarP(&importAppend, "append", "a", false, "append mode / 追加写入")
+	importCmd.Flags().StringVar(&importRules, "rules", "", msg("personal rules YAML file", "个人规则 YAML 文件"))
+	importCmd.Flags().StringVarP(&importTarget, "target", "t", "", msg("target output format", "输出格式"))
+	importCmd.Flags().StringVarP(&importOutput, "output", "o", "", msg("output file", "输出文件"))
+	importCmd.Flags().BoolVarP(&importAppend, "append", "a", false, msg("append to output file", "追加写入输出文件"))
 	_ = importCmd.RegisterFlagCompletionFunc("rules", completeYAMLFiles)
 	_ = importCmd.RegisterFlagCompletionFunc("target", cobra.FixedCompletions([]cobra.Completion{
 		consts.CompilerBeanCount + "\tbeancount output",
