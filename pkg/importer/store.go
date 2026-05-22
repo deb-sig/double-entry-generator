@@ -27,6 +27,7 @@ type RegistryTemplate struct {
 	Tags         []string `json:"tags,omitempty" yaml:"tags,omitempty"`
 	Version      string   `json:"version,omitempty" yaml:"version,omitempty"`
 	Latest       string   `json:"latest,omitempty" yaml:"latest,omitempty"`
+	Versions     []string `json:"versions,omitempty" yaml:"versions,omitempty"`
 	Path         string   `json:"path" yaml:"path"`
 	StarterRules string   `json:"starterRules,omitempty" yaml:"starterRules,omitempty"`
 	URL          string   `json:"url,omitempty" yaml:"url,omitempty"`
@@ -140,31 +141,78 @@ func expandHome(path string) string {
 	return path
 }
 
+// ParseTemplateRef splits "wechat@2026.05" into id and optional pinned version.
+func ParseTemplateRef(ref string) (id, version string) {
+	ref = strings.TrimSpace(ref)
+	if base, v, ok := strings.Cut(ref, "@"); ok {
+		return strings.TrimSpace(base), strings.TrimSpace(v)
+	}
+	return ref, ""
+}
+
+func registryBaseURL(rawURL string) string {
+	if rawURL == "" {
+		rawURL = DefaultRegistryURL
+	}
+	return strings.TrimSuffix(rawURL, "registry.yaml")
+}
+
+func lookupRegistryTemplate(registry *Registry, ref string) (RegistryTemplate, string, error) {
+	id, version := ParseTemplateRef(ref)
+	if id == "" {
+		return RegistryTemplate{}, "", fmt.Errorf("template id is required")
+	}
+	if strings.Contains(ref, "@") && version == "" {
+		return RegistryTemplate{}, "", fmt.Errorf("template version is empty in %q, use id@version (e.g. wechat@2026.05)", ref)
+	}
+	for _, template := range registry.Templates {
+		if template.ID != id {
+			continue
+		}
+		return template, version, nil
+	}
+	return RegistryTemplate{}, version, fmt.Errorf("template %q not found in registry", id)
+}
+
+func applyVersionToPath(path, latest, version string) string {
+	if version == "" {
+		return path
+	}
+	if latest != "" && strings.Contains(path, latest) {
+		return strings.Replace(path, latest, version, 1)
+	}
+	dir, file := filepath.Split(path)
+	ext := filepath.Ext(file)
+	return filepath.ToSlash(filepath.Join(strings.TrimSuffix(dir, "/"), version+ext))
+}
+
+func resolveRegistryAssetURL(registryURL, assetPath, latest, version string) string {
+	return registryBaseURL(registryURL) + applyVersionToPath(assetPath, latest, version)
+}
+
 func TemplateURLFromRegistry(id string) (string, error) {
 	registry, err := LoadRemoteRegistry("")
 	if err != nil {
 		return "", err
 	}
-	name := id
-	version := ""
-	if base, v, ok := strings.Cut(id, "@"); ok {
-		name = base
-		version = v
+	template, version, err := lookupRegistryTemplate(registry, id)
+	if err != nil {
+		return "", err
 	}
-	for _, template := range registry.Templates {
-		if template.ID != name {
-			continue
-		}
-		if template.URL != "" {
-			return template.URL, nil
-		}
-		path := template.Path
-		if version != "" {
-			path = strings.Replace(path, template.Latest, version, 1)
-		}
-		return strings.TrimSuffix(DefaultRegistryURL, "registry.yaml") + path, nil
+	if version != "" && template.URL != "" {
+		return "", fmt.Errorf("template %q uses a fixed URL and does not support version pinning; use a path-based registry entry or omit @version", template.ID)
 	}
-	return "", fmt.Errorf("template %q not found in registry", id)
+	if template.URL != "" {
+		return template.URL, nil
+	}
+	if template.Path == "" {
+		return "", fmt.Errorf("template %q has no path in registry", template.ID)
+	}
+	url := resolveRegistryAssetURL("", template.Path, template.Latest, version)
+	if version != "" && template.Latest != "" && strings.Contains(url, template.Latest) {
+		return "", fmt.Errorf("template %s@%s: version %q did not match registry path (latest=%q)", template.ID, version, version, template.Latest)
+	}
+	return url, nil
 }
 
 func StarterRulesURLFromRegistry(id string) (string, error) {
@@ -172,21 +220,21 @@ func StarterRulesURLFromRegistry(id string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	name := id
-	if base, _, ok := strings.Cut(id, "@"); ok {
-		name = base
+	template, version, err := lookupRegistryTemplate(registry, id)
+	if err != nil {
+		return "", err
 	}
-	for _, template := range registry.Templates {
-		if template.ID != name {
-			continue
-		}
-		if template.StarterRules == "" {
-			return "", fmt.Errorf("template %q has no starterRules in registry", id)
-		}
-		if IsHTTPURL(template.StarterRules) {
-			return template.StarterRules, nil
-		}
-		return strings.TrimSuffix(DefaultRegistryURL, "registry.yaml") + template.StarterRules, nil
+	if template.StarterRules == "" {
+		return "", fmt.Errorf("template %q has no starterRules in registry", template.ID)
 	}
-	return "", fmt.Errorf("template %q not found in registry", id)
+	if IsHTTPURL(template.StarterRules) {
+		if version != "" {
+			return "", fmt.Errorf("template %q starter rules use a fixed URL and do not support @version", template.ID)
+		}
+		return template.StarterRules, nil
+	}
+	if version != "" && (template.Latest == "" || !strings.Contains(template.StarterRules, template.Latest)) {
+		return registryBaseURL("") + template.StarterRules, nil
+	}
+	return resolveRegistryAssetURL("", template.StarterRules, template.Latest, version), nil
 }

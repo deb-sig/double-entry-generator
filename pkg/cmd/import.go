@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"strings"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/compiler"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
@@ -30,6 +32,21 @@ type projectImportConfig struct {
 var importCmd = &cobra.Command{
 	Use:   "import [flags] <template> <path to bill file>",
 	Short: "Import bills with a runtime template / 使用运行时模板导入账单",
+	Long: strings.TrimSpace(`
+Import bills using a template from the online registry, a pinned version, or a local profile YAML.
+
+Template reference:
+  wechat                         use registry latest (e.g. 2026.05)
+  wechat@2026.05                 pin a specific profile version
+  wechat-xlsx-flow@2026.05         another template id with its own version
+  ./profiles/wechat.yaml           local profile file
+
+Omit @version to follow registry "latest"; pin @version to keep old bill formats working after the default template changes.
+
+Examples:
+  deg import wechat bill.csv -o out.bean
+  deg import wechat@2025.12 bill.csv --rules rules.yaml -o out.bean
+`),
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 2 {
 			return fmt.Errorf("accepts 2 args, received %d", len(args))
@@ -39,6 +56,7 @@ var importCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		runImport(args[0], args[1])
 	},
+	ValidArgsFunction: completeImportArgs,
 }
 
 func init() {
@@ -47,11 +65,21 @@ func init() {
 	importCmd.Flags().StringVarP(&importTarget, "target", "t", "", "target output format / 输出格式")
 	importCmd.Flags().StringVarP(&importOutput, "output", "o", "", "output file / 输出文件")
 	importCmd.Flags().BoolVarP(&importAppend, "append", "a", false, "append mode / 追加写入")
+	_ = importCmd.RegisterFlagCompletionFunc("rules", completeYAMLFiles)
+	_ = importCmd.RegisterFlagCompletionFunc("target", cobra.FixedCompletions([]cobra.Completion{
+		consts.CompilerBeanCount + "\tbeancount output",
+		consts.CompilerLedger + "\tledger output",
+	}, cobra.ShellCompDirectiveNoFileComp))
+	_ = importCmd.RegisterFlagCompletionFunc("output", completeOutputFiles)
 }
 
 func runImport(templateRef, filename string) {
 	projectCfg := loadProjectImportConfig()
-	profile, err := importer.LoadProfileRef(firstNonEmpty(templateRef, projectCfg.DefaultTemplate))
+	templateRef = firstNonEmpty(templateRef, projectCfg.DefaultTemplate)
+	if id, version := importer.ParseTemplateRef(templateRef); version != "" {
+		log.Printf("Using pinned template %s@%s", id, version)
+	}
+	profile, err := importer.LoadProfileRef(templateRef)
 	logErrorIfNotNil(err)
 
 	rulesPath := firstNonEmpty(importRules, projectCfg.DefaultRules)

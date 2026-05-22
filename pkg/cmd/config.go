@@ -23,6 +23,12 @@ var configCmd = &cobra.Command{
 var configInitCmd = &cobra.Command{
 	Use:   "init <template>",
 	Short: "Create a personal rule skeleton / 生成个人规则骨架",
+	Long: strings.TrimSpace(`
+Download starter rules for a registry template. Supports version pinning:
+
+  deg config init wechat
+  deg config init wechat@2026.05 -o wechat-rules.yaml
+`),
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return fmt.Errorf("accepts 1 arg, received %d", len(args))
@@ -34,6 +40,7 @@ var configInitCmd = &cobra.Command{
 		logErrorIfNotNil(err)
 		fmt.Printf("personal rules written: %s\n", output)
 	},
+	ValidArgsFunction: completeConfigInitArgs,
 }
 
 func init() {
@@ -41,6 +48,7 @@ func init() {
 	configCmd.AddCommand(configInitCmd)
 	configInitCmd.Flags().StringVarP(&configInitOutput, "output", "o", "", "output personal rules YAML path")
 	configInitCmd.Flags().BoolVarP(&configInitForce, "force", "f", false, "overwrite existing output file")
+	_ = configInitCmd.RegisterFlagCompletionFunc("output", completeYAMLFiles)
 }
 
 func initPersonalRules(templateRef, output string, force bool) (string, error) {
@@ -56,9 +64,10 @@ func initPersonalRules(templateRef, output string, force bool) (string, error) {
 		return "", err
 	}
 	if output == "" {
-		name := templateRef
-		if base, _, ok := strings.Cut(templateRef, "@"); ok {
-			name = base
+		id, version := importer.ParseTemplateRef(templateRef)
+		name := id
+		if version != "" {
+			name = id + "-" + version
 		}
 		output = name + "-rules.yaml"
 	}
