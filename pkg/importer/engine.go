@@ -47,18 +47,67 @@ func ImportFile(profile *Profile, filename string) (*ir.IR, error) {
 }
 
 func ParseFile(profile *Profile, filename string) ([]Row, error) {
-	format := strings.ToLower(profile.Template.FileFormat)
-	if format == "" {
-		format = strings.TrimPrefix(strings.ToLower(filepath.Ext(filename)), ".")
+	if err := validateBillMatchesTemplate(profile, filename); err != nil {
+		return nil, err
 	}
+	format := templateFileFormat(profile)
 	switch format {
-	case "csv", "txt", "text":
+	case "csv":
 		return parseCSV(profile, filename)
 	case "xlsx":
 		return parseXLSX(profile, filename)
 	default:
 		return nil, fmt.Errorf("unsupported template fileFormat %q", profile.Template.FileFormat)
 	}
+}
+
+func templateFileFormat(profile *Profile) string {
+	return normalizeFileFormat(profile.Template.FileFormat, "csv")
+}
+
+func billFileFormat(filename string) string {
+	ext := strings.TrimPrefix(strings.ToLower(filepath.Ext(filename)), ".")
+	return normalizeFileFormat(ext, "")
+}
+
+func normalizeFileFormat(format, fallback string) string {
+	switch strings.ToLower(strings.TrimSpace(format)) {
+	case "txt", "text":
+		return "csv"
+	case "xls":
+		return "xlsx"
+	case "csv", "xlsx":
+		return strings.ToLower(strings.TrimSpace(format))
+	default:
+		return fallback
+	}
+}
+
+func validateBillMatchesTemplate(profile *Profile, filename string) error {
+	templateFmt := templateFileFormat(profile)
+	billFmt := billFileFormat(filename)
+	if billFmt == "" {
+		return fmt.Errorf("无法识别账单文件格式 %q，请使用 csv 或 xlsx", filepath.Ext(filename))
+	}
+	if templateFmt == billFmt {
+		return nil
+	}
+	templateID := profile.ID
+	if templateID == "" {
+		templateID = profile.Name
+	}
+	if templateID == "" {
+		templateID = "template"
+	}
+	return fmt.Errorf(
+		"账单文件 %s（%s）与模板 %q 的 fileFormat=%q 不匹配；请将账单导出为 %s，或改用 fileFormat=%q 的模板（本地 profile YAML 或 registry 中的对应模板）",
+		filepath.Base(filename),
+		billFmt,
+		templateID,
+		templateFmt,
+		templateFmt,
+		billFmt,
+	)
 }
 
 func parseCSV(profile *Profile, filename string) ([]Row, error) {

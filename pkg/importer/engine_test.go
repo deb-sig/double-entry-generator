@@ -128,6 +128,19 @@ func TestRuleExpressionErrorIsReturned(t *testing.T) {
 	}
 }
 
+func TestParseFileRejectsBillTemplateFormatMismatch(t *testing.T) {
+	profile := testProfile()
+	profile.ID = "wechat"
+	profile.Template.FileFormat = "csv"
+	_, err := ParseFile(profile, filepath.Join("..", "..", "example", "wechat", "example-wechat-records.xlsx"))
+	if err == nil {
+		t.Fatal("expected format mismatch error")
+	}
+	if !strings.Contains(err.Error(), `fileFormat="csv"`) || !strings.Contains(err.Error(), "xlsx") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
 func TestTemplateRuleOverrideCanDisableRule(t *testing.T) {
 	disabled := false
 	profile := testProfile()
