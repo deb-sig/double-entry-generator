@@ -1,0 +1,13 @@
+title: cgb_credit
+defaultCurrency: CNY
+defaultMinusAccount: Assets:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Liabilities:CGB:CreditCard
+cgb_credit:
+  rules:
+    - type: 还款
+      targetAccount: Equity:Transfers
+    - item: 示例商户A
+      targetAccount: Expenses:Food
+    - item: 示例商户B
+      targetAccount: Expenses:Shopping:Online
