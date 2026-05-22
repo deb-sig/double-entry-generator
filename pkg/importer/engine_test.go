@@ -163,6 +163,75 @@ func TestTemplateRuleOverrideCanDisableRule(t *testing.T) {
 	}
 }
 
+func TestSourceHeadersAndSplitAmountColumns(t *testing.T) {
+	dir := t.TempDir()
+	csvPath := filepath.Join(dir, "bill.csv")
+	if err := os.WriteFile(csvPath, []byte("2026-05-21,10:30:00,午餐,,18.90\n2026-05-22,09:00:00,工资,100.00,\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	profile := &Profile{
+		ID: "headerless",
+		Template: Template{
+			FileFormat:      "csv",
+			DateFormat:      "yyyy-MM-dd HH:mm:ss",
+			SourceHeaders:   []string{"date", "time", "payee", "in", "out"},
+			DefaultMinus:    "Assets:FIXME",
+			DefaultPlus:     "Expenses:FIXME",
+			DefaultCurrency: "CNY",
+			Columns: ColumnMapping{
+				Date:      "date",
+				Time:      "time",
+				AmountIn:  "in",
+				AmountOut: "out",
+				Payee:     "payee",
+			},
+		},
+	}
+	out, err := ImportFile(profile, csvPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(out.Orders) != 2 {
+		t.Fatalf("expected 2 orders, got %d", len(out.Orders))
+	}
+	if out.Orders[0].Type != ir.TypeSend {
+		t.Fatalf("expected first order send, got %s", out.Orders[0].Type)
+	}
+	if out.Orders[1].Type != ir.TypeRecv {
+		t.Fatalf("expected second order recv, got %s", out.Orders[1].Type)
+	}
+}
+
+func TestSkipInvalidRows(t *testing.T) {
+	dir := t.TempDir()
+	csvPath := filepath.Join(dir, "bill.csv")
+	if err := os.WriteFile(csvPath, []byte("date,payee,amount\n2026-05-21,午餐,18.90\n合计,,18.90\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	profile := &Profile{
+		ID: "skip-summary",
+		Template: Template{
+			FileFormat:      "csv",
+			SkipInvalidRows: true,
+			DefaultMinus:    "Assets:FIXME",
+			DefaultPlus:     "Expenses:FIXME",
+			DefaultCurrency: "CNY",
+			Columns: ColumnMapping{
+				Date:   "date",
+				Amount: "amount",
+				Payee:  "payee",
+			},
+		},
+	}
+	out, err := ImportFile(profile, csvPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(out.Orders) != 1 {
+		t.Fatalf("expected 1 order after skipping summary row, got %d", len(out.Orders))
+	}
+}
+
 func testProfile() *Profile {
 	return &Profile{
 		ID: "test",

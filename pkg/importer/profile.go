@@ -27,7 +27,9 @@ type Template struct {
 	FileFormat      string            `json:"fileFormat,omitempty" yaml:"fileFormat,omitempty"`
 	Encoding        string            `json:"encoding,omitempty" yaml:"encoding,omitempty"`
 	Delimiter       string            `json:"delimiter,omitempty" yaml:"delimiter,omitempty"`
+	StripTabs       bool              `json:"stripTabs,omitempty" yaml:"stripTabs,omitempty"`
 	SkipLeadingRows int               `json:"skipLeadingRows,omitempty" yaml:"skipLeadingRows,omitempty"`
+	SkipInvalidRows bool              `json:"skipInvalidRows,omitempty" yaml:"skipInvalidRows,omitempty"`
 	DateFormat      string            `json:"dateFormat,omitempty" yaml:"dateFormat,omitempty"`
 	AmountPrefix    string            `json:"amountPrefix,omitempty" yaml:"amountPrefix,omitempty"`
 	SourceHeaders   []string          `json:"sourceHeaders,omitempty" yaml:"sourceHeaders,omitempty"`
@@ -40,7 +42,10 @@ type Template struct {
 
 type ColumnMapping struct {
 	Date      string `json:"date,omitempty" yaml:"date,omitempty"`
+	Time      string `json:"time,omitempty" yaml:"time,omitempty"`
 	Amount    string `json:"amount,omitempty" yaml:"amount,omitempty"`
+	AmountIn  string `json:"amountIn,omitempty" yaml:"amountIn,omitempty"`
+	AmountOut string `json:"amountOut,omitempty" yaml:"amountOut,omitempty"`
 	Payee     string `json:"payee,omitempty" yaml:"payee,omitempty"`
 	Narration string `json:"narration,omitempty" yaml:"narration,omitempty"`
 	Type      string `json:"type,omitempty" yaml:"type,omitempty"`
@@ -56,19 +61,20 @@ type Rule struct {
 }
 
 type Actions struct {
-	Type       string            `json:"type,omitempty" yaml:"type,omitempty"`
-	From       string            `json:"from,omitempty" yaml:"from,omitempty"`
-	To         string            `json:"to,omitempty" yaml:"to,omitempty"`
-	Payee      string            `json:"payee,omitempty" yaml:"payee,omitempty"`
-	Narration  string            `json:"narration,omitempty" yaml:"narration,omitempty"`
-	Amount     string            `json:"amount,omitempty" yaml:"amount,omitempty"`
-	Currency   string            `json:"currency,omitempty" yaml:"currency,omitempty"`
-	Tag        string            `json:"tag,omitempty" yaml:"tag,omitempty"`
-	Tags       []string          `json:"tags,omitempty" yaml:"tags,omitempty"`
-	Ignore     bool              `json:"ignore,omitempty" yaml:"ignore,omitempty"`
-	Metadata   map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-	Commission string            `json:"commission,omitempty" yaml:"commission,omitempty"`
-	PnlAccount string            `json:"pnlAccount,omitempty" yaml:"pnlAccount,omitempty"`
+	Type              string            `json:"type,omitempty" yaml:"type,omitempty"`
+	From              string            `json:"from,omitempty" yaml:"from,omitempty"`
+	To                string            `json:"to,omitempty" yaml:"to,omitempty"`
+	Payee             string            `json:"payee,omitempty" yaml:"payee,omitempty"`
+	Narration         string            `json:"narration,omitempty" yaml:"narration,omitempty"`
+	Amount            string            `json:"amount,omitempty" yaml:"amount,omitempty"`
+	Currency          string            `json:"currency,omitempty" yaml:"currency,omitempty"`
+	Tag               string            `json:"tag,omitempty" yaml:"tag,omitempty"`
+	Tags              []string          `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Ignore            bool              `json:"ignore,omitempty" yaml:"ignore,omitempty"`
+	Metadata          map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Commission        string            `json:"commission,omitempty" yaml:"commission,omitempty"`
+	CommissionAccount string            `json:"commissionAccount,omitempty" yaml:"commissionAccount,omitempty"`
+	PnlAccount        string            `json:"pnlAccount,omitempty" yaml:"pnlAccount,omitempty"`
 }
 
 func isZeroActions(actions Actions) bool {
@@ -84,6 +90,7 @@ func isZeroActions(actions Actions) bool {
 		!actions.Ignore &&
 		len(actions.Metadata) == 0 &&
 		actions.Commission == "" &&
+		actions.CommissionAccount == "" &&
 		actions.PnlAccount == ""
 }
 
@@ -119,8 +126,11 @@ func LoadProfile(path string) (*Profile, error) {
 	if p.Template.DefaultCurrency == "" {
 		p.Template.DefaultCurrency = p.Defaults["currency"]
 	}
-	if p.Template.Columns.Date == "" || p.Template.Columns.Amount == "" {
-		return nil, fmt.Errorf("template columns.date and columns.amount are required")
+	if p.Template.Columns.Date == "" {
+		return nil, fmt.Errorf("template columns.date is required")
+	}
+	if p.Template.Columns.Amount == "" && (p.Template.Columns.AmountIn == "" || p.Template.Columns.AmountOut == "") {
+		return nil, fmt.Errorf("template columns.amount or both columns.amountIn/amountOut are required")
 	}
 	return &p, nil
 }

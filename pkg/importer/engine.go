@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
+	"github.com/extrame/xls"
 	"github.com/xuri/excelize/v2"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
@@ -36,6 +37,9 @@ func ImportFile(profile *Profile, filename string) (*ir.IR, error) {
 	for _, row := range rows {
 		order, ignore, err := rowToOrder(profile, row)
 		if err != nil {
+			if profile.Template.SkipInvalidRows {
+				continue
+			}
 			return nil, err
 		}
 		if ignore {
@@ -54,6 +58,8 @@ func ParseFile(profile *Profile, filename string) ([]Row, error) {
 	switch format {
 	case "csv":
 		return parseCSV(profile, filename)
+	case "xls":
+		return parseXLS(profile, filename)
 	case "xlsx":
 		return parseXLSX(profile, filename)
 	default:
@@ -75,7 +81,7 @@ func normalizeFileFormat(format, fallback string) string {
 	case "txt", "text":
 		return "csv"
 	case "xls":
-		return "xlsx"
+		return "xls"
 	case "csv", "xlsx":
 		return strings.ToLower(strings.TrimSpace(format))
 	default:
@@ -121,6 +127,13 @@ func parseCSV(profile *Profile, filename string) ([]Row, error) {
 	if strings.EqualFold(profile.Template.Encoding, "gbk") || strings.EqualFold(profile.Template.Encoding, "gb18030") {
 		r = transform.NewReader(file, simplifiedchinese.GB18030.NewDecoder())
 	}
+	if profile.Template.StripTabs {
+		b, err := io.ReadAll(r)
+		if err != nil {
+			return nil, err
+		}
+		r = strings.NewReader(strings.ReplaceAll(string(b), "\t", ""))
+	}
 
 	reader := csv.NewReader(r)
 	reader.FieldsPerRecord = -1
@@ -154,17 +167,61 @@ func parseXLSX(profile *Profile, filename string) ([]Row, error) {
 	return recordsToRows(profile, records)
 }
 
+func parseXLS(profile *Profile, filename string) ([]Row, error) {
+	wb, err := xls.Open(filename, "utf-8")
+	if err != nil {
+		return parseCSV(profile, filename)
+	}
+	if wb.NumSheets() == 0 {
+		return nil, fmt.Errorf("xls has no sheets")
+	}
+	sheet := wb.GetSheet(0)
+	if sheet == nil {
+		return nil, fmt.Errorf("xls has no first sheet")
+	}
+	records := make([][]string, 0, int(sheet.MaxRow)+1)
+	for i := 0; i <= int(sheet.MaxRow); i++ {
+		row := sheet.Row(i)
+		if row == nil {
+			records = append(records, nil)
+			continue
+		}
+		record := make([]string, 0, row.LastCol())
+		for col := 0; col < row.LastCol(); col++ {
+			record = append(record, safeXLSCell(row, col))
+		}
+		records = append(records, record)
+	}
+	return recordsToRows(profile, records)
+}
+
+func safeXLSCell(row *xls.Row, col int) (value string) {
+	defer func() {
+		if recover() != nil {
+			value = ""
+		}
+	}()
+	return row.Col(col)
+}
+
 func recordsToRows(profile *Profile, records [][]string) ([]Row, error) {
 	skip := profile.Template.SkipLeadingRows
 	if skip < 0 {
 		skip = 0
 	}
 	if len(records) <= skip {
-		return nil, fmt.Errorf("no header row after skipLeadingRows=%d", skip)
+		return nil, fmt.Errorf("no rows after skipLeadingRows=%d", skip)
 	}
-	headers := normalizeCells(records[skip])
-	rows := make([]Row, 0, len(records)-skip-1)
-	for _, record := range records[skip+1:] {
+	headers := normalizeCells(profile.Template.SourceHeaders)
+	start := skip
+	if len(headers) == 0 {
+		headers = normalizeCells(records[skip])
+		start = skip + 1
+	} else if sameCells(headers, normalizeCells(records[skip])) {
+		start = skip + 1
+	}
+	rows := make([]Row, 0, len(records)-start)
+	for _, record := range records[start:] {
 		record = normalizeCells(record)
 		if emptyRecord(record) {
 			continue
@@ -177,19 +234,75 @@ func recordsToRows(profile *Profile, records [][]string) ([]Row, error) {
 		for key, source := range profile.Template.Metadata {
 			metadata[key] = raw[source]
 		}
+		date := raw[profile.Template.Columns.Date]
+		if profile.Template.Columns.Time != "" && raw[profile.Template.Columns.Time] != "" {
+			date = strings.TrimSpace(date + " " + raw[profile.Template.Columns.Time])
+		}
 		row := Row{
-			Date:      raw[profile.Template.Columns.Date],
-			Amount:    raw[profile.Template.Columns.Amount],
+			Date:      date,
+			Amount:    rowAmount(profile, raw),
 			Currency:  raw[profile.Template.Columns.Currency],
 			Payee:     raw[profile.Template.Columns.Payee],
 			Narration: raw[profile.Template.Columns.Narration],
-			Type:      raw[profile.Template.Columns.Type],
+			Type:      rowType(profile, raw),
 			Metadata:  metadata,
 			Raw:       raw,
+		}
+		if strings.TrimSpace(row.Amount) == "" {
+			continue
 		}
 		rows = append(rows, row)
 	}
 	return rows, nil
+}
+
+func sameCells(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if strings.TrimSpace(a[i]) != strings.TrimSpace(b[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func rowAmount(profile *Profile, raw map[string]string) string {
+	if profile.Template.Columns.Amount != "" {
+		return raw[profile.Template.Columns.Amount]
+	}
+	if profile.Template.Columns.AmountOut != "" {
+		if value := strings.TrimSpace(raw[profile.Template.Columns.AmountOut]); value != "" && value != "-" {
+			return "-" + strings.TrimPrefix(value, "-")
+		}
+	}
+	if profile.Template.Columns.AmountIn != "" {
+		value := strings.TrimSpace(raw[profile.Template.Columns.AmountIn])
+		if value == "-" {
+			return ""
+		}
+		return value
+	}
+	return ""
+}
+
+func rowType(profile *Profile, raw map[string]string) string {
+	if profile.Template.Columns.Type != "" {
+		return raw[profile.Template.Columns.Type]
+	}
+	if profile.Template.Columns.AmountOut != "" && nonEmptyAmount(raw[profile.Template.Columns.AmountOut]) {
+		return "支出"
+	}
+	if profile.Template.Columns.AmountIn != "" && nonEmptyAmount(raw[profile.Template.Columns.AmountIn]) {
+		return "收入"
+	}
+	return ""
+}
+
+func nonEmptyAmount(value string) bool {
+	value = strings.TrimSpace(value)
+	return value != "" && value != "-"
 }
 
 func rowToOrder(profile *Profile, row Row) (ir.Order, bool, error) {
@@ -301,6 +414,12 @@ func applyActions(order *ir.Order, row Row, actions Actions, ignore *bool) {
 			order.Commission = commission
 		}
 	}
+	if actions.CommissionAccount != "" {
+		if order.ExtraAccounts == nil {
+			order.ExtraAccounts = map[ir.Account]string{}
+		}
+		order.ExtraAccounts[ir.CommissionAccount] = resolveValue(actions.CommissionAccount, row)
+	}
 	if actions.PnlAccount != "" {
 		if order.ExtraAccounts == nil {
 			order.ExtraAccounts = map[ir.Account]string{}
@@ -311,17 +430,23 @@ func applyActions(order *ir.Order, row Row, actions Actions, ignore *bool) {
 
 func fieldValue(field string, row Row, order ir.Order) string {
 	field = strings.TrimSpace(field)
-	if base, suffix, ok := strings.Cut(field, "."); ok && (suffix == "time" || suffix == "date") {
+	if base, suffix, ok := strings.Cut(field, "."); ok && (suffix == "time" || suffix == "date" || suffix == "timestamp") {
 		value := fieldValue(base, row, order)
 		if base == "date" || base == "交易时间" || value == "" {
 			if suffix == "time" {
 				return order.PayTime.Format("15:04")
+			}
+			if suffix == "timestamp" {
+				return strconv.FormatInt(order.PayTime.Unix(), 10)
 			}
 			return order.PayTime.Format("2006-01-02")
 		}
 		if t, err := parseDate(value, ""); err == nil {
 			if suffix == "time" {
 				return t.Format("15:04")
+			}
+			if suffix == "timestamp" {
+				return strconv.FormatInt(t.Unix(), 10)
 			}
 			return t.Format("2006-01-02")
 		}
@@ -359,6 +484,12 @@ func parseAmount(value, prefix string) (float64, error) {
 	value = strings.TrimPrefix(value, strings.TrimSpace(prefix))
 	replacer := strings.NewReplacer(",", "", "¥", "", "￥", "", "$", "", "CNY", "", "RMB", "")
 	value = strings.TrimSpace(replacer.Replace(value))
+	if base, _, ok := strings.Cut(value, "("); ok {
+		value = strings.TrimSpace(base)
+	}
+	if base, _, ok := strings.Cut(value, "（"); ok {
+		value = strings.TrimSpace(base)
+	}
 	return strconv.ParseFloat(value, 64)
 }
 
@@ -370,6 +501,15 @@ func parseDate(value, layout string) (time.Time, error) {
 		"2006-01-02",
 		"2006/01/02 15:04:05",
 		"2006/01/02",
+		"20060102 15:04:05",
+		"20060102 150405",
+		"20060102",
+		"01/02/2006",
+		"02/01/2006",
+		"01/02/2006 15:04:05",
+		"02/01/2006 15:04:05",
+		"01/02",
+		"02/01",
 		time.RFC3339,
 	}
 	for _, candidate := range layouts {
@@ -447,7 +587,11 @@ func normalizeDelimiter(value string) rune {
 func normalizeCells(values []string) []string {
 	out := make([]string, len(values))
 	for i, value := range values {
-		out[i] = strings.TrimSpace(strings.TrimPrefix(value, "\ufeff"))
+		value = strings.TrimSpace(strings.TrimPrefix(value, "\ufeff"))
+		if strings.HasPrefix(value, `="`) && strings.HasSuffix(value, `"`) {
+			value = strings.TrimSuffix(strings.TrimPrefix(value, `="`), `"`)
+		}
+		out[i] = value
 	}
 	return out
 }

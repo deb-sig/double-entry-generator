@@ -229,6 +229,10 @@ func (p *exprParser) valueOf(token exprToken) string {
 			if t, err := parseDate(value, ""); err == nil {
 				return t.Format("2006-01-02")
 			}
+		case "timestamp":
+			if t, err := parseDate(value, ""); err == nil {
+				return strconv.FormatInt(t.Unix(), 10)
+			}
 		}
 		return value
 	}
