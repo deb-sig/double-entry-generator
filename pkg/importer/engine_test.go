@@ -36,13 +36,13 @@ func TestImportFileAppliesTemplateAndPersonalRules(t *testing.T) {
 		TemplateRules: []Rule{
 			{
 				When:    `raw[收/支] == "支出"`,
-				Actions: Actions{Type: "send", MinusAccount: "Assets:Alipay"},
+				Actions: Actions{Type: "send", From: "Assets:Alipay"},
 			},
 		},
 		PersonalRules: []Rule{
 			{
 				When:    `raw[交易对方] ~ "滴露"`,
-				Actions: Actions{PlusAccount: "Expenses:Groceries"},
+				Actions: Actions{To: "Expenses:Groceries"},
 			},
 		},
 	}

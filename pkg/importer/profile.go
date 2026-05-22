@@ -56,30 +56,25 @@ type Rule struct {
 }
 
 type Actions struct {
-	Type              string            `json:"type,omitempty" yaml:"type,omitempty"`
-	MinusAccount      string            `json:"minusAccount,omitempty" yaml:"minusAccount,omitempty"`
-	PlusAccount       string            `json:"plusAccount,omitempty" yaml:"plusAccount,omitempty"`
-	MethodAccount     string            `json:"methodAccount,omitempty" yaml:"methodAccount,omitempty"`
-	TargetAccount     string            `json:"targetAccount,omitempty" yaml:"targetAccount,omitempty"`
-	Payee             string            `json:"payee,omitempty" yaml:"payee,omitempty"`
-	Narration         string            `json:"narration,omitempty" yaml:"narration,omitempty"`
-	Amount            string            `json:"amount,omitempty" yaml:"amount,omitempty"`
-	Currency          string            `json:"currency,omitempty" yaml:"currency,omitempty"`
-	Tag               string            `json:"tag,omitempty" yaml:"tag,omitempty"`
-	Tags              []string          `json:"tags,omitempty" yaml:"tags,omitempty"`
-	Ignore            bool              `json:"ignore,omitempty" yaml:"ignore,omitempty"`
-	Metadata          map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-	Commission        string            `json:"commission,omitempty" yaml:"commission,omitempty"`
-	CommissionAccount string            `json:"commissionAccount,omitempty" yaml:"commissionAccount,omitempty"`
-	PnlAccount        string            `json:"pnlAccount,omitempty" yaml:"pnlAccount,omitempty"`
+	Type       string            `json:"type,omitempty" yaml:"type,omitempty"`
+	From       string            `json:"from,omitempty" yaml:"from,omitempty"`
+	To         string            `json:"to,omitempty" yaml:"to,omitempty"`
+	Payee      string            `json:"payee,omitempty" yaml:"payee,omitempty"`
+	Narration  string            `json:"narration,omitempty" yaml:"narration,omitempty"`
+	Amount     string            `json:"amount,omitempty" yaml:"amount,omitempty"`
+	Currency   string            `json:"currency,omitempty" yaml:"currency,omitempty"`
+	Tag        string            `json:"tag,omitempty" yaml:"tag,omitempty"`
+	Tags       []string          `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Ignore     bool              `json:"ignore,omitempty" yaml:"ignore,omitempty"`
+	Metadata   map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Commission string            `json:"commission,omitempty" yaml:"commission,omitempty"`
+	PnlAccount string            `json:"pnlAccount,omitempty" yaml:"pnlAccount,omitempty"`
 }
 
 func isZeroActions(actions Actions) bool {
 	return actions.Type == "" &&
-		actions.MinusAccount == "" &&
-		actions.PlusAccount == "" &&
-		actions.MethodAccount == "" &&
-		actions.TargetAccount == "" &&
+		actions.From == "" &&
+		actions.To == "" &&
 		actions.Payee == "" &&
 		actions.Narration == "" &&
 		actions.Amount == "" &&
@@ -89,7 +84,6 @@ func isZeroActions(actions Actions) bool {
 		!actions.Ignore &&
 		len(actions.Metadata) == 0 &&
 		actions.Commission == "" &&
-		actions.CommissionAccount == "" &&
 		actions.PnlAccount == ""
 }
 

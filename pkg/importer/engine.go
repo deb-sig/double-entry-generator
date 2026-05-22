@@ -229,27 +229,11 @@ func applyActions(order *ir.Order, row Row, actions Actions, ignore *bool) {
 	if actions.Currency != "" {
 		order.Currency = resolveValue(actions.Currency, row)
 	}
-	if actions.MinusAccount != "" {
-		order.MinusAccount = resolveValue(actions.MinusAccount, row)
+	if actions.From != "" {
+		order.MinusAccount = resolveValue(actions.From, row)
 	}
-	if actions.PlusAccount != "" {
-		order.PlusAccount = resolveValue(actions.PlusAccount, row)
-	}
-	if actions.MethodAccount != "" {
-		account := resolveValue(actions.MethodAccount, row)
-		if order.Type == ir.TypeRecv {
-			order.PlusAccount = account
-		} else {
-			order.MinusAccount = account
-		}
-	}
-	if actions.TargetAccount != "" {
-		account := resolveValue(actions.TargetAccount, row)
-		if order.Type == ir.TypeRecv {
-			order.MinusAccount = account
-		} else {
-			order.PlusAccount = account
-		}
+	if actions.To != "" {
+		order.PlusAccount = resolveValue(actions.To, row)
 	}
 	if actions.Tag != "" {
 		order.Tags = append(order.Tags, splitList(actions.Tag)...)
@@ -267,12 +251,6 @@ func applyActions(order *ir.Order, row Row, actions Actions, ignore *bool) {
 		if commission, err := parseAmount(resolveValue(actions.Commission, row), ""); err == nil {
 			order.Commission = commission
 		}
-	}
-	if actions.CommissionAccount != "" {
-		if order.ExtraAccounts == nil {
-			order.ExtraAccounts = map[ir.Account]string{}
-		}
-		order.ExtraAccounts[ir.CommissionAccount] = resolveValue(actions.CommissionAccount, row)
 	}
 	if actions.PnlAccount != "" {
 		if order.ExtraAccounts == nil {
