@@ -8,6 +8,9 @@ description: List of supported banks and service providers
 
 Double Entry Generator supports data conversion from the following financial service providers:
 
+## Generic Template
+- [Generic Template Provider](en/providers/template.md ) - Import bills with runtime templates and rules. Useful for adding or iterating bill formats.
+
 ## 🏦 Banks
 - [China Construction Bank (CCB)](en/providers/banks/ccb.md )
 - [Industrial and Commercial Bank of China (ICBC)](en/providers/banks/icbc.md )

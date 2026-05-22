@@ -104,11 +104,6 @@ func completeImportArgs(cmd *cobra.Command, args []string, toComplete string) ([
 	case 0:
 		return completeTemplateRefs(toComplete)
 	case 1:
-		if cmd.Flag("rules") != nil && !cmd.Flag("rules").Changed {
-			return []cobra.Completion{
-				cobra.CompletionWithDesc("--rules", msg("required: personal rules YAML, then bill file", "必填：个人规则 YAML，然后补全账单文件")),
-			}, cobra.ShellCompDirectiveNoFileComp
-		}
 		return []cobra.Completion{"csv", "xlsx", "xls"}, cobra.ShellCompDirectiveFilterFileExt
 	default:
 		return nil, cobra.ShellCompDirectiveNoFileComp

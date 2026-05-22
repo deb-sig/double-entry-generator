@@ -209,7 +209,7 @@ func TemplateURLFromRegistry(id string) (string, error) {
 		return "", fmt.Errorf("template %q has no path in registry", template.ID)
 	}
 	url := resolveRegistryAssetURL("", template.Path, template.Latest, version)
-	if version != "" && template.Latest != "" && strings.Contains(url, template.Latest) {
+	if version != "" && version != template.Latest && template.Latest != "" && strings.Contains(url, template.Latest) {
 		return "", fmt.Errorf("template %s@%s: version %q did not match registry path (latest=%q)", template.ID, version, version, template.Latest)
 	}
 	return url, nil

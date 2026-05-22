@@ -44,8 +44,8 @@ Template reference:
 Omit @version to follow registry "latest"; pin @version to keep old bill formats working after the default template changes.
 
 Examples:
-  double-entry-generator import wechat --rules rules.yaml bill.csv -o out.bean
-  double-entry-generator import wechat@2025.12 --rules rules.yaml bill.csv -o out.bean
+  double-entry-generator import wechat bill.csv -o out.bean
+  double-entry-generator import wechat@2025.12 bill.csv --rules rules.yaml -o out.bean
 `),
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 2 {

@@ -1,6 +1,9 @@
 package importer
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestParseTemplateRef(t *testing.T) {
 	tests := []struct {
@@ -69,5 +72,26 @@ func TestTemplateURLFromRegistryPinsVersion(t *testing.T) {
 	want := registryBaseURL("") + "templates/wechat/2025.12.yaml"
 	if url != want {
 		t.Fatalf("url = %q, want %q", url, want)
+	}
+}
+
+func TestTemplateURLFromRegistryAllowsPinnedLatest(t *testing.T) {
+	registry := &Registry{
+		Templates: []RegistryTemplate{{
+			ID:     "wechat",
+			Latest: "2026.05",
+			Path:   "templates/wechat/2026.05.yaml",
+		}},
+	}
+	template, version, err := lookupRegistryTemplate(registry, "wechat@2026.05")
+	if err != nil {
+		t.Fatal(err)
+	}
+	url := resolveRegistryAssetURL("", template.Path, template.Latest, version)
+	if !strings.HasSuffix(url, "templates/wechat/2026.05.yaml") {
+		t.Fatalf("url = %q", url)
+	}
+	if version != template.Latest {
+		t.Fatalf("version = %q, latest = %q", version, template.Latest)
 	}
 }
