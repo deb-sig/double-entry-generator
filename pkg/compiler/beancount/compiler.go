@@ -144,6 +144,18 @@ func (b *BeanCount) writeHeader(file io.Writer) error {
 	}
 
 	accounts := b.GetAllCandidateAccounts(b.Config)
+	for _, order := range b.IR.Orders {
+		for _, account := range []string{order.MinusAccount, order.PlusAccount} {
+			if account != "" {
+				accounts[account] = true
+			}
+		}
+		for _, account := range order.ExtraAccounts {
+			if account != "" {
+				accounts[account] = true
+			}
+		}
+	}
 	var sortedAccounts []string
 	for k := range accounts {
 		if k != "" {

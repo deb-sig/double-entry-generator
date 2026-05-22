@@ -128,6 +128,18 @@ func (ledger *Ledger) writeHeader(file io.Writer) error {
 	var err error
 
 	accounts := ledger.GetAllCandidateAccounts(ledger.Config)
+	for _, order := range ledger.IR.Orders {
+		for _, account := range []string{order.MinusAccount, order.PlusAccount} {
+			if account != "" {
+				accounts[account] = true
+			}
+		}
+		for _, account := range order.ExtraAccounts {
+			if account != "" {
+				accounts[account] = true
+			}
+		}
+	}
 	var sortedAccounts []string
 	for k := range accounts {
 		if k != "" {
