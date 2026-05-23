@@ -1,0 +1,27 @@
+schema: https://deg.dev/template-profile/v2
+id: wechat
+name: 测试
+template:
+  fileFormat: xlsx
+  delimiter: ','
+  stripTabs: true
+  skipLeadingRows: 17
+  sourceHeaders:
+    - 交易时间
+    - 交易类型
+    - 交易对方
+    - 商品
+    - 收/支
+    - 金额(元)
+    - 支付方式
+    - 当前状态
+    - 交易单号
+    - 商户单号
+    - 备注
+  columns:
+    date: 交易时间
+    amount: 金额(元)
+    payee: 交易对方
+    narration: 商品
+    type: 收/支
+  defaultCurrency: CNY

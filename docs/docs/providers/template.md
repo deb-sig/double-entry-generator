@@ -50,7 +50,7 @@ double-entry-generator config init wechat -o wechat-rules.yaml
 也可以 pin 到指定模板版本：
 
 ```bash
-double-entry-generator config init wechat@2026.05 -o wechat-rules.yaml
+double-entry-generator config init wechat@2026-04-28 -o wechat-rules.yaml
 ```
 
 ## 导入账单
@@ -70,7 +70,7 @@ double-entry-generator import wechat bill.csv --rules wechat-rules.yaml -o outpu
 使用指定版本的模板：
 
 ```bash
-double-entry-generator import wechat@2026.05 bill.csv --rules wechat-rules.yaml -o output.bean
+double-entry-generator import wechat@2026-04-28 bill.csv --rules wechat-rules.yaml -o output.bean
 ```
 
 使用本地模板文件：

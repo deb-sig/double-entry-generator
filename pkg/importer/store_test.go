@@ -10,8 +10,8 @@ func TestParseTemplateRef(t *testing.T) {
 		ref, wantID, wantVersion string
 	}{
 		{ref: "wechat", wantID: "wechat"},
-		{ref: "wechat@2026.05", wantID: "wechat", wantVersion: "2026.05"},
-		{ref: " wechat @ 2025.12 ", wantID: "wechat", wantVersion: "2025.12"},
+		{ref: "wechat@2026-04-28", wantID: "wechat", wantVersion: "2026-04-28"},
+		{ref: " wechat @ 2025-07-15 ", wantID: "wechat", wantVersion: "2025-07-15"},
 	}
 	for _, tt := range tests {
 		id, version := ParseTemplateRef(tt.ref)
@@ -25,9 +25,9 @@ func TestApplyVersionToPath(t *testing.T) {
 	tests := []struct {
 		path, latest, version, want string
 	}{
-		{path: "templates/wechat/2026.05.yaml", latest: "2026.05", version: "", want: "templates/wechat/2026.05.yaml"},
-		{path: "templates/wechat/2026.05.yaml", latest: "2026.05", version: "2025.12", want: "templates/wechat/2025.12.yaml"},
-		{path: "templates/wechat/latest.yaml", latest: "2026.05", version: "2025.12", want: "templates/wechat/2025.12.yaml"},
+		{path: "templates/wechat/latest.yaml", latest: "2026-04-28", version: "", want: "templates/wechat/latest.yaml"},
+		{path: "templates/wechat/2026-04-28.yaml", latest: "2026-04-28", version: "2025-07-15", want: "templates/wechat/2025-07-15.yaml"},
+		{path: "templates/wechat/latest.yaml", latest: "2026-04-28", version: "2025-07-15", want: "templates/wechat/2025-07-15.yaml"},
 	}
 	for _, tt := range tests {
 		if got := applyVersionToPath(tt.path, tt.latest, tt.version); got != tt.want {
@@ -40,15 +40,15 @@ func TestLookupRegistryTemplate(t *testing.T) {
 	registry := &Registry{
 		Templates: []RegistryTemplate{{
 			ID:     "wechat",
-			Latest: "2026.05",
-			Path:   "templates/wechat/2026.05.yaml",
+			Latest: "2026-04-28",
+			Path:   "templates/wechat/latest.yaml",
 		}},
 	}
-	template, version, err := lookupRegistryTemplate(registry, "wechat@2025.12")
+	template, version, err := lookupRegistryTemplate(registry, "wechat@2025-07-15")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if template.ID != "wechat" || version != "2025.12" {
+	if template.ID != "wechat" || version != "2025-07-15" {
 		t.Fatalf("unexpected lookup result: %#v %q", template, version)
 	}
 	if _, _, err := lookupRegistryTemplate(registry, "wechat@"); err == nil {
@@ -60,16 +60,16 @@ func TestTemplateURLFromRegistryPinsVersion(t *testing.T) {
 	registry := &Registry{
 		Templates: []RegistryTemplate{{
 			ID:     "wechat",
-			Latest: "2026.05",
-			Path:   "templates/wechat/2026.05.yaml",
+			Latest: "2026-04-28",
+			Path:   "templates/wechat/latest.yaml",
 		}},
 	}
-	template, version, err := lookupRegistryTemplate(registry, "wechat@2025.12")
+	template, version, err := lookupRegistryTemplate(registry, "wechat@2025-07-15")
 	if err != nil {
 		t.Fatal(err)
 	}
 	url := resolveRegistryAssetURL("", template.Path, template.Latest, version)
-	want := registryBaseURL("") + "templates/wechat/2025.12.yaml"
+	want := registryBaseURL("") + "templates/wechat/2025-07-15.yaml"
 	if url != want {
 		t.Fatalf("url = %q, want %q", url, want)
 	}
@@ -79,16 +79,16 @@ func TestTemplateURLFromRegistryAllowsPinnedLatest(t *testing.T) {
 	registry := &Registry{
 		Templates: []RegistryTemplate{{
 			ID:     "wechat",
-			Latest: "2026.05",
-			Path:   "templates/wechat/2026.05.yaml",
+			Latest: "2026-04-28",
+			Path:   "templates/wechat/latest.yaml",
 		}},
 	}
-	template, version, err := lookupRegistryTemplate(registry, "wechat@2026.05")
+	template, version, err := lookupRegistryTemplate(registry, "wechat@2026-04-28")
 	if err != nil {
 		t.Fatal(err)
 	}
 	url := resolveRegistryAssetURL("", template.Path, template.Latest, version)
-	if !strings.HasSuffix(url, "templates/wechat/2026.05.yaml") {
+	if !strings.HasSuffix(url, "templates/wechat/2026-04-28.yaml") {
 		t.Fatalf("url = %q", url)
 	}
 	if version != template.Latest {

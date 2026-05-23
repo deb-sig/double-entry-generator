@@ -23,7 +23,8 @@ import (
 // IR is the intermediate representation for the double-entry bookkeeping.
 type IR struct {
 	// TODO(gaocegege): Refactor it to be general.
-	Orders []Order
+	Orders       []Order
+	OpenAccounts map[string]bool
 }
 
 // Order is the intermediate representation for the order.
@@ -51,6 +52,14 @@ type Order struct {
 	PlusAccount     string
 	Metadata        map[string]string
 	Tags            []string
+	Postings        []Posting
+}
+
+// Posting is a rendered, template-driven posting line. Runtime v2 rules
+// produce these directly so the compiler does not need provider-specific
+// account, direction, or lot logic.
+type Posting struct {
+	Line string
 }
 
 // Unit is the key commodity names
@@ -103,6 +112,7 @@ const (
 // New creates a new IR.
 func New() *IR {
 	return &IR{
-		Orders: make([]Order, 0),
+		Orders:       make([]Order, 0),
+		OpenAccounts: map[string]bool{},
 	}
 }

@@ -114,6 +114,27 @@ func tokenizeWhen(expr string) ([]exprToken, error) {
 			i = j
 			continue
 		}
+		if expr[i] == '[' {
+			j := i + 1
+			for ; j < len(expr); j++ {
+				if expr[j] == ']' {
+					break
+				}
+			}
+			if j >= len(expr) {
+				return nil, fmt.Errorf("unterminated field")
+			}
+			j++
+			for strings.HasPrefix(expr[j:], ".") {
+				j++
+				for j < len(expr) && isIdentByte(expr[j]) {
+					j++
+				}
+			}
+			tokens = append(tokens, exprToken{typ: exprTokenValue, val: expr[i:j]})
+			i = j
+			continue
+		}
 		j := i
 		for j < len(expr) {
 			if expr[j] == ' ' || expr[j] == '\t' || expr[j] == '\n' || expr[j] == '\r' {
@@ -235,6 +256,9 @@ func (p *exprParser) valueOf(token exprToken) string {
 			}
 		}
 		return value
+	}
+	if strings.HasPrefix(token.val, "[") {
+		return evalColumnString(token.val, p.row, p.order)
 	}
 	value := fieldValue(token.val, p.row, p.order)
 	if value == "" && isLiteralToken(token.val) {

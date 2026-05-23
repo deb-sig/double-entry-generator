@@ -36,13 +36,13 @@ func TestImportFileAppliesTemplateAndPersonalRules(t *testing.T) {
 		TemplateRules: []Rule{
 			{
 				When:    `raw[收/支] == "支出"`,
-				Actions: Actions{Type: "send", From: "Assets:Alipay"},
+				Actions: Actions{Type: "send", From: TransferSide{Account: "Assets:Alipay"}},
 			},
 		},
 		PersonalRules: []Rule{
 			{
 				When:    `raw[交易对方] ~ "滴露"`,
-				Actions: Actions{To: "Expenses:Groceries"},
+				Actions: Actions{To: TransferSide{Account: "Expenses:Groceries"}},
 			},
 		},
 	}
@@ -76,7 +76,7 @@ func TestTemplateRefKinds(t *testing.T) {
 		localPath bool
 	}{
 		{ref: "wechat"},
-		{ref: "wechat@2026.05"},
+		{ref: "wechat@2026-04-28"},
 		{ref: "https://example.com/wechat.yaml", http: true},
 		{ref: "http://example.com/wechat.yaml", http: true},
 		{ref: "./wechat.yaml", localPath: true},
@@ -199,6 +199,76 @@ func TestSourceHeadersAndSplitAmountColumns(t *testing.T) {
 	}
 	if out.Orders[1].Type != ir.TypeRecv {
 		t.Fatalf("expected second order recv, got %s", out.Orders[1].Type)
+	}
+}
+
+func TestV2ActionsBuildExplicitPostings(t *testing.T) {
+	profile := testProfile()
+	profile.Schema = "https://deg.dev/template-profile/v2"
+	profile.Template.DefaultMinus = ""
+	profile.Template.DefaultPlus = ""
+	profile.PersonalRules = []Rule{
+		{
+			When: `[交易对方] == "滴露"`,
+			Actions: Actions{
+				To:       TransferSide{Account: "Expenses:Groceries"},
+				Amount:   "[金额].number",
+				Currency: "CNY",
+				Postings: []string{
+					`Expenses:Fees [金额].number.! CNY`,
+				},
+			},
+		},
+	}
+	out, err := ImportFile(profile, writeTestCSV(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(out.Orders) != 1 {
+		t.Fatalf("expected 1 order, got %d", len(out.Orders))
+	}
+	postings := out.Orders[0].Postings
+	if len(postings) != 2 {
+		t.Fatalf("expected 2 postings, got %#v", postings)
+	}
+	if postings[0].Line != "Expenses:Groceries 18.90 CNY" {
+		t.Fatalf("unexpected to posting: %q", postings[0].Line)
+	}
+	if postings[1].Line != "Expenses:Fees -18.90 CNY" {
+		t.Fatalf("unexpected extra posting: %q", postings[1].Line)
+	}
+	if out.Orders[0].MinusAccount != "" || out.Orders[0].PlusAccount != "" {
+		t.Fatalf("v2 should not fill default accounts: minus=%q plus=%q", out.Orders[0].MinusAccount, out.Orders[0].PlusAccount)
+	}
+}
+
+func TestV2TransferSideOverridesAmountAndCurrency(t *testing.T) {
+	profile := testProfile()
+	profile.Schema = "https://deg.dev/template-profile/v2"
+	profile.PersonalRules = []Rule{
+		{
+			Actions: Actions{
+				From:     TransferSide{Account: "Assets:Cash", Amount: "[金额].number", Currency: "CNY"},
+				To:       TransferSide{Account: "Assets:Bank", Amount: "[金额].number * 0.99", Currency: "CNY"},
+				Postings: []string{`Expenses:Commission [金额].number.+ * 0.01 CNY`},
+			},
+		},
+	}
+	out, err := ImportFile(profile, writeTestCSV(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := []string{}
+	for _, posting := range out.Orders[0].Postings {
+		got = append(got, posting.Line)
+	}
+	want := []string{
+		"Assets:Bank 18.711 CNY",
+		"Assets:Cash -18.90 CNY",
+		"Expenses:Commission 0.189 CNY",
+	}
+	if strings.Join(got, "\n") != strings.Join(want, "\n") {
+		t.Fatalf("postings mismatch\ngot:\n%s\nwant:\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
 	}
 }
 

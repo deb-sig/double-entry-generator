@@ -4,8 +4,10 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -34,6 +36,9 @@ func ImportFile(profile *Profile, filename string) (*ir.IR, error) {
 		return nil, err
 	}
 	orders := ir.New()
+	if profile.IsV2() {
+		orders.OpenAccounts = collectV2Accounts(profile)
+	}
 	for _, row := range rows {
 		order, ignore, err := rowToOrder(profile, row)
 		if err != nil {
@@ -48,6 +53,28 @@ func ImportFile(profile *Profile, filename string) (*ir.IR, error) {
 		orders.Orders = append(orders.Orders, order)
 	}
 	return orders, nil
+}
+
+func collectV2Accounts(profile *Profile) map[string]bool {
+	accounts := map[string]bool{}
+	for _, rule := range profile.Rules() {
+		addRuleAccount(accounts, rule.Actions.From.Account)
+		addRuleAccount(accounts, rule.Actions.To.Account)
+		for _, line := range rule.Actions.Postings {
+			addRuleAccount(accounts, strings.Fields(line)...)
+		}
+	}
+	return accounts
+}
+
+func addRuleAccount(accounts map[string]bool, values ...string) {
+	for _, value := range values {
+		value = strings.TrimSpace(value)
+		if strings.Contains(value, ":") && !strings.Contains(value, "[") {
+			accounts[value] = true
+			return
+		}
+	}
 }
 
 func ParseFile(profile *Profile, filename string) ([]Row, error) {
@@ -220,6 +247,9 @@ func recordsToRows(profile *Profile, records [][]string) ([]Row, error) {
 	} else if sameCells(headers, normalizeCells(records[skip])) {
 		start = skip + 1
 	}
+	if err := validateHeaders(profile, headers); err != nil {
+		return nil, err
+	}
 	rows := make([]Row, 0, len(records)-start)
 	for _, record := range records[start:] {
 		record = normalizeCells(record)
@@ -230,9 +260,12 @@ func recordsToRows(profile *Profile, records [][]string) ([]Row, error) {
 		for i, h := range headers {
 			raw[h] = cell(record, i)
 		}
-		metadata := make(map[string]string, len(profile.Template.Metadata))
-		for key, source := range profile.Template.Metadata {
-			metadata[key] = raw[source]
+		metadata := map[string]string{}
+		if !profile.IsV2() {
+			metadata = make(map[string]string, len(profile.Template.Metadata))
+			for key, source := range profile.Template.Metadata {
+				metadata[key] = raw[source]
+			}
 		}
 		date := raw[profile.Template.Columns.Date]
 		if profile.Template.Columns.Time != "" && raw[profile.Template.Columns.Time] != "" {
@@ -254,6 +287,29 @@ func recordsToRows(profile *Profile, records [][]string) ([]Row, error) {
 		rows = append(rows, row)
 	}
 	return rows, nil
+}
+
+func validateHeaders(profile *Profile, headers []string) error {
+	available := map[string]bool{}
+	for _, header := range headers {
+		available[header] = true
+	}
+	required := []string{
+		profile.Template.Columns.Date,
+		profile.Template.Columns.Amount,
+		profile.Template.Columns.AmountIn,
+		profile.Template.Columns.AmountOut,
+		profile.Template.Columns.Payee,
+		profile.Template.Columns.Narration,
+		profile.Template.Columns.Type,
+		profile.Template.Columns.Currency,
+	}
+	for _, header := range required {
+		if header != "" && !available[header] {
+			return fmt.Errorf("template header %q not found after skipLeadingRows=%d", header, profile.Template.SkipLeadingRows)
+		}
+	}
+	return nil
 }
 
 func sameCells(a, b []string) bool {
@@ -327,9 +383,11 @@ func rowToOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 		Type:         txType,
 		TypeOriginal: row.Type,
 		Currency:     profile.Template.DefaultCurrency,
-		MinusAccount: profile.Template.DefaultMinus,
-		PlusAccount:  profile.Template.DefaultPlus,
 		Metadata:     row.Metadata,
+	}
+	if !profile.IsV2() {
+		order.MinusAccount = profile.Template.DefaultMinus
+		order.PlusAccount = profile.Template.DefaultPlus
 	}
 	if row.Currency != "" {
 		order.Currency = row.Currency
@@ -339,6 +397,7 @@ func rowToOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 	}
 
 	ignore := false
+	mergedV2Actions := Actions{}
 	for _, rule := range profile.Rules() {
 		matches, err := ruleMatches(rule, row, order)
 		if err != nil {
@@ -347,7 +406,17 @@ func rowToOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 		if !matches {
 			continue
 		}
-		applyActions(&order, row, rule.Actions, &ignore)
+		if profile.IsV2() {
+			applyV2ScalarActions(&order, row, rule.Actions, &ignore)
+			mergeV2Actions(&mergedV2Actions, rule.Actions)
+			continue
+		}
+		if err := applyActions(&order, row, rule.Actions, &ignore, profile.IsV2()); err != nil {
+			return ir.Order{}, false, err
+		}
+	}
+	if profile.IsV2() {
+		renderV2Postings(&order, row, mergedV2Actions)
 	}
 	return order, ignore, nil
 }
@@ -366,7 +435,7 @@ func ruleMatches(rule Rule, row Row, order ir.Order) (bool, error) {
 	return ok, nil
 }
 
-func applyActions(order *ir.Order, row Row, actions Actions, ignore *bool) {
+func applyActions(order *ir.Order, row Row, actions Actions, ignore *bool, v2 bool) error {
 	if actions.Ignore {
 		*ignore = true
 	}
@@ -391,11 +460,31 @@ func applyActions(order *ir.Order, row Row, actions Actions, ignore *bool) {
 	if actions.Currency != "" {
 		order.Currency = resolveValue(actions.Currency, row)
 	}
-	if actions.From != "" {
-		order.MinusAccount = resolveValue(actions.From, row)
+	if !actions.To.IsZero() {
+		if v2 {
+			if posting, ok := renderTransferPosting(actions.To, actions.Amount, actions.Currency, "+", row, *order); ok {
+				order.Postings = append(order.Postings, ir.Posting{Line: posting})
+			}
+		} else {
+			order.PlusAccount = resolveValue(actions.To.Account, row)
+		}
 	}
-	if actions.To != "" {
-		order.PlusAccount = resolveValue(actions.To, row)
+	if !actions.From.IsZero() {
+		if v2 {
+			if posting, ok := renderTransferPosting(actions.From, actions.Amount, actions.Currency, "-", row, *order); ok {
+				order.Postings = append(order.Postings, ir.Posting{Line: posting})
+			}
+		} else {
+			order.MinusAccount = resolveValue(actions.From.Account, row)
+		}
+	}
+	if v2 {
+		for _, line := range actions.Postings {
+			rendered := strings.TrimSpace(renderRuleText(line, row, *order))
+			if rendered != "" {
+				order.Postings = append(order.Postings, ir.Posting{Line: rendered})
+			}
+		}
 	}
 	if actions.Tag != "" {
 		order.Tags = append(order.Tags, splitList(actions.Tag)...)
@@ -406,7 +495,11 @@ func applyActions(order *ir.Order, row Row, actions Actions, ignore *bool) {
 			order.Metadata = map[string]string{}
 		}
 		for key, value := range actions.Metadata {
-			order.Metadata[key] = resolveValue(value, row)
+			if v2 {
+				order.Metadata[key] = renderRuleText(value, row, *order)
+			} else {
+				order.Metadata[key] = resolveValue(value, row)
+			}
 		}
 	}
 	if actions.Commission != "" {
@@ -426,6 +519,137 @@ func applyActions(order *ir.Order, row Row, actions Actions, ignore *bool) {
 		}
 		order.ExtraAccounts[ir.PnlAccount] = resolveValue(actions.PnlAccount, row)
 	}
+	return nil
+}
+
+func applyV2ScalarActions(order *ir.Order, row Row, actions Actions, ignore *bool) {
+	if actions.Ignore {
+		*ignore = true
+	}
+	if actions.Payee != "" {
+		order.Peer = renderRuleText(actions.Payee, row, *order)
+	}
+	if actions.Narration != "" {
+		order.Item = renderRuleText(actions.Narration, row, *order)
+	}
+	if actions.Tag != "" {
+		order.Tags = append(order.Tags, splitList(actions.Tag)...)
+	}
+	order.Tags = append(order.Tags, actions.Tags...)
+	if actions.Metadata != nil {
+		if order.Metadata == nil {
+			order.Metadata = map[string]string{}
+		}
+		for key, value := range actions.Metadata {
+			order.Metadata[key] = renderRuleText(value, row, *order)
+		}
+	}
+}
+
+func mergeV2Actions(base *Actions, next Actions) {
+	if !next.From.IsZero() {
+		base.From = mergeTransferSide(base.From, next.From)
+	}
+	if !next.To.IsZero() {
+		base.To = mergeTransferSide(base.To, next.To)
+	}
+	if next.Amount != "" {
+		base.Amount = next.Amount
+	}
+	if next.Currency != "" {
+		base.Currency = next.Currency
+	}
+	base.Postings = append(base.Postings, next.Postings...)
+}
+
+func mergeTransferSide(base, next TransferSide) TransferSide {
+	if next.Account != "" {
+		base.Account = next.Account
+	}
+	if next.Amount != "" {
+		base.Amount = next.Amount
+	}
+	if next.Currency != "" {
+		base.Currency = next.Currency
+	}
+	return base
+}
+
+func renderV2Postings(order *ir.Order, row Row, actions Actions) {
+	if !actions.To.IsZero() {
+		if posting, ok := renderTransferPosting(actions.To, actions.Amount, actions.Currency, "+", row, *order); ok {
+			order.Postings = append(order.Postings, ir.Posting{Line: posting})
+		}
+	}
+	if !actions.From.IsZero() {
+		if posting, ok := renderTransferPosting(actions.From, actions.Amount, actions.Currency, "-", row, *order); ok {
+			order.Postings = append(order.Postings, ir.Posting{Line: posting})
+		}
+	}
+	for _, line := range actions.Postings {
+		rendered := strings.TrimSpace(renderPostingText(line, row, *order))
+		if rendered != "" {
+			order.Postings = append(order.Postings, ir.Posting{Line: rendered})
+		}
+	}
+}
+
+func renderTransferPosting(side TransferSide, defaultAmount, defaultCurrency, direction string, row Row, order ir.Order) (string, bool) {
+	account := strings.TrimSpace(renderRuleText(side.Account, row, order))
+	if account == "" {
+		return "", false
+	}
+	amount := firstNonEmptyString(side.Amount, defaultAmount)
+	currency := firstNonEmptyString(side.Currency, defaultCurrency)
+	if amount == "" {
+		amount = "[amount].number"
+	}
+	amount = forceAmountDirection(amount, direction)
+	parts := []string{account, renderPostingText(amount, row, order)}
+	if currency != "" {
+		parts = append(parts, renderRuleText(currency, row, order))
+	}
+	return strings.Join(nonEmptyStrings(parts), " "), true
+}
+
+func forceAmountDirection(expr, direction string) string {
+	expr = strings.TrimSpace(expr)
+	if expr == "" {
+		return expr
+	}
+	if strings.Contains(expr, ".+") || strings.Contains(expr, ".-") || strings.Contains(expr, ".!") {
+		return expr
+	}
+	if strings.HasPrefix(expr, "+") || strings.HasPrefix(expr, "-") || strings.HasPrefix(expr, "!") {
+		return expr
+	}
+	loc := columnExprPattern.FindStringIndex(expr)
+	if loc != nil {
+		return expr[:loc[1]] + "." + direction + expr[loc[1]:]
+	}
+	if direction == "-" {
+		return "-(" + expr + ")"
+	}
+	return expr
+}
+
+func firstNonEmptyString(values ...string) string {
+	for _, value := range values {
+		if strings.TrimSpace(value) != "" {
+			return value
+		}
+	}
+	return ""
+}
+
+func nonEmptyStrings(values []string) []string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		if strings.TrimSpace(value) != "" {
+			out = append(out, strings.TrimSpace(value))
+		}
+	}
+	return out
 }
 
 func fieldValue(field string, row Row, order ir.Order) string {
@@ -621,4 +845,221 @@ func splitList(value string) []string {
 		}
 	}
 	return out
+}
+
+var columnExprPattern = regexp.MustCompile(`\[([^\]]+)\]((?:\.extract\((?:r)?"[^"]*"\)|\.extract\((?:r)?'[^']*'\)|\.[A-Za-z0-9_+\-!]+)*)`)
+
+func renderRuleText(value string, row Row, order ir.Order) string {
+	return columnExprPattern.ReplaceAllStringFunc(value, func(match string) string {
+		return evalColumnString(match, row, order)
+	})
+}
+
+func renderPostingText(value string, row Row, order ir.Order) string {
+	rendered := renderRuleText(value, row, order)
+	return evalSimpleArithmetic(rendered)
+}
+
+func evalColumnString(expr string, row Row, order ir.Order) string {
+	if !strings.HasPrefix(expr, "[") {
+		return expr
+	}
+	end := strings.Index(expr, "]")
+	if end < 0 {
+		return expr
+	}
+	field := expr[1:end]
+	value := row.Raw[field]
+	rest := expr[end+1:]
+	for rest != "" {
+		if !strings.HasPrefix(rest, ".") {
+			break
+		}
+		rest = strings.TrimPrefix(rest, ".")
+		method, arg, tail := nextMethod(rest)
+		value = applyColumnMethod(value, method, arg, row, order)
+		rest = tail
+	}
+	return value
+}
+
+func nextMethod(rest string) (string, string, string) {
+	if strings.HasPrefix(rest, "extract(") {
+		end := closingMethodParen(rest)
+		if end < 0 {
+			return rest, "", ""
+		}
+		return "extract", strings.TrimPrefix(strings.TrimSuffix(rest[len("extract("):end], `"`), `"`), rest[end+1:]
+	}
+	i := 0
+	for i < len(rest) && (isIdentByte(rest[i]) || rest[i] == '+' || rest[i] == '-' || rest[i] == '!') {
+		i++
+	}
+	return rest[:i], "", rest[i:]
+}
+
+func closingMethodParen(value string) int {
+	var quote byte
+	for i := len("extract("); i < len(value); i++ {
+		c := value[i]
+		if quote != 0 {
+			if c == '\\' && i+1 < len(value) {
+				i++
+				continue
+			}
+			if c == quote {
+				quote = 0
+			}
+			continue
+		}
+		if c == '\'' || c == '"' {
+			quote = c
+			continue
+		}
+		if c == ')' {
+			return i
+		}
+	}
+	return -1
+}
+
+func applyColumnMethod(value, method, arg string, row Row, order ir.Order) string {
+	switch method {
+	case "trim":
+		return strings.TrimSpace(value)
+	case "number":
+		return normalizeAmountString(value)
+	case "+":
+		n, err := parseAmount(value, "")
+		if err != nil {
+			return value
+		}
+		return formatAmountLike(math.Abs(n), value)
+	case "-":
+		n, err := parseAmount(value, "")
+		if err != nil {
+			return value
+		}
+		return formatAmountLike(-math.Abs(n), value)
+	case "!":
+		n, err := parseAmount(value, "")
+		if err != nil {
+			return value
+		}
+		return formatAmountLike(-n, value)
+	case "date", "time", "timestamp":
+		if t, err := parseDate(value, ""); err == nil {
+			switch method {
+			case "date":
+				return t.Format("2006-01-02")
+			case "time":
+				return t.Format("15:04")
+			case "timestamp":
+				return strconv.FormatInt(t.Unix(), 10)
+			}
+		}
+	case "extract":
+		pattern := strings.TrimSpace(arg)
+		pattern = strings.TrimPrefix(pattern, "r")
+		pattern = strings.Trim(pattern, `"'`)
+		re, err := regexp.Compile(pattern)
+		if err != nil {
+			return ""
+		}
+		matches := re.FindStringSubmatch(value)
+		if len(matches) > 1 {
+			return matches[1]
+		}
+		if len(matches) == 1 {
+			return matches[0]
+		}
+		return ""
+	}
+	return value
+}
+
+func normalizeAmountString(value string) string {
+	value = strings.TrimSpace(value)
+	replacer := strings.NewReplacer(",", "", "¥", "", "￥", "", "$", "", "CNY", "", "RMB", "")
+	value = strings.TrimSpace(replacer.Replace(value))
+	if base, _, ok := strings.Cut(value, "("); ok {
+		value = strings.TrimSpace(base)
+	}
+	if base, _, ok := strings.Cut(value, "（"); ok {
+		value = strings.TrimSpace(base)
+	}
+	return value
+}
+
+func formatAmountLike(amount float64, original string) string {
+	precision := 2
+	cleaned := normalizeAmountString(original)
+	if dot := strings.LastIndex(cleaned, "."); dot >= 0 {
+		precision = len(cleaned) - dot - 1
+	}
+	if precision < 2 {
+		precision = 2
+	}
+	return strconv.FormatFloat(amount, 'f', precision, 64)
+}
+
+var simpleArithmeticPattern = regexp.MustCompile(`(-?\d+(?:\.\d+)?)\s*([*/+-])\s*(-?\d+(?:\.\d+)?)`)
+
+func evalSimpleArithmetic(value string) string {
+	for {
+		loc := simpleArithmeticPattern.FindStringSubmatchIndex(value)
+		if loc == nil {
+			return value
+		}
+		match := value[loc[0]:loc[1]]
+		parts := simpleArithmeticPattern.FindStringSubmatch(match)
+		if len(parts) != 4 {
+			return value
+		}
+		left, err1 := strconv.ParseFloat(parts[1], 64)
+		right, err2 := strconv.ParseFloat(parts[3], 64)
+		if err1 != nil || err2 != nil {
+			return value
+		}
+		var out float64
+		switch parts[2] {
+		case "*":
+			out = left * right
+		case "/":
+			if right == 0 {
+				return value
+			}
+			out = left / right
+		case "+":
+			out = left + right
+		case "-":
+			out = left - right
+		}
+		precision := max(decimalPlaces(parts[1]), decimalPlaces(parts[3]))
+		if parts[2] == "*" {
+			precision = decimalPlaces(parts[1]) + decimalPlaces(parts[3])
+		}
+		if precision < 2 {
+			precision = 2
+		}
+		value = value[:loc[0]] + trimFraction(strconv.FormatFloat(out, 'f', precision, 64), 2) + value[loc[1]:]
+	}
+}
+
+func trimFraction(value string, minPrecision int) string {
+	dot := strings.LastIndex(value, ".")
+	if dot < 0 {
+		return value
+	}
+	for len(value)-dot-1 > minPrecision && strings.HasSuffix(value, "0") {
+		value = strings.TrimSuffix(value, "0")
+	}
+	return value
+}
+
+func decimalPlaces(value string) int {
+	if dot := strings.LastIndex(value, "."); dot >= 0 {
+		return len(value) - dot - 1
+	}
+	return 0
 }

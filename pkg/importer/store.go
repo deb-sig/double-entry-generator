@@ -81,11 +81,7 @@ func loadProfileURL(rawURL string) (*Profile, error) {
 	if err != nil {
 		return nil, err
 	}
-	var profile Profile
-	if err := yaml.Unmarshal(b, &profile); err != nil {
-		return nil, err
-	}
-	return &profile, nil
+	return loadProfileBytes(b, strings.TrimSuffix(filepath.Base(strings.Split(rawURL, "?")[0]), filepath.Ext(strings.Split(rawURL, "?")[0])))
 }
 
 func LoadRemoteRegistry(rawURL string) (*Registry, error) {
@@ -141,7 +137,7 @@ func expandHome(path string) string {
 	return path
 }
 
-// ParseTemplateRef splits "wechat@2026.05" into id and optional pinned version.
+// ParseTemplateRef splits "wechat@2026-04-28" into id and optional pinned version.
 func ParseTemplateRef(ref string) (id, version string) {
 	ref = strings.TrimSpace(ref)
 	if base, v, ok := strings.Cut(ref, "@"); ok {
@@ -163,7 +159,7 @@ func lookupRegistryTemplate(registry *Registry, ref string) (RegistryTemplate, s
 		return RegistryTemplate{}, "", fmt.Errorf("template id is required")
 	}
 	if strings.Contains(ref, "@") && version == "" {
-		return RegistryTemplate{}, "", fmt.Errorf("template version is empty in %q, use id@version (e.g. wechat@2026.05)", ref)
+		return RegistryTemplate{}, "", fmt.Errorf("template version is empty in %q, use id@version (e.g. wechat@2026-04-28)", ref)
 	}
 	for _, template := range registry.Templates {
 		if template.ID != id {

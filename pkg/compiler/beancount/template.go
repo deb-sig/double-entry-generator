@@ -16,6 +16,12 @@ var normalOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ EscapeString .Peer }
 
 `
 
+var runtimeOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ EscapeString .Peer }}" {{- if .Item }} "{{ EscapeString .Item }}"{{ end }}{{ range .Tags }} #{{ . }}{{ end }}{{ if .Note }} ; {{ .Note }}{{ end }}
+	{{- range $key, $value := .Metadata }}{{ if $value }}{{ printf "\n" }}	{{ $key }}: "{{ $value }}"{{end}}{{end}}
+	{{- range .Postings }}{{ printf "\n" }}	{{ . }}{{ end }}
+
+`
+
 // 加密货币账单的模版（需要高精度）
 var cryptoOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ EscapeString .Peer }}" {{- if .Item }} "{{ EscapeString .Item }}"{{ end }}{{ range .Tags }} #{{ . }}{{ end }}{{ if .Note }} ; {{ .Note }}{{ end }}
 	{{- range $key, $value := .Metadata }}{{ if $value }}{{ printf "\n" }}	{{ $key }}: "{{ $value }}"{{end}}{{end}}
@@ -41,6 +47,7 @@ type NormalOrderVars struct {
 	Currency          string
 	Metadata          map[string]string // unordered metadata map
 	Tags              []string
+	Postings          []string
 }
 
 // 火币买入模版（手续费单位为购买单位货币）
@@ -189,6 +196,7 @@ const etfMergeOrderBeancount = `{{.PayTime.Format "2006-01-02"}} * "{{ EscapeStr
 
 var (
 	normalOrderTemplate                          *template.Template
+	runtimeOrderTemplate                         *template.Template
 	cryptoOrderTemplate                          *template.Template
 	huobiTradeBuyOrderTemplate                   *template.Template
 	huobiTradeBuyOrderDiffCommissionUnitTemplate *template.Template

@@ -27,7 +27,7 @@ var configInitCmd = &cobra.Command{
 Download starter rules for a registry template. Supports version pinning:
 
   double-entry-generator config init wechat
-  double-entry-generator config init wechat@2026.05 -o wechat-rules.yaml
+  double-entry-generator config init wechat@2026-04-28 -o wechat-rules.yaml
 `),
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {

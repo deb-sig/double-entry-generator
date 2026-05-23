@@ -46,7 +46,7 @@ double-entry-generator config init wechat -o wechat-rules.yaml
 Pin a template version:
 
 ```bash
-double-entry-generator config init wechat@2026.05 -o wechat-rules.yaml
+double-entry-generator config init wechat@2026-04-28 -o wechat-rules.yaml
 ```
 
 ## Import Bills
@@ -66,7 +66,7 @@ double-entry-generator import wechat bill.csv --rules wechat-rules.yaml -o outpu
 Pin a template version:
 
 ```bash
-double-entry-generator import wechat@2026.05 bill.csv --rules wechat-rules.yaml -o output.bean
+double-entry-generator import wechat@2026-04-28 bill.csv --rules wechat-rules.yaml -o output.bean
 ```
 
 Use a local template:

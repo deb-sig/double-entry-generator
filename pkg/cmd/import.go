@@ -36,16 +36,15 @@ var importCmd = &cobra.Command{
 Import bills using a template from the online registry, a pinned version, or a local profile YAML.
 
 Template reference:
-  wechat                         use registry latest (e.g. 2026.05)
-  wechat@2026.05                 pin a specific profile version
-  wechat-xlsx-flow@2026.05         another template id with its own version
+  wechat                         use registry latest
+  wechat@2026-04-28              pin a specific profile version
   ./profiles/wechat.yaml           local profile file
 
 Omit @version to follow registry "latest"; pin @version to keep old bill formats working after the default template changes.
 
 Examples:
   double-entry-generator import wechat bill.csv -o out.bean
-  double-entry-generator import wechat@2025.12 bill.csv --rules rules.yaml -o out.bean
+  double-entry-generator import wechat@2025-07-15 bill.csv --rules rules.yaml -o out.bean
 `),
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 2 {

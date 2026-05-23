@@ -62,8 +62,8 @@ type Rule struct {
 
 type Actions struct {
 	Type              string            `json:"type,omitempty" yaml:"type,omitempty"`
-	From              string            `json:"from,omitempty" yaml:"from,omitempty"`
-	To                string            `json:"to,omitempty" yaml:"to,omitempty"`
+	From              TransferSide      `json:"from,omitempty" yaml:"from,omitempty"`
+	To                TransferSide      `json:"to,omitempty" yaml:"to,omitempty"`
 	Payee             string            `json:"payee,omitempty" yaml:"payee,omitempty"`
 	Narration         string            `json:"narration,omitempty" yaml:"narration,omitempty"`
 	Amount            string            `json:"amount,omitempty" yaml:"amount,omitempty"`
@@ -75,12 +75,43 @@ type Actions struct {
 	Commission        string            `json:"commission,omitempty" yaml:"commission,omitempty"`
 	CommissionAccount string            `json:"commissionAccount,omitempty" yaml:"commissionAccount,omitempty"`
 	PnlAccount        string            `json:"pnlAccount,omitempty" yaml:"pnlAccount,omitempty"`
+	Postings          []string          `json:"postings,omitempty" yaml:"postings,omitempty"`
+}
+
+type TransferSide struct {
+	Account  string `json:"account,omitempty" yaml:"account,omitempty"`
+	Amount   string `json:"amount,omitempty" yaml:"amount,omitempty"`
+	Currency string `json:"currency,omitempty" yaml:"currency,omitempty"`
+}
+
+func (s *TransferSide) UnmarshalYAML(value *yaml.Node) error {
+	switch value.Kind {
+	case yaml.ScalarNode:
+		s.Account = strings.TrimSpace(value.Value)
+		return nil
+	case yaml.MappingNode:
+		type side TransferSide
+		var out side
+		if err := value.Decode(&out); err != nil {
+			return err
+		}
+		*s = TransferSide(out)
+		return nil
+	case 0:
+		return nil
+	default:
+		return fmt.Errorf("from/to must be an account string or mapping")
+	}
+}
+
+func (s TransferSide) IsZero() bool {
+	return s.Account == "" && s.Amount == "" && s.Currency == ""
 }
 
 func isZeroActions(actions Actions) bool {
 	return actions.Type == "" &&
-		actions.From == "" &&
-		actions.To == "" &&
+		actions.From.IsZero() &&
+		actions.To.IsZero() &&
 		actions.Payee == "" &&
 		actions.Narration == "" &&
 		actions.Amount == "" &&
@@ -91,7 +122,8 @@ func isZeroActions(actions Actions) bool {
 		len(actions.Metadata) == 0 &&
 		actions.Commission == "" &&
 		actions.CommissionAccount == "" &&
-		actions.PnlAccount == ""
+		actions.PnlAccount == "" &&
+		len(actions.Postings) == 0
 }
 
 func LoadProfile(path string) (*Profile, error) {
@@ -99,40 +131,59 @@ func LoadProfile(path string) (*Profile, error) {
 	if err != nil {
 		return nil, err
 	}
-	var p Profile
 	switch strings.ToLower(filepath.Ext(path)) {
 	case ".yaml", ".yml":
 	default:
 		return nil, fmt.Errorf("template profile must be a YAML file")
 	}
+	return loadProfileBytes(b, strings.TrimSuffix(filepath.Base(path), filepath.Ext(path)))
+}
+
+func loadProfileBytes(b []byte, fallbackID string) (*Profile, error) {
+	var p Profile
 	if err := yaml.Unmarshal(b, &p); err != nil {
 		return nil, err
 	}
 	if p.ID == "" {
-		p.ID = strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
+		p.ID = fallbackID
 	}
-	if p.Template.Delimiter == "" {
-		p.Template.Delimiter = ","
-	}
-	if p.Template.FileFormat == "" {
-		p.Template.FileFormat = "csv"
-	}
-	if p.Template.DefaultMinus == "" {
-		p.Template.DefaultMinus = p.Defaults["minusAccount"]
-	}
-	if p.Template.DefaultPlus == "" {
-		p.Template.DefaultPlus = p.Defaults["plusAccount"]
-	}
-	if p.Template.DefaultCurrency == "" {
-		p.Template.DefaultCurrency = p.Defaults["currency"]
-	}
-	if p.Template.Columns.Date == "" {
-		return nil, fmt.Errorf("template columns.date is required")
-	}
-	if p.Template.Columns.Amount == "" && (p.Template.Columns.AmountIn == "" || p.Template.Columns.AmountOut == "") {
-		return nil, fmt.Errorf("template columns.amount or both columns.amountIn/amountOut are required")
+	normalizeTemplate(&p.Template, p.Defaults)
+	if err := validateTemplate(p.Template); err != nil {
+		return nil, err
 	}
 	return &p, nil
+}
+
+func normalizeTemplate(t *Template, defaults map[string]string) {
+	if t.Delimiter == "" {
+		t.Delimiter = ","
+	}
+	if t.FileFormat == "" {
+		t.FileFormat = "csv"
+	}
+	if t.DefaultMinus == "" {
+		t.DefaultMinus = defaults["minusAccount"]
+	}
+	if t.DefaultPlus == "" {
+		t.DefaultPlus = defaults["plusAccount"]
+	}
+	if t.DefaultCurrency == "" {
+		t.DefaultCurrency = defaults["currency"]
+	}
+}
+
+func validateTemplate(t Template) error {
+	if t.Columns.Date == "" {
+		return fmt.Errorf("template columns.date is required")
+	}
+	if t.Columns.Amount == "" && (t.Columns.AmountIn == "" || t.Columns.AmountOut == "") {
+		return fmt.Errorf("template columns.amount or both columns.amountIn/amountOut are required")
+	}
+	return nil
+}
+
+func (p *Profile) IsV2() bool {
+	return strings.Contains(strings.ToLower(p.Schema), "/v2")
 }
 
 func (p *Profile) Rules() []Rule {
