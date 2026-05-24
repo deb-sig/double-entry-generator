@@ -54,6 +54,7 @@ plugins:
             - Providers: en/providers.md
             - Banks:
               - China Construction Bank (CCB): en/providers/banks/ccb.md
+              - Bank of China (BOC): en/providers/banks/boc.md
               - Industrial and Commercial Bank of China (ICBC): en/providers/banks/icbc.md
               - China CITIC Bank (CITIC): en/providers/banks/citic.md
               - Agricultural Bank of China Debit Card (ABC Debit): en/providers/banks/abc_debit.md
@@ -93,6 +94,7 @@ plugins:
             - 提供商支持: providers.md
             - 银行:
               - 建设银行 (CCB): providers/banks/ccb.md
+              - 中国银行 (BOC): providers/banks/boc.md
               - 工商银行 (ICBC): providers/banks/icbc.md
               - 中信银行 (CITIC): providers/banks/citic.md
               - 招商银行 (CMB): providers/banks/cmb.md
@@ -157,6 +159,7 @@ nav:
   - 提供商支持: providers.md
   - 银行:
     - 建设银行 (CCB): providers/banks/ccb.md
+    - 中国银行 (BOC): providers/banks/boc.md
     - 工商银行 (ICBC): providers/banks/icbc.md
     - 中信银行 (CITIC): providers/banks/citic.md
     - 招商银行 (CMB): providers/banks/cmb.md

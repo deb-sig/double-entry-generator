@@ -17,7 +17,7 @@ description: 基于规则的复式记账导入器
 <div class="features">
   <div class="feature">
     <h3>🏦 多银行支持</h3>
-    <p>支持建设银行、工商银行、中信银行、汇丰银行等主流银行账单</p>
+    <p>支持建设银行、中国银行、工商银行、中信银行、汇丰银行等主流银行账单</p>
   </div>
   <div class="feature">
     <h3>💰 支付工具</h3>
@@ -72,6 +72,7 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 
 ### 🏦 银行
 - [建设银行 (CCB)](providers/banks/ccb.md) - 支持 CSV、XLS、XLSX 格式
+- [中国银行 (BOC)](providers/banks/boc.md) - 支持借记卡和信用卡账单
 - [工商银行 (ICBC)](providers/banks/icbc.md) - 自动识别借记卡/信用卡
 - [中信银行 (CITIC)](providers/banks/citic.md) - 信用卡账单
 - [汇丰银行香港 (HSBC HK)](providers/banks/hsbchk.md) - 香港汇丰银行

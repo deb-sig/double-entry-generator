@@ -10,7 +10,7 @@ A rule-based double-entry bookkeeping importer that intelligently converts vario
 
 ## ✨ Features
 
-- 🏦 **Multi-Bank Support** - Supports major banks including CCB, ICBC, CITIC, HSBC, etc.
+- 🏦 **Multi-Bank Support** - Supports major banks including CCB, BOC, ICBC, CITIC, HSBC, etc.
 - 💰 **Payment Tools** - Supports Alipay, WeChat, and other mainstream payment platforms
 - 📈 **Securities Trading** - Supports trading records from HTSEC, HXSEC, and other securities firms
 - 🪙 **Cryptocurrency** - Supports crypto trading records from Huobi and other exchanges
@@ -61,6 +61,7 @@ For more usage instructions, please refer to the [Getting Started Guide](https:/
 ### 🏦 Banks
 
 - [China Construction Bank (CCB)](https://deb-sig.github.io/double-entry-generator/providers/banks/ccb.html) - Supports CSV, XLS, XLSX formats
+- [Bank of China (BOC)](https://deb-sig.github.io/double-entry-generator/providers/banks/boc.html) - Supports debit and credit card statements
 - [Industrial and Commercial Bank of China (ICBC)](https://deb-sig.github.io/double-entry-generator/providers/banks/icbc.html) - Auto-detects debit/credit cards
 - [China CITIC Bank (CITIC)](https://deb-sig.github.io/double-entry-generator/providers/banks/citic.html) - Credit card statements
 - [HSBC Hong Kong](https://deb-sig.github.io/double-entry-generator/providers/banks/hsbchk.html) - HSBC Hong Kong

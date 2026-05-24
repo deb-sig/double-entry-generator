@@ -10,6 +10,7 @@ Double Entry Generator 支持以下金融服务提供商的数据转换：
 
 ## 🏦 银行
 - [中国建设银行 (CCB)](providers/banks/ccb.md)
+- [中国银行 (BOC)](providers/banks/boc.md) - 支持借记卡和信用卡账单
 - [中国工商银行 (ICBC)](providers/banks/icbc.md)
 - [中信银行 (CITIC)](providers/banks/citic.md)
 - [招商银行 (CMB)](providers/banks/cmb.md) - 支持储蓄卡和信用卡

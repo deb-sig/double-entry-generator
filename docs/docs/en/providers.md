@@ -10,6 +10,7 @@ Double Entry Generator supports data conversion from the following financial ser
 
 ## 🏦 Banks
 - [China Construction Bank (CCB)](providers/banks/ccb.md)
+- [Bank of China (BOC)](providers/banks/boc.md) - Supports debit and credit card statements
 - [Industrial and Commercial Bank of China (ICBC)](providers/banks/icbc.md)
 - [China CITIC Bank (CITIC)](providers/banks/citic.md)
 - [China Merchants Bank (CMB)](providers/banks/cmb.md) - Supports savings and credit cards
