@@ -2,10 +2,10 @@ schema: https://deg.dev/template-profile/v2
 id: wechat
 name: 测试
 template:
-  fileFormat: csv
+  fileFormat: xlsx
   delimiter: ','
   stripTabs: true
-  skipLeadingRows: 16
+  skipLeadingRows: 17
   sourceHeaders:
     - 交易时间
     - 交易类型

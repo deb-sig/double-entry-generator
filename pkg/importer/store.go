@@ -174,6 +174,14 @@ func applyVersionToPath(path, latest, version string) string {
 	if version == "" {
 		return path
 	}
+	parts := strings.Split(filepath.ToSlash(path), "/")
+	for i, part := range parts {
+		if part == "latest" {
+			out := append([]string(nil), parts...)
+			out[i] = version
+			return strings.Join(out, "/")
+		}
+	}
 	if latest != "" && strings.Contains(path, latest) {
 		return strings.Replace(path, latest, version, 1)
 	}
@@ -228,9 +236,6 @@ func StarterRulesURLFromRegistry(id string) (string, error) {
 			return "", fmt.Errorf("template %q starter rules use a fixed URL and do not support @version", template.ID)
 		}
 		return template.StarterRules, nil
-	}
-	if version != "" && (template.Latest == "" || !strings.Contains(template.StarterRules, template.Latest)) {
-		return registryBaseURL("") + template.StarterRules, nil
 	}
 	return resolveRegistryAssetURL("", template.StarterRules, template.Latest, version), nil
 }

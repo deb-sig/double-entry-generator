@@ -26,6 +26,7 @@ func TestApplyVersionToPath(t *testing.T) {
 		path, latest, version, want string
 	}{
 		{path: "templates/wechat/latest.yaml", latest: "2026-04-28", version: "", want: "templates/wechat/latest.yaml"},
+		{path: "wechat/latest/template.yaml", latest: "2026-04-28", version: "2025-07-15", want: "wechat/2025-07-15/template.yaml"},
 		{path: "templates/wechat/2026-04-28.yaml", latest: "2026-04-28", version: "2025-07-15", want: "templates/wechat/2025-07-15.yaml"},
 		{path: "templates/wechat/latest.yaml", latest: "2026-04-28", version: "2025-07-15", want: "templates/wechat/2025-07-15.yaml"},
 	}
@@ -41,7 +42,7 @@ func TestLookupRegistryTemplate(t *testing.T) {
 		Templates: []RegistryTemplate{{
 			ID:     "wechat",
 			Latest: "2026-04-28",
-			Path:   "templates/wechat/latest.yaml",
+			Path:   "wechat/latest/template.yaml",
 		}},
 	}
 	template, version, err := lookupRegistryTemplate(registry, "wechat@2025-07-15")
@@ -61,7 +62,7 @@ func TestTemplateURLFromRegistryPinsVersion(t *testing.T) {
 		Templates: []RegistryTemplate{{
 			ID:     "wechat",
 			Latest: "2026-04-28",
-			Path:   "templates/wechat/latest.yaml",
+			Path:   "wechat/latest/template.yaml",
 		}},
 	}
 	template, version, err := lookupRegistryTemplate(registry, "wechat@2025-07-15")
@@ -69,7 +70,7 @@ func TestTemplateURLFromRegistryPinsVersion(t *testing.T) {
 		t.Fatal(err)
 	}
 	url := resolveRegistryAssetURL("", template.Path, template.Latest, version)
-	want := registryBaseURL("") + "templates/wechat/2025-07-15.yaml"
+	want := registryBaseURL("") + "wechat/2025-07-15/template.yaml"
 	if url != want {
 		t.Fatalf("url = %q, want %q", url, want)
 	}
@@ -80,7 +81,7 @@ func TestTemplateURLFromRegistryAllowsPinnedLatest(t *testing.T) {
 		Templates: []RegistryTemplate{{
 			ID:     "wechat",
 			Latest: "2026-04-28",
-			Path:   "templates/wechat/latest.yaml",
+			Path:   "wechat/latest/template.yaml",
 		}},
 	}
 	template, version, err := lookupRegistryTemplate(registry, "wechat@2026-04-28")
@@ -88,10 +89,23 @@ func TestTemplateURLFromRegistryAllowsPinnedLatest(t *testing.T) {
 		t.Fatal(err)
 	}
 	url := resolveRegistryAssetURL("", template.Path, template.Latest, version)
-	if !strings.HasSuffix(url, "templates/wechat/2026-04-28.yaml") {
+	if !strings.HasSuffix(url, "wechat/2026-04-28/template.yaml") {
 		t.Fatalf("url = %q", url)
 	}
 	if version != template.Latest {
 		t.Fatalf("version = %q, latest = %q", version, template.Latest)
+	}
+}
+
+func TestStarterRulesURLPinsVersionedFolder(t *testing.T) {
+	template := RegistryTemplate{
+		ID:           "wechat",
+		Latest:       "2026-04-28",
+		StarterRules: "wechat/latest/rules.yaml",
+	}
+	got := resolveRegistryAssetURL("", template.StarterRules, template.Latest, "2025-07-15")
+	want := registryBaseURL("") + "wechat/2025-07-15/rules.yaml"
+	if got != want {
+		t.Fatalf("starter rules url = %q, want %q", got, want)
 	}
 }
