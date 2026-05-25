@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlexQueryResponse queryName="ibkr fixture" type="AF">
+  <FlexStatements count="1">
+    <FlexStatement accountId="U123456" fromDate="2025-01-01" toDate="2025-01-31" whenGenerated="2026-05-12,00:00:00 EDT">
+      <Trades>
+        <Trade accountId="U123456" currency="USD" assetCategory="STK" subCategory="COMMON" symbol="TSLA" description="TESLA INC" tradeID="TBUY1" tradeDate="2025-01-02" dateTime="2025-01-02,10:00:00 EST" quantity="2" tradePrice="300.00" tradeMoney="600.00" proceeds="-600.00" ibCommission="-0.35" ibCommissionCurrency="USD" netCash="-600.35" buySell="BUY" transactionID="TXBUY1" ibOrderID="OBUY1" ibExecID="EXECBUY1" exchange="NASDAQ" isin="US88160R1014" securityID="US88160R1014" reportDate="2025-01-02" settleDateTarget="2025-01-03" />
+        <Trade accountId="U123456" currency="USD" assetCategory="STK" subCategory="COMMON" symbol="TSLA" description="TESLA INC" tradeID="TSELL1" tradeDate="2025-01-03" dateTime="2025-01-03,11:00:00 EST" quantity="-1" tradePrice="320.00" tradeMoney="-320.00" proceeds="320.00" ibCommission="-0.36" ibCommissionCurrency="USD" netCash="319.64" buySell="SELL" transactionID="TXSELL1" ibOrderID="OSELL1" ibExecID="EXECSELL1" exchange="NASDAQ" isin="US88160R1014" securityID="US88160R1014" reportDate="2025-01-03" settleDateTarget="2025-01-06" />
+        <Trade accountId="U123456" currency="HKD" assetCategory="CASH" symbol="USD.HKD" description="USD.HKD" tradeID="TFX1" tradeDate="2025-01-04" dateTime="2025-01-04,12:00:00 EST" quantity="10" tradePrice="7.80" tradeMoney="78.00" buySell="BUY" transactionID="TXFX1" ibOrderID="OFX1" ibExecID="EXECFX1" exchange="IDEALFX" reportDate="2025-01-04" settleDateTarget="2025-01-06" ibCommissionCurrency="USD" />
+      </Trades>
+      <CashTransactions>
+        <CashTransaction accountId="U123456" currency="USD" assetCategory="" subCategory="" symbol="" description="CASH RECEIPTS / ELECTRONIC FUND TRANSFERS" dateTime="2025-01-01,09:00:00 EST" settleDate="2025-01-01" amount="1000.00" type="Deposits/Withdrawals" transactionID="CDEP1" reportDate="2025-01-01" />
+        <CashTransaction accountId="U123456" currency="USD" assetCategory="STK" subCategory="COMMON" symbol="MSFT" description="MSFT(US5949181045) CASH DIVIDEND USD 0.83 PER SHARE (Ordinary Dividend)" dateTime="2025-01-05,20:20:00 EST" settleDate="2025-01-05" amount="0.83" type="Dividends" transactionID="CDIV1" actionID="ADIV1" isin="US5949181045" securityID="US5949181045" reportDate="2025-01-05" />
+        <CashTransaction accountId="U123456" currency="USD" assetCategory="STK" subCategory="COMMON" symbol="MSFT" description="MSFT(US5949181045) CASH DIVIDEND USD 0.83 PER SHARE - US TAX" dateTime="2025-01-05,20:20:00 EST" settleDate="2025-01-05" amount="-0.08" type="Withholding Tax" transactionID="CTAX1" actionID="ATAX1" isin="US5949181045" securityID="US5949181045" reportDate="2025-01-05" />
+      </CashTransactions>
+    </FlexStatement>
+  </FlexStatements>
+</FlexQueryResponse>

@@ -52,6 +52,8 @@ TEST_CONFIGS := \
 	citic:beancount,ledger:credit \
 	hxsec:beancount:. \
 	spdb_debit:beancount:. \
+	cib_debit:beancount,ledger:. \
+	ibkr:beancount,ledger:. \
 	boc:beancount:credit,debit \
 	oklink:beancount:.
 

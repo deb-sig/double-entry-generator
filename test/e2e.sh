@@ -49,7 +49,7 @@ collect_input_files() {
         # Root-level case: only consider input files directly under the provider
         # directory (e.g. `example/wechat/example-wechat-records.csv`). This keeps
         # provider root tests independent from `credit/`, `debit/` sub-cases.
-        for ext in csv xls xlsx; do
+        for ext in csv xls xlsx xml; do
             for file in "$example_dir"/*."$ext"; do
                 [ -f "$file" ] && INPUT_FILES+=("$file")
             done
@@ -57,7 +57,7 @@ collect_input_files() {
         return 0
     fi
 
-    for ext in csv xls xlsx; do
+    for ext in csv xls xlsx xml; do
         while IFS= read -r file; do
             [ -f "$file" ] && INPUT_FILES+=("$file")
         done < <(find "$example_dir" -type f -name "*.$ext" 2>/dev/null || true)
@@ -150,6 +150,21 @@ run_test_case() {
         done
 
         [ $ran_any -eq 1 ] || { echo "Error: No supported wechat input files found in $example_dir" >&2; return 1; }
+        return 0
+    fi
+
+    if [ "$provider" = "cib_debit" ] && [ "$case_name" = "." ]; then
+        local output_file="$ROOT_DIR/test/output/test-$file_suffix-output.$target"
+        local translate_args=(
+            "--provider" "$provider"
+            "--config" "$config_file"
+            "--output" "$output_file"
+        )
+        [ "$target" != "beancount" ] && translate_args+=("--target" "$target")
+        translate_args+=("${INPUT_FILES[@]}")
+
+        "$ROOT_DIR/bin/double-entry-generator" translate "${translate_args[@]}" || return 1
+        diff_expected_output "$expected_file" "$output_file" || return 1
         return 0
     fi
 

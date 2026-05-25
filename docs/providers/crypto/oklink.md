@@ -69,7 +69,7 @@ oklink:
       - tokenSymbol: "USDT"
         methodAccount: "Assets:Crypto:Ethereum:USDT"
         tags: "Stablecoin,USDT"
-      
+
       # USDC 配置
       - tokenSymbol: "USDC"
         methodAccount: "Assets:Crypto:Ethereum:USDC"
@@ -86,14 +86,14 @@ defaultPlusAccount: "Assets:FIXME"
 
 oklink:
   # Ethereum 地址
-  "0x1429****7f855c":  
+  "0x1429****7f855c":
     rules:
       - tokenSymbol: "USDT"
         methodAccount: "Assets:Crypto:Ethereum:USDT"
         tags: "Stablecoin,USDT"
-  
+
   # TRON 地址
-  "TExam****7890":  
+  "TExam****7890":
     rules:
       - tokenSymbol: "USDT"
         methodAccount: "Assets:Crypto:TRON:USDT"
@@ -102,7 +102,7 @@ oklink:
 
 
 > 为什么需要多地址配置?适用于一个链上拥有多个地址的情况,不需要频繁修改配置文件就可以导出多个地址的账单
-> 
+>
 > 在这里写明地址是因为需要根据这里的地址计算交易方向, 每次导出账单的时候只会应用对应地址下的规则配置,如果涉及到两个hd地址都配置的情况,则两个地址的规则配置会同时应用
 
 ## 配置说明
@@ -132,7 +132,7 @@ defaultPlusAccount: "Expenses:FIXME"   # 默认贷方账户
 oklink:
   "0x...":  # Ethereum 地址（0x 开头）
     rules: [...]
-  
+
   "T...":   # TRON 地址（T 开头）
     rules: [...]
 ```
@@ -207,7 +207,7 @@ oklink:
       - tokenSymbol: "USDT"
         methodAccount: "Assets:Crypto:Ethereum:USDT"
         tags: "Stablecoin,USDT"
-      
+
       # USDC 配置
       - tokenSymbol: "USDC"
         methodAccount: "Assets:Crypto:Ethereum:USDC"
@@ -229,11 +229,11 @@ oklink:
       - tokenSymbol: "USDT"
         methodAccount: "Assets:Crypto:Ethereum:USDT"
         tags: "Stablecoin,USDT"
-      
+
       - tokenSymbol: "USDC"
         methodAccount: "Assets:Crypto:Ethereum:USDC"
         tags: "Stablecoin,USDC"
-  
+
   # TRON 地址
   "TExample123456789012345678901234567890":
     rules:
@@ -246,7 +246,7 @@ oklink:
 
 ```yaml
 oklink:
-  "0x1429****7f855c":  
+  "0x1429****7f855c":
     rules:
       # USDT 收款（从指定地址收款）
       - tokenSymbol: "USDT"
@@ -255,7 +255,7 @@ oklink:
         methodAccount: "Assets:Crypto:Ethereum:USDT"
         targetAccount: "Income:Crypto:Transfer"
         tags: "USDT,Receive"
-      
+
       # USDT 付款（向指定地址付款,修改支出账户为Expenses:Food:Meal,并修改货币单位为CNY,但是并不能自动帮你换算汇率）
       - tokenSymbol: "USDT"
         peer: "0x3ef4****f2768a"
@@ -270,7 +270,7 @@ oklink:
 
 ```yaml
 oklink:
-  "0x1429****7f855c":  
+  "0x1429****7f855c":
     rules:
       # USDT 大额转账（>= 1000）
       - tokenSymbol: "USDT"
@@ -278,7 +278,7 @@ oklink:
         methodAccount: "Assets:Crypto:Ethereum:USDT"
         targetAccount: "Income:Crypto:Business"
         tags: "LargeTransfer"
-      
+
       # USDT 小额空投（1-10）
       - tokenSymbol: "USDT"
         minAmount: 1.0
@@ -286,7 +286,7 @@ oklink:
         methodAccount: "Assets:Crypto:Ethereum:USDT"
         targetAccount: "Income:Crypto:Airdrop"
         tags: "SmallAirdrop"
-      
+
       # USDT 普通转账（其他金额）
       - tokenSymbol: "USDT"
         methodAccount: "Assets:Crypto:Ethereum:USDT"
@@ -298,13 +298,13 @@ oklink:
 
 ```yaml
 oklink:
-  "0x1429****7f855c":  
+  "0x1429****7f855c":
     rules:
       # 使用完整地址作为账户的一部分
       - tokenSymbol: "USDT"
         methodAccount: "Assets:Crypto:Software:Ethereum:0x1429****7f855c"
         tags: "SoftwareWallet,USDT"
-      
+
       # 或使用简化的地址标识
       - tokenSymbol: "USDC"
         methodAccount: "Assets:Crypto:Software:Ethereum:0x1429:USDC"

@@ -23,7 +23,7 @@ theme:
   show_stargazers: true
   topbar_sections: false
   show_datetime: false
-  icon: heroicons:book-open
+  icon: img/book-open.svg
   pygments_style:
     light: shadcn-light
     dark: github-dark
@@ -54,9 +54,11 @@ plugins:
             - Providers: en/providers.md
             - Banks:
               - China Construction Bank (CCB): en/providers/banks/ccb.md
+              - Bank of China (BOC): en/providers/banks/boc.md
               - Industrial and Commercial Bank of China (ICBC): en/providers/banks/icbc.md
               - China CITIC Bank (CITIC): en/providers/banks/citic.md
               - Agricultural Bank of China Debit Card (ABC Debit): en/providers/banks/abc_debit.md
+              - Industrial Bank Debit Card (CIB Debit): en/providers/banks/cib_debit.md
               - HSBC Hong Kong: en/providers/banks/hsbchk.md
               - Bank of Montreal (BMO): en/providers/banks/bmo.md
               - Toronto-Dominion Bank (TD): en/providers/banks/td.md
@@ -69,6 +71,7 @@ plugins:
             - Securities Trading:
               - Haitong Securities (HTSEC): en/providers/securities/htsec.md
               - Huaxi Securities (HXSEC): en/providers/securities/hxsec.md
+              - Interactive Brokers (IBKR): en/providers/securities/ibkr.md
             - Cryptocurrency:
               - Huobi: en/providers/crypto/huobi.md
             - Life Services:
@@ -91,10 +94,12 @@ plugins:
             - 提供商支持: providers.md
             - 银行:
               - 建设银行 (CCB): providers/banks/ccb.md
+              - 中国银行 (BOC): providers/banks/boc.md
               - 工商银行 (ICBC): providers/banks/icbc.md
               - 中信银行 (CITIC): providers/banks/citic.md
               - 招商银行 (CMB): providers/banks/cmb.md
               - 农业银行储蓄卡 (ABC Debit): providers/banks/abc_debit.md
+              - 兴业银行借记卡 (CIB Debit): providers/banks/cib_debit.md
               - 交通银行借记卡 (BOCOM Debit): providers/banks/bocom-debit.md
               - 交通银行信用卡 (BOCOM Credit): providers/banks/bocom_credit.md
               - 汇丰银行香港 (HSBC HK): providers/banks/hsbchk.md
@@ -106,6 +111,7 @@ plugins:
             - 证券交易:
               - 海通证券 (HTSEC): providers/securities/htsec.md
               - 华西证券 (HXSEC): providers/securities/hxsec.md
+              - Interactive Brokers (IBKR): providers/securities/ibkr.md
             - 加密货币:
               - 火币 (Huobi): providers/crypto/huobi.md
             - 生活服务:
@@ -153,10 +159,12 @@ nav:
   - 提供商支持: providers.md
   - 银行:
     - 建设银行 (CCB): providers/banks/ccb.md
+    - 中国银行 (BOC): providers/banks/boc.md
     - 工商银行 (ICBC): providers/banks/icbc.md
     - 中信银行 (CITIC): providers/banks/citic.md
     - 招商银行 (CMB): providers/banks/cmb.md
     - 农业银行储蓄卡 (ABC Debit): providers/banks/abc_debit.md
+    - 兴业银行借记卡 (CIB Debit): providers/banks/cib_debit.md
     - 交通银行借记卡 (BOCOM Debit): providers/banks/bocom-debit.md
     - 交通银行信用卡 (BOCOM Credit): providers/banks/bocom_credit.md
     - 汇丰银行香港 (HSBC HK): providers/banks/hsbchk.md
@@ -168,6 +176,7 @@ nav:
   - 证券交易:
     - 海通证券 (HTSEC): providers/securities/htsec.md
     - 华西证券 (HXSEC): providers/securities/hxsec.md
+    - Interactive Brokers (IBKR): providers/securities/ibkr.md
   - 加密货币:
     - 火币 (Huobi): providers/crypto/huobi.md
   - 生活服务:

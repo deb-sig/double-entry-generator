@@ -11,7 +11,7 @@
 
 ## ✨ 特性
 
-- 🏦 **多银行支持** - 支持建设银行、工商银行、中信银行、汇丰银行等主流银行账单
+- 🏦 **多银行支持** - 支持建设银行、中国银行、工商银行、中信银行、汇丰银行等主流银行账单
 - 💰 **支付工具** - 支持支付宝、微信等主流支付平台的账单导入
 - 📈 **证券交易** - 支持海通证券、华西证券等券商的交易记录
 - 🪙 **加密货币** - 支持火币等交易所的币币交易记录
@@ -64,6 +64,7 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 ### 🏦 银行
 
 - [建设银行 (CCB)](https://deb-sig.github.io/double-entry-generator/providers/banks/ccb.html) - 支持 CSV、XLS、XLSX 格式
+- [中国银行 (BOC)](https://deb-sig.github.io/double-entry-generator/providers/banks/boc.html) - 支持借记卡和信用卡账单
 - [工商银行 (ICBC)](https://deb-sig.github.io/double-entry-generator/providers/banks/icbc.html) - 自动识别借记卡/信用卡
 - [中信银行 (CITIC)](https://deb-sig.github.io/double-entry-generator/providers/banks/citic.html) - 信用卡账单
 - [汇丰银行香港 (HSBC HK)](https://deb-sig.github.io/double-entry-generator/providers/banks/hsbchk.html) - 香港汇丰银行

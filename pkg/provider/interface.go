@@ -28,12 +28,14 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_credit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cib_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cmb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hsbchk"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/htsec"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/huobi"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hxsec"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ibkr"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/mt"
@@ -46,6 +48,11 @@ import (
 // Interface is the interface for the provider.
 type Interface interface {
 	Translate(filename string) (*ir.IR, error)
+}
+
+// MultiFileInterface is implemented by providers that can merge several files.
+type MultiFileInterface interface {
+	TranslateFiles(filenames []string) (*ir.IR, error)
 }
 
 // New creates a new interface.
@@ -89,8 +96,12 @@ func New(name string) (Interface, error) {
 		return abc_debit.New(), nil
 	case consts.ProviderSpdbDebit:
 		return spdb_debit.New(), nil
+	case consts.ProviderCibDebit:
+		return cib_debit.New(), nil
 	case consts.ProviderBoc:
 		return boc.New(), nil
+	case consts.ProviderIbkr:
+		return ibkr.New(), nil
 	default:
 		return nil, fmt.Errorf("Fail to create the provider for the given name %s", name)
 	}

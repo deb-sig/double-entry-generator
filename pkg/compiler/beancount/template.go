@@ -43,6 +43,26 @@ type NormalOrderVars struct {
 	Tags              []string
 }
 
+var currencyExchangeOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ EscapeString .Peer }}" "{{ EscapeString .Item }}"
+	{{- range $key, $value := .Metadata }}{{ if $value }}{{ printf "\n" }}	{{ $key }}: "{{ $value }}"{{end}}{{end}}
+	{{ .MinusAccount }} -{{ .SourceAmount | printf "%.2f" }} {{ .SourceCurrency }}
+	{{ .PlusAccount }} {{ .TargetAmount | printf "%.2f" }} {{ .TargetCurrency }} @@ {{ .SourceAmount | printf "%.2f" }} {{ .SourceCurrency }}
+
+`
+
+type CurrencyExchangeOrderVars struct {
+	PayTime        time.Time
+	Peer           string
+	Item           string
+	SourceAmount   float64
+	SourceCurrency string
+	TargetAmount   float64
+	TargetCurrency string
+	PlusAccount    string
+	MinusAccount   string
+	Metadata       map[string]string
+}
+
 // 火币买入模版（手续费单位为购买单位货币）
 var huobiTradeBuyOrder = `{{ .PayTime.Format "2006-01-02" }} * "{{ .Peer }}-{{ .TxTypeOriginal }}" "{{ .TypeOriginal }}-{{ .Item }}"
 	{{ .CashAccount }} -{{ .Money | printf "%.8f" }} {{ .BaseUnit }}
@@ -189,6 +209,7 @@ const etfMergeOrderBeancount = `{{.PayTime.Format "2006-01-02"}} * "{{ EscapeStr
 
 var (
 	normalOrderTemplate                          *template.Template
+	currencyExchangeOrderTemplate                *template.Template
 	cryptoOrderTemplate                          *template.Template
 	huobiTradeBuyOrderTemplate                   *template.Template
 	huobiTradeBuyOrderDiffCommissionUnitTemplate *template.Template

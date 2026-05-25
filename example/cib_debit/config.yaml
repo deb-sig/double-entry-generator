@@ -1,0 +1,15 @@
+defaultMinusAccount: Income:FIXME
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:DebitCard:CIB
+defaultCurrency: CNY
+title: 兴业银行借记卡示例
+cib_debit:
+  rules:
+    - txType: 存款利息
+      targetAccount: Income:Interest
+    - txType: 转账转出
+      targetAccount: Equity:Transfers
+    - txType: 跨行消费,快捷支付
+      targetAccount: Expenses:Daily
+    - txType: 购汇
+      targetAccount: Equity:Transfers

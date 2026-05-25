@@ -4,16 +4,18 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/abc_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/boc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_credit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/boc"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cib_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cmb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hsbchk"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/htsec"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/huobi"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hxsec"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ibkr"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/mt"
@@ -34,6 +36,7 @@ type Config struct {
 	DefaultPnlAccount               string               `yaml:"defaultPnlAccount,omitempty"`
 	DefaultThirdPartyCustodyAccount string               `yaml:"defaultThirdPartyCustodyAccount,omitempty"`
 	DefaultCurrency                 string               `yaml:"defaultCurrency,omitempty"`
+	BookingMethod                   string               `yaml:"bookingMethod,omitempty"`
 	Alipay                          *alipay.Config       `yaml:"alipay,omitempty"`
 	Wechat                          *wechat.Config       `yaml:"wechat,omitempty"`
 	Huobi                           *huobi.Config        `yaml:"huobi,omitempty"`
@@ -53,5 +56,7 @@ type Config struct {
 	OKLink                          *oklink.Config       `yaml:"oklink,omitempty"`
 	AbcDebit                        *abc_debit.Config    `yaml:"abc_debit,omitempty" mapstructure:"abc_debit,omitempty"`
 	SpdbDebit                       *spdb_debit.Config   `yaml:"spdb_debit,omitempty" mapstructure:"spdb_debit,omitempty"`
+	CibDebit                        *cib_debit.Config    `yaml:"cib_debit,omitempty" mapstructure:"cib_debit,omitempty"`
 	Boc                             *boc.Config          `yaml:"boc,omitempty"`
+	Ibkr                            *ibkr.Config         `yaml:"ibkr,omitempty"`
 }

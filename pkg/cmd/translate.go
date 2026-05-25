@@ -26,6 +26,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/compiler"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
@@ -85,6 +86,8 @@ func run(args []string) {
 		fallthrough
 	case consts.ProviderBocomDebit:
 		fallthrough
+	case consts.ProviderCibDebit:
+		fallthrough
 	case consts.ProviderCCB:
 		if c.DefaultCurrency == "" ||
 			c.DefaultMinusAccount == "" ||
@@ -100,6 +103,16 @@ func run(args []string) {
 		}
 	case consts.ProviderHuobi:
 		if c.DefaultCurrency == "" ||
+			c.DefaultCashAccount == "" ||
+			c.DefaultPositionAccount == "" ||
+			c.DefaultCommissionAccount == "" ||
+			c.DefaultPnlAccount == "" {
+			log.Fatalf("Failed to get default options in config")
+		}
+	case consts.ProviderIbkr:
+		if c.DefaultCurrency == "" ||
+			c.DefaultMinusAccount == "" ||
+			c.DefaultPlusAccount == "" ||
 			c.DefaultCashAccount == "" ||
 			c.DefaultPositionAccount == "" ||
 			c.DefaultCommissionAccount == "" ||
@@ -123,14 +136,14 @@ func run(args []string) {
 			e.Config = c.OKLink
 			e.DefaultMinusAccount = c.DefaultMinusAccount
 			e.DefaultPlusAccount = c.DefaultPlusAccount
-			
+
 			// 处理多地址配置：从 viper 中提取地址作为 key 的配置
 			if c.OKLink != nil && c.OKLink.Addresses == nil {
 				// 从 viper 中获取 oklink 的所有设置
 				oklinkSettings := viper.GetStringMap("oklink")
 				if len(oklinkSettings) > 0 {
 					addresses := make(map[string]*oklink.AddressConfig)
-					
+
 					for key := range oklinkSettings {
 						// 检查是否是地址格式（0x 开头或 T 开头）
 						isAddress := (len(key) >= 2 && key[0:2] == "0x") || (len(key) >= 1 && key[0] == 'T')
@@ -145,7 +158,7 @@ func run(args []string) {
 							}
 						}
 					}
-					
+
 					if len(addresses) > 0 {
 						c.OKLink.Addresses = addresses
 					}
@@ -154,7 +167,16 @@ func run(args []string) {
 		}
 	}
 
-	i, err := p.Translate(args[0])
+	var i *ir.IR
+	if len(args) > 1 {
+		multiProvider, ok := p.(provider.MultiFileInterface)
+		if !ok {
+			log.Fatalf("Failed to translate: provider %s does not support multi-file input", providerName)
+		}
+		i, err = multiProvider.TranslateFiles(args)
+	} else {
+		i, err = p.Translate(args[0])
+	}
 	logErrorIfNotNil(err)
 
 	cpl, err := compiler.New(providerName, targetName, output, appendMode, c, i)

@@ -1,0 +1,206 @@
+option "title" "兴业银行借记卡示例"
+option "operating_currency" "CNY"
+
+1970-01-01 open Assets:DebitCard:CIB
+1970-01-01 open Equity:Transfers
+1970-01-01 open Expenses:Daily
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Income:FIXME
+1970-01-01 open Income:Interest
+
+2024-01-01 * "示例用户 示例银行 PEER-MOCK-CNY-IN" "汇款汇入"
+	accountName: "示例用户"
+	accountNum: "CARD-MOCK-001"
+	accountingDay: "2024-01-01"
+	balance: "10.00"
+	channel: "其他"
+	currency: "CNY"
+	income: "10.00"
+	peer: "示例用户"
+	peerAccount: "PEER-MOCK-CNY-IN"
+	peerBank: "示例银行"
+	source: "兴业银行借记卡"
+	subAccount: "001 活期储蓄存款 人民币"
+	summary: "汇款汇入"
+	Assets:DebitCard:CIB 10.00 CNY
+	Income:FIXME -10.00 CNY
+
+2024-01-02 * "示例清算机构 PEER-MOCK-CNY-CARD" "跨行消费 测试消费"
+	accountName: "示例用户"
+	accountNum: "CARD-MOCK-001"
+	accountingDay: "2024-01-02"
+	balance: "80.00"
+	channel: "其他"
+	currency: "CNY"
+	expense: "20.00"
+	peerAccount: "PEER-MOCK-CNY-CARD"
+	peerBank: "示例清算机构"
+	purpose: "测试消费"
+	source: "兴业银行借记卡"
+	subAccount: "001 活期储蓄存款 人民币"
+	summary: "跨行消费"
+	Expenses:Daily 20.00 CNY
+	Assets:DebitCard:CIB -20.00 CNY
+
+2024-01-03 * "CIB Debit" "存款利息"
+	accountName: "示例用户"
+	accountNum: "CARD-MOCK-001"
+	accountingDay: "2024-01-03"
+	balance: "80.01"
+	channel: "其他"
+	currency: "CNY"
+	income: "0.01"
+	source: "兴业银行借记卡"
+	subAccount: "001 活期储蓄存款 人民币"
+	summary: "存款利息"
+	Assets:DebitCard:CIB 0.01 CNY
+	Income:Interest -0.01 CNY
+
+2024-01-04 * "CIB Debit" "购汇 CNY/HKD"
+	accountName: "示例用户"
+	accountNum: "CARD-MOCK-001"
+	matchWindow: "3m0s"
+	source: "兴业银行借记卡"
+	sourceAmount: "5.00"
+	sourceCurrency: "CNY"
+	sourceSubAccount: "001 活期储蓄存款 人民币"
+	targetAmount: "5.50"
+	targetCurrency: "HKD"
+	targetSubAccount: "002 活期储蓄存款 港币 现汇"
+	Assets:DebitCard:CIB -5.00 CNY
+	Assets:DebitCard:CIB 5.50 HKD @@ 5.00 CNY
+
+2024-01-04 * "MOCK USER MOCK BANK PEER-MOCK-HKD-OUT" "转账转出 测试用途"
+	accountName: "示例用户"
+	accountNum: "CARD-MOCK-001"
+	accountingDay: "2024-01-04"
+	balance: "0.00"
+	channel: "手机银行"
+	currency: "HKD"
+	expense: "5.50"
+	peer: "MOCK USER"
+	peerAccount: "PEER-MOCK-HKD-OUT"
+	peerBank: "MOCK BANK"
+	purpose: "测试用途"
+	source: "兴业银行借记卡"
+	subAccount: "002 活期储蓄存款 港币 现汇"
+	summary: "转账转出"
+	Equity:Transfers 5.50 HKD
+	Assets:DebitCard:CIB -5.50 HKD
+
+2024-01-05 * "示例用户 示例银行 PEER-MOCK-CNY-FX" "购汇"
+	accountName: "示例用户"
+	accountNum: "CARD-MOCK-001"
+	accountingDay: "2024-01-05"
+	balance: "69.01"
+	channel: "手机银行"
+	currency: "CNY"
+	expense: "6.00"
+	peer: "示例用户"
+	peerAccount: "PEER-MOCK-CNY-FX"
+	peerBank: "示例银行"
+	source: "兴业银行借记卡"
+	subAccount: "001 活期储蓄存款 人民币"
+	summary: "购汇"
+	Equity:Transfers 6.00 CNY
+	Assets:DebitCard:CIB -6.00 CNY
+
+2024-01-05 * "MOCK USER MOCK BANK PEER-MOCK-HKD-OUT" "隔日冲账 冲正"
+	accountName: "示例用户"
+	accountNum: "CARD-MOCK-001"
+	accountingDay: "2024-01-05"
+	balance: "5.50"
+	channel: "手机银行"
+	currency: "HKD"
+	expense: "-5.50"
+	peer: "MOCK USER"
+	peerAccount: "PEER-MOCK-HKD-OUT"
+	peerBank: "MOCK BANK"
+	purpose: "冲正"
+	source: "兴业银行借记卡"
+	subAccount: "002 活期储蓄存款 港币 现汇"
+	summary: "隔日冲账"
+	Assets:DebitCard:CIB 5.50 HKD
+	Income:FIXME -5.50 HKD
+
+2024-01-05 * "示例用户 示例银行 PEER-MOCK-HKD-FX" "购汇"
+	accountName: "示例用户"
+	accountNum: "CARD-MOCK-001"
+	accountingDay: "2024-01-05"
+	balance: "12.10"
+	channel: "手机银行"
+	currency: "HKD"
+	income: "6.60"
+	peer: "示例用户"
+	peerAccount: "PEER-MOCK-HKD-FX"
+	peerBank: "示例银行"
+	source: "兴业银行借记卡"
+	subAccount: "002 活期储蓄存款 港币 现汇"
+	summary: "购汇"
+	Assets:DebitCard:CIB 6.60 HKD
+	Equity:Transfers -6.60 HKD
+
+2024-01-05 * "MOCK USER MOCK BANK PEER-MOCK-HKD-OUT" "转账转出 测试用途"
+	accountName: "示例用户"
+	accountNum: "CARD-MOCK-001"
+	accountingDay: "2024-01-05"
+	balance: "0.00"
+	channel: "手机银行"
+	currency: "HKD"
+	expense: "12.10"
+	peer: "MOCK USER"
+	peerAccount: "PEER-MOCK-HKD-OUT"
+	peerBank: "MOCK BANK"
+	purpose: "测试用途"
+	source: "兴业银行借记卡"
+	subAccount: "002 活期储蓄存款 港币 现汇"
+	summary: "转账转出"
+	Equity:Transfers 12.10 HKD
+	Assets:DebitCard:CIB -12.10 HKD
+
+2024-01-06 * "CIB Debit" "购汇 CNY/USD"
+	accountName: "示例用户"
+	accountNum: "CARD-MOCK-001"
+	matchWindow: "3m0s"
+	source: "兴业银行借记卡"
+	sourceAmount: "30.00"
+	sourceCurrency: "CNY"
+	sourceSubAccount: "001 活期储蓄存款 人民币"
+	targetAmount: "30.00"
+	targetCurrency: "USD"
+	targetSubAccount: "003 活期储蓄存款 美元 现汇"
+	Assets:DebitCard:CIB -30.00 CNY
+	Assets:DebitCard:CIB 30.00 USD @@ 30.00 CNY
+
+2024-01-07 * "CIB Debit" "购汇 CNY/USD"
+	accountName: "示例用户"
+	accountNum: "CARD-MOCK-001"
+	matchWindow: "3m0s"
+	source: "兴业银行借记卡"
+	sourceAmount: "40.00"
+	sourceCurrency: "CNY"
+	sourceSubAccount: "001 活期储蓄存款 人民币"
+	targetAmount: "40.00"
+	targetCurrency: "USD"
+	targetSubAccount: "003 活期储蓄存款 美元 现汇"
+	Assets:DebitCard:CIB -40.00 CNY
+	Assets:DebitCard:CIB 40.00 USD @@ 40.00 CNY
+
+2024-01-08 * "MOCK USER MOCK BANK PEER-MOCK-USD-OUT" "转账转出 测试用途"
+	accountName: "示例用户"
+	accountNum: "CARD-MOCK-001"
+	accountingDay: "2024-01-08"
+	balance: "0.00"
+	channel: "手机银行"
+	currency: "USD"
+	expense: "70.00"
+	peer: "MOCK USER"
+	peerAccount: "PEER-MOCK-USD-OUT"
+	peerBank: "MOCK BANK"
+	purpose: "测试用途"
+	source: "兴业银行借记卡"
+	subAccount: "003 活期储蓄存款 美元 现汇"
+	summary: "转账转出"
+	Equity:Transfers 70.00 USD
+	Assets:DebitCard:CIB -70.00 USD
+

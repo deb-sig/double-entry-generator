@@ -6,16 +6,18 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/abc_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bmo"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/boc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocom_credit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocom_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/ccb"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/boc"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/cib_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/cmb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/hsbchk"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/htsec"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/huobi"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/hxsec"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/ibkr"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/icbc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/jd"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/mt"
@@ -75,8 +77,12 @@ func New(providerName string) (Interface, error) {
 		return abc_debit.AbcDebit{}, nil
 	case consts.ProviderSpdbDebit:
 		return spdb_debit.SpdbDebit{}, nil
+	case consts.ProviderCibDebit:
+		return cib_debit.CibDebit{}, nil
 	case consts.ProviderBoc:
 		return boc.Boc{}, nil
+	case consts.ProviderIbkr:
+		return ibkr.Ibkr{}, nil
 	default:
 		return nil, fmt.Errorf("Fail to create the analyser for the given name %s", providerName)
 	}

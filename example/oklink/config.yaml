@@ -16,12 +16,12 @@ oklink:
       - tokenSymbol: "USDT"
         methodAccount: "Assets:Crypto:Software:Ethereum:0x1429****7f855c"
         tags: "Stablecoin,USDT"
-      
+
       # USDC 配置（可填写其他 bean 账户，或者和上面的一样就是一个账户不同币种的记法）
       - tokenSymbol: "USDC"
         methodAccount: "Assets:Crypto:Ethereum:USDC"
         tags: "Stablecoin,USDC"
-      
+
       # ===== 2. 按交易方向匹配（可选）=====
       # USDT 入账（根据地址、交易方向来匹配）
       - tokenSymbol: "USDT"
@@ -30,7 +30,7 @@ oklink:
         methodAccount: "Assets:Crypto:Ethereum:USDT"
         targetAccount: "Income:Crypto:Transfer"
         tags: "USDT,Receive"
-        
+
       # USDT 出账（根据地址、交易方向对应到支出账户，设置货币单位为 CNY、USD 等，默认使用 tokenSymbol）
       - tokenSymbol: "USDT"
         peer: "0x3ef4****f2768a"
@@ -39,7 +39,7 @@ oklink:
         targetAccount: "Expenses:Food:Meal"
         currency: "CNY"
         tags: "USDT,Send"
-      
+
       # ===== 3. 按金额区分（可选）=====
       # 空投（按金额范围区分空投）
       - maxAmount: 10
@@ -64,7 +64,7 @@ oklink:
 #         tags: "Stablecoin,USDT,TRON"
 
 # ===== 配置说明 =====
-# 
+#
 # 字段说明：
 # - 地址作为 key：使用地址作为配置的 key
 # - methodAccount: 代币资产账户（如 Assets:Crypto:Ethereum:USDT）
@@ -81,7 +81,7 @@ oklink:
 # - txHash: 交易哈希（精确匹配）
 # - tags: 标签，多个用逗号分隔
 # - ignore: 是否忽略此交易（默认 false）
-# 
+#
 # 匹配优先级（从高到低）：
 # 1. txHash（交易哈希）
 # 2. contractAddress + tokenSymbol
@@ -89,7 +89,7 @@ oklink:
 # 4. tokenSymbol + minAmount/maxAmount
 # 5. peer
 # 6. time/blockNo
-# 
+#
 # 货币单位说明：
 # - 默认：自动使用 tokenSymbol（USDT、UNI、ETH 等）
 # - 可在规则中指定 currency 字段覆盖
