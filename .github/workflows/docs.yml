@@ -21,9 +21,9 @@ permissions:
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
+# Cancel stale runs for the same ref without cancelling the matching PR/push run.
 concurrency:
-  group: "pages"
+  group: "pages-${{ github.workflow }}-${{ github.ref }}"
   cancel-in-progress: true
 
 jobs:
