@@ -1,4 +1,4 @@
-﻿package spdb_debit
+package spdb_debit
 
 import (
 	"fmt"

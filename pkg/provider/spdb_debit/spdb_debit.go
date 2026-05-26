@@ -108,8 +108,8 @@ func (sd *SpdbDebit) translateExcel(filename string) (*ir.IR, error) {
 		if !isDataSection && len(rowData) > 3 {
 			// Look for header keywords in any column
 			for _, col := range rowData {
-				if strings.Contains(col, "交易日期") || strings.Contains(col, "交易时间") || 
-				   strings.Contains(col, "交易摘要") || strings.Contains(col, "交易金额") {
+				if strings.Contains(col, "交易日期") || strings.Contains(col, "交易时间") ||
+					strings.Contains(col, "交易摘要") || strings.Contains(col, "交易金额") {
 					isDataSection = true
 					log.Printf("Found header row at line %d, starting data parsing", sd.LineNum)
 					break
@@ -138,13 +138,13 @@ func (sd *SpdbDebit) translateExcel(filename string) (*ir.IR, error) {
 func (sd *SpdbDebit) TranslateFromExcelBytes(fileData []byte) (*ir.IR, error) {
 	log.SetPrefix("[Provider-SPDB_debit] ")
 	log.Printf("TranslateFromExcelBytes called with %d bytes", len(fileData))
-	
+
 	// Use xls.OpenReader to read from byte stream
 	xlFile, err := xls.OpenReader(strings.NewReader(string(fileData)))
 	if err != nil {
 		return nil, fmt.Errorf("无法打开Excel文件。原始错误: %v", err)
 	}
-	
+
 	sheet, err := xlFile.GetSheet(0)
 	if err != nil {
 		return nil, fmt.Errorf("无法获取Excel的第一个工作表。原始错误: %v", err)
@@ -152,25 +152,25 @@ func (sd *SpdbDebit) TranslateFromExcelBytes(fileData []byte) (*ir.IR, error) {
 
 	// Skip rows until we find the actual transaction data
 	isDataSection := false
-	
+
 	for i := 0; i <= int(sheet.GetNumberRows()); i++ {
 		row, err := sheet.GetRow(i)
 		if err != nil {
 			log.Printf("跳过无法读取的行 %d: %v", i, err)
 			continue
 		}
-		
+
 		if row == nil {
 			continue
 		}
-		
+
 		var rowData []string
 		for _, col := range row.GetCols() {
 			rowData = append(rowData, col.GetString())
 		}
-		
+
 		sd.LineNum = i + 1
-		
+
 		// Skip empty rows
 		if len(rowData) == 0 || (len(rowData) == 1 && strings.TrimSpace(rowData[0]) == "") {
 			continue
@@ -188,8 +188,8 @@ func (sd *SpdbDebit) TranslateFromExcelBytes(fileData []byte) (*ir.IR, error) {
 		if !isDataSection && len(rowData) > 3 {
 			// Look for header keywords in any column
 			for _, col := range rowData {
-				if strings.Contains(col, "交易日期") || strings.Contains(col, "交易时间") || 
-				   strings.Contains(col, "交易摘要") || strings.Contains(col, "交易金额") {
+				if strings.Contains(col, "交易日期") || strings.Contains(col, "交易时间") ||
+					strings.Contains(col, "交易摘要") || strings.Contains(col, "交易金额") {
 					isDataSection = true
 					log.Printf("Found header row at line %d, starting data parsing", sd.LineNum)
 					break
@@ -209,7 +209,7 @@ func (sd *SpdbDebit) TranslateFromExcelBytes(fileData []byte) (*ir.IR, error) {
 			}
 		}
 	}
-	
+
 	log.Printf("Finished to parse the Excel file from bytes, parsed %d orders", len(sd.Orders))
 	return sd.convertToIR()
 }
