@@ -46,6 +46,7 @@ TEST_CONFIGS := \
 	huobi:beancount,ledger:. \
 	htsec:beancount,ledger:. \
 	bocom_credit:beancount,ledger:. \
+	cgb_credit:beancount,ledger:. \
 	bocom_debit:beancount,ledger:. \
 	abc_debit:beancount,ledger:. \
 	ccb:beancount,ledger:. \
