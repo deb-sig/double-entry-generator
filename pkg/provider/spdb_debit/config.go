@@ -14,6 +14,6 @@ type Rule struct {
 	TargetAccount *string `mapstructure:"targetAccount,omitempty"`
 	FullMatch     bool    `mapstructure:"fullMatch,omitempty"`
 	Ignore        bool    `mapstructure:"ignore,omitempty"` // default: false
-	Tags          *string `mapstructure:"tag,omitempty"`    // tags for the transaction, separated by sep
+	Tags          *string `mapstructure:"tags,omitempty"`   // tags for the transaction, separated by sep
 	TxType        *string `mapstructure:"txType,omitempty"` // match transaction type (e.g. "转账", "消费")
 }
