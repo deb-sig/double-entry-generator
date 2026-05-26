@@ -1,4 +1,4 @@
-﻿option "title" "浦发银行借记卡配置"
+option "title" "浦发银行借记卡配置"
 option "operating_currency" "CNY"
 
 1970-01-01 open Assets:DebitCard:SPB1234
