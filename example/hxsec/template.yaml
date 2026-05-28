@@ -1,4 +1,4 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: hxsec
 name: hxsec
 template:
@@ -6,6 +6,7 @@ template:
     encoding: gb18030
     delimiter: "\t"
     skipLeadingRows: 1
+    skipInvalidRows: true
     sourceHeaders:
         - date
         - time
@@ -32,19 +33,4 @@ template:
         - tradeId
         - shareholderCode
         - accountNumber
-    columns:
-        date: date
-        time: time
-        amount: amount
-        payee: securityName
-        narration: txType
-        type: txType
-        currency: currency
-    metadata:
-        txType: txType
-        securityCode: securityCode
-        tradeId: tradeId
-        accountNumber: accountNumber
-    defaultMinusAccount: Assets:FIXME
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: CNY

@@ -19,7 +19,6 @@ type Profile struct {
 	TemplateRules         []Rule            `json:"templateRules,omitempty" yaml:"templateRules,omitempty"`
 	TemplateRuleOverrides []Rule            `json:"templateRuleOverrides,omitempty" yaml:"templateRuleOverrides,omitempty"`
 	PersonalRules         []Rule            `json:"personalRules,omitempty" yaml:"personalRules,omitempty"`
-	UserRules             []Rule            `json:"userRules,omitempty" yaml:"userRules,omitempty"`
 	Defaults              map[string]string `json:"defaults,omitempty" yaml:"defaults,omitempty"`
 }
 
@@ -61,21 +60,21 @@ type Rule struct {
 }
 
 type Actions struct {
-	Type              string            `json:"type,omitempty" yaml:"type,omitempty"`
-	From              TransferSide      `json:"from,omitempty" yaml:"from,omitempty"`
-	To                TransferSide      `json:"to,omitempty" yaml:"to,omitempty"`
-	Payee             string            `json:"payee,omitempty" yaml:"payee,omitempty"`
-	Narration         string            `json:"narration,omitempty" yaml:"narration,omitempty"`
-	Amount            string            `json:"amount,omitempty" yaml:"amount,omitempty"`
-	Currency          string            `json:"currency,omitempty" yaml:"currency,omitempty"`
-	Tag               string            `json:"tag,omitempty" yaml:"tag,omitempty"`
-	Tags              []string          `json:"tags,omitempty" yaml:"tags,omitempty"`
-	Ignore            bool              `json:"ignore,omitempty" yaml:"ignore,omitempty"`
-	Metadata          map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-	Commission        string            `json:"commission,omitempty" yaml:"commission,omitempty"`
-	CommissionAccount string            `json:"commissionAccount,omitempty" yaml:"commissionAccount,omitempty"`
-	PnlAccount        string            `json:"pnlAccount,omitempty" yaml:"pnlAccount,omitempty"`
-	Postings          []string          `json:"postings,omitempty" yaml:"postings,omitempty"`
+	Date      string            `json:"date,omitempty" yaml:"date,omitempty"`
+	Type      string            `json:"type,omitempty" yaml:"type,omitempty"`
+	Note      string            `json:"note,omitempty" yaml:"note,omitempty"`
+	From      TransferSide      `json:"from,omitempty" yaml:"from,omitempty"`
+	To        TransferSide      `json:"to,omitempty" yaml:"to,omitempty"`
+	Payee     string            `json:"payee,omitempty" yaml:"payee,omitempty"`
+	Narration string            `json:"narration,omitempty" yaml:"narration,omitempty"`
+	Amount    string            `json:"amount,omitempty" yaml:"amount,omitempty"`
+	Currency  string            `json:"currency,omitempty" yaml:"currency,omitempty"`
+	Tag       string            `json:"tag,omitempty" yaml:"tag,omitempty"`
+	Tags      []string          `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Ignore    bool              `json:"ignore,omitempty" yaml:"ignore,omitempty"`
+	Vars      map[string]string `json:"vars,omitempty" yaml:"vars,omitempty"`
+	Metadata  map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Postings  []string          `json:"postings,omitempty" yaml:"postings,omitempty"`
 }
 
 type TransferSide struct {
@@ -84,18 +83,104 @@ type TransferSide struct {
 	Currency string `json:"currency,omitempty" yaml:"currency,omitempty"`
 }
 
+type flexibleString string
+
+func (s *flexibleString) UnmarshalYAML(value *yaml.Node) error {
+	switch value.Kind {
+	case yaml.ScalarNode:
+		*s = flexibleString(strings.TrimSpace(value.Value))
+		return nil
+	case 0:
+		return nil
+	default:
+		return fmt.Errorf("value must be a string")
+	}
+}
+
+func (r *Rule) UnmarshalYAML(value *yaml.Node) error {
+	type rule struct {
+		ID      string         `yaml:"id,omitempty"`
+		Name    string         `yaml:"name,omitempty"`
+		Enabled *bool          `yaml:"enabled,omitempty"`
+		When    flexibleString `yaml:"when,omitempty"`
+		Actions Actions        `yaml:"actions,omitempty"`
+	}
+	var out rule
+	if err := value.Decode(&out); err != nil {
+		return err
+	}
+	*r = Rule{
+		ID:      out.ID,
+		Name:    out.Name,
+		Enabled: out.Enabled,
+		When:    string(out.When),
+		Actions: out.Actions,
+	}
+	return nil
+}
+
+func (a *Actions) UnmarshalYAML(value *yaml.Node) error {
+	type actions struct {
+		Date      flexibleString            `yaml:"date,omitempty"`
+		Type      flexibleString            `yaml:"type,omitempty"`
+		Note      flexibleString            `yaml:"note,omitempty"`
+		From      TransferSide              `yaml:"from,omitempty"`
+		To        TransferSide              `yaml:"to,omitempty"`
+		Payee     flexibleString            `yaml:"payee,omitempty"`
+		Narration flexibleString            `yaml:"narration,omitempty"`
+		Amount    flexibleString            `yaml:"amount,omitempty"`
+		Currency  flexibleString            `yaml:"currency,omitempty"`
+		Tag       flexibleString            `yaml:"tag,omitempty"`
+		Tags      []string                  `yaml:"tags,omitempty"`
+		Ignore    bool                      `yaml:"ignore,omitempty"`
+		Vars      map[string]flexibleString `yaml:"vars,omitempty"`
+		Metadata  map[string]flexibleString `yaml:"metadata,omitempty"`
+		Postings  []flexibleString          `yaml:"postings,omitempty"`
+	}
+	var out actions
+	if err := value.Decode(&out); err != nil {
+		return err
+	}
+	*a = Actions{
+		Date:      string(out.Date),
+		Type:      string(out.Type),
+		Note:      string(out.Note),
+		From:      out.From,
+		To:        out.To,
+		Payee:     string(out.Payee),
+		Narration: string(out.Narration),
+		Amount:    string(out.Amount),
+		Currency:  string(out.Currency),
+		Tag:       string(out.Tag),
+		Tags:      out.Tags,
+		Ignore:    out.Ignore,
+		Vars:      flexibleStringMap(out.Vars),
+		Metadata:  flexibleStringMap(out.Metadata),
+		Postings:  flexibleStringSlice(out.Postings),
+	}
+	return nil
+}
+
 func (s *TransferSide) UnmarshalYAML(value *yaml.Node) error {
 	switch value.Kind {
 	case yaml.ScalarNode:
 		s.Account = strings.TrimSpace(value.Value)
 		return nil
 	case yaml.MappingNode:
-		type side TransferSide
+		type side struct {
+			Account  flexibleString `yaml:"account,omitempty"`
+			Amount   flexibleString `yaml:"amount,omitempty"`
+			Currency flexibleString `yaml:"currency,omitempty"`
+		}
 		var out side
 		if err := value.Decode(&out); err != nil {
 			return err
 		}
-		*s = TransferSide(out)
+		*s = TransferSide{
+			Account:  string(out.Account),
+			Amount:   string(out.Amount),
+			Currency: string(out.Currency),
+		}
 		return nil
 	case 0:
 		return nil
@@ -104,12 +189,39 @@ func (s *TransferSide) UnmarshalYAML(value *yaml.Node) error {
 	}
 }
 
+func flexibleStringMap(values map[string]flexibleString) map[string]string {
+	if len(values) == 0 {
+		return nil
+	}
+	out := make(map[string]string, len(values))
+	for key, value := range values {
+		out[key] = string(value)
+	}
+	return out
+}
+
+func flexibleStringSlice(values []flexibleString) []string {
+	if len(values) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		out = append(out, string(value))
+	}
+	return out
+}
+
+func (s flexibleString) MarshalYAML() (any, error) {
+	return string(s), nil
+}
+
 func (s TransferSide) IsZero() bool {
 	return s.Account == "" && s.Amount == "" && s.Currency == ""
 }
 
 func isZeroActions(actions Actions) bool {
 	return actions.Type == "" &&
+		actions.Date == "" &&
 		actions.From.IsZero() &&
 		actions.To.IsZero() &&
 		actions.Payee == "" &&
@@ -119,10 +231,8 @@ func isZeroActions(actions Actions) bool {
 		actions.Tag == "" &&
 		len(actions.Tags) == 0 &&
 		!actions.Ignore &&
+		len(actions.Vars) == 0 &&
 		len(actions.Metadata) == 0 &&
-		actions.Commission == "" &&
-		actions.CommissionAccount == "" &&
-		actions.PnlAccount == "" &&
 		len(actions.Postings) == 0
 }
 
@@ -148,7 +258,7 @@ func loadProfileBytes(b []byte, fallbackID string) (*Profile, error) {
 		p.ID = fallbackID
 	}
 	normalizeTemplate(&p.Template, p.Defaults)
-	if err := validateTemplate(p.Template); err != nil {
+	if err := validateTemplate(p); err != nil {
 		return nil, err
 	}
 	return &p, nil
@@ -172,7 +282,11 @@ func normalizeTemplate(t *Template, defaults map[string]string) {
 	}
 }
 
-func validateTemplate(t Template) error {
+func validateTemplate(p Profile) error {
+	t := p.Template
+	if p.IsV2() && t.hasNoColumns() {
+		return nil
+	}
 	if t.Columns.Date == "" {
 		return fmt.Errorf("template columns.date is required")
 	}
@@ -182,16 +296,27 @@ func validateTemplate(t Template) error {
 	return nil
 }
 
+func (t Template) hasNoColumns() bool {
+	return t.Columns.Date == "" &&
+		t.Columns.Time == "" &&
+		t.Columns.Amount == "" &&
+		t.Columns.AmountIn == "" &&
+		t.Columns.AmountOut == "" &&
+		t.Columns.Payee == "" &&
+		t.Columns.Narration == "" &&
+		t.Columns.Type == "" &&
+		t.Columns.Currency == ""
+}
+
 func (p *Profile) IsV2() bool {
 	return strings.Contains(strings.ToLower(p.Schema), "/v2")
 }
 
 func (p *Profile) Rules() []Rule {
-	rules := make([]Rule, 0, len(p.TemplateRules)+len(p.PersonalRules)+len(p.UserRules))
+	rules := make([]Rule, 0, len(p.TemplateRules)+len(p.PersonalRules))
 	rules = append(rules, p.TemplateRules...)
 	rules = applyTemplateRuleOverrides(rules, p.TemplateRuleOverrides)
 	rules = append(rules, p.PersonalRules...)
-	rules = append(rules, p.UserRules...)
 	return enabledRules(rules)
 }
 

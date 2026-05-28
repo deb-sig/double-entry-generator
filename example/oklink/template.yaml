@@ -1,6 +1,5 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: oklink
-name: oklink
 template:
     fileFormat: csv
     delimiter: ','
@@ -16,10 +15,3 @@ template:
         - 数量
         - 代币符号
         - 代币地址
-    columns:
-        date: UTC时间
-        amount: 数量
-        currency: 代币符号
-    defaultMinusAccount: Assets:FIXME
-    defaultPlusAccount: Expenses:FIXME
-    defaultCurrency: CNY

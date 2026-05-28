@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
+	"gopkg.in/yaml.v3"
 )
 
 func TestImportFileAppliesTemplateAndPersonalRules(t *testing.T) {
@@ -107,6 +108,77 @@ func TestRawTimeSuffixCondition(t *testing.T) {
 	}
 	if !ok {
 		t.Fatal("expected raw[交易时间].time condition to match")
+	}
+}
+
+func TestGroupedOrConditionCanBeCombinedWithAnd(t *testing.T) {
+	row := Row{
+		Raw: map[string]string{
+			"交易创建时间": "2026-05-21 18:30:00",
+			"订单标题":   "牛肉火锅",
+			"收/支":    "支出",
+		},
+	}
+	expr := `(<订单标题> ~ "单人餐" || <订单标题> ~ "牛肉火锅") && raw[交易创建时间].time >= "16:00" && raw[交易创建时间].time <= "21:00" && <收/支> == "支出"`
+	ok, err := evalWhen(expr, row, ir.Order{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Fatal("expected grouped OR condition with trailing AND clauses to match")
+	}
+}
+
+func TestRuleYAMLSupportsAngleFieldReferencesWithoutBreakingArrays(t *testing.T) {
+	var profile Profile
+	err := yaml.Unmarshal([]byte(`
+schema: https://deg.dev/template-profile/v2
+id: 测试
+template:
+  columns:
+    date: 交易时间
+    amount: 金额
+personalRules:
+  - id: 元数据
+    when: <收/支> == 收入
+    actions:
+      metadata:
+        category: <交易分类>
+      amount: <金额>.number
+      tags:
+        - income
+        - service
+`), &profile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rule := profile.PersonalRules[0]
+	if rule.When != "<收/支> == 收入" {
+		t.Fatalf("unexpected when: %q", rule.When)
+	}
+	if rule.Actions.Metadata["category"] != "<交易分类>" {
+		t.Fatalf("unexpected metadata shorthand: %#v", rule.Actions.Metadata)
+	}
+	if rule.Actions.Amount != "<金额>.number" {
+		t.Fatalf("unexpected amount: %q", rule.Actions.Amount)
+	}
+	if got := strings.Join(rule.Actions.Tags, ","); got != "income,service" {
+		t.Fatalf("tags should remain an array, got %#v", rule.Actions.Tags)
+	}
+	row := Row{Raw: map[string]string{
+		"收/支":  "收入",
+		"交易分类": "餐饮美食",
+		"金额":   "18.90",
+	}}
+	ok, err := evalWhen(rule.When, row, ir.Order{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Fatal("expected angle field condition to match")
+	}
+	if got := renderRuleText(rule.Actions.Metadata["category"], row, ir.Order{}); got != "餐饮美食" {
+		t.Fatalf("unexpected rendered metadata: %q", got)
 	}
 }
 
@@ -239,6 +311,39 @@ func TestV2ActionsBuildExplicitPostings(t *testing.T) {
 	}
 	if out.Orders[0].MinusAccount != "" || out.Orders[0].PlusAccount != "" {
 		t.Fatalf("v2 should not fill default accounts: minus=%q plus=%q", out.Orders[0].MinusAccount, out.Orders[0].PlusAccount)
+	}
+}
+
+func TestRuntimeImporterCollectsStaticRuleOpenAccounts(t *testing.T) {
+	profile := testProfile()
+	profile.Schema = "https://deg.dev/template-profile/v2"
+	profile.Template.DefaultMinus = ""
+	profile.Template.DefaultPlus = ""
+	profile.PersonalRules = []Rule{
+		{
+			ID:   "未命中静态账户",
+			When: `<交易对方> == 不存在`,
+			Actions: Actions{
+				From: TransferSide{Account: "Assets:Static"},
+				To:   TransferSide{Account: "Expenses:Static"},
+				Postings: []string{
+					"Income:Static <金额>.number CNY",
+					"<动态账户> <金额>.number CNY",
+				},
+			},
+		},
+	}
+	out, err := ImportFile(profile, writeTestCSV(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, account := range []string{"Assets:Static", "Expenses:Static", "Income:Static"} {
+		if !out.OpenAccounts[account] {
+			t.Fatalf("expected static account %s to be collected: %#v", account, out.OpenAccounts)
+		}
+	}
+	if out.OpenAccounts["<动态账户>"] {
+		t.Fatalf("dynamic account expression should not be collected: %#v", out.OpenAccounts)
 	}
 }
 

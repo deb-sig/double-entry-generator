@@ -1,10 +1,11 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: ccb
 name: ccb
 template:
     fileFormat: xls
     delimiter: ','
-    skipLeadingRows: 5
+    skipLeadingRows: 6
+    skipInvalidRows: true
     sourceHeaders:
         - 记账日
         - 交易日期
@@ -17,17 +18,4 @@ template:
         - 对方账号
         - 对方户名
         - 交易地点
-    columns:
-        date: 交易日期
-        time: 交易时间
-        amountIn: 收入
-        amountOut: 支出
-        payee: 对方户名
-        narration: 摘要
-        currency: 币种
-    metadata:
-        method: 交易地点
-        txType: 摘要
-    defaultMinusAccount: Assets:Bank:CN:CCB:Checking
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: CNY

@@ -1,6 +1,7 @@
 package importer
 
 import (
+	"bytes"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -13,7 +14,7 @@ import (
 	"time"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
-	"github.com/extrame/xls"
+	xlsreader "github.com/shakinm/xlsReader/xls"
 	"github.com/xuri/excelize/v2"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
@@ -36,11 +37,9 @@ func ImportFile(profile *Profile, filename string) (*ir.IR, error) {
 		return nil, err
 	}
 	orders := ir.New()
-	if profile.IsV2() {
-		orders.OpenAccounts = collectV2Accounts(profile)
-	}
+	collectRuleOpenAccounts(orders, profile.Rules())
 	for _, row := range rows {
-		order, ignore, err := rowToOrder(profile, row)
+		order, ignore, err := rowToImportOrder(profile, row)
 		if err != nil {
 			if profile.Template.SkipInvalidRows {
 				continue
@@ -55,25 +54,48 @@ func ImportFile(profile *Profile, filename string) (*ir.IR, error) {
 	return orders, nil
 }
 
-func collectV2Accounts(profile *Profile) map[string]bool {
-	accounts := map[string]bool{}
-	for _, rule := range profile.Rules() {
-		addRuleAccount(accounts, rule.Actions.From.Account)
-		addRuleAccount(accounts, rule.Actions.To.Account)
+func collectRuleOpenAccounts(orders *ir.IR, rules []Rule) {
+	for _, rule := range rules {
+		collectStaticAccount(orders, rule.Actions.From.Account)
+		collectStaticAccount(orders, rule.Actions.To.Account)
+		for _, value := range rule.Actions.Vars {
+			collectStaticAccount(orders, value)
+		}
 		for _, line := range rule.Actions.Postings {
-			addRuleAccount(accounts, strings.Fields(line)...)
+			collectStaticAccount(orders, accountFromPostingTemplate(line))
 		}
 	}
-	return accounts
 }
 
-func addRuleAccount(accounts map[string]bool, values ...string) {
-	for _, value := range values {
-		value = strings.TrimSpace(value)
-		if strings.Contains(value, ":") && !strings.Contains(value, "[") {
-			accounts[value] = true
-			return
-		}
+func collectStaticAccount(orders *ir.IR, account string) {
+	account = strings.TrimSpace(account)
+	if account == "" || strings.Contains(account, "<") || strings.Contains(account, "[") {
+		return
+	}
+	if !isAccountName(account) {
+		return
+	}
+	orders.OpenAccounts[account] = true
+}
+
+func accountFromPostingTemplate(line string) string {
+	fields := strings.Fields(strings.TrimSpace(line))
+	if len(fields) == 0 {
+		return ""
+	}
+	return fields[0]
+}
+
+func isAccountName(value string) bool {
+	switch {
+	case strings.HasPrefix(value, "Assets:"),
+		strings.HasPrefix(value, "Liabilities:"),
+		strings.HasPrefix(value, "Equity:"),
+		strings.HasPrefix(value, "Income:"),
+		strings.HasPrefix(value, "Expenses:"):
+		return true
+	default:
+		return false
 	}
 }
 
@@ -195,40 +217,49 @@ func parseXLSX(profile *Profile, filename string) ([]Row, error) {
 }
 
 func parseXLS(profile *Profile, filename string) ([]Row, error) {
-	wb, err := xls.Open(filename, "utf-8")
+	if !hasOLEHeader(filename) {
+		return parseCSV(profile, filename)
+	}
+	wb, err := xlsreader.OpenFile(filename)
 	if err != nil {
 		return parseCSV(profile, filename)
 	}
-	if wb.NumSheets() == 0 {
-		return nil, fmt.Errorf("xls has no sheets")
-	}
-	sheet := wb.GetSheet(0)
-	if sheet == nil {
+	sheet, err := wb.GetSheet(0)
+	if err != nil {
 		return nil, fmt.Errorf("xls has no first sheet")
 	}
-	records := make([][]string, 0, int(sheet.MaxRow)+1)
-	for i := 0; i <= int(sheet.MaxRow); i++ {
-		row := sheet.Row(i)
+	records := make([][]string, 0, int(sheet.GetNumberRows())+1)
+	for i := 0; i <= int(sheet.GetNumberRows()); i++ {
+		row, err := sheet.GetRow(i)
+		if err != nil {
+			records = append(records, nil)
+			continue
+		}
 		if row == nil {
 			records = append(records, nil)
 			continue
 		}
-		record := make([]string, 0, row.LastCol())
-		for col := 0; col < row.LastCol(); col++ {
-			record = append(record, safeXLSCell(row, col))
+		cols := row.GetCols()
+		record := make([]string, 0, len(cols))
+		for _, col := range cols {
+			record = append(record, col.GetString())
 		}
 		records = append(records, record)
 	}
 	return recordsToRows(profile, records)
 }
 
-func safeXLSCell(row *xls.Row, col int) (value string) {
-	defer func() {
-		if recover() != nil {
-			value = ""
-		}
-	}()
-	return row.Col(col)
+func hasOLEHeader(filename string) bool {
+	f, err := os.Open(filename)
+	if err != nil {
+		return false
+	}
+	defer f.Close()
+	header := make([]byte, 8)
+	if _, err := io.ReadFull(f, header); err != nil {
+		return false
+	}
+	return bytes.Equal(header, []byte{0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1})
 }
 
 func recordsToRows(profile *Profile, records [][]string) ([]Row, error) {
@@ -281,7 +312,7 @@ func recordsToRows(profile *Profile, records [][]string) ([]Row, error) {
 			Metadata:  metadata,
 			Raw:       raw,
 		}
-		if strings.TrimSpace(row.Amount) == "" {
+		if !profile.IsV2() && strings.TrimSpace(row.Amount) == "" {
 			continue
 		}
 		rows = append(rows, row)
@@ -361,6 +392,66 @@ func nonEmptyAmount(value string) bool {
 	return value != "" && value != "-"
 }
 
+func rowToImportOrder(profile *Profile, row Row) (ir.Order, bool, error) {
+	if !profile.IsV2() {
+		return rowToOrder(profile, row)
+	}
+	return rowToV2Order(profile, row)
+}
+
+func rowToV2Order(profile *Profile, row Row) (ir.Order, bool, error) {
+	order := ir.Order{
+		OrderType: ir.OrderTypeNormal,
+		Currency:  profile.Template.DefaultCurrency,
+		Metadata:  row.Metadata,
+	}
+	if order.Metadata == nil {
+		order.Metadata = map[string]string{}
+	}
+	if row.Date != "" {
+		if payTime, err := parseDate(row.Date, profile.Template.DateFormat); err == nil {
+			order.PayTime = payTime
+		}
+	}
+	if row.Amount != "" {
+		if amount, err := parseAmount(row.Amount, profile.Template.AmountPrefix); err == nil {
+			order.Type = inferType(row.Type, amount)
+			order.TypeOriginal = row.Type
+			if amount < 0 {
+				amount = -amount
+			}
+			order.Money = amount
+		}
+	}
+	order.Peer = row.Payee
+	order.Item = row.Narration
+	if row.Currency != "" {
+		order.Currency = row.Currency
+	}
+
+	ignore := false
+	mergedV2Actions := Actions{}
+	for _, rule := range profile.Rules() {
+		matches, err := ruleMatches(rule, row, order)
+		if err != nil {
+			return ir.Order{}, false, err
+		}
+		if !matches {
+			continue
+		}
+		applyV2ScalarActions(&order, row, rule.Actions, &ignore, profile.Template.DateFormat)
+		mergeV2Actions(&mergedV2Actions, rule.Actions)
+	}
+	if ignore {
+		return order, true, nil
+	}
+	if order.PayTime.IsZero() {
+		return ir.Order{}, false, fmt.Errorf("runtime v2 rule did not set date")
+	}
+	renderV2Postings(&order, row, mergedV2Actions)
+	return order, false, nil
+}
+
 func rowToOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 	amount, err := parseAmount(row.Amount, profile.Template.AmountPrefix)
 	if err != nil {
@@ -385,10 +476,8 @@ func rowToOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 		Currency:     profile.Template.DefaultCurrency,
 		Metadata:     row.Metadata,
 	}
-	if !profile.IsV2() {
-		order.MinusAccount = profile.Template.DefaultMinus
-		order.PlusAccount = profile.Template.DefaultPlus
-	}
+	order.MinusAccount = profile.Template.DefaultMinus
+	order.PlusAccount = profile.Template.DefaultPlus
 	if row.Currency != "" {
 		order.Currency = row.Currency
 	}
@@ -397,7 +486,6 @@ func rowToOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 	}
 
 	ignore := false
-	mergedV2Actions := Actions{}
 	for _, rule := range profile.Rules() {
 		matches, err := ruleMatches(rule, row, order)
 		if err != nil {
@@ -406,17 +494,9 @@ func rowToOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 		if !matches {
 			continue
 		}
-		if profile.IsV2() {
-			applyV2ScalarActions(&order, row, rule.Actions, &ignore)
-			mergeV2Actions(&mergedV2Actions, rule.Actions)
-			continue
-		}
-		if err := applyActions(&order, row, rule.Actions, &ignore, profile.IsV2()); err != nil {
+		if err := applyActions(&order, row, rule.Actions, &ignore, false); err != nil {
 			return ir.Order{}, false, err
 		}
-	}
-	if profile.IsV2() {
-		renderV2Postings(&order, row, mergedV2Actions)
 	}
 	return order, ignore, nil
 }
@@ -442,6 +522,9 @@ func applyActions(order *ir.Order, row Row, actions Actions, ignore *bool, v2 bo
 	if actions.Type != "" {
 		order.Type = inferType(actions.Type, order.Money)
 		order.TypeOriginal = actions.Type
+	}
+	if actions.Note != "" {
+		order.Note = resolveValue(actions.Note, row)
 	}
 	if actions.Payee != "" {
 		order.Peer = resolveValue(actions.Payee, row)
@@ -502,35 +585,42 @@ func applyActions(order *ir.Order, row Row, actions Actions, ignore *bool, v2 bo
 			}
 		}
 	}
-	if actions.Commission != "" {
-		if commission, err := parseAmount(resolveValue(actions.Commission, row), ""); err == nil {
-			order.Commission = commission
-		}
-	}
-	if actions.CommissionAccount != "" {
-		if order.ExtraAccounts == nil {
-			order.ExtraAccounts = map[ir.Account]string{}
-		}
-		order.ExtraAccounts[ir.CommissionAccount] = resolveValue(actions.CommissionAccount, row)
-	}
-	if actions.PnlAccount != "" {
-		if order.ExtraAccounts == nil {
-			order.ExtraAccounts = map[ir.Account]string{}
-		}
-		order.ExtraAccounts[ir.PnlAccount] = resolveValue(actions.PnlAccount, row)
-	}
 	return nil
 }
 
-func applyV2ScalarActions(order *ir.Order, row Row, actions Actions, ignore *bool) {
+func applyV2ScalarActions(order *ir.Order, row Row, actions Actions, ignore *bool, dateFormat string) {
 	if actions.Ignore {
 		*ignore = true
+	}
+	if actions.Date != "" {
+		if payTime, err := parseDate(renderRuleText(actions.Date, row, *order), dateFormat); err == nil {
+			order.PayTime = payTime
+		}
+	}
+	if actions.Amount != "" {
+		if amount, err := parseAmount(renderPostingText(actions.Amount, row, *order), ""); err == nil {
+			order.Type = inferType(order.TypeOriginal, amount)
+			if amount < 0 {
+				amount = -amount
+			}
+			order.Money = amount
+		}
+	}
+	if actions.Type != "" {
+		order.TypeOriginal = renderRuleText(actions.Type, row, *order)
+		order.Type = inferType(order.TypeOriginal, order.Money)
+	}
+	if actions.Note != "" {
+		order.Note = renderRuleText(actions.Note, row, *order)
 	}
 	if actions.Payee != "" {
 		order.Peer = renderRuleText(actions.Payee, row, *order)
 	}
 	if actions.Narration != "" {
 		order.Item = renderRuleText(actions.Narration, row, *order)
+	}
+	if actions.Currency != "" {
+		order.Currency = renderRuleText(actions.Currency, row, *order)
 	}
 	if actions.Tag != "" {
 		order.Tags = append(order.Tags, splitList(actions.Tag)...)
@@ -541,7 +631,12 @@ func applyV2ScalarActions(order *ir.Order, row Row, actions Actions, ignore *boo
 			order.Metadata = map[string]string{}
 		}
 		for key, value := range actions.Metadata {
-			order.Metadata[key] = renderRuleText(value, row, *order)
+			rendered := renderRuleText(value, row, *order)
+			if rendered == "" {
+				delete(order.Metadata, key)
+				continue
+			}
+			order.Metadata[key] = rendered
 		}
 	}
 }
@@ -558,6 +653,14 @@ func mergeV2Actions(base *Actions, next Actions) {
 	}
 	if next.Currency != "" {
 		base.Currency = next.Currency
+	}
+	if len(next.Vars) > 0 {
+		if base.Vars == nil {
+			base.Vars = map[string]string{}
+		}
+		for key, value := range next.Vars {
+			base.Vars[key] = value
+		}
 	}
 	base.Postings = append(base.Postings, next.Postings...)
 }
@@ -576,6 +679,7 @@ func mergeTransferSide(base, next TransferSide) TransferSide {
 }
 
 func renderV2Postings(order *ir.Order, row Row, actions Actions) {
+	row = rowWithVars(row, actions.Vars, *order)
 	if !actions.To.IsZero() {
 		if posting, ok := renderTransferPosting(actions.To, actions.Amount, actions.Currency, "+", row, *order); ok {
 			order.Postings = append(order.Postings, ir.Posting{Line: posting})
@@ -592,6 +696,22 @@ func renderV2Postings(order *ir.Order, row Row, actions Actions) {
 			order.Postings = append(order.Postings, ir.Posting{Line: rendered})
 		}
 	}
+}
+
+func rowWithVars(row Row, vars map[string]string, order ir.Order) Row {
+	if len(vars) == 0 {
+		return row
+	}
+	raw := make(map[string]string, len(row.Raw)+len(vars))
+	for key, value := range row.Raw {
+		raw[key] = value
+	}
+	withVars := row
+	withVars.Raw = raw
+	for key, value := range vars {
+		raw["var."+key] = renderPostingText(value, withVars, order)
+	}
+	return withVars
 }
 
 func renderTransferPosting(side TransferSide, defaultAmount, defaultCurrency, direction string, row Row, order ir.Order) (string, bool) {
@@ -796,6 +916,9 @@ func normalizeDateLayout(layout string) string {
 }
 
 func normalizeDelimiter(value string) rune {
+	if value == "\t" {
+		return '\t'
+	}
 	switch strings.ToLower(strings.TrimSpace(value)) {
 	case "", "comma", ",":
 		return ','
@@ -812,6 +935,9 @@ func normalizeCells(values []string) []string {
 	out := make([]string, len(values))
 	for i, value := range values {
 		value = strings.TrimSpace(strings.TrimPrefix(value, "\ufeff"))
+		if strings.HasPrefix(value, `"`) && strings.HasSuffix(value, `"`) {
+			value = strings.TrimSuffix(strings.TrimPrefix(value, `"`), `"`)
+		}
 		if strings.HasPrefix(value, `="`) && strings.HasSuffix(value, `"`) {
 			value = strings.TrimSuffix(strings.TrimPrefix(value, `="`), `"`)
 		}
@@ -847,7 +973,7 @@ func splitList(value string) []string {
 	return out
 }
 
-var columnExprPattern = regexp.MustCompile(`\[([^\]]+)\]((?:\.extract\((?:r)?"[^"]*"\)|\.extract\((?:r)?'[^']*'\)|\.[A-Za-z0-9_+\-!]+)*)`)
+var columnExprPattern = regexp.MustCompile(`(?:\[([^\]]+)\]|<([^>]+)>)((?:\.(?:extract|format)\((?:r)?"[^"]*"\)|\.(?:extract|format)\((?:r)?'[^']*'\)|\.[A-Za-z0-9_]+|\.[+\-!])*)`)
 
 func renderRuleText(value string, row Row, order ir.Order) string {
 	return columnExprPattern.ReplaceAllStringFunc(value, func(match string) string {
@@ -861,10 +987,14 @@ func renderPostingText(value string, row Row, order ir.Order) string {
 }
 
 func evalColumnString(expr string, row Row, order ir.Order) string {
-	if !strings.HasPrefix(expr, "[") {
+	if !strings.HasPrefix(expr, "[") && !strings.HasPrefix(expr, "<") {
 		return expr
 	}
-	end := strings.Index(expr, "]")
+	close := "]"
+	if strings.HasPrefix(expr, "<") {
+		close = ">"
+	}
+	end := strings.Index(expr, close)
 	if end < 0 {
 		return expr
 	}
@@ -884,23 +1014,37 @@ func evalColumnString(expr string, row Row, order ir.Order) string {
 }
 
 func nextMethod(rest string) (string, string, string) {
-	if strings.HasPrefix(rest, "extract(") {
+	if strings.HasPrefix(rest, "extract(") || strings.HasPrefix(rest, "format(") {
+		name, _, _ := strings.Cut(rest, "(")
 		end := closingMethodParen(rest)
 		if end < 0 {
 			return rest, "", ""
 		}
-		return "extract", strings.TrimPrefix(strings.TrimSuffix(rest[len("extract("):end], `"`), `"`), rest[end+1:]
+		arg := rest[len(name)+1 : end]
+		arg = strings.Trim(arg, `"'`)
+		return name, arg, rest[end+1:]
+	}
+	if rest != "" && (rest[0] == '+' || rest[0] == '-' || rest[0] == '!') {
+		return rest[:1], "", rest[1:]
 	}
 	i := 0
-	for i < len(rest) && (isIdentByte(rest[i]) || rest[i] == '+' || rest[i] == '-' || rest[i] == '!') {
+	for i < len(rest) && isMethodIdentByte(rest[i]) {
 		i++
 	}
 	return rest[:i], "", rest[i:]
 }
 
+func isMethodIdentByte(c byte) bool {
+	return c == '_' || c >= '0' && c <= '9' || c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z'
+}
+
 func closingMethodParen(value string) int {
 	var quote byte
-	for i := len("extract("); i < len(value); i++ {
+	start := strings.Index(value, "(")
+	if start < 0 {
+		return -1
+	}
+	for i := start + 1; i < len(value); i++ {
 		c := value[i]
 		if quote != 0 {
 			if c == '\\' && i+1 < len(value) {
@@ -947,6 +1091,8 @@ func applyColumnMethod(value, method, arg string, row Row, order ir.Order) strin
 			return value
 		}
 		return formatAmountLike(-n, value)
+	case "format":
+		return formatValue(value, arg)
 	case "date", "time", "timestamp":
 		if t, err := parseDate(value, ""); err == nil {
 			switch method {
@@ -1001,6 +1147,22 @@ func formatAmountLike(amount float64, original string) string {
 		precision = 2
 	}
 	return strconv.FormatFloat(amount, 'f', precision, 64)
+}
+
+func formatValue(value, pattern string) string {
+	pattern = strings.TrimSpace(pattern)
+	pattern = strings.Trim(pattern, `"'`)
+	if pattern == "" {
+		return value
+	}
+	if strings.ContainsAny(pattern, "fFeEgG") {
+		n, err := parseAmount(value, "")
+		if err != nil {
+			return value
+		}
+		return fmt.Sprintf(pattern, n)
+	}
+	return fmt.Sprintf(pattern, strings.TrimSpace(value))
 }
 
 var simpleArithmeticPattern = regexp.MustCompile(`(-?\d+(?:\.\d+)?)\s*([*/+-])\s*(-?\d+(?:\.\d+)?)`)

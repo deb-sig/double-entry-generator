@@ -1,4 +1,4 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: htsec
 name: htsec
 template:
@@ -24,13 +24,4 @@ template:
         - 股份本次余额
         - 股东账号
         - 资金账号
-    columns:
-        date: 成交日期
-        time: 成交时间
-        amount: 发生金额
-        type: 操作
-    metadata:
-        txType: 操作
-    defaultMinusAccount: Assets:FIXME
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: CNY

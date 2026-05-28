@@ -88,6 +88,24 @@ func tokenizeWhen(expr string) ([]exprToken, error) {
 			i++
 			continue
 		}
+		if expr[i] == '<' && (i+1 >= len(expr) || expr[i+1] != '=') {
+			j := i + 1
+			for ; j < len(expr); j++ {
+				if expr[j] == '>' {
+					break
+				}
+				if expr[j] == '\n' || expr[j] == '\r' {
+					break
+				}
+			}
+			if j < len(expr) && expr[j] == '>' {
+				j++
+				j = scanMethodTail(expr, j)
+				tokens = append(tokens, exprToken{typ: exprTokenValue, val: expr[i:j]})
+				i = j
+				continue
+			}
+		}
 		if op, ok := matchOperator(expr[i:]); ok {
 			tokens = append(tokens, exprToken{typ: exprTokenOp, val: op})
 			i += len(op)
@@ -104,12 +122,7 @@ func tokenizeWhen(expr string) ([]exprToken, error) {
 				return nil, fmt.Errorf("unterminated raw field")
 			}
 			j++
-			if strings.HasPrefix(expr[j:], ".") {
-				j++
-				for j < len(expr) && isIdentByte(expr[j]) {
-					j++
-				}
-			}
+			j = scanMethodTail(expr, j)
 			tokens = append(tokens, exprToken{typ: exprTokenValue, val: expr[i:j]})
 			i = j
 			continue
@@ -125,12 +138,7 @@ func tokenizeWhen(expr string) ([]exprToken, error) {
 				return nil, fmt.Errorf("unterminated field")
 			}
 			j++
-			for strings.HasPrefix(expr[j:], ".") {
-				j++
-				for j < len(expr) && isIdentByte(expr[j]) {
-					j++
-				}
-			}
+			j = scanMethodTail(expr, j)
 			tokens = append(tokens, exprToken{typ: exprTokenValue, val: expr[i:j]})
 			i = j
 			continue
@@ -138,6 +146,22 @@ func tokenizeWhen(expr string) ([]exprToken, error) {
 		j := i
 		for j < len(expr) {
 			if expr[j] == ' ' || expr[j] == '\t' || expr[j] == '\n' || expr[j] == '\r' {
+				break
+			}
+			if expr[j] == '(' {
+				if j == i {
+					break
+				}
+				j++
+				for j < len(expr) && expr[j] != ')' {
+					j++
+				}
+				if j < len(expr) && expr[j] == ')' {
+					j++
+				}
+				continue
+			}
+			if expr[j] == ')' {
 				break
 			}
 			if _, ok := matchOperator(expr[j:]); ok {
@@ -153,6 +177,44 @@ func tokenizeWhen(expr string) ([]exprToken, error) {
 	}
 	tokens = append(tokens, exprToken{typ: exprTokenEOF})
 	return tokens, nil
+}
+
+func scanMethodTail(expr string, i int) int {
+	for i < len(expr) && expr[i] == '.' {
+		i++
+		for i < len(expr) && isIdentByte(expr[i]) {
+			i++
+		}
+		if i >= len(expr) || expr[i] != '(' {
+			continue
+		}
+		quote := byte(0)
+		i++
+		for i < len(expr) {
+			c := expr[i]
+			if quote != 0 {
+				if c == '\\' && i+1 < len(expr) {
+					i += 2
+					continue
+				}
+				i++
+				if c == quote {
+					quote = 0
+				}
+				continue
+			}
+			if c == '\'' || c == '"' {
+				quote = c
+				i++
+				continue
+			}
+			i++
+			if c == ')' {
+				break
+			}
+		}
+	}
+	return i
 }
 
 func matchOperator(s string) (string, bool) {
@@ -260,11 +322,19 @@ func (p *exprParser) valueOf(token exprToken) string {
 	if strings.HasPrefix(token.val, "[") {
 		return evalColumnString(token.val, p.row, p.order)
 	}
+	if strings.HasPrefix(token.val, "<") {
+		return evalColumnString(token.val, p.row, p.order)
+	}
 	value := fieldValue(token.val, p.row, p.order)
-	if value == "" && isLiteralToken(token.val) {
+	if value == "" && !rowHasRawField(p.row, token.val) {
 		return token.val
 	}
 	return value
+}
+
+func rowHasRawField(row Row, field string) bool {
+	_, ok := row.Raw[field]
+	return ok
 }
 
 func splitRawToken(value string) (string, string) {
@@ -324,7 +394,7 @@ func compareValues(left, op, right string) (bool, error) {
 
 func parseComparableNumber(value string) (float64, bool) {
 	cleaned := strings.NewReplacer(",", "", "¥", "", "￥", "", "$", "", "CNY", "", "RMB", "").Replace(strings.TrimSpace(value))
-	if !regexp.MustCompile(`^-?\d+(\.\d+)?$`).MatchString(cleaned) {
+	if !regexp.MustCompile(`^[+-]?\d+(\.\d+)?$`).MatchString(cleaned) {
 		return 0, false
 	}
 	n, err := strconv.ParseFloat(cleaned, 64)

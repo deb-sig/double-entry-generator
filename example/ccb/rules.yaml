@@ -1,211 +1,294 @@
+options:
+    title: 建设银行账单转换
+    operatingCurrency: CNY
+
+templateRules:
+    - id: 建行基础交易
+      actions:
+          date: <交易日期> <交易时间>
+          payee: <对方户名>
+          narration: <交易地点>
+          note: <摘要>
+          currency: CNY
+          metadata:
+              source: 中国建设银行
+              accountNum: xxxxx*********xxxx
+              balances: <账户余额>
+              currency: <币种>
+              peerAccount: <对方户名>
+              peerAccountNum: <对方账号>
+              recordDate: <记账日>
+              region: <交易地点>
+              tradeTime: <交易时间>
+              txType: <摘要>
+
+    - id: 建行支出
+      when: <支出> != "" && <支出> != "0"
+      actions:
+          amount: <支出>.number
+          type: 支出
+          metadata:
+              expense: <支出>
+              type: 支出
+          from:
+              account: Assets:Bank:CN:CCB:Checking
+          to:
+              account: Expenses:FIXME
+
+    - id: 建行收入
+      when: <收入> != "" && <收入> != "0"
+      actions:
+          amount: <收入>.number
+          type: 收入
+          metadata:
+              income: <收入>
+              type: 收入
+          from:
+              account: Income:Transfer
+          to:
+              account: Assets:Bank:CN:CCB:Checking
+
 personalRules:
-    - id: rule-001
-      when: (payee ~ "工资" || payee ~ "薪金" || payee ~ "月薪" || payee ~ "年薪")
+    - id: 工资收入
+      when: (<对方户名> ~ "工资" || <对方户名> ~ "薪金" || <对方户名> ~ "月薪" || <对方户名> ~ "年薪") && <收入> != "" && <收入> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - salary
-        to: Income:Work:Salary
-    - id: rule-002
-      when: (payee ~ "奖金" || payee ~ "年终奖" || payee ~ "绩效")
+          tags:
+              - salary
+          from:
+              account: Income:Work:Salary
+
+    - id: 奖金收入
+      when: (<对方户名> ~ "奖金" || <对方户名> ~ "年终奖" || <对方户名> ~ "绩效") && <收入> != "" && <收入> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - bonus
-        to: Income:Work:Bonus
-    - id: rule-003
-      when: (payee ~ "基金" || payee ~ "理财" || payee ~ "投资")
+          tags:
+              - bonus
+          from:
+              account: Income:Work:Bonus
+
+    - id: 投资收入
+      when: (<对方户名> ~ "基金" || <对方户名> ~ "理财" || <对方户名> ~ "投资") && <收入> != "" && <收入> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - investment
-        to: Income:Investment:Dividend
-    - id: rule-004
-      when: payee ~ "转账" && type ~ "收入"
+          tags:
+              - investment
+          from:
+              account: Income:Investment:Dividend
+
+    - id: 转账收入
+      when: <对方户名> ~ "转账" && <收入> != "" && <收入> != "0"
       actions:
-        from: Income:Transfer
-        to: Assets:Bank:CN:CCB:Checking
-    - id: rule-005
-      when: (payee ~ "美团" || payee ~ "饿了么" || payee ~ "肯德基" || payee ~ "麦当劳" || payee ~ "星巴克" || payee ~ "咖啡" || payee ~ "奶茶" || payee ~ "餐厅" || payee ~ "饭店" || payee ~ "食堂") && date.time >= "06:00" && date.time <= "11:00"
+          from:
+              account: Income:Transfer
+
+    - id: 早餐
+      when: (<对方户名> ~ "美团" || <对方户名> ~ "饿了么" || <对方户名> ~ "肯德基" || <对方户名> ~ "麦当劳" || <对方户名> ~ "星巴克" || <对方户名> ~ "咖啡" || <对方户名> ~ "奶茶" || <对方户名> ~ "餐厅" || <对方户名> ~ "饭店" || <对方户名> ~ "食堂") && <交易时间> >= "06:00" && <交易时间> <= "11:00" && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - food
-            - breakfast
-        to: Expenses:Food:Meal:Breakfast
-    - id: rule-006
-      when: (payee ~ "美团" || payee ~ "饿了么" || payee ~ "肯德基" || payee ~ "麦当劳" || payee ~ "星巴克" || payee ~ "咖啡" || payee ~ "奶茶" || payee ~ "餐厅" || payee ~ "饭店" || payee ~ "食堂") && date.time >= "11:00" && date.time <= "15:00"
+          tags:
+              - food
+              - breakfast
+          to:
+              account: Expenses:Food:Meal:Breakfast
+
+    - id: 午餐
+      when: (<对方户名> ~ "美团" || <对方户名> ~ "饿了么" || <对方户名> ~ "肯德基" || <对方户名> ~ "麦当劳" || <对方户名> ~ "星巴克" || <对方户名> ~ "咖啡" || <对方户名> ~ "奶茶" || <对方户名> ~ "餐厅" || <对方户名> ~ "饭店" || <对方户名> ~ "食堂") && <交易时间> >= "11:00" && <交易时间> <= "15:00" && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - food
-            - lunch
-        to: Expenses:Food:Meal:Lunch
-    - id: rule-007
-      when: (payee ~ "美团" || payee ~ "饿了么" || payee ~ "肯德基" || payee ~ "麦当劳" || payee ~ "星巴克" || payee ~ "咖啡" || payee ~ "奶茶" || payee ~ "餐厅" || payee ~ "饭店" || payee ~ "食堂") && date.time >= "17:00" && date.time <= "22:00"
+          tags:
+              - food
+              - lunch
+          to:
+              account: Expenses:Food:Meal:Lunch
+
+    - id: 晚餐
+      when: (<对方户名> ~ "美团" || <对方户名> ~ "饿了么" || <对方户名> ~ "肯德基" || <对方户名> ~ "麦当劳" || <对方户名> ~ "星巴克" || <对方户名> ~ "咖啡" || <对方户名> ~ "奶茶" || <对方户名> ~ "餐厅" || <对方户名> ~ "饭店" || <对方户名> ~ "食堂") && <交易时间> >= "17:00" && <交易时间> <= "22:00" && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - food
-            - dinner
-        to: Expenses:Food:Meal:Dinner
-    - id: rule-008
-      when: (payee ~ "美团" || payee ~ "饿了么" || payee ~ "肯德基" || payee ~ "麦当劳" || payee ~ "星巴克" || payee ~ "咖啡" || payee ~ "奶茶" || payee ~ "餐厅" || payee ~ "饭店" || payee ~ "食堂") && (date.time >= "22:00" || date.time <= "06:00")
+          tags:
+              - food
+              - dinner
+          to:
+              account: Expenses:Food:Meal:Dinner
+
+    - id: 夜宵
+      when: (<对方户名> ~ "美团" || <对方户名> ~ "饿了么" || <对方户名> ~ "肯德基" || <对方户名> ~ "麦当劳" || <对方户名> ~ "星巴克" || <对方户名> ~ "咖啡" || <对方户名> ~ "奶茶" || <对方户名> ~ "餐厅" || <对方户名> ~ "饭店" || <对方户名> ~ "食堂") && (<交易时间> >= "22:00" || <交易时间> <= "06:00") && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - food
-            - snack
-        to: Expenses:Food:Meal:Snack
-    - id: rule-009
-      when: (payee ~ "滴滴" || payee ~ "高德打车" || payee ~ "出租车" || payee ~ "快车" || payee ~ "专车")
+          tags:
+              - food
+              - snack
+          to:
+              account: Expenses:Food:Meal:Snack
+
+    - id: 出租车
+      when: (<对方户名> ~ "滴滴" || <对方户名> ~ "高德打车" || <对方户名> ~ "出租车" || <对方户名> ~ "快车" || <对方户名> ~ "专车") && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - transport
-            - taxi
-        to: Expenses:Transport:Taxi
-    - id: rule-010
-      when: (payee ~ "地铁" || payee ~ "公交" || payee ~ "巴士" || payee ~ "公交车")
+          tags:
+              - transport
+              - taxi
+          to:
+              account: Expenses:Transport:Taxi
+
+    - id: 公共交通
+      when: (<对方户名> ~ "地铁" || <对方户名> ~ "公交" || <对方户名> ~ "巴士" || <对方户名> ~ "公交车") && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - transport
-            - public
-        to: Expenses:Transport:Public
-    - id: rule-011
-      when: (payee ~ "中国铁路" || payee ~ "12306" || payee ~ "火车" || payee ~ "高铁")
+          tags:
+              - transport
+              - public
+          to:
+              account: Expenses:Transport:Public
+
+    - id: 火车
+      when: (<对方户名> ~ "中国铁路" || <对方户名> ~ "12306" || <对方户名> ~ "火车" || <对方户名> ~ "高铁") && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - transport
-            - train
-        to: Expenses:Transport:Train
-    - id: rule-012
-      when: (payee ~ "航空公司" || payee ~ "机场" || payee ~ "机票")
+          tags:
+              - transport
+              - train
+          to:
+              account: Expenses:Transport:Train
+
+    - id: 航班
+      when: (<对方户名> ~ "航空公司" || <对方户名> ~ "机场" || <对方户名> ~ "机票") && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - transport
-            - flight
-        to: Expenses:Transport:Flight
-    - id: rule-013
-      when: (payee ~ "淘宝" || payee ~ "天猫" || payee ~ "京东" || payee ~ "拼多多" || payee ~ "苏宁" || payee ~ "国美")
+          tags:
+              - transport
+              - flight
+          to:
+              account: Expenses:Transport:Flight
+
+    - id: 线上购物
+      when: (<对方户名> ~ "淘宝" || <对方户名> ~ "天猫" || <对方户名> ~ "京东" || <对方户名> ~ "拼多多" || <对方户名> ~ "苏宁" || <对方户名> ~ "国美") && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - shopping
-            - online
-        to: Expenses:Shopping:Online
-    - id: rule-014
-      when: (payee ~ "超市" || payee ~ "便利店" || payee ~ "沃尔玛" || payee ~ "家乐福" || payee ~ "永辉")
+          tags:
+              - shopping
+              - online
+          to:
+              account: Expenses:Shopping:Online
+
+    - id: 日用购物
+      when: (<对方户名> ~ "超市" || <对方户名> ~ "便利店" || <对方户名> ~ "沃尔玛" || <对方户名> ~ "家乐福" || <对方户名> ~ "永辉") && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - shopping
-            - groceries
-        to: Expenses:Shopping:Groceries
-    - id: rule-015
-      when: (payee ~ "水电费" || payee ~ "电费" || payee ~ "水费" || payee ~ "燃气费" || payee ~ "物业费")
+          tags:
+              - shopping
+              - groceries
+          to:
+              account: Expenses:Shopping:Groceries
+
+    - id: 生活缴费
+      when: (<对方户名> ~ "水电费" || <对方户名> ~ "电费" || <对方户名> ~ "水费" || <对方户名> ~ "燃气费" || <对方户名> ~ "物业费") && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - life
-            - utilities
-        to: Expenses:Life:Utilities
-    - id: rule-016
-      when: (payee ~ "房租" || payee ~ "租金" || payee ~ "押金")
+          tags:
+              - life
+              - utilities
+          to:
+              account: Expenses:Life:Utilities
+
+    - id: 房租
+      when: (<对方户名> ~ "房租" || <对方户名> ~ "租金" || <对方户名> ~ "押金") && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - housing
-            - rent
-        to: Expenses:Housing:Rent
-    - id: rule-017
-      when: (payee ~ "医院" || payee ~ "诊所" || payee ~ "药店" || payee ~ "医药")
+          tags:
+              - housing
+              - rent
+          to:
+              account: Expenses:Housing:Rent
+
+    - id: 医疗
+      when: (<对方户名> ~ "医院" || <对方户名> ~ "诊所" || <对方户名> ~ "药店" || <对方户名> ~ "医药") && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - health
-            - medical
-        to: Expenses:Health:Medical
-    - id: rule-018
-      when: (payee ~ "电影院" || payee ~ "影院" || payee ~ "电影")
+          tags:
+              - health
+              - medical
+          to:
+              account: Expenses:Health:Medical
+
+    - id: 电影
+      when: (<对方户名> ~ "电影院" || <对方户名> ~ "影院" || <对方户名> ~ "电影") && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - entertainment
-            - movie
-        to: Expenses:Entertainment:Movie
-    - id: rule-019
-      when: (payee ~ "游戏" || payee ~ "手游" || payee ~ "网游")
+          tags:
+              - entertainment
+              - movie
+          to:
+              account: Expenses:Entertainment:Movie
+
+    - id: 游戏
+      when: (<对方户名> ~ "游戏" || <对方户名> ~ "手游" || <对方户名> ~ "网游") && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - entertainment
-            - game
-        to: Expenses:Entertainment:Game
-    - id: rule-020
-      when: (payee ~ "手续费" || payee ~ "年费" || payee ~ "管理费")
+          tags:
+              - entertainment
+              - game
+          to:
+              account: Expenses:Entertainment:Game
+
+    - id: 银行费用
+      when: (<对方户名> ~ "手续费" || <对方户名> ~ "年费" || <对方户名> ~ "管理费") && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - bank
-            - fees
-        to: Expenses:Bank:Fees
-    - id: rule-021
-      when: payee ~ "信用卡还款"
+          tags:
+              - bank
+              - fees
+          to:
+              account: Expenses:Bank:Fees
+
+    - id: 信用卡还款
+      when: <对方户名> ~ "信用卡还款" && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - creditcard
-            - payment
-        to: Liabilities:CreditCard:CCB
-    - id: rule-022
-      when: payee ~ "微信零钱提现"
+          tags:
+              - creditcard
+              - payment
+          to:
+              account: Liabilities:CreditCard:CCB
+
+    - id: 微信提现
+      when: <对方户名> ~ "微信零钱提现" && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - transfer
-            - wechat
-        to: Assets:Digital:WeChat:Cash
-    - id: rule-023
-      when: payee ~ "支付宝提现"
+          tags:
+              - transfer
+              - wechat
+          to:
+              account: Assets:Digital:WeChat:Cash
+
+    - id: 支付宝提现
+      when: <对方户名> ~ "支付宝提现" && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - transfer
-            - alipay
-        to: Assets:Digital:Alipay:Cash
-    - id: rule-024
-      when: (payee ~ "工商银行" || payee ~ "中国银行" || payee ~ "农业银行" || payee ~ "招商银行") && type ~ "转账"
+          tags:
+              - transfer
+              - alipay
+          to:
+              account: Assets:Digital:Alipay:Cash
+
+    - id: 银行转账
+      when: (<对方户名> ~ "工商银行" || <对方户名> ~ "中国银行" || <对方户名> ~ "农业银行" || <对方户名> ~ "招商银行") && <摘要> ~ "转账" && <支出> != "" && <支出> != "0"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-        tags:
-            - transfer
-            - bank
-        to: Assets:Bank:CN:Other
-    - id: rule-025
-      when: (payee ~ "微信支付" || payee ~ "支付宝" || payee ~ "财付通")
+          tags:
+              - transfer
+              - bank
+          to:
+              account: Assets:Bank:CN:Other
+
+    - id: 忽略第三方支付
+      when: (<对方户名> ~ "微信支付" || <对方户名> ~ "支付宝" || <对方户名> ~ "财付通")
       actions:
-        ignore: true
-    - id: rule-026
-      when: (payee ~ "系统维护" || payee ~ "对账" || payee ~ "冲正")
+          ignore: true
+
+    - id: 忽略系统交易
+      when: (<对方户名> ~ "系统维护" || <对方户名> ~ "对账" || <对方户名> ~ "冲正")
       actions:
-        ignore: true
-    - id: rule-027
-      when: metadata.method == "借记卡"
+          ignore: true
+
+    - id: 借记卡账户
+      when: <交易地点> == "借记卡"
       actions:
-        from: Assets:Bank:CN:CCB:DebitCard
-    - id: rule-028
-      when: metadata.method == "信用卡"
+          from:
+              account: Assets:Bank:CN:CCB:DebitCard
+
+    - id: 信用卡账户
+      when: <交易地点> == "信用卡"
       actions:
-        from: Liabilities:CreditCard:CCB
-    - id: rule-029
-      when: metadata.method == "活期"
+          from:
+              account: Liabilities:CreditCard:CCB
+
+    - id: 活期账户
+      when: <交易地点> == "活期"
       actions:
-        from: Assets:Bank:CN:CCB:Checking
-    - id: rule-030
-      when: metadata.method == "定期"
+          from:
+              account: Assets:Bank:CN:CCB:Checking
+
+    - id: 定期账户
+      when: <交易地点> == "定期"
       actions:
-        from: Assets:Bank:CN:CCB:TimeDeposit
+          from:
+              account: Assets:Bank:CN:CCB:TimeDeposit

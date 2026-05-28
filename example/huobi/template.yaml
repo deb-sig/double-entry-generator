@@ -1,11 +1,11 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: huobi
 name: huobi
 template:
     fileFormat: csv
     delimiter: ','
     sourceHeaders:
-        - '"时间"'
+        - 时间
         - 交易类型
         - 交易对
         - 方向
@@ -13,12 +13,4 @@ template:
         - 数量
         - 成交额
         - 手续费
-    columns:
-        date: '"时间"'
-        amount: 成交额
-        type: 交易类型
-    metadata:
-        txType: 方向
-    defaultMinusAccount: Assets:FIXME
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: CNY

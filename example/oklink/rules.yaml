@@ -1,1 +1,113 @@
-personalRules: []
+options:
+    title: OKLink 代币账本
+    operatingCurrency: CNY
+
+templateRules:
+    - id: 欧科云链基础交易
+      actions:
+          date: <本地时间(UTC+8)>
+          amount: <数量>.format("%.8f")
+          currency: <代币符号>
+          metadata:
+              txHash: <交易哈希>
+              blockNo: <区块高度>
+              from: <发送方>
+              to: <接收方>
+              contractAddress: <代币地址>
+              tokenName: <代币符号>
+              tokenSymbol: <代币符号>
+
+personalRules:
+    - id: 欧科云链默认账户
+      actions:
+          from:
+              account: Assets:FIXME
+          to:
+              account: Expenses:FIXME
+
+    - id: 欧科云链发送
+      when: <发送方> == 0x1429****7f855c
+      actions:
+          payee: <接收方>
+          narration: <代币符号> Send
+          metadata:
+              direction: send
+          from:
+              account: Assets:Crypto:Software:Ethereum:0x1429****7f855c
+              amount: <数量>.format("%.8f")
+              currency: <代币符号>
+          to:
+              account: Expenses:FIXME
+              amount: <数量>.format("%.8f")
+              currency: <代币符号>
+
+    - id: 欧科云链接收
+      when: <接收方> == 0x1429****7f855c
+      actions:
+          payee: <发送方>
+          narration: <代币符号> Receive
+          metadata:
+              direction: recv
+          from:
+              account: Income:Crypto:Transfer
+              amount: <数量>.format("%.8f")
+              currency: <代币符号>
+          to:
+              account: Assets:Crypto:Software:Ethereum:0x1429****7f855c
+              amount: <数量>.format("%.8f")
+              currency: <代币符号>
+
+    - id: USDT标签
+      when: <代币符号> == USDT
+      actions:
+          tags:
+              - Stablecoin
+              - USDT
+
+    - id: USDC标签
+      when: <代币符号> == USDC
+      actions:
+          tags:
+              - Stablecoin
+              - USDC
+
+    - id: USDC发送账户
+      when: <代币符号> == USDC && <发送方> == 0x1429****7f855c
+      actions:
+          from:
+              account: Assets:Crypto:Ethereum:USDC
+
+    - id: USDC接收账户
+      when: <代币符号> == USDC && <接收方> == 0x1429****7f855c
+      actions:
+          to:
+              account: Assets:Crypto:Ethereum:USDC
+
+    - id: USDT指定收入对手方
+      when: <代币符号> == USDT && <发送方> == 0xd854****c172b3 && <接收方> == 0x1429****7f855c
+      actions:
+          tags:
+              - Receive
+          from:
+              account: Income:Crypto:Transfer
+          to:
+              account: Assets:Crypto:Ethereum:USDT
+
+    - id: USDT指定支出对手方
+      when: <代币符号> == USDT && <发送方> == 0x1429****7f855c && <接收方> == 0x3ef4****f2768a
+      actions:
+          tags:
+              - Send
+          currency: CNY
+          from:
+              account: Assets:Crypto:Ethereum:USDT
+          to:
+              account: Expenses:Food:Meal
+
+    - id: 小额空投
+      when: <发送方> == 0x1429****7f855c && <数量> >= 1 && <数量> <= 10
+      actions:
+          tags:
+              - SmallAirdrop
+          to:
+              account: Income:Crypto:Airdrop

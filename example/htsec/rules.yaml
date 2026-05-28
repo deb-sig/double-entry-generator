@@ -1,5 +1,69 @@
-personalRules:
-    - id: rule-001
-      when: narration ~ "兴业转债" && type ~ "卖"
+options:
+    title: 测试
+    operatingCurrency: CNY
+
+templateRules:
+    - id: 海通交易基础
       actions:
-        pnlAccount: Income:Rule1:PnL
+          date: <成交日期> <成交时间>
+          payee: htsec
+          narration: <操作>-<证券代码>.format("%06.0f")-<证券名称>
+          vars:
+              cash: Assets:Htsec:Cash
+              position: Assets:Htsec:Positions
+              feeExpense: Expenses:Htsec:Commission
+              pnl: Income:Htsec:PnL
+              security: SZ<证券代码>.format("%06.0f")
+              amount: <成交金额>.format("%.2f")
+              fee: <手续费>.number + <印花税>.number + <过户费>.number + <其他费>.number
+
+    - id: 上海证券代码
+      when: <股东账号> ~ "A"
+      actions:
+          vars:
+              security: SH<证券代码>.format("%06.0f")
+
+    - id: 海通买入
+      when: <操作> == "买"
+      actions:
+          postings:
+              - <var.cash> -<var.amount> CNY
+              - <var.position> <成交数量>.format("%.2f") <var.security> {<成交价格>.format("%.3f") CNY} @@ <var.amount> CNY
+              - <var.cash> -<var.fee> CNY
+              - <var.feeExpense> <var.fee> CNY
+
+    - id: 海通卖出
+      when: <操作> == "卖"
+      actions:
+          postings:
+              - <var.position> -<成交数量>.format("%.2f") <var.security> {} @ <成交价格>.format("%.3f") CNY
+              - <var.cash> <var.amount> CNY
+              - <var.cash> -<var.fee> CNY
+              - <var.feeExpense> <var.fee> CNY
+              - <var.pnl>
+
+    - id: 海通拆分成交目标
+      when: <成交数量> != "0" && <成交价格> != "0" && <成交金额> == "0"
+      actions:
+          vars:
+              amount: <成交数量>.number * <成交价格>.number
+
+    - id: 海通拆分成交金额来源
+      when: <成交金额> != "0" && <成交数量> == "0" && <成交价格> == "0"
+      actions:
+          ignore: true
+
+personalRules:
+    - id: 忽略新增证券
+      when: <证券名称> == "新增证券"
+      actions:
+          ignore: true
+
+    - id: Rule1 兴业转债卖出
+      when: <证券名称> ~ "兴业转债" && <操作> ~ "卖"
+      actions:
+          vars:
+              cash: Assets:Rule1:Cash
+              position: Assets:Rule1:Positions
+              feeExpense: Expenses:Rule1:Commission
+              pnl: Income:Rule1:PnL

@@ -1,5 +1,146 @@
-personalRules:
-    - id: rule-001
-      when: narration ~ "HS300ETF"
+options:
+    title: 测试
+    operatingCurrency: CNY
+
+templateRules:
+    - id: 华西基础
       actions:
-        pnlAccount: Income:Rule1:PnL
+          date: <date> <time>
+          payee: hxsec
+          vars:
+              cash: Assets:Hxsec:Cash
+              position: Assets:Hxsec:Positions
+              feeExpense: Expenses:Hxsec:Commission
+              pnl: Income:Hxsec:PnL
+              custody: Assets:CN:CCB:Debit
+              security: SZ<securityCode>.format("%06.0f")
+              tradeAmount: <tradeAmount>.format("%.2f")
+              totalFee: <totalFee>.format("%.2f")
+          metadata:
+              account_number: <accountNumber>
+              trade_time: <time>
+
+    - id: 华西证券元数据
+      when: (<txType> == "证券买入" || <txType> == "融券回购" || <txType> == "证券卖出" || <txType> == "融券购回" || <txType> == "红利入账")
+      actions:
+          metadata:
+              security_code: <securityCode>.format("%06.0f")
+              security_name: <securityName>
+              shareholder_code: <shareholderCode>
+              trade_id: <tradeId>
+
+    - id: 上海证券代码
+      when: <shareholderCode> ~ "A"
+      actions:
+          vars:
+              security: SH<securityCode>.format("%06.0f")
+
+    - id: 银行转证券
+      when: <txType> == "银行转证券"
+      actions:
+          narration: 银行转证券
+          postings:
+              - <var.cash> <amount>.format("%.2f") CNY
+              - <var.custody> -<amount>.format("%.2f") CNY
+
+    - id: 证券转银行
+      when: <txType> == "证券转银行"
+      actions:
+          narration: 证券转银行
+          postings:
+              - <var.custody> <amount>.+.format("%.2f") CNY
+              - <var.cash> -<amount>.+.format("%.2f") CNY
+
+    - id: 利息归本
+      when: <txType> == "利息归本"
+      actions:
+          narration: 利息归本
+          postings:
+              - <var.cash> <amount>.format("%.2f") CNY
+              - <var.pnl> -<amount>.format("%.2f") CNY
+
+    - id: 红利入账
+      when: <txType> == "红利入账"
+      actions:
+          date: <date> 23:59:59
+          narration: 红利入账-<securityCode>.format("%06.0f")-<securityName>
+          postings:
+              - <var.cash> <amount>.format("%.2f") CNY
+              - <var.pnl> -<amount>.format("%.2f") CNY
+          metadata:
+              trade_time: 23:59:59
+
+    - id: 证券买入
+      when: <txType> == "证券买入"
+      actions:
+          narration: 证券买入-<securityCode>.format("%06.0f")-<securityName>
+          postings:
+              - <var.cash> -<var.tradeAmount> CNY
+              - <var.position> <quantity>.format("%.2f") <var.security> {<price>.format("%.3f") CNY} @@ <var.tradeAmount> CNY
+              - <var.cash> -<var.totalFee> CNY
+              - <var.feeExpense> <var.totalFee> CNY
+
+    - id: 证券卖出
+      when: <txType> == "证券卖出"
+      actions:
+          narration: 证券卖出-<securityCode>.format("%06.0f")-<securityName>
+          postings:
+              - <var.position> -<quantity>.format("%.2f") <var.security> {} @ <price>.format("%.3f") CNY
+              - <var.cash> <var.tradeAmount> CNY
+              - <var.cash> -<var.totalFee> CNY
+              - <var.feeExpense> <var.totalFee> CNY
+              - <var.pnl>
+
+    - id: 融券回购
+      when: <txType> == "融券回购"
+      actions:
+          narration: 融券回购-<securityCode>.format("%06.0f")-<securityName>
+          postings:
+              - <var.cash> -<var.tradeAmount> CNY
+              - <var.position> <quantity>.format("%.2f") <var.security> {100.000 CNY} @@ <var.tradeAmount> CNY
+              - <var.cash> -<var.totalFee> CNY
+              - <var.feeExpense> <var.totalFee> CNY
+          metadata:
+              interest_rate: <price>.format("%.3f")%
+
+    - id: 融券购回
+      when: <txType> == "融券购回"
+      actions:
+          narration: 融券购回-<securityCode>.format("%06.0f")-<securityName>
+          postings:
+              - <var.position> -<quantity>.format("%.2f") <var.security> {} @ 100.000 CNY
+              - <var.cash> <var.tradeAmount> CNY
+              - <var.cash> -<var.totalFee> CNY
+              - <var.feeExpense> <var.totalFee> CNY
+              - <var.pnl>
+          metadata:
+              interest_rate: <price>.format("%.3f")%
+
+    - id: ETF份额合并
+      when: <txType> == "ETF份额合并"
+      actions:
+          date: <date> 23:59:59
+          narration: ETF份额合并-<securityCode>.format("%06.0f")-<securityName>
+          vars:
+              removedAmount: <quantity>.number + <remainingQuantity>.number
+          postings:
+              - <var.position> -<var.removedAmount> <var.security> {}
+              - <var.position> <remainingQuantity>.format("%.2f") <var.security> {}
+          metadata:
+              shareholder_code: <shareholderCode>
+              trade_time: 23:59:59
+
+    - id: 忽略指定交易
+      when: <txType> == "指定交易"
+      actions:
+          ignore: true
+
+personalRules:
+    - id: Rule1 HS300ETF
+      when: <securityName> ~ "HS300ETF"
+      actions:
+          vars:
+              cash: Assets:Rule1:Cash
+              position: Assets:Hxsec:Positions:沪深300
+              feeExpense: Expenses:Rule1:Commission
+              pnl: Income:Rule1:PnL
