@@ -1,6 +1,6 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: mt
-name: mt
+name: Meituan
 template:
     fileFormat: csv
     delimiter: ','
@@ -17,15 +17,4 @@ template:
         - 交易单号
         - 商家单号
         - 备注
-    columns:
-        date: 交易创建时间
-        amount: 实付金额
-        payee: 订单标题
-        narration: 订单标题
-        type: 收/支
-    metadata:
-        method: 支付方式
-        txType: 交易类型
-    defaultMinusAccount: Assets:FIXME
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: CNY

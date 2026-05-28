@@ -1,82 +1,205 @@
+options:
+    title: mt
+    operatingCurrency: CNY
+
+templateRules:
+    - id: 美团基础交易
+      actions:
+          date: <交易创建时间>
+          narration: <订单标题>
+          amount: <实付金额>.number
+          type: <收/支>
+          currency: CNY
+          metadata:
+              source: 美团
+              payTime: <交易创建时间> +0800 CST
+              orderId: <交易单号>
+              merchantId: <商家单号>
+              type: <收/支>
+              method: <支付方式>
+
+    - id: 美团支出
+      when: <收/支> == "支出"
+      actions:
+          from:
+              account: Assets:FIXME
+          to:
+              account: Expenses:FIXME
+
+    - id: 美团收入
+      when: <收/支> == "收入"
+      actions:
+          from:
+              account: Income:Rebate
+          to:
+              account: Assets:FIXME
+
 personalRules:
-    - id: rule-001
-      when: (narration ~ "单人餐" || narration ~ "牛肉火锅" || narration ~ "江湖菜" || narration ~ "川菜" || narration ~ "肉蟹煲" || narration ~ "自助餐" || narration ~ "盖码饭" || narration ~ "米线" || narration ~ "斑鱼" || narration ~ "蛋挞" || narration ~ "湖南菜" || narration ~ "湘语" || narration ~ "一条鱼" || narration ~ "湘菜" || narration ~ "活鱼" || narration ~ "牛羊肉" || narration ~ "米粉")
+    - id: 餐饮券
+      when: (<订单标题> ~ "单人餐" || <订单标题> ~ "牛肉火锅" || <订单标题> ~ "江湖菜" || <订单标题> ~ "川菜" || <订单标题> ~ "肉蟹煲" || <订单标题> ~ "自助餐" || <订单标题> ~ "盖码饭" || <订单标题> ~ "米线" || <订单标题> ~ "斑鱼" || <订单标题> ~ "蛋挞" || <订单标题> ~ "湖南菜" || <订单标题> ~ "湘语" || <订单标题> ~ "一条鱼" || <订单标题> ~ "湘菜" || <订单标题> ~ "活鱼" || <订单标题> ~ "牛羊肉" || <订单标题> ~ "米粉") && <收/支> == "支出"
       actions:
-        to: Expenses:Food:Meal:Coupon
-    - id: rule-002
-      when: (narration ~ "单人餐" || narration ~ "牛肉火锅" || narration ~ "江湖菜" || narration ~ "川菜" || narration ~ "肉蟹煲" || narration ~ "自助餐" || narration ~ "盖码饭" || narration ~ "米线" || narration ~ "斑鱼" || narration ~ "蛋挞" || narration ~ "湖南菜" || narration ~ "湘语" || narration ~ "一条鱼" || narration ~ "湘菜" || narration ~ "活鱼" || narration ~ "牛羊肉" || narration ~ "米粉") && date.time >= "16:00" && date.time <= "21:00"
+          to:
+              account: Expenses:Food:Meal:Coupon
+
+    - id: 晚餐
+      when: (<订单标题> ~ "单人餐" || <订单标题> ~ "牛肉火锅" || <订单标题> ~ "江湖菜" || <订单标题> ~ "川菜" || <订单标题> ~ "肉蟹煲" || <订单标题> ~ "自助餐" || <订单标题> ~ "盖码饭" || <订单标题> ~ "米线" || <订单标题> ~ "斑鱼" || <订单标题> ~ "蛋挞" || <订单标题> ~ "湖南菜" || <订单标题> ~ "湘语" || <订单标题> ~ "一条鱼" || <订单标题> ~ "湘菜" || <订单标题> ~ "活鱼" || <订单标题> ~ "牛羊肉" || <订单标题> ~ "米粉") && raw[交易创建时间].time >= "16:00" && raw[交易创建时间].time <= "21:00" && <收/支> == "支出"
       actions:
-        to: Expenses:Food:Meal:Dinner
-    - id: rule-003
-      when: (narration ~ "单人餐" || narration ~ "牛肉火锅" || narration ~ "江湖菜" || narration ~ "川菜" || narration ~ "肉蟹煲" || narration ~ "自助餐" || narration ~ "盖码饭" || narration ~ "米线" || narration ~ "斑鱼" || narration ~ "蛋挞" || narration ~ "湖南菜" || narration ~ "湘语" || narration ~ "一条鱼" || narration ~ "湘菜" || narration ~ "活鱼" || narration ~ "牛羊肉" || narration ~ "米粉") && date.time >= "10:30" && date.time <= "14:00"
+          to:
+              account: Expenses:Food:Meal:Dinner
+
+    - id: 午餐
+      when: (<订单标题> ~ "单人餐" || <订单标题> ~ "牛肉火锅" || <订单标题> ~ "江湖菜" || <订单标题> ~ "川菜" || <订单标题> ~ "肉蟹煲" || <订单标题> ~ "自助餐" || <订单标题> ~ "盖码饭" || <订单标题> ~ "米线" || <订单标题> ~ "斑鱼" || <订单标题> ~ "蛋挞" || <订单标题> ~ "湖南菜" || <订单标题> ~ "湘语" || <订单标题> ~ "一条鱼" || <订单标题> ~ "湘菜" || <订单标题> ~ "活鱼" || <订单标题> ~ "牛羊肉" || <订单标题> ~ "米粉") && raw[交易创建时间].time >= "10:30" && raw[交易创建时间].time <= "14:00" && <收/支> == "支出"
       actions:
-        to: Expenses:Food:Meal:Lunch
-    - id: rule-004
-      when: narration ~ "代金券"
+          to:
+              account: Expenses:Food:Meal:Lunch
+
+    - id: 代金券
+      when: <订单标题> ~ "代金券" && <收/支> == "支出"
       actions:
-        to: Expenses:Food:Meal:Coupon
-    - id: rule-005
-      when: (narration ~ "瑞幸" || narration ~ "喜茶" || narration ~ "分甜" || narration ~ "奶茶" || narration ~ "果茶" || narration ~ "甜品" || narration ~ "中杯" || narration ~ "大杯")
+          to:
+              account: Expenses:Food:Meal:Coupon
+
+    - id: 饮品甜品
+      when: (<订单标题> ~ "瑞幸" || <订单标题> ~ "喜茶" || <订单标题> ~ "分甜" || <订单标题> ~ "奶茶" || <订单标题> ~ "果茶" || <订单标题> ~ "甜品" || <订单标题> ~ "中杯" || <订单标题> ~ "大杯") && <收/支> == "支出"
       actions:
-        to: Expenses:Food:Snacks
-    - id: rule-006
-      when: narration ~ "【美团月付】主动还款"
+          to:
+              account: Expenses:Food:Snacks
+
+    - id: 美团月付还款
+      when: <订单标题> ~ "【美团月付】主动还款" && <收/支> == "支出"
       actions:
-        to: Liabilities:MT:zwyyy456
-    - id: rule-007
-      when: metadata.method ~ "(0354)"
+          to:
+              account: Liabilities:MT:zwyyy456
+
+    - id: 交通0354支出
+      when: <支付方式> ~ "(0354)" && <收/支> == "支出"
       actions:
-        from: Liabilities:CC:BCM:0354
-    - id: rule-008
-      when: metadata.method ~ "(1341)"
+          from:
+              account: Liabilities:CC:BCM:0354
+
+    - id: 交通0354收入
+      when: <支付方式> ~ "(0354)" && <收/支> == "收入"
       actions:
-        from: Liabilities:CC:BoC:1341
-    - id: rule-009
-      when: metadata.method ~ "(1875)"
+          to:
+              account: Liabilities:CC:BCM:0354
+
+    - id: 中行1341支出
+      when: <支付方式> ~ "(1341)" && <收/支> == "支出"
       actions:
-        from: Liabilities:CC:BoC:1875
-    - id: rule-010
-      when: metadata.method ~ "(2189)"
+          from:
+              account: Liabilities:CC:BoC:1341
+
+    - id: 中行1341收入
+      when: <支付方式> ~ "(1341)" && <收/支> == "收入"
       actions:
-        from: Liabilities:CC:BoNB:2189
-    - id: rule-011
-      when: metadata.method ~ "(0924)"
+          to:
+              account: Liabilities:CC:BoC:1341
+
+    - id: 中行1875支出
+      when: <支付方式> ~ "(1875)" && <收/支> == "支出"
       actions:
-        from: Liabilities:CC:CMB:0924
-    - id: rule-012
-      when: metadata.method ~ "(0073)"
+          from:
+              account: Liabilities:CC:BoC:1875
+
+    - id: 中行1875收入
+      when: <支付方式> ~ "(1875)" && <收/支> == "收入"
       actions:
-        from: Liabilities:CC:CMBC:0073
-    - id: rule-013
-      when: metadata.method ~ "(5559)"
+          to:
+              account: Liabilities:CC:BoC:1875
+
+    - id: 北银2189支出
+      when: <支付方式> ~ "(2189)" && <收/支> == "支出"
       actions:
-        from: Liabilities:CC:CMBC:5559
-    - id: rule-014
-      when: metadata.method ~ "(3147)"
+          from:
+              account: Liabilities:CC:BoNB:2189
+
+    - id: 北银2189收入
+      when: <支付方式> ~ "(2189)" && <收/支> == "收入"
       actions:
-        from: Assets:DC:BoC:3147
-    - id: rule-015
-      when: metadata.method ~ "美团月付"
+          to:
+              account: Liabilities:CC:BoNB:2189
+
+    - id: 招行0924支出
+      when: <支付方式> ~ "(0924)" && <收/支> == "支出"
       actions:
-        from: Liabilities:MT:zwyyy456
-    - id: rule-016
-      when: metadata.method ~ "美团余额"
+          from:
+              account: Liabilities:CC:CMB:0924
+
+    - id: 招行0924收入
+      when: <支付方式> ~ "(0924)" && <收/支> == "收入"
       actions:
-        from: Assets:MT:Balance:zwyyy456
-    - id: rule-017
-      when: metadata.method ~ "微信支付"
+          to:
+              account: Liabilities:CC:CMB:0924
+
+    - id: 民生0073支出
+      when: <支付方式> ~ "(0073)" && <收/支> == "支出"
       actions:
-        from: Assests:Test:Wx
-        ignore: true
-    - id: rule-018
-      when: type ~ "不计收支" && metadata.category ~ "网购"
+          from:
+              account: Liabilities:CC:CMBC:0073
+
+    - id: 民生0073收入
+      when: <支付方式> ~ "(0073)" && <收/支> == "收入"
       actions:
-        to: Income:Rebate
-    - id: rule-019
-      when: type ~ "收入"
+          to:
+              account: Liabilities:CC:CMBC:0073
+
+    - id: 民生5559支出
+      when: <支付方式> ~ "(5559)" && <收/支> == "支出"
       actions:
-        from: Income:Rebate
-    - id: rule-020
-      when: narration ~ "转入" && type ~ "收入"
+          from:
+              account: Liabilities:CC:CMBC:5559
+
+    - id: 民生5559收入
+      when: <支付方式> ~ "(5559)" && <收/支> == "收入"
       actions:
-        from: Income:Rebate
+          to:
+              account: Liabilities:CC:CMBC:5559
+
+    - id: 中行储蓄3147支出
+      when: <支付方式> ~ "(3147)" && <收/支> == "支出"
+      actions:
+          from:
+              account: Assets:DC:BoC:3147
+
+    - id: 中行储蓄3147收入
+      when: <支付方式> ~ "(3147)" && <收/支> == "收入"
+      actions:
+          to:
+              account: Assets:DC:BoC:3147
+
+    - id: 美团月付支出
+      when: <支付方式> ~ "美团月付" && <收/支> == "支出"
+      actions:
+          from:
+              account: Liabilities:MT:zwyyy456
+
+    - id: 美团月付收入
+      when: <支付方式> ~ "美团月付" && <收/支> == "收入"
+      actions:
+          to:
+              account: Liabilities:MT:zwyyy456
+
+    - id: 美团余额支出
+      when: <支付方式> ~ "美团余额" && <收/支> == "支出"
+      actions:
+          from:
+              account: Assets:MT:Balance:zwyyy456
+
+    - id: 美团余额收入
+      when: <支付方式> ~ "美团余额" && <收/支> == "收入"
+      actions:
+          to:
+              account: Assets:MT:Balance:zwyyy456
+
+    - id: 忽略微信支付
+      when: <支付方式> ~ "微信支付"
+      actions:
+          from:
+              account: Assets:Test:Wx
+          ignore: true
+
+    - id: 收入返利
+      when: <收/支> == "收入"
+      actions:
+          from:
+              account: Income:Rebate
