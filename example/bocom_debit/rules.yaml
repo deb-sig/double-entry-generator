@@ -1,25 +1,117 @@
+options:
+    title: 交通银行借记卡示例
+    operatingCurrency: CNY
+
+templateRules:
+    - id: 交通借记卡基础交易
+      actions:
+          date: <交易日期> <交易时间>
+          amount: <交易金额>.number
+          currency: CNY
+          payee: <对方户名> <对方账号>
+          narration: <交易地点>
+          type: <借贷>
+          metadata:
+              balance: <余额>
+              currency: CNY
+              dcFlg: <借贷>
+              payTime: <交易日期> <交易时间> +0800 CST
+              paymentReceiptAccount: <对方账号>
+              paymentReceiptAccountName: <对方户名>
+              serialNum: <序号>
+              source: 交通银行
+              tradingPlace: <交易地点>
+              tradingType: <交易类型>
+              transDate: <交易日期>
+              transTime: <交易时间>
+
+    - id: 交通借记卡摘要
+      when: <摘要> != ""
+      actions:
+          narration: <交易地点> <摘要>
+          metadata:
+              abstract: <摘要>
+
+    - id: 交通借记卡收入
+      when: <借贷> ~ "贷"
+      actions:
+          type: 收入
+          from:
+              account: Assets:FIXME
+          to:
+              account: Assets:DebitCard:BOCOM
+
+    - id: 交通借记卡支出
+      when: <借贷> ~ "借"
+      actions:
+          type: 支出
+          from:
+              account: Assets:DebitCard:BOCOM
+          to:
+              account: Expenses:FIXME
+
 personalRules:
-    - id: rule-001
-      when: payee ~ "应付个人活期储蓄存款利息"
+    - id: 存款利息收入
+      when: <对方户名> ~ "应付个人活期储蓄存款利息" && <借贷> ~ "贷"
       actions:
-        to: Income:Interest
-    - id: rule-002
-      when: payee ~ "信用卡还款"
+          from:
+              account: Income:Interest
+
+    - id: 存款利息支出
+      when: <对方户名> ~ "应付个人活期储蓄存款利息" && <借贷> ~ "借"
       actions:
-        to: Equity:Transfers
-    - id: rule-003
-      when: metadata.txType ~ "信用卡转账还款"
+          to:
+              account: Income:Interest
+
+    - id: 信用卡还款收入
+      when: <对方户名> ~ "信用卡还款" && <借贷> ~ "贷"
       actions:
-        to: Equity:Transfers
-    - id: rule-004
-      when: payee ~ "网上国网"
+          from:
+              account: Equity:Transfers
+
+    - id: 信用卡还款支出
+      when: <对方户名> ~ "信用卡还款" && <借贷> ~ "借"
       actions:
-        to: Expenses:Electricity
-    - id: rule-005
-      when: narration ~ "基金理财产品申购"
+          to:
+              account: Equity:Transfers
+
+    - id: 信用卡转账还款收入
+      when: <交易类型> ~ "信用卡转账还款" && <借贷> ~ "贷"
       actions:
-        to: Assets:Funds
-    - id: rule-006
-      when: narration ~ "财付通"
+          from:
+              account: Equity:Transfers
+
+    - id: 信用卡转账还款支出
+      when: <交易类型> ~ "信用卡转账还款" && <借贷> ~ "借"
       actions:
-        ignore: true
+          to:
+              account: Equity:Transfers
+
+    - id: 网上国网收入
+      when: <对方户名> ~ "网上国网" && <借贷> ~ "贷"
+      actions:
+          from:
+              account: Expenses:Electricity
+
+    - id: 网上国网支出
+      when: <对方户名> ~ "网上国网" && <借贷> ~ "借"
+      actions:
+          to:
+              account: Expenses:Electricity
+
+    - id: 基金申购收入
+      when: <摘要> ~ "基金理财产品申购" && <借贷> ~ "贷"
+      actions:
+          from:
+              account: Assets:Funds
+
+    - id: 基金申购支出
+      when: <摘要> ~ "基金理财产品申购" && <借贷> ~ "借"
+      actions:
+          to:
+              account: Assets:Funds
+
+    - id: 忽略财付通
+      when: <摘要> ~ "财付通"
+      actions:
+          ignore: true

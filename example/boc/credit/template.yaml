@@ -1,6 +1,6 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: boc-credit
-name: boc-credit
+name: BOC Credit
 template:
     fileFormat: csv
     delimiter: ','
@@ -13,13 +13,4 @@ template:
         - 存入
         - 支出
         - 币种
-    columns:
-        date: 交易日
-        amountIn: 存入
-        amountOut: 支出
-        payee: 交易描述
-        narration: 交易描述
-        currency: 币种
-    defaultMinusAccount: Assets:FIXME
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: CNY

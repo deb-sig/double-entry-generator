@@ -81,12 +81,17 @@ func runImport(templateRef, filename string) {
 	profile, err := importer.LoadProfileRef(templateRef)
 	logErrorIfNotNil(err)
 
+	if isRegistryTemplateRef(templateRef) {
+		ruleCfg, err := loadRegistryStarterRules(templateRef)
+		logErrorIfNotNil(err)
+		appendTemplateRulesToProfile(profile, ruleCfg)
+	}
+
 	rulesPath := firstNonEmpty(importRules, projectCfg.DefaultRules)
 	if rulesPath != "" {
 		ruleCfg, err := loadRuleFile(rulesPath)
 		logErrorIfNotNil(err)
-		profile.TemplateRuleOverrides = append(profile.TemplateRuleOverrides, ruleCfg.TemplateRuleOverrides...)
-		profile.PersonalRules = append(profile.PersonalRules, ruleCfg.Rules...)
+		appendRulesToProfile(profile, ruleCfg)
 	}
 
 	i, err := importer.ImportFile(profile, filename)
@@ -118,10 +123,15 @@ func loadProjectImportConfig() projectImportConfig {
 }
 
 type importRuleConfig struct {
-	Rules                 []importer.Rule `yaml:"rules"`
+	TemplateRules         []importer.Rule `yaml:"templateRules"`
 	TemplateRuleOverrides []importer.Rule `yaml:"templateRuleOverrides"`
 	PersonalRules         []importer.Rule `yaml:"personalRules"`
-	UserRules             []importer.Rule `yaml:"userRules"`
+	Options               importOptions   `yaml:"options"`
+}
+
+type importOptions struct {
+	Title             string `yaml:"title"`
+	OperatingCurrency string `yaml:"operatingCurrency"`
 }
 
 func loadRuleFile(path string) (importRuleConfig, error) {
@@ -129,17 +139,53 @@ func loadRuleFile(path string) (importRuleConfig, error) {
 	if err != nil {
 		return importRuleConfig{}, err
 	}
-	var rules []importer.Rule
-	if err := yaml.Unmarshal(b, &rules); err == nil && len(rules) > 0 {
-		return importRuleConfig{Rules: rules}, nil
+	return parseRuleBytes(b)
+}
+
+func loadRegistryStarterRules(templateRef string) (importRuleConfig, error) {
+	rulesRef, err := importer.StarterRulesURLFromRegistry(templateRef)
+	if err != nil {
+		return importRuleConfig{}, err
 	}
+	b, err := importer.ReadRef(rulesRef)
+	if err != nil {
+		return importRuleConfig{}, err
+	}
+	return parseRuleBytes(b)
+}
+
+func parseRuleBytes(b []byte) (importRuleConfig, error) {
 	var wrapper importRuleConfig
 	if err := yaml.Unmarshal(b, &wrapper); err != nil {
 		return importRuleConfig{}, err
 	}
-	wrapper.Rules = append(wrapper.Rules, wrapper.PersonalRules...)
-	wrapper.Rules = append(wrapper.Rules, wrapper.UserRules...)
 	return wrapper, nil
+}
+
+func appendRulesToProfile(profile *importer.Profile, ruleCfg importRuleConfig) {
+	profile.TemplateRules = append(profile.TemplateRules, ruleCfg.TemplateRules...)
+	profile.TemplateRuleOverrides = append(profile.TemplateRuleOverrides, ruleCfg.TemplateRuleOverrides...)
+	profile.PersonalRules = append(profile.PersonalRules, ruleCfg.PersonalRules...)
+	if ruleCfg.Options.Title != "" {
+		profile.Name = ruleCfg.Options.Title
+	}
+	if ruleCfg.Options.OperatingCurrency != "" {
+		profile.Template.DefaultCurrency = ruleCfg.Options.OperatingCurrency
+	}
+}
+
+func appendTemplateRulesToProfile(profile *importer.Profile, ruleCfg importRuleConfig) {
+	profile.TemplateRules = append(profile.TemplateRules, ruleCfg.TemplateRules...)
+	if ruleCfg.Options.Title != "" {
+		profile.Name = ruleCfg.Options.Title
+	}
+	if ruleCfg.Options.OperatingCurrency != "" {
+		profile.Template.DefaultCurrency = ruleCfg.Options.OperatingCurrency
+	}
+}
+
+func isRegistryTemplateRef(ref string) bool {
+	return !importer.IsHTTPURL(ref) && !importer.IsLocalPathRef(ref)
 }
 
 func firstNonEmpty(values ...string) string {

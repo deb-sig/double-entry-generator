@@ -1,6 +1,7 @@
 option "title" "测试"
 option "operating_currency" "CNY"
 
+1970-01-01 open Assets:Bank:CN:ICBC
 1970-01-01 open Assets:Borrow
 1970-01-01 open Assets:FIXME
 1970-01-01 open Expenses:FIXME

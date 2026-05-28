@@ -1,29 +1,110 @@
+options:
+    title: HSBC HK借记卡示例
+    operatingCurrency: HKD
+
+templateRules:
+    - id: 汇丰香港借记卡基础交易
+      actions:
+          date: <Date>
+          amount: <Billing amount>.number
+          currency: <Billing currency>
+          payee: <Description>
+          metadata:
+              source: HSBC HK
+              balance: <Balance>.number <Balance currency>
+
+    - id: 汇丰香港借记卡收入
+      when: <Billing amount> >= 0
+      actions:
+          type: 收入
+          from:
+              account: Assets:FIXME
+          to:
+              account: Assets:Bank:HK:HSBC:Savings
+
+    - id: 汇丰香港借记卡支出
+      when: <Billing amount> < 0
+      actions:
+          type: 支出
+          from:
+              account: Assets:Bank:HK:HSBC:Savings
+          to:
+              account: Expenses:FIXME
+
 personalRules:
-    - id: rule-001
-      when: payee ~ "WITHDRAWAL"
+    - id: 取现收入
+      when: <Description> ~ "WITHDRAWAL" && <Billing amount> >= 0
       actions:
-        to: Assets:Cash
-    - id: rule-002
-      when: payee ~ "SALARY PAYMENT"
+          from:
+              account: Assets:Cash
+
+    - id: 取现支出
+      when: <Description> ~ "WITHDRAWAL" && <Billing amount> < 0
       actions:
-        to: Income:Salary
-    - id: rule-003
-      when: payee ~ "TRANSFER FROM"
+          to:
+              account: Assets:Cash
+
+    - id: 工资收入
+      when: <Description> ~ "SALARY PAYMENT" && <Billing amount> >= 0
       actions:
-        to: Income:Transfer
-    - id: rule-004
-      when: payee ~ "BILL PAYMENT"
+          from:
+              account: Income:Salary
+
+    - id: 工资支出
+      when: <Description> ~ "SALARY PAYMENT" && <Billing amount> < 0
       actions:
-        to: Expenses:Utilities
-    - id: rule-005
-      when: (payee ~ "POS PURCHASE" || payee ~ "SUPERMARKET")
+          to:
+              account: Income:Salary
+
+    - id: 转入收入
+      when: <Description> ~ "TRANSFER FROM" && <Billing amount> >= 0
       actions:
-        to: Expenses:Groceries
-    - id: rule-006
-      when: payee ~ "INTEREST CREDIT"
+          from:
+              account: Income:Transfer
+
+    - id: 转入支出
+      when: <Description> ~ "TRANSFER FROM" && <Billing amount> < 0
       actions:
-        to: Income:Interest
-    - id: rule-007
-      when: payee ~ "TRIPLE Z"
+          to:
+              account: Income:Transfer
+
+    - id: 账单缴费收入
+      when: <Description> ~ "BILL PAYMENT" && <Billing amount> >= 0
       actions:
-        ignore: true
+          from:
+              account: Expenses:Utilities
+
+    - id: 账单缴费支出
+      when: <Description> ~ "BILL PAYMENT" && <Billing amount> < 0
+      actions:
+          to:
+              account: Expenses:Utilities
+
+    - id: 超市收入
+      when: (<Description> ~ "POS PURCHASE" || <Description> ~ "SUPERMARKET") && <Billing amount> >= 0
+      actions:
+          from:
+              account: Expenses:Groceries
+
+    - id: 超市支出
+      when: (<Description> ~ "POS PURCHASE" || <Description> ~ "SUPERMARKET") && <Billing amount> < 0
+      actions:
+          to:
+              account: Expenses:Groceries
+
+    - id: 利息收入
+      when: <Description> ~ "INTEREST CREDIT" && <Billing amount> >= 0
+      actions:
+          from:
+              account: Income:Interest
+
+    - id: 利息支出
+      when: <Description> ~ "INTEREST CREDIT" && <Billing amount> < 0
+      actions:
+          to:
+              account: Income:Interest
+
+    - id: 忽略TRIPLEZ
+      when: <Description> ~ "TRIPLE Z"
+      actions:
+          ignore: true

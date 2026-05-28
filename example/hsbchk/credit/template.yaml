@@ -1,10 +1,11 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: hsbchk-credit
-name: hsbchk-credit
+name: HSBC HK Credit
 template:
     fileFormat: csv
     delimiter: ','
     stripTabs: true
+    dateFormat: 02/01/2006
     sourceHeaders:
         - Transaction date
         - Post date
@@ -16,15 +17,4 @@ template:
         - Country / region
         - Area / district
         - Credit / Debit
-    columns:
-        date: Transaction date
-        amount: Billing amount
-        payee: Merchant name
-        narration: Description
-        type: Credit / Debit
-        currency: Billing currency
-    metadata:
-        status: Transaction status
-    defaultMinusAccount: Assets:FIXME
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: CNY

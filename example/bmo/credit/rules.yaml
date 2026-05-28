@@ -1,34 +1,78 @@
+options:
+    title: 测试
+    operatingCurrency: CAD
+
+templateRules:
+    - id: BMO信用卡基础交易
+      actions:
+          date: <Transaction Date>
+          payee: BMO
+          narration: <Description>
+          amount: <Transaction Amount>.number
+          currency: CAD
+
+    - id: BMO信用卡支出
+      when: <Transaction Amount> >= 0
+      actions:
+          type: 支出
+          from:
+              account: Liabilities:CreditCard:BMO
+          to:
+              account: Expenses:FIXME
+
+    - id: BMO信用卡收入
+      when: <Transaction Amount> < 0
+      actions:
+          type: 收入
+          from:
+              account: Assets:FIXME
+          to:
+              account: Liabilities:CreditCard:BMO
+
 personalRules:
-    - id: rule-001
-      when: narration ~ "T T"
+    - id: 大统华
+      when: <Description> ~ "T T"
       actions:
-        tags:
-            - tt_tag
-        to: Expenses:Grocery
-    - id: rule-002
-      when: narration ~ "COSTCO"
+          tags:
+              - tt_tag
+          to:
+              account: Expenses:Grocery
+
+    - id: Costco
+      when: <Description> ~ "COSTCO"
       actions:
-        to: Expenses:Grocery
-    - id: rule-003
-      when: narration ~ "T&T SUPERMARKET"
+          to:
+              account: Expenses:Grocery
+
+    - id: T&T超市
+      when: <Description> ~ "T&T SUPERMARKET"
       actions:
-        to: Expenses:Grocery
-    - id: rule-004
-      when: narration ~ "JOLLIBEE"
+          to:
+              account: Expenses:Grocery
+
+    - id: Jollibee
+      when: <Description> ~ "JOLLIBEE"
       actions:
-        to: Expenses:Food:Lunch
-    - id: rule-005
-      when: narration ~ "DOLLARAMA"
+          to:
+              account: Expenses:Food:Lunch
+
+    - id: Dollarama
+      when: <Description> ~ "DOLLARAMA"
       actions:
-        tags:
-            - grocery_tag1
-            - cheap_tag2
-        to: Expenses:Grocery
-    - id: rule-006
-      when: narration ~ "DEVELOPM MSP"
+          tags:
+              - grocery_tag1
+              - cheap_tag2
+          to:
+              account: Expenses:Grocery
+
+    - id: 工资
+      when: <Description> ~ "DEVELOPM MSP" && <Transaction Amount> < 0
       actions:
-        to: Income:Salary
-    - id: rule-007
-      when: narration ~ "SEND E-TFR" && type ~ "收入"
+          from:
+              account: Income:Salary
+
+    - id: 收入转账
+      when: <Description> ~ "SEND E-TFR" && <Transaction Amount> < 0
       actions:
-        from: Income:FIXME
+          from:
+              account: Income:FIXME

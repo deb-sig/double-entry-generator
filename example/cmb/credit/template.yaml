@@ -1,6 +1,6 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: cmb-credit
-name: cmb-credit
+name: CMB Credit
 template:
     fileFormat: csv
     delimiter: ','
@@ -12,13 +12,4 @@ template:
         - 人民币金额
         - 卡号末四位
         - 交易地金额
-    columns:
-        date: 记账日
-        amount: 人民币金额
-        payee: 交易摘要
-        narration: 交易摘要
-    metadata:
-        txType: 交易摘要
-    defaultMinusAccount: Assets:FIXME
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: CNY

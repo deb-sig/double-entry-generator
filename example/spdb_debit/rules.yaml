@@ -1,17 +1,89 @@
+options:
+    title: 浦发银行借记卡配置
+    operatingCurrency: CNY
+
+templateRules:
+    - id: 浦发基础交易
+      actions:
+          date: <交易日期>
+          payee: <交易对手名称>
+          narration: <交易类型>
+          currency: CNY
+          metadata:
+              source: 浦发银行借记卡
+              balance: <余额>
+              time: <交易日期>.extract("[0-9]{2}:[0-9]{2}:[0-9]{2}")
+              account: <交易对手账号>
+
+    - id: 浦发支出
+      when: <取出金额> != "" && <取出金额> != "0"
+      actions:
+          amount: <取出金额>.number
+          type: 支出
+          metadata:
+              amount: <取出金额>
+          from:
+              account: Assets:DebitCard:SPB1234
+          to:
+              account: Expenses:FIXME
+
+    - id: 浦发收入
+      when: <存入金额> != "" && <存入金额> != "0"
+      actions:
+          amount: <存入金额>.number
+          type: 收入
+          metadata:
+              amount: <存入金额>.-
+          from:
+              account: Expenses:FIXME
+          to:
+              account: Assets:DebitCard:SPB1234
+
 personalRules:
-    - id: rule-001
-      when: payee ~ "基金销售有限公司"
+    - id: 基金销售支出
+      when: <交易对手名称> ~ "基金销售有限公司" && <取出金额> != "" && <取出金额> != "0"
       actions:
-        to: Expenses:Investment:Funds
-    - id: rule-002
-      when: payee ~ "餐厅" && metadata.category ~ "餐饮美食"
+          to:
+              account: Expenses:Investment:Funds
+
+    - id: 基金销售收入
+      when: <交易对手名称> ~ "基金销售有限公司" && <存入金额> != "" && <存入金额> != "0"
       actions:
-        to: Expenses:Food:Restaurant
-    - id: rule-003
-      when: payee ~ "地铁" && metadata.category ~ "交通出行"
+          from:
+              account: Expenses:Investment:Funds
+
+    - id: 餐厅支出
+      when: <交易对手名称> ~ "餐厅" && <取出金额> != "" && <取出金额> != "0"
       actions:
-        to: Expenses:Transport:Metro
-    - id: rule-004
-      when: payee ~ "超市" && metadata.category ~ "购物消费"
+          to:
+              account: Expenses:Food:Restaurant
+
+    - id: 餐厅收入
+      when: <交易对手名称> ~ "餐厅" && <存入金额> != "" && <存入金额> != "0"
       actions:
-        to: Expenses:Shopping:Supermarket
+          from:
+              account: Expenses:Food:Restaurant
+
+    - id: 地铁支出
+      when: <交易对手名称> ~ "地铁" && <取出金额> != "" && <取出金额> != "0"
+      actions:
+          to:
+              account: Expenses:Transport:Metro
+
+    - id: 地铁收入
+      when: <交易对手名称> ~ "地铁" && <存入金额> != "" && <存入金额> != "0"
+      actions:
+          from:
+              account: Expenses:Transport:Metro
+
+    - id: 超市支出
+      when: <交易对手名称> ~ "超市" && <取出金额> != "" && <取出金额> != "0"
+      actions:
+          to:
+              account: Expenses:Shopping:Supermarket
+
+    - id: 超市收入
+      when: <交易对手名称> ~ "超市" && <存入金额> != "" && <存入金额> != "0"
+      actions:
+          from:
+              account: Expenses:Shopping:Supermarket

@@ -1,6 +1,8 @@
 package importer
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -107,5 +109,56 @@ func TestStarterRulesURLPinsVersionedFolder(t *testing.T) {
 	want := registryBaseURL("") + "wechat/2025-07-15/rules.yaml"
 	if got != want {
 		t.Fatalf("starter rules url = %q, want %q", got, want)
+	}
+}
+
+func TestLocalRegistryResolvesTemplateAndStarterRules(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "registry.yaml"), `version: 1
+templates:
+  - id: oklink
+    latest: "2026-05-26"
+    versions:
+      - "2026-05-26"
+    path: oklink/latest/template.yaml
+    starterRules: oklink/latest/rules.yaml
+`)
+	writeFile(t, filepath.Join(root, "oklink", "2026-05-26", "template.yaml"), `schema: https://deg.dev/template-profile/v1
+id: oklink
+template:
+  fileFormat: csv
+  columns:
+    date: time
+    amount: amount
+`)
+	writeFile(t, filepath.Join(root, "oklink", "2026-05-26", "rules.yaml"), `personalRules: []`)
+
+	t.Setenv(RegistryURLEnv, filepath.Join(root, "registry.yaml"))
+	profileRef, err := TemplateURLFromRegistry("oklink@2026-05-26")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := filepath.Join(root, "oklink", "2026-05-26", "template.yaml"); profileRef != want {
+		t.Fatalf("profile ref = %q, want %q", profileRef, want)
+	}
+	rulesRef, err := StarterRulesURLFromRegistry("oklink@2026-05-26")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := filepath.Join(root, "oklink", "2026-05-26", "rules.yaml"); rulesRef != want {
+		t.Fatalf("rules ref = %q, want %q", rulesRef, want)
+	}
+	if _, err := LoadProfileRef("oklink@2026-05-26"); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func writeFile(t *testing.T, path, content string) {
+	t.Helper()
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
 	}
 }

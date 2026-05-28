@@ -1,149 +1,157 @@
-personalRules:
-  - id: metadata
+templateRules:
+  - id: 基础交易
     actions:
+      date: <交易时间>
+      amount: <金额>.number
+      payee: <交易对方>
+      narration: <商品说明>
+      type: <收/支>
+      currency: CNY
       metadata:
-        category: "[交易分类]"
-        method: "[收/付款方式]"
-        merchantId: "[商家订单号]"
-        orderId: "[交易订单号]"
-        payTime: "[交易时间] +0800 CST"
-        source: "支付宝"
-        status: "[交易状态]"
-        type: "[收/支]"
-  - id: ignore-closed
-    when: '[交易状态] == "交易关闭"'
+        category: <交易分类>
+        method: <收/付款方式>
+        merchantId: <商家订单号>
+        orderId: <交易订单号>
+        payTime: <交易时间> +0800 CST
+        source: 支付宝
+        status: <交易状态>
+        type: <收/支>
+
+personalRules:
+  - id: 忽略关闭交易
+    when: <交易状态> == 交易关闭
     actions:
       ignore: true
-  - id: ignore-closed-refund
-    when: '[交易状态] == "退款成功" && [交易订单号] ~ "_"'
+  - id: 忽略退款子交易
+    when: <交易状态> == 退款成功 && <交易订单号> ~ _
     actions:
       ignore: true
 
-  - id: default-income
-    when: '[收/支] == "收入"'
+  - id: 默认收入
+    when: <收/支> == 收入
     actions:
       from: Income:FIXME
       to: Assets:FIXME
-      amount: "[金额].number"
+      amount: <金额>.number
       currency: CNY
-  - id: default-out
-    when: '[收/支] != "收入"'
+  - id: 默认支出
+    when: <收/支> != 收入
     actions:
       from: Assets:FIXME
       to: Expenses:FIXME
-      amount: "[金额].number"
+      amount: <金额>.number
       currency: CNY
 
-  - id: income-generic
-    when: '[收/支] == "收入"'
+  - id: 通用收入
+    when: <收/支> == 收入
     actions:
       from: Income:FIXME
       to: Assets:Alipay
-  - id: income-shoukuanma
-    when: '[商品说明] ~ "商品" && [收/支] == "收入"'
+  - id: 收款码收入
+    when: <商品说明> ~ 商品 && <收/支> == 收入
     actions:
       from: Income:Alipay:ShouKuanMa
       to: Assets:Alipay
 
-  - id: groceries-large
-    when: '[交易分类] ~ "日用百货" && [金额] >= 10'
+  - id: 大额日用百货
+    when: <交易分类> ~ 日用百货 && <金额> >= 10
     actions:
       to: Expenses:Groceries
-  - id: groceries-drink
-    when: '[交易分类] ~ "日用百货" && [金额] >= 0 && [金额] <= 9.99'
+  - id: 小额日用百货饮品
+    when: <交易分类> ~ 日用百货 && <金额> >= 0 && <金额> <= 9.99
     actions:
       to: Expenses:Food:Drink
-  - id: lunch
-    when: '[交易分类] ~ "餐饮美食" && [交易时间].time >= "11:00" && [交易时间].time <= "14:00"'
+  - id: 午餐
+    when: <交易分类> ~ 餐饮美食 && <交易时间>.time >= 11:00 && <交易时间>.time <= 14:00
     actions:
       to: Expenses:Food:Lunch
-  - id: dinner
-    when: '[交易分类] ~ "餐饮美食" && [交易时间].time >= "16:00" && [交易时间].time <= "22:00"'
+  - id: 晚餐
+    when: <交易分类> ~ 餐饮美食 && <交易时间>.time >= 16:00 && <交易时间>.time <= 22:00
     actions:
       to: Expenses:Food:Dinner
-  - id: peer-dilv
-    when: '[交易对方] ~ "滴露"'
+  - id: 滴露商户
+    when: <交易对方> ~ 滴露
     actions:
       to: Expenses:Groceries
-  - id: peer-suning
-    when: '[交易对方] ~ "苏宁"'
+  - id: 苏宁商户
+    when: <交易对方> ~ 苏宁
     actions:
       to: Expenses:Electronics
-  - id: xianghubao
-    when: '[商品说明] ~ "相互宝"'
+  - id: 相互宝
+    when: <商品说明> ~ 相互宝
     actions:
       to: Expenses:Insurance
 
-  - id: method-balance-income
-    when: '[收/支] == "收入" && [收/付款方式] == "余额"'
+  - id: 余额收入
+    when: <收/支> == 收入 && <收/付款方式> == 余额
     actions:
       to: Assets:Alipay
-  - id: method-yuebao-income
-    when: '[收/支] == "收入" && [收/付款方式] == "余额宝"'
+  - id: 余额宝收入
+    when: <收/支> == 收入 && <收/付款方式> == 余额宝
     actions:
       to: Assets:Alipay
-  - id: method-comm-income
-    when: '[收/支] == "收入" && [收/付款方式] == "交通银行信用卡(7449)"'
+  - id: 交通信用卡收入
+    when: <收/支> == 收入 && <收/付款方式> == 交通银行信用卡(7449)
     actions:
       to: Liabilities:CC:COMM:7449
-  - id: method-balance-out
-    when: '[收/支] != "收入" && [收/付款方式] == "余额"'
+  - id: 余额支出
+    when: <收/支> != 收入 && <收/付款方式> == 余额
     actions:
       from: Assets:Alipay
-  - id: method-yuebao-out
-    when: '[收/支] != "收入" && [收/付款方式] == "余额宝"'
+  - id: 余额宝支出
+    when: <收/支> != 收入 && <收/付款方式> == 余额宝
     actions:
       from: Assets:Alipay
-  - id: method-comm-out
-    when: '[收/支] != "收入" && [收/付款方式] == "交通银行信用卡(7449)"'
+  - id: 交通信用卡支出
+    when: <收/支> != 收入 && <收/付款方式> == 交通银行信用卡(7449)
     actions:
       from: Liabilities:CC:COMM:7449
 
-  - id: refund-method-comm
-    when: '([商品说明] ~ "退款-" || [交易分类] == "退款" || [交易状态] == "退款成功") && [收/支] != "收入" && [收/付款方式] == "交通银行信用卡(7449)"'
+  - id: 交通信用卡退款
+    when: (<商品说明> ~ 退款- || <交易分类> == 退款 || <交易状态> == 退款成功) && <收/支> != 收入 && <收/付款方式> == 交通银行信用卡(7449)
     actions:
       from: Expenses:FIXME
       to: Liabilities:CC:COMM:7449
-  - id: refund-method-yuebao
-    when: '([商品说明] ~ "退款-" || [交易分类] == "退款" || [交易状态] == "退款成功") && [收/支] != "收入" && [收/付款方式] == "余额宝"'
+  - id: 余额宝退款
+    when: (<商品说明> ~ 退款- || <交易分类> == 退款 || <交易状态> == 退款成功) && <收/支> != 收入 && <收/付款方式> == 余额宝
     actions:
       from: Expenses:FIXME
       to: Assets:Alipay
-  - id: refund-method-balance
-    when: '([商品说明] ~ "退款-" || [交易分类] == "退款" || [交易状态] == "退款成功") && [收/支] != "收入" && [收/付款方式] == "余额"'
+  - id: 余额退款
+    when: (<商品说明> ~ 退款- || <交易分类> == 退款 || <交易状态> == 退款成功) && <收/支> != 收入 && <收/付款方式> == 余额
     actions:
       from: Expenses:FIXME
       to: Assets:Alipay
 
-  - id: yuebao-profit
-    when: '[商品说明] ~ "收益发放" && [收/支] ~ "其他"'
+  - id: 余额宝收益
+    when: <商品说明> ~ 收益发放 && <收/支> ~ 其他
     actions:
       from: Income:Alipay:YuEBao:PnL
       to: Assets:Alipay
-  - id: yuebao-transfer-in
-    when: '[商品说明] ~ "余额宝-单次转入" && [收/支] ~ "其他"'
+  - id: 余额宝转入
+    when: <商品说明> ~ 余额宝-单次转入 && <收/支> ~ 其他
     actions:
       from: Assets:Alipay
       to: Assets:Alipay
-  - id: gold-buy
-    when: '[交易对方] ~ "基金" && [商品说明] ~ "黄金-买入" && [收/支] ~ "其他"'
+  - id: 黄金买入
+    when: <交易对方> ~ 基金 && <商品说明> ~ 黄金-买入 && <收/支> ~ 其他
     actions:
       from: Assets:Alipay
       to: Assets:Alipay:Invest:Gold
-  - id: gold-sell
-    when: '[交易对方] ~ "基金" && [商品说明] ~ "黄金-卖出" && [收/支] ~ "其他"'
+  - id: 黄金卖出
+    when: <交易对方> ~ 基金 && <商品说明> ~ 黄金-卖出 && <收/支> ~ 其他
     actions:
       from: Assets:Alipay:Invest:Gold
       to: Assets:Alipay
       postings:
         - Income:Alipay:Invest:PnL
-  - id: fund-buy
-    when: '[交易对方] ~ "基金" && [商品说明] ~ "买入" && [收/支] ~ "其他"'
+  - id: 基金买入
+    when: <交易对方> ~ 基金 && <商品说明> ~ 买入 && <收/支> ~ 其他
     actions:
       from: Assets:Alipay
       to: Assets:Alipay:Invest:Fund
-  - id: fund-sell
-    when: '[交易对方] ~ "基金" && [商品说明] ~ "卖出" && [收/支] ~ "其他"'
+  - id: 基金卖出
+    when: <交易对方> ~ 基金 && <商品说明> ~ 卖出 && <收/支> ~ 其他
     actions:
       from: Assets:Alipay:Invest:Fund
       to: Assets:Alipay

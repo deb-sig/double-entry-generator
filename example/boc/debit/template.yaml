@@ -1,6 +1,6 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: boc-debit
-name: boc-debit
+name: BOC Debit
 template:
     fileFormat: csv
     delimiter: ','
@@ -19,14 +19,4 @@ template:
         - 对方卡号/账号
         - 对方开户行
         - 借记卡号
-    columns:
-        date: 记账日期
-        amount: 金额
-        currency: 币别
-        payee: 对方账户名
-        narration: 交易名称
-    metadata:
-        method: 渠道
-    defaultMinusAccount: Assets:FIXME
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: CNY

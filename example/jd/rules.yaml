@@ -1,106 +1,290 @@
+options:
+    title: jd
+    operatingCurrency: CNY
+
+templateRules:
+    - id: 京东基础交易
+      actions:
+          date: <交易时间>
+          amount: <金额>.number
+          payee: <商户名称>
+          narration: <交易说明>
+          currency: CNY
+          type: <收/支>
+          metadata:
+              source: <商户名称>
+              category: <交易分类>
+              payTime: <交易时间> +0800 CST
+              orderId: <交易订单号>
+              merchantId: <商家订单号>
+              type: <收/支>
+              method: <收/付款方式>
+              status: <交易状态>
+
+    - id: 平台商户京鲜生
+      when: <商户名称> == "京东平台商户" && <交易说明> ~ "京鲜生" && <交易说明> !~ "退款-"
+      actions:
+          payee: 京鲜生
+          metadata:
+              source: 京鲜生
+
+    - id: 平台商户JEEP
+      when: <商户名称> == "京东平台商户" && <交易说明> ~ "JEEP" && <交易说明> !~ "退款-"
+      actions:
+          payee: JEEP
+          metadata:
+              source: JEEP
+
+    - id: 京东支出
+      when: <收/支> == "支出"
+      actions:
+          from:
+              account: Assets:FIXME
+          to:
+              account: Expenses:FIXME
+
+    - id: 京东收入
+      when: <收/支> == "收入"
+      actions:
+          from:
+              account: Assets:FIXME
+          to:
+              account: Expenses:FIXME
+
+    - id: 京东不计收支普通支出
+      when: <收/支> == "不计收支" && <交易说明> !~ "退款-" && <交易说明> !~ "冻结-" && <交易说明> !~ "解冻-"
+      actions:
+          from:
+              account: Assets:FIXME
+          to:
+              account: Expenses:FIXME
+
+    - id: 京东退款
+      when: <收/支> == "不计收支" && <交易说明> ~ "退款-"
+      actions:
+          from:
+              account: Income:Rebate
+          to:
+              account: Expenses:FIXME
+
+    - id: 京东冻结解冻忽略
+      when: <收/支> == "不计收支" && (<交易说明> ~ "冻结-" || <交易说明> ~ "解冻-")
+      actions:
+          ignore: true
+
 personalRules:
-    - id: rule-001
-      when: (narration ~ "椰子" || narration ~ "红薯" || narration ~ "膳" || narration ~ "食用油" || narration ~ "挂面" || narration ~ "食盐")
+    - id: 零食支出
+      when: (<交易说明> ~ "椰子" || <交易说明> ~ "红薯" || <交易说明> ~ "膳" || <交易说明> ~ "食用油" || <交易说明> ~ "挂面" || <交易说明> ~ "食盐") && <收/支> != "收入" && <交易说明> !~ "退款-"
       actions:
-        to: Expenses:Food:Snacks
-    - id: rule-002
-      when: metadata.category ~ "美妆个护"
+          to:
+              account: Expenses:Food:Snacks
+
+    - id: 零食收入
+      when: (<交易说明> ~ "椰子" || <交易说明> ~ "红薯" || <交易说明> ~ "膳" || <交易说明> ~ "食用油" || <交易说明> ~ "挂面" || <交易说明> ~ "食盐") && <收/支> == "收入"
       actions:
-        to: Expenses:MakeUp
-    - id: rule-003
-      when: metadata.category == "食品酒饮"
+          from:
+              account: Expenses:Food:Snacks
+
+    - id: 美妆个护支出
+      when: <交易分类> ~ "美妆个护" && <收/支> != "收入" && <交易说明> !~ "退款-"
       actions:
-        to: Expenses:Food:Snacks
-    - id: rule-004
-      when: metadata.category ~ "医疗保健"
+          to:
+              account: Expenses:MakeUp
+
+    - id: 食品酒饮支出
+      when: <交易分类> == "食品酒饮" && <收/支> != "收入" && <交易说明> !~ "退款-"
       actions:
-        to: Expenses:Hospital:Medicine
-    - id: rule-005
-      when: (metadata.category ~ "数码电器" || metadata.category ~ "电脑办公" || metadata.category ~ "手机通讯")
+          to:
+              account: Expenses:Food:Snacks
+
+    - id: 医疗保健支出
+      when: <交易分类> ~ "医疗保健" && <收/支> != "收入" && <交易说明> !~ "退款-"
       actions:
-        to: Expenses:Electronics
-    - id: rule-006
-      when: (metadata.category ~ "日用百货" || metadata.category ~ "清洁纸品" || metadata.category ~ "生活服务" || metadata.category ~ "家居家装" || metadata.category ~ "其他网购" || metadata.category ~ "1号店")
+          to:
+              account: Expenses:Hospital:Medicine
+
+    - id: 电子产品支出
+      when: (<交易分类> ~ "数码电器" || <交易分类> ~ "电脑办公" || <交易分类> ~ "手机通讯") && <收/支> != "收入" && <交易说明> !~ "退款-"
       actions:
-        to: Expenses:Groceries
-    - id: rule-007
-      when: metadata.category ~ "运动户外"
+          to:
+              account: Expenses:Electronics
+
+    - id: 日用百货支出
+      when: (<交易分类> ~ "日用百货" || <交易分类> ~ "清洁纸品" || <交易分类> ~ "生活服务" || <交易分类> ~ "家居家装" || <交易分类> ~ "其他网购" || <交易分类> ~ "1号店") && <收/支> != "收入" && <交易说明> !~ "退款-"
       actions:
-        to: Expenses:Sports
-    - id: rule-008
-      when: (metadata.category ~ "鞋服箱包" || metadata.category ~ "服饰内衣")
+          to:
+              account: Expenses:Groceries
+
+    - id: 运动户外支出
+      when: <交易分类> ~ "运动户外" && <收/支> != "收入" && <交易说明> !~ "退款-"
       actions:
-        to: Expenses:Clothes
-    - id: rule-009
-      when: metadata.category ~ "收发快递"
+          to:
+              account: Expenses:Sports
+
+    - id: 服饰支出
+      when: (<交易分类> ~ "鞋服箱包" || <交易分类> ~ "服饰内衣") && <收/支> != "收入" && <交易说明> !~ "退款-"
       actions:
-        to: Expenses:Reside:Express
-    - id: rule-010
-      when: narration ~ "转入" && type ~ "收入"
+          to:
+              account: Expenses:Clothes
+
+    - id: 快递支出
+      when: <交易分类> ~ "收发快递" && <收/支> != "收入" && <交易说明> !~ "退款-"
       actions:
-        from: Income:Rebate
-    - id: rule-011
-      when: payee ~ "亲密卡"
+          to:
+              account: Expenses:Reside:Express
+
+    - id: 转入收入
+      when: <交易说明> ~ "转入" && <收/支> == "收入"
       actions:
-        to: Expenses:Prpaid
-    - id: rule-012
-      when: (narration ~ "白条" || narration ~ "还款")
+          from:
+              account: Income:Rebate
+
+    - id: 亲密卡支出
+      when: <商户名称> ~ "亲密卡" && <收/支> != "收入" && <交易说明> !~ "退款-"
       actions:
-        to: Liabilities:Baitiao
-    - id: rule-013
-      when: narration == "京东小金库收益"
+          to:
+              account: Expenses:Prpaid
+
+    - id: 白条支出
+      when: (<交易说明> ~ "白条" || <交易说明> ~ "还款") && <收/支> != "收入" && <交易说明> !~ "退款-"
       actions:
-        from: Assets:EPay:JD
-        to: Income:PnL:JD
-    - id: rule-014
-      when: metadata.method ~ "京东白条"
+          to:
+              account: Liabilities:Baitiao
+
+    - id: 京东小金库收益
+      when: <交易说明> == "京东小金库收益"
       actions:
-        from: Liabilities:JD:Baitiao
-    - id: rule-015
-      when: metadata.method ~ "小金库零用钱"
+          from:
+              account: Assets:EPay:JD
+          to:
+              account: Income:PnL:JD
+
+    - id: 京东白条支出
+      when: <收/付款方式> ~ "京东白条" && <交易说明> !~ "退款-"
       actions:
-        from: Assets:EPay:JD
-    - id: rule-016
-      when: metadata.method ~ "钱包余额"
+          from:
+              account: Liabilities:JD:Baitiao
+
+    - id: 京东白条退款
+      when: <收/付款方式> ~ "京东白条" && <交易说明> ~ "退款-"
       actions:
-        from: Assets:JD:Balance
-    - id: rule-017
-      when: metadata.method ~ "(0354)"
+          to:
+              account: Liabilities:JD:Baitiao
+
+    - id: 小金库支出
+      when: <收/付款方式> ~ "小金库零用钱" && <交易说明> !~ "退款-"
       actions:
-        from: Liabilities:CC:BCM:0354
-    - id: rule-018
-      when: metadata.method ~ "(1341)"
+          from:
+              account: Assets:EPay:JD
+
+    - id: 小金库退款
+      when: <收/付款方式> ~ "小金库零用钱" && <交易说明> ~ "退款-"
       actions:
-        from: Liabilities:CC:BoC:1341
-    - id: rule-019
-      when: metadata.method ~ "(1875)"
+          to:
+              account: Assets:EPay:JD
+
+    - id: 钱包余额支出
+      when: <收/付款方式> ~ "钱包余额" && <交易说明> !~ "退款-"
       actions:
-        from: Liabilities:CC:BoC:1875
-    - id: rule-020
-      when: metadata.method ~ "(2189)"
+          from:
+              account: Assets:JD:Balance
+
+    - id: 钱包余额退款
+      when: <收/付款方式> ~ "钱包余额" && <交易说明> ~ "退款-"
       actions:
-        from: Liabilities:CC:BoNB:2189
-    - id: rule-021
-      when: metadata.method ~ "(0924)"
+          to:
+              account: Assets:JD:Balance
+
+    - id: 交通0354支出
+      when: <收/付款方式> ~ "(0354)" && <交易说明> !~ "退款-"
       actions:
-        from: Liabilities:CC:CMB:0924
-    - id: rule-022
-      when: metadata.method ~ "(0073)"
+          from:
+              account: Liabilities:CC:BCM:0354
+
+    - id: 交通0354退款
+      when: <收/付款方式> ~ "(0354)" && <交易说明> ~ "退款-"
       actions:
-        from: Liabilities:CC:CMBC:0073
-    - id: rule-023
-      when: metadata.method ~ "(5559)"
+          to:
+              account: Liabilities:CC:BCM:0354
+
+    - id: 中行1341支出
+      when: <收/付款方式> ~ "(1341)" && <交易说明> !~ "退款-"
       actions:
-        from: Liabilities:CC:CMBC:5559
-    - id: rule-024
-      when: metadata.method ~ "微信-"
+          from:
+              account: Liabilities:CC:BoC:1341
+
+    - id: 中行1341退款
+      when: <收/付款方式> ~ "(1341)" && <交易说明> ~ "退款-"
       actions:
-        ignore: true
-    - id: rule-025
-      when: metadata.method ~ "先享后付"
+          to:
+              account: Liabilities:CC:BoC:1341
+
+    - id: 中行1875支出
+      when: <收/付款方式> ~ "(1875)" && <交易说明> !~ "退款-"
       actions:
-        ignore: true
-    - id: rule-026
-      when: type ~ "不计收支" && metadata.category ~ "网购"
+          from:
+              account: Liabilities:CC:BoC:1875
+
+    - id: 中行1875退款
+      when: <收/付款方式> ~ "(1875)" && <交易说明> ~ "退款-"
       actions:
-        to: Income:Rebate
+          to:
+              account: Liabilities:CC:BoC:1875
+
+    - id: 北银2189支出
+      when: <收/付款方式> ~ "(2189)" && <交易说明> !~ "退款-"
+      actions:
+          from:
+              account: Liabilities:CC:BoNB:2189
+
+    - id: 北银2189退款
+      when: <收/付款方式> ~ "(2189)" && <交易说明> ~ "退款-"
+      actions:
+          to:
+              account: Liabilities:CC:BoNB:2189
+
+    - id: 招行0924支出
+      when: <收/付款方式> ~ "(0924)" && <交易说明> !~ "退款-"
+      actions:
+          from:
+              account: Liabilities:CC:CMB:0924
+
+    - id: 招行0924退款
+      when: <收/付款方式> ~ "(0924)" && <交易说明> ~ "退款-"
+      actions:
+          to:
+              account: Liabilities:CC:CMB:0924
+
+    - id: 民生0073支出
+      when: <收/付款方式> ~ "(0073)" && <交易说明> !~ "退款-"
+      actions:
+          from:
+              account: Liabilities:CC:CMBC:0073
+
+    - id: 民生0073退款
+      when: <收/付款方式> ~ "(0073)" && <交易说明> ~ "退款-"
+      actions:
+          to:
+              account: Liabilities:CC:CMBC:0073
+
+    - id: 民生5559支出
+      when: <收/付款方式> ~ "(5559)" && <交易说明> !~ "退款-"
+      actions:
+          from:
+              account: Liabilities:CC:CMBC:5559
+
+    - id: 民生5559退款
+      when: <收/付款方式> ~ "(5559)" && <交易说明> ~ "退款-"
+      actions:
+          to:
+              account: Liabilities:CC:CMBC:5559
+
+    - id: 忽略微信
+      when: <收/付款方式> ~ "微信-"
+      actions:
+          ignore: true
+
+    - id: 忽略先享后付
+      when: <收/付款方式> ~ "先享后付"
+      actions:
+          ignore: true

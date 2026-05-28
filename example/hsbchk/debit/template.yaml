@@ -1,10 +1,11 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: hsbchk-debit
-name: hsbchk-debit
+name: HSBC HK Debit
 template:
     fileFormat: csv
     delimiter: ','
     stripTabs: true
+    dateFormat: 02/01/2006
     sourceHeaders:
         - Date
         - Description
@@ -12,12 +13,4 @@ template:
         - Billing currency
         - Balance
         - Balance currency
-    columns:
-        date: Date
-        amount: Billing amount
-        payee: Description
-        narration: Description
-        currency: Billing currency
-    defaultMinusAccount: Assets:FIXME
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: HKD

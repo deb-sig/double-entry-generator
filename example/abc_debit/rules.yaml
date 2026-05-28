@@ -1,21 +1,108 @@
+options:
+    title: abc_debit
+    operatingCurrency: CNY
+
+templateRules:
+    - id: 农行借记卡基础交易
+      actions:
+          date: <交易日期> <交易时间>
+          amount: <交易金额>.number
+          currency: CNY
+          payee: <对手信息>
+          narration: <交易摘要>
+          metadata:
+              amount: <交易金额>
+              balance: <本次余额>
+              channel: <交易渠道>
+              logNumber: <日 志 号>
+              postscript: <交易附言>
+              source: 中国农业银行储蓄卡
+
+    - id: 农行借记卡默认对手方
+      when: <对手信息> == "" || <对手信息> == "--"
+      actions:
+          payee: ABC Debit
+
+    - id: 农行借记卡附言摘要
+      when: <交易附言> != ""
+      actions:
+          narration: <交易摘要> - <交易附言>
+
+    - id: 农行借记卡收入
+      when: <交易金额> >= 0
+      actions:
+          type: 收入
+          from:
+              account: Assets:FIXME
+          to:
+              account: Assets:ABC:DebitCard
+
+    - id: 农行借记卡支出
+      when: <交易金额> < 0
+      actions:
+          type: 支出
+          from:
+              account: Assets:ABC:DebitCard
+          to:
+              account: Expenses:FIXME
+
 personalRules:
-    - id: rule-001
-      when: narration ~ "转存"
+    - id: 转存收入
+      when: <交易摘要> ~ "转存" && <交易金额> >= 0
       actions:
-        to: Equity:Transfers
-    - id: rule-002
-      when: narration ~ "财付通"
+          from:
+              account: Equity:Transfers
+
+    - id: 转存支出
+      when: <交易摘要> ~ "转存" && <交易金额> < 0
       actions:
-        to: Expenses:Transport:Transit
-    - id: rule-003
-      when: narration ~ "正常还款"
+          to:
+              account: Equity:Transfers
+
+    - id: 财付通收入
+      when: <交易摘要> ~ "财付通" && <交易金额> >= 0
       actions:
-        to: Liabilities:Loans:Personal
-    - id: rule-004
-      when: narration ~ "结息"
+          from:
+              account: Expenses:Transport:Transit
+
+    - id: 财付通支出
+      when: <交易摘要> ~ "财付通" && <交易金额> < 0
       actions:
-        to: Income:Interest
-    - id: rule-005
-      when: narration ~ "利息税"
+          to:
+              account: Expenses:Transport:Transit
+
+    - id: 正常还款收入
+      when: <交易摘要> ~ "正常还款" && <交易金额> >= 0
       actions:
-        to: Expenses:Tax
+          from:
+              account: Liabilities:Loans:Personal
+
+    - id: 正常还款支出
+      when: <交易摘要> ~ "正常还款" && <交易金额> < 0
+      actions:
+          to:
+              account: Liabilities:Loans:Personal
+
+    - id: 结息收入
+      when: <交易摘要> ~ "结息" && <交易金额> >= 0
+      actions:
+          from:
+              account: Income:Interest
+
+    - id: 结息支出
+      when: <交易摘要> ~ "结息" && <交易金额> < 0
+      actions:
+          to:
+              account: Income:Interest
+
+    - id: 利息税收入
+      when: <交易摘要> ~ "利息税" && <交易金额> >= 0
+      actions:
+          from:
+              account: Expenses:Tax
+
+    - id: 利息税支出
+      when: <交易摘要> ~ "利息税" && <交易金额> < 0
+      actions:
+          to:
+              account: Expenses:Tax

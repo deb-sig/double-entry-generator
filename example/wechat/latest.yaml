@@ -18,10 +18,4 @@ template:
     - 交易单号
     - 商户单号
     - 备注
-  columns:
-    date: 交易时间
-    amount: 金额(元)
-    payee: 交易对方
-    narration: 商品
-    type: 收/支
   defaultCurrency: CNY

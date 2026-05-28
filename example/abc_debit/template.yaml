@@ -1,6 +1,6 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: abc_debit
-name: abc_debit
+name: ABC Debit
 template:
     fileFormat: csv
     delimiter: ','
@@ -14,15 +14,4 @@ template:
         - 日 志 号
         - 交易渠道
         - 交易附言
-    columns:
-        date: 交易日期
-        time: 交易时间
-        amount: 交易金额
-        payee: 对手信息
-        narration: 交易摘要
-    metadata:
-        method: 交易渠道
-        txType: 交易摘要
-    defaultMinusAccount: Assets:FIXME
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: CNY

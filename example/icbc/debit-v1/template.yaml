@@ -1,6 +1,6 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: icbc-debit-v1
-name: icbc-debit-v1
+name: ICBC Debit V1
 template:
     fileFormat: csv
     delimiter: ','
@@ -20,15 +20,4 @@ template:
         - 记账币种
         - 余额
         - 对方户名
-    columns:
-        date: 交易日期
-        amountIn: 记账金额(收入)
-        amountOut: 记账金额(支出)
-        payee: 对方户名
-        narration: 摘要
-        currency: 记账币种
-    metadata:
-        txType: 摘要
-    defaultMinusAccount: Assets:FIXME
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: CNY

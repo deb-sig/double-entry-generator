@@ -1,17 +1,87 @@
+options:
+    title: 测试
+    operatingCurrency: CNY
+
+templateRules:
+    - id: 招商信用卡基础交易
+      actions:
+          date: 2024/<记账日>
+          amount: <人民币金额>.number
+          payee: CMB
+          narration: <交易摘要>
+          currency: CNY
+
+    - id: 招商信用卡交易日优先
+      when: <交易日> != ""
+      actions:
+          date: 2024/<交易日>
+
+    - id: 招商信用卡记账日跨年
+      when: <交易日> == "" && <记账日> >= 12/01
+      actions:
+          date: 2023/<记账日>
+
+    - id: 招商信用卡交易日跨年
+      when: <交易日> >= 12/01
+      actions:
+          date: 2023/<交易日>
+
+    - id: 招商信用卡支出
+      when: <人民币金额> >= 0
+      actions:
+          type: 支出
+          from:
+              account: Liabilities:CreditCard:CMB<卡号末四位>.extract("^$")
+          to:
+              account: Expenses:FIXME
+
+    - id: 招商信用卡收入
+      when: <人民币金额> < 0
+      actions:
+          type: 收入
+          from:
+              account: Assets:FIXME
+          to:
+              account: Liabilities:CreditCard:CMB<卡号末四位>.extract("^$")
+
 personalRules:
-    - id: rule-001
-      when: narration ~ "掌上生活影票"
+    - id: 掌上生活影票支出
+      when: <交易摘要> ~ "掌上生活影票" && <人民币金额> >= 0
       actions:
-        to: Expenses:Movie
-    - id: rule-002
-      when: narration ~ "手机银行饭票"
+          to:
+              account: Expenses:Movie
+
+    - id: 掌上生活影票收入
+      when: <交易摘要> ~ "掌上生活影票" && <人民币金额> < 0
       actions:
-        to: Expenses:Food
-    - id: rule-003
-      when: narration ~ "中国移动"
+          from:
+              account: Expenses:Movie
+
+    - id: 手机银行饭票支出
+      when: <交易摘要> ~ "手机银行饭票" && <人民币金额> >= 0
       actions:
-        to: Expenses:Mobile
-    - id: rule-004
-      when: narration ~ "财付通"
+          to:
+              account: Expenses:Food
+
+    - id: 手机银行饭票收入
+      when: <交易摘要> ~ "手机银行饭票" && <人民币金额> < 0
       actions:
-        ignore: true
+          from:
+              account: Expenses:Food
+
+    - id: 中国移动支出
+      when: <交易摘要> ~ "中国移动" && <人民币金额> >= 0
+      actions:
+          to:
+              account: Expenses:Mobile
+
+    - id: 中国移动收入
+      when: <交易摘要> ~ "中国移动" && <人民币金额> < 0
+      actions:
+          from:
+              account: Expenses:Mobile
+
+    - id: 忽略财付通
+      when: <交易摘要> ~ "财付通"
+      actions:
+          ignore: true

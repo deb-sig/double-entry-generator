@@ -1,185 +1,193 @@
-personalRules:
-  - id: metadata
+templateRules:
+  - id: 基础交易
     actions:
+      date: <交易时间>
+      amount: <金额(元)>.number
+      payee: <交易对方>
+      narration: <商品>
+      type: <收/支>
+      currency: CNY
       metadata:
-        merchantId: "[商户单号]"
-        method: "[支付方式]"
-        orderId: "[交易单号]"
-        payTime: "[交易时间] +0800 CST"
-        source: "微信支付"
-        status: "[当前状态]"
-        txType: "[交易类型]"
-        type: "[收/支]"
+        merchantId: <商户单号>
+        method: <支付方式>
+        orderId: <交易单号>
+        payTime: <交易时间> +0800 CST
+        source: 微信支付
+        status: <当前状态>
+        txType: <交易类型>
+        type: <收/支>
 
-  - id: default-income
-    when: '[收/支] == "收入"'
+
+personalRules:
+  - id: 默认收入
+    when: <收/支> == 收入
     actions:
       from: Income:Wechat:RedPacket
       to: Assets:FIXME
-      amount: "[金额(元)].number"
+      amount: <金额(元)>.number
       currency: CNY
-  - id: default-out
-    when: '[收/支] != "收入"'
+  - id: 默认支出
+    when: <收/支> != 收入
     actions:
       from: Assets:FIXME
       to: Expenses:FIXME
-      amount: "[金额(元)].number"
+      amount: <金额(元)>.number
       currency: CNY
 
-  - id: redpacket
-    when: '[商品] ~ "/" && [收/支] ~ "收入" && [支付方式] ~ "/"'
+  - id: 红包
+    when: <商品> ~ / && <收/支> ~ 收入 && <支付方式> ~ /
     actions:
       from: Income:Wechat:RedPacket
       to: Assets:Digital:Wechat:Cash
-  - id: mini-fund-in
-    when: '[交易对方] ~ "/" && [商品] ~ "/" && [收/支] ~ "/" && [交易类型] ~ "转入零钱通"'
+  - id: 转入零钱通
+    when: <交易对方> ~ / && <商品> ~ / && <收/支> ~ / && <交易类型> ~ 转入零钱通
     actions:
       to: Assets:Digital:Wechat:MiniFund
-  - id: cash-withdraw
-    when: '[收/支] ~ "/" && [交易类型] ~ "零钱提现"'
+  - id: 零钱提现
+    when: <收/支> ~ / && <交易类型> ~ 零钱提现
     actions:
       from:
         account: Assets:Digital:Wechat:Cash
-        amount: '[金额(元)].number.! + [备注].extract("服务费.?(.*)").number'
+        amount: <金额(元)>.number.! + <备注>.extract("服务费.?(.*)").number
         currency: CNY
       to:
         account: Assets:Digital:Wechat:Cash
-        amount: '[金额(元)].number - [备注].extract("服务费.?(.*)").number'
+        amount: <金额(元)>.number - <备注>.extract("服务费.?(.*)").number
         currency: CNY
       postings:
-        - Expenses:Wechat:Commission [备注].extract("服务费.?(.*)").number.+ CNY
-        - Assets:Digital:Wechat:Cash [备注].extract("服务费.?(.*)").number.- CNY
-  - id: cash-recharge
-    when: '[收/支] ~ "/" && [交易类型] ~ "零钱充值"'
+        - Expenses:Wechat:Commission <备注>.extract("服务费.?(.*)").number.+ CNY
+        - Assets:Digital:Wechat:Cash <备注>.extract("服务费.?(.*)").number.- CNY
+  - id: 零钱充值
+    when: <收/支> ~ / && <交易类型> ~ 零钱充值
     actions:
       to: Assets:Digital:Wechat:Cash
-  - id: mini-fund-to-cash
-    when: '[收/支] ~ "/" && [交易类型] ~ "零钱通转出-到零钱"'
+  - id: 零钱通转出到零钱
+    when: <收/支> ~ / && <交易类型> ~ 零钱通转出-到零钱
     actions:
       to: Assets:Digital:Wechat:Cash
-  - id: mini-fund-to-icbc
-    when: '[收/支] ~ "/" && [交易类型] ~ "零钱通转出-到工商银行(9876)"'
+  - id: 零钱通转出到工商银行
+    when: <收/支> ~ / && <交易类型> ~ 零钱通转出-到工商银行(9876)
     actions:
       to: Assets:Bank:CN:ICBC:Savings
-  - id: sponsor
-    when: '[收/支] ~ "支出" && [交易类型] ~ "赞赏码"'
+  - id: 赞赏码
+    when: <收/支> ~ 支出 && <交易类型> ~ 赞赏码
     actions:
       to: Expenses:Wechat:Sponsor
-  - id: lunch
-    when: '([交易对方] ~ "云膳过桥米线" || [交易对方] ~ "餐厅") && [交易时间].time >= "11:00" && [交易时间].time <= "15:00"'
+  - id: 午餐
+    when: (<交易对方> ~ 云膳过桥米线 || <交易对方> ~ 餐厅) && <交易时间>.time >= 11:00 && <交易时间>.time <= 15:00
     actions:
       to: Expenses:Food:Meal:Lunch
-  - id: dinner
-    when: '([交易对方] ~ "云膳过桥米线" || [交易对方] ~ "餐厅") && [交易时间].time >= "16:30" && [交易时间].time <= "21:30"'
+  - id: 晚餐
+    when: (<交易对方> ~ 云膳过桥米线 || <交易对方> ~ 餐厅) && <交易时间>.time >= 16:30 && <交易时间>.time <= 21:30
     actions:
       to: Expenses:Food:Meal:Dinner
-  - id: midnight-1
-    when: '[交易对方] ~ "餐厅" && ([交易时间].time >= "23:55" || [交易时间].time <= "00:10")'
+  - id: 夜宵一
+    when: <交易对方> ~ 餐厅 && (<交易时间>.time >= 23:55 || <交易时间>.time <= 00:10)
     actions:
       to: Expenses:Food:Meal:MidNight
-  - id: midnight-2
-    when: '[交易对方] ~ "餐厅" && ([交易时间].time >= "23:50" || [交易时间].time <= "00:05")'
+  - id: 夜宵二
+    when: <交易对方> ~ 餐厅 && (<交易时间>.time >= 23:50 || <交易时间>.time <= 00:05)
     actions:
       to: Expenses:Food:Meal:MidNight
-  - id: meituan-drink
-    when: '[交易对方] ~ "美团平台商户" && [收/支] ~ "支出" && [金额(元)] >= 0 && [金额(元)] <= 9.99'
+  - id: 美团饮品
+    when: <交易对方> ~ 美团平台商户 && <收/支> ~ 支出 && <金额(元)> >= 0 && <金额(元)> <= 9.99
     actions:
       to: Expenses:Food:Drink
-  - id: meituan-meal
-    when: '[交易对方] ~ "美团平台商户" && [收/支] ~ "支出" && [金额(元)] >= 10'
+  - id: 美团餐食
+    when: <交易对方> ~ 美团平台商户 && <收/支> ~ 支出 && <金额(元)> >= 10
     actions:
       to: Expenses:Food:Meal
-  - id: rent
-    when: '[交易对方] ~ "房东" && [收/支] ~ "支出"'
+  - id: 房租
+    when: <交易对方> ~ 房东 && <收/支> ~ 支出
     actions:
       to: Expenses:Housing:Rent
-  - id: service-income
-    when: '[交易对方] ~ "用户" && [收/支] ~ "收入"'
+  - id: 服务收入
+    when: <交易对方> ~ 用户 && <收/支> ~ 收入
     actions:
       from: Income:Service
       to: Assets:Digital:Wechat:Cash
       tags:
         - income
         - service
-  - id: licaitong
-    when: '[交易对方] ~ "理财通" && [收/支] ~ "/"'
+  - id: 理财通
+    when: <交易对方> ~ 理财通 && <收/支> ~ /
     actions:
       to: Assets:Trade:Tencent:LiCaiTong
-  - id: ccb-credit
-    when: '[交易对方] ~ "建设银行" && [交易类型] ~ "信用卡还款"'
+  - id: 建设银行信用卡
+    when: <交易对方> ~ 建设银行 && <交易类型> ~ 信用卡还款
     actions:
       to: Liabilities:Bank:CN:CCB
 
-  - id: method-slash-income
-    when: '[收/支] == "收入" && [支付方式] ~ "/"'
+  - id: 默认方式收入
+    when: <收/支> == 收入 && <支付方式> ~ /
     actions:
       to: Assets:Digital:Wechat:Cash
-  - id: method-cash-income
-    when: '[收/支] == "收入" && [支付方式] == "零钱"'
+  - id: 零钱收入
+    when: <收/支> == 收入 && <支付方式> == 零钱
     actions:
       to: Assets:Digital:Wechat:Cash
-  - id: method-minifund-income
-    when: '[收/支] == "收入" && [支付方式] == "零钱通"'
+  - id: 零钱通收入
+    when: <收/支> == 收入 && <支付方式> == 零钱通
     actions:
       to: Assets:Digital:Wechat:MiniFund
-  - id: method-icbc-income
-    when: '[收/支] == "收入" && [支付方式] ~ "工商银行"'
+  - id: 工商银行收入
+    when: <收/支> == 收入 && <支付方式> ~ 工商银行
     actions:
       to: Assets:Bank:CN:ICBC:Savings
-  - id: method-boc-income
-    when: '[收/支] == "收入" && [支付方式] ~ "中国银行"'
+  - id: 中国银行收入
+    when: <收/支> == 收入 && <支付方式> ~ 中国银行
     actions:
       to: Assets:Bank:CN:BOC:Savings
-  - id: method-slash-out
-    when: '[收/支] != "收入" && [支付方式] ~ "/"'
+  - id: 默认方式支出
+    when: <收/支> != 收入 && <支付方式> ~ /
     actions:
       from: Assets:Digital:Wechat:Cash
-  - id: method-cash-out
-    when: '[收/支] != "收入" && [支付方式] == "零钱"'
+  - id: 零钱支出
+    when: <收/支> != 收入 && <支付方式> == 零钱
     actions:
       from: Assets:Digital:Wechat:Cash
-  - id: method-minifund-out
-    when: '[收/支] != "收入" && [支付方式] == "零钱通"'
+  - id: 零钱通支出
+    when: <收/支> != 收入 && <支付方式> == 零钱通
     actions:
       from: Assets:Digital:Wechat:MiniFund
-  - id: method-icbc-out
-    when: '[收/支] != "收入" && [支付方式] ~ "工商银行"'
+  - id: 工商银行支出
+    when: <收/支> != 收入 && <支付方式> ~ 工商银行
     actions:
       from: Assets:Bank:CN:ICBC:Savings
-  - id: method-boc-out
-    when: '[收/支] != "收入" && [支付方式] ~ "中国银行"'
+  - id: 中国银行支出
+    when: <收/支> != 收入 && <支付方式> ~ 中国银行
     actions:
       from: Assets:Bank:CN:BOC:Savings
 
-  - id: withdraw-icbc
-    when: '[收/支] ~ "/" && [交易类型] ~ "零钱提现" && [支付方式] ~ "工商银行"'
+  - id: 提现到工商银行
+    when: <收/支> ~ / && <交易类型> ~ 零钱提现 && <支付方式> ~ 工商银行
     actions:
       from:
         account: Assets:Digital:Wechat:Cash
-        amount: '[金额(元)].number.! + [备注].extract("服务费.?(.*)").number'
+        amount: <金额(元)>.number.! + <备注>.extract("服务费.?(.*)").number
         currency: CNY
       to:
         account: Assets:Bank:CN:ICBC:Savings
-        amount: '[金额(元)].number - [备注].extract("服务费.?(.*)").number'
+        amount: <金额(元)>.number - <备注>.extract("服务费.?(.*)").number
         currency: CNY
-  - id: withdraw-boc
-    when: '[收/支] ~ "/" && [交易类型] ~ "零钱提现" && [支付方式] ~ "中国银行"'
+  - id: 提现到中国银行
+    when: <收/支> ~ / && <交易类型> ~ 零钱提现 && <支付方式> ~ 中国银行
     actions:
       from:
         account: Assets:Digital:Wechat:Cash
-        amount: '[金额(元)].number.! + [备注].extract("服务费.?(.*)").number'
+        amount: <金额(元)>.number.! + <备注>.extract("服务费.?(.*)").number
         currency: CNY
       to:
         account: Assets:Bank:CN:BOC:Savings
-        amount: '[金额(元)].number - [备注].extract("服务费.?(.*)").number'
+        amount: <金额(元)>.number - <备注>.extract("服务费.?(.*)").number
         currency: CNY
 
-  - id: timestamp-travel
-    when: '[交易对方] ~ "测试时间戳" && [交易时间].timestamp >= "1658112487" && [交易时间].timestamp <= "1658112490"'
+  - id: 时间戳旅行
+    when: <交易对方> ~ 测试时间戳 && <交易时间>.timestamp >= 1658112487 && <交易时间>.timestamp <= 1658112490
     actions:
       from: Expenses:Travel
       to: Assets:Digital:Wechat:Cash
-  - id: donation
-    when: '[收/支] ~ "支出" && [交易类型] ~ "分分捐"'
+  - id: 分分捐
+    when: <收/支> ~ 支出 && <交易类型> ~ 分分捐
     actions:
       to: Expenses:Charity:Donation

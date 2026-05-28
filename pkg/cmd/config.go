@@ -8,6 +8,7 @@ import (
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/importer"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 )
 
 var (
@@ -59,7 +60,11 @@ func initPersonalRules(templateRef, output string, force bool) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	b, err := importer.ReadURL(rulesURL)
+	b, err := importer.ReadRef(rulesURL)
+	if err != nil {
+		return "", err
+	}
+	b, err = personalRuleSkeleton(b)
 	if err != nil {
 		return "", err
 	}
@@ -86,4 +91,20 @@ func initPersonalRules(templateRef, output string, force bool) (string, error) {
 		return "", err
 	}
 	return output, nil
+}
+
+func personalRuleSkeleton(b []byte) ([]byte, error) {
+	ruleCfg, err := parseRuleBytes(b)
+	if err != nil {
+		return nil, err
+	}
+	type personalRuleFile struct {
+		TemplateRuleOverrides []importer.Rule `yaml:"templateRuleOverrides,omitempty"`
+		PersonalRules         []importer.Rule `yaml:"personalRules,omitempty"`
+	}
+	out := personalRuleFile{
+		TemplateRuleOverrides: ruleCfg.TemplateRuleOverrides,
+		PersonalRules:         ruleCfg.PersonalRules,
+	}
+	return yaml.Marshal(out)
 }

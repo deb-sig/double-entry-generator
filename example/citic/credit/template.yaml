@@ -1,6 +1,6 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: citic-credit
-name: citic-credit
+name: CITIC Credit
 template:
     fileFormat: xls
     delimiter: ','
@@ -14,12 +14,4 @@ template:
         - 结算币种
         - 交易金额
         - 结算金额
-    columns:
-        date: 交易日期
-        amount: 交易金额
-        payee: 交易描述
-        narration: 交易描述
-        currency: 结算币种
-    defaultMinusAccount: Assets:FIXME
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: CNY

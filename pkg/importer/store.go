@@ -14,6 +14,7 @@ import (
 )
 
 const DefaultRegistryURL = "https://raw.githubusercontent.com/deb-sig/deg-provider-template/main/registry.yaml"
+const RegistryURLEnv = "DEG_PROVIDER_REGISTRY"
 
 type Registry struct {
 	Version   int                `json:"version" yaml:"version"`
@@ -52,6 +53,9 @@ func LoadProfileRef(ref string) (*Profile, error) {
 	if err != nil {
 		return nil, err
 	}
+	if !IsHTTPURL(rawURL) {
+		return loadProfilePath(rawURL)
+	}
 	return loadProfileURL(rawURL)
 }
 
@@ -86,9 +90,9 @@ func loadProfileURL(rawURL string) (*Profile, error) {
 
 func LoadRemoteRegistry(rawURL string) (*Registry, error) {
 	if rawURL == "" {
-		rawURL = DefaultRegistryURL
+		rawURL = RegistryURL()
 	}
-	b, err := readURL(rawURL)
+	b, err := ReadRef(rawURL)
 	if err != nil {
 		return nil, err
 	}
@@ -101,6 +105,13 @@ func LoadRemoteRegistry(rawURL string) (*Registry, error) {
 
 func ReadURL(rawURL string) ([]byte, error) {
 	return readURL(rawURL)
+}
+
+func ReadRef(ref string) ([]byte, error) {
+	if IsHTTPURL(ref) {
+		return readURL(ref)
+	}
+	return os.ReadFile(expandHome(ref))
 }
 
 func readURL(rawURL string) ([]byte, error) {
@@ -137,6 +148,13 @@ func expandHome(path string) string {
 	return path
 }
 
+func RegistryURL() string {
+	if value := strings.TrimSpace(os.Getenv(RegistryURLEnv)); value != "" {
+		return value
+	}
+	return DefaultRegistryURL
+}
+
 // ParseTemplateRef splits "wechat@2026-04-28" into id and optional pinned version.
 func ParseTemplateRef(ref string) (id, version string) {
 	ref = strings.TrimSpace(ref)
@@ -148,7 +166,10 @@ func ParseTemplateRef(ref string) (id, version string) {
 
 func registryBaseURL(rawURL string) string {
 	if rawURL == "" {
-		rawURL = DefaultRegistryURL
+		rawURL = RegistryURL()
+	}
+	if !IsHTTPURL(rawURL) {
+		return filepath.Dir(expandHome(rawURL))
 	}
 	return strings.TrimSuffix(rawURL, "registry.yaml")
 }
@@ -191,7 +212,12 @@ func applyVersionToPath(path, latest, version string) string {
 }
 
 func resolveRegistryAssetURL(registryURL, assetPath, latest, version string) string {
-	return registryBaseURL(registryURL) + applyVersionToPath(assetPath, latest, version)
+	versionedPath := applyVersionToPath(assetPath, latest, version)
+	base := registryBaseURL(registryURL)
+	if !IsHTTPURL(base) {
+		return filepath.Join(base, filepath.FromSlash(versionedPath))
+	}
+	return base + versionedPath
 }
 
 func TemplateURLFromRegistry(id string) (string, error) {

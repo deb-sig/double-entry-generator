@@ -1,4 +1,4 @@
-schema: https://deg.dev/template-profile/v1
+schema: https://deg.dev/template-profile/v2
 id: spdb_debit
 name: spdb_debit
 template:
@@ -15,14 +15,4 @@ template:
         - 交易对手名称
         - 交易对手账号
         - 附言
-    columns:
-        date: 交易日期
-        amountIn: 存入金额
-        amountOut: 取出金额
-        payee: 交易对手名称
-        type: 交易类型
-    metadata:
-        txType: 交易类型
-    defaultMinusAccount: Assets:DebitCard:SPB1234
-    defaultPlusAccount: Expenses:FIXME
     defaultCurrency: CNY
