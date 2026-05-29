@@ -41,7 +41,6 @@ Download starter rules for a registry template. Supports version pinning:
 		logErrorIfNotNil(err)
 		fmt.Printf("personal rules written: %s\n", output)
 	},
-	ValidArgsFunction: completeConfigInitArgs,
 }
 
 func init() {
@@ -49,7 +48,6 @@ func init() {
 	configCmd.AddCommand(configInitCmd)
 	configInitCmd.Flags().StringVarP(&configInitOutput, "output", "o", "", msg("output personal rules YAML path", "个人规则 YAML 输出路径"))
 	configInitCmd.Flags().BoolVarP(&configInitForce, "force", "f", false, msg("overwrite existing output file", "覆盖已有输出文件"))
-	_ = configInitCmd.RegisterFlagCompletionFunc("output", completeYAMLFiles)
 }
 
 func initPersonalRules(templateRef, output string, force bool) (string, error) {

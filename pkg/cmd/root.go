@@ -50,14 +50,12 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.CompletionOptions.DisableDefaultCmd = true
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", msg("config file (default is $HOME/.double-entry-generator.yaml)", "配置文件，默认 $HOME/.double-entry-generator.yaml"))
-	_ = rootCmd.RegisterFlagCompletionFunc("config", completeYAMLFiles)
 
 }
 

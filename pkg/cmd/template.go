@@ -14,15 +14,13 @@ var (
 )
 
 var templateCmd = &cobra.Command{
-	Use:               "template",
-	Short:             msg("Inspect runtime import templates", "查看运行时模板"),
-	ValidArgsFunction: cobra.NoFileCompletions,
+	Use:   "template",
+	Short: msg("Inspect runtime import templates", "查看运行时模板"),
 }
 
 var templateListCmd = &cobra.Command{
-	Use:               "list",
-	Short:             msg("List templates from the online registry", "查看线上模板列表"),
-	ValidArgsFunction: cobra.NoFileCompletions,
+	Use:   "list",
+	Short: msg("List templates from the online registry", "查看线上模板列表"),
 	Run: func(cmd *cobra.Command, args []string) {
 		registry, err := importer.LoadRemoteRegistry(templateRegistryURL)
 		logErrorIfNotNil(err)
@@ -31,10 +29,9 @@ var templateListCmd = &cobra.Command{
 }
 
 var templateSearchCmd = &cobra.Command{
-	Use:               "search <query>",
-	Short:             msg("Search templates in the online registry", "搜索线上模板"),
-	Args:              cobra.ExactArgs(1),
-	ValidArgsFunction: cobra.NoFileCompletions,
+	Use:   "search <query>",
+	Short: msg("Search templates in the online registry", "搜索线上模板"),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		registry, err := importer.LoadRemoteRegistry(templateRegistryURL)
 		logErrorIfNotNil(err)
