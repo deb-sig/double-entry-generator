@@ -10,6 +10,7 @@ import (
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/importer"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/io/writer"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/util"
@@ -128,15 +129,17 @@ func (ledger *Ledger) writeHeader(file io.Writer) error {
 	var err error
 
 	accounts := ledger.GetAllCandidateAccounts(ledger.Config)
-	for _, order := range ledger.IR.Orders {
-		for _, account := range []string{order.MinusAccount, order.PlusAccount} {
-			if account != "" {
-				accounts[account] = true
+	if ledger.Provider == importer.DefaultProviderName {
+		for _, order := range ledger.IR.Orders {
+			for _, account := range []string{order.MinusAccount, order.PlusAccount} {
+				if account != "" {
+					accounts[account] = true
+				}
 			}
-		}
-		for _, account := range order.ExtraAccounts {
-			if account != "" {
-				accounts[account] = true
+			for _, account := range order.ExtraAccounts {
+				if account != "" {
+					accounts[account] = true
+				}
 			}
 		}
 	}

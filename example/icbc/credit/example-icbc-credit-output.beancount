@@ -5,7 +5,6 @@ option "operating_currency" "CNY"
 1970-01-01 open Assets:FIXME
 1970-01-01 open Expenses:FIXME
 1970-01-01 open Expenses:Transport:Highway
-1970-01-01 open Liabilities:Bank:CN:ICBC
 
 2023-03-20 * "广东联合电子收费股份"
 	balances: "-16042.73"

@@ -12,6 +12,7 @@ import (
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/importer"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/io/writer"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/util"
@@ -149,25 +150,27 @@ func (b *BeanCount) writeHeader(file io.Writer) error {
 	}
 
 	accounts := b.GetAllCandidateAccounts(b.Config)
-	for account := range b.IR.OpenAccounts {
-		if account != "" {
-			accounts[account] = true
-		}
-	}
-	for _, order := range b.IR.Orders {
-		for _, posting := range order.Postings {
-			if account := postingAccount(posting.Line); account != "" {
-				accounts[account] = true
-			}
-		}
-		for _, account := range []string{order.MinusAccount, order.PlusAccount} {
+	if b.Provider == importer.DefaultProviderName {
+		for account := range b.IR.OpenAccounts {
 			if account != "" {
 				accounts[account] = true
 			}
 		}
-		for _, account := range order.ExtraAccounts {
-			if account != "" {
-				accounts[account] = true
+		for _, order := range b.IR.Orders {
+			for _, posting := range order.Postings {
+				if account := postingAccount(posting.Line); account != "" {
+					accounts[account] = true
+				}
+			}
+			for _, account := range []string{order.MinusAccount, order.PlusAccount} {
+				if account != "" {
+					accounts[account] = true
+				}
+			}
+			for _, account := range order.ExtraAccounts {
+				if account != "" {
+					accounts[account] = true
+				}
 			}
 		}
 	}

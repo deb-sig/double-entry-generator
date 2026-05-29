@@ -9,7 +9,6 @@ option "operating_currency" "CNY"
 1970-01-01 open Expenses:Shopping
 1970-01-01 open Expenses:Transport
 1970-01-01 open Income:Rewards
-1970-01-01 open Liabilities:CreditCard:CITIC
 
 2024-10-20 * "CITIC" "公共事业缴费（电费）"
 	Expenses:Electricity 20.16 CNY

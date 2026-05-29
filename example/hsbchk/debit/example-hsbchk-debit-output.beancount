@@ -1,7 +1,6 @@
 option "title" "HSBC HK借记卡示例"
 option "operating_currency" "HKD"
 
-1970-01-01 open Assets:Bank:HK:HSBC:Savings
 1970-01-01 open Assets:Cash
 1970-01-01 open Assets:FIXME
 1970-01-01 open Expenses:FIXME
