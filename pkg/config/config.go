@@ -4,10 +4,11 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/abc_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/boc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_credit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/bocom_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/boc"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cgb_credit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/cmb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/hsbchk"
@@ -44,6 +45,7 @@ type Config struct {
 	Bmo                             *bmo.Config          `yaml:"bmo,omitempty"`
 	BocomDebit                      *bocom_debit.Config  `yaml:"bocom_debit,omitempty" mapstructure:"bocom_debit,omitempty"`
 	BocomCredit                     *bocom_credit.Config `yaml:"bocom_credit,omitempty" mapstructure:"bocom_credit,omitempty"`
+	CgbCredit                       *cgb_credit.Config   `yaml:"cgb_credit,omitempty" mapstructure:"cgb_credit,omitempty"`
 	JD                              *jd.Config           `yaml:"jd,omitempty"`
 	Citic                           *citic.Config        `yaml:"citic,omitempty"`
 	HsbcHK                          *hsbchk.Config       `yaml:"hsbchk,omitempty"`

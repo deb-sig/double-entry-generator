@@ -10,6 +10,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocom_credit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocom_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/ccb"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/cgb_credit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/citic"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/cmb"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/hsbchk"
@@ -56,6 +57,8 @@ func New(providerName string) (Interface, error) {
 		return bmo.Bmo{}, nil
 	case consts.ProviderBocomCredit:
 		return bocom_credit.BocomCredit{}, nil
+	case consts.ProviderCgbCredit:
+		return cgb_credit.CgbCredit{}, nil
 	case consts.ProviderBocomDebit:
 		return bocom_debit.BocomDebit{}, nil
 	case consts.ProviderJD:

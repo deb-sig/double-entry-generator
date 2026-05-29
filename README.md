@@ -66,6 +66,7 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 - [建设银行 (CCB)](https://deb-sig.github.io/double-entry-generator/providers/banks/ccb.html) - 支持 CSV、XLS、XLSX 格式
 - [工商银行 (ICBC)](https://deb-sig.github.io/double-entry-generator/providers/banks/icbc.html) - 自动识别借记卡/信用卡
 - [中信银行 (CITIC)](https://deb-sig.github.io/double-entry-generator/providers/banks/citic.html) - 信用卡账单
+- [广发银行信用卡 (CGB Credit)](https://deb-sig.github.io/double-entry-generator/providers/banks/cgb_credit.html)
 - [汇丰银行香港 (HSBC HK)](https://deb-sig.github.io/double-entry-generator/providers/banks/hsbchk.html) - 香港汇丰银行
 - [加拿大银行 (BMO)](https://deb-sig.github.io/double-entry-generator/providers/banks/bmo.html) - Bank of Montreal
 - [道明银行 (TD)](https://deb-sig.github.io/double-entry-generator/providers/banks/td.html) - Toronto-Dominion Bank

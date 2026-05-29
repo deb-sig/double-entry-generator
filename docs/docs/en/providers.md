@@ -16,6 +16,7 @@ Double Entry Generator supports data conversion from the following financial ser
 - [Industrial and Commercial Bank of China (ICBC)](en/providers/banks/icbc.md )
 - [China CITIC Bank (CITIC)](en/providers/banks/citic.md )
 - [China Merchants Bank (CMB)](en/providers/banks/cmb.md ) - Supports savings and credit cards
+- [CGB Credit Card (CGB Credit)](en/providers/banks/cgb_credit.md )
 - [Agricultural Bank of China Debit Card (ABC Debit)](en/providers/banks/abc_debit.md )
 - [HSBC Hong Kong (HSBCHK)](en/providers/banks/hsbchk.md )
 - [Bank of Montreal (BMO)](en/providers/banks/bmo.md )

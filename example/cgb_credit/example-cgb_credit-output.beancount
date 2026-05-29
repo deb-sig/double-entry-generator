@@ -1,0 +1,34 @@
+option "title" "cgb_credit"
+option "operating_currency" "CNY"
+
+1970-01-01 open Assets:FIXME
+1970-01-01 open Equity:Transfers
+1970-01-01 open Expenses:FIXME
+1970-01-01 open Expenses:Food
+1970-01-01 open Expenses:Shopping:Online
+1970-01-01 open Liabilities:CGB:CreditCard
+
+2024-12-25 * "CGB Credit" "（还款）云闪付 银联入账-张三"
+	recordDate: "2024-12-26"
+	source: "广发银行信用卡"
+	Liabilities:CGB:CreditCard 1130.68 CNY
+	Equity:Transfers -1130.68 CNY
+
+2025-01-03 * "CGB Credit" "（分期）银联分期00000000000/10/12期"
+	recordDate: "2025-01-03"
+	source: "广发银行信用卡"
+	Expenses:FIXME 387.42 CNY
+	Liabilities:CGB:CreditCard -387.42 CNY
+
+2025-01-04 * "CGB Credit" "（退款）示例商户B"
+	recordDate: "2025-01-04"
+	source: "广发银行信用卡"
+	Liabilities:CGB:CreditCard 97.20 CNY
+	Expenses:Shopping:Online -97.20 CNY
+
+2025-01-05 * "CGB Credit" "（消费）示例商户A"
+	recordDate: "2025-01-06"
+	source: "广发银行信用卡"
+	Expenses:Food 15.90 CNY
+	Liabilities:CGB:CreditCard -15.90 CNY
+
