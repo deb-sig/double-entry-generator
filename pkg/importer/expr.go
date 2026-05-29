@@ -401,17 +401,6 @@ func parseComparableNumber(value string) (float64, bool) {
 	return n, err == nil
 }
 
-func isLiteralToken(value string) bool {
-	if _, ok := parseComparableNumber(value); ok {
-		return true
-	}
-	switch strings.ToLower(strings.TrimSpace(value)) {
-	case "true", "false":
-		return true
-	}
-	return false
-}
-
 func (p *exprParser) peek() exprToken {
 	if p.pos >= len(p.tokens) {
 		return exprToken{typ: exprTokenEOF}
