@@ -88,11 +88,11 @@ option "operating_currency" "CNY"
 	Expenses:Hxsec:Commission 0.04 CNY
 
 2023-02-14 * "hxsec" "ETF份额合并-511030-公司债"
-	account_number: "114514114514"
-	shareholder_code: "A114514114"
-	trade_time: "23:59:59"
-	Assets:Hxsec:Positions -600.00 SH511030 {}
-	Assets:Hxsec:Positions 60.00 SH511030 {}
+  account_number: "114514114514"
+  shareholder_code: "A114514114"
+  trade_time: "23:59:59"
+  Assets:Hxsec:Positions  -600.00 SH511030 {}
+  Assets:Hxsec:Positions  60.00 SH511030 {}
 
 2023-02-15 * "hxsec" "银行转证券"
 	account_number: "114514114514"
