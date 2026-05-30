@@ -12,6 +12,7 @@ require (
 	github.com/spf13/viper v1.14.0
 	github.com/xuri/excelize/v2 v2.5.0
 	golang.org/x/text v0.31.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -47,5 +48,4 @@ require (
 	golang.org/x/tools v0.38.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

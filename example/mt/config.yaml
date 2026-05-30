@@ -45,7 +45,7 @@ mt:
     - method: 美团余额
       methodAccount: Assets:MT:Balance:zwyyy456
     - method: 微信支付
-      methodAccount: Assests:Test:Wx
+      methodAccount: Assets:Test:Wx
       ignore: true # 忽略微信支付，微信账单中单独处理
     - category: 网购
       type: 不计收支

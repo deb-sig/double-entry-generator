@@ -1,4 +1,4 @@
-﻿package spdb_debit_test
+package spdb_debit_test
 
 import (
 	"testing"

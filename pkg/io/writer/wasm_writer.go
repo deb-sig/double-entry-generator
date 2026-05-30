@@ -57,7 +57,7 @@ func GetWriter(fileName string) (OutputWriter, error) {
 		lastMemoryWriter = &MemoryWriter{}
 		return lastMemoryWriter, nil
 	}
-	
+
 	outputArea := document.Call("getElementById", fileName)
 	if !outputArea.Truthy() {
 		return nil, fmt.Errorf("can't get `%v` element from document object", fileName)
