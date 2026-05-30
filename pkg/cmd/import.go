@@ -55,6 +55,7 @@ Examples:
 	Run: func(cmd *cobra.Command, args []string) {
 		runImport(args[0], args[1])
 	},
+	ValidArgsFunction: completeImportArgs,
 }
 
 func init() {
@@ -63,6 +64,12 @@ func init() {
 	importCmd.Flags().StringVarP(&importTarget, "target", "t", "", msg("target output format", "输出格式"))
 	importCmd.Flags().StringVarP(&importOutput, "output", "o", "", msg("output file", "输出文件"))
 	importCmd.Flags().BoolVarP(&importAppend, "append", "a", false, msg("append to output file", "追加写入输出文件"))
+	_ = importCmd.RegisterFlagCompletionFunc("rules", completeYAMLFiles)
+	_ = importCmd.RegisterFlagCompletionFunc("target", cobra.FixedCompletions([]cobra.Completion{
+		consts.CompilerBeanCount + "\tbeancount output",
+		consts.CompilerLedger + "\tledger output",
+	}, cobra.ShellCompDirectiveNoFileComp))
+	_ = importCmd.RegisterFlagCompletionFunc("output", completeOutputFiles)
 }
 
 func runImport(templateRef, filename string) {
