@@ -43,4 +43,4 @@ const (
 	OrderTypeSend    OrderType = "支出"
 	OrderTypeRecv    OrderType = "收入"
 	OrderTypeUnknown OrderType = "Unknown"
-) 
+)

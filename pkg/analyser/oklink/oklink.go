@@ -11,7 +11,7 @@ type OKLink struct{}
 // GetAllCandidateAccounts returns all accounts defined in config.
 func (e OKLink) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 	uniqMap := make(map[string]bool)
-	
+
 	// Add default accounts from global config
 	if cfg.DefaultMinusAccount != "" {
 		uniqMap[cfg.DefaultMinusAccount] = true
@@ -19,7 +19,7 @@ func (e OKLink) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
 	if cfg.DefaultPlusAccount != "" {
 		uniqMap[cfg.DefaultPlusAccount] = true
 	}
-	
+
 	if cfg.OKLink != nil && cfg.OKLink.Addresses != nil {
 		// 从所有地址的配置中获取账户
 		for _, addrConfig := range cfg.OKLink.Addresses {
@@ -53,4 +53,3 @@ func (e OKLink) GetAccountsAndTags(o *ir.Order, c *config.Config, plusAccount st
 	// Use the accounts and tags already set in the Order
 	return false, o.MinusAccount, o.PlusAccount, nil, o.Tags
 }
-

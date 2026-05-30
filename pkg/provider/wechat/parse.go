@@ -51,11 +51,7 @@ func (w *Wechat) translateToOrders(array []string, isCSV bool) error {
 		bill.Type = OrderTypeRecv
 	}
 
-	if (isCSV) {
-		bill.Money, err = strconv.ParseFloat(array[5][2:], 64)
-	} else {
-		bill.Money, err = strconv.ParseFloat(array[5], 64)
-	}
+	bill.Money, err = parseMoney(array[5])
 	if err != nil {
 		return fmt.Errorf("parse money %s error: %v", array[5], err)
 	}
@@ -78,4 +74,18 @@ func (w *Wechat) translateToOrders(array []string, isCSV bool) error {
 
 	w.Orders = append(w.Orders, bill)
 	return nil
+}
+
+func parseMoney(value string) (float64, error) {
+	value = strings.TrimSpace(value)
+	value = strings.NewReplacer(
+		"¥", "",
+		"￥", "",
+		"CNY", "",
+		"元", "",
+		",", "",
+		" ", "",
+		"\t", "",
+	).Replace(value)
+	return strconv.ParseFloat(value, 64)
 }

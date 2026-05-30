@@ -8,6 +8,9 @@ description: 支持的银行和服务提供商列表
 
 Double Entry Generator 支持以下金融服务提供商的数据转换：
 
+## 通用模板
+- [通用模板 Provider](providers/template.md ) - 使用运行时模板和规则导入账单，适合新增或迭代账单格式。
+
 ## 🏦 银行
 - [中国建设银行 (CCB)](providers/banks/ccb.md )
 - [中国工商银行 (ICBC)](providers/banks/icbc.md )

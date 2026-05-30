@@ -52,6 +52,7 @@ plugins:
               - Rules Configuration: en/configuration/rules.md
               - Account Mapping: en/configuration/accounts.md
             - Providers: en/providers.md
+            - Generic Template Provider: en/providers/template.md
             - Banks:
               - China Construction Bank (CCB): en/providers/banks/ccb.md
               - Industrial and Commercial Bank of China (ICBC): en/providers/banks/icbc.md
@@ -89,6 +90,7 @@ plugins:
               - 规则配置: configuration/rules.md
               - 账户映射: configuration/accounts.md
             - 提供商支持: providers.md
+            - 通用模板 Provider: providers/template.md
             - 银行:
               - 建设银行 (CCB): providers/banks/ccb.md
               - 工商银行 (ICBC): providers/banks/icbc.md
@@ -151,6 +153,7 @@ nav:
     - 规则配置: configuration/rules.md
     - 账户映射: configuration/accounts.md
   - 提供商支持: providers.md
+  - 通用模板 Provider: providers/template.md
   - 银行:
     - 建设银行 (CCB): providers/banks/ccb.md
     - 工商银行 (ICBC): providers/banks/icbc.md

@@ -7,10 +7,12 @@ import (
 	"log"
 	"math"
 	"sort"
+	"strings"
 	"text/template"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/importer"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/io/writer"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/util"
@@ -58,6 +60,10 @@ func (b *BeanCount) initTemplates() error {
 	normalOrderTemplate, err = template.New("normalOrder").Funcs(funcMap).Parse(normalOrder)
 	if err != nil {
 		return fmt.Errorf("Failed to init the normalOrder template. %v", err)
+	}
+	runtimeOrderTemplate, err = template.New("runtimeOrder").Funcs(funcMap).Parse(runtimeOrder)
+	if err != nil {
+		return fmt.Errorf("Failed to init the runtimeOrder template. %v", err)
 	}
 	cryptoOrderTemplate, err = template.New("cryptoOrder").Funcs(funcMap).Parse(cryptoOrder)
 	if err != nil {
@@ -144,6 +150,30 @@ func (b *BeanCount) writeHeader(file io.Writer) error {
 	}
 
 	accounts := b.GetAllCandidateAccounts(b.Config)
+	if b.Provider == importer.DefaultProviderName {
+		for account := range b.IR.OpenAccounts {
+			if account != "" {
+				accounts[account] = true
+			}
+		}
+		for _, order := range b.IR.Orders {
+			for _, posting := range order.Postings {
+				if account := postingAccount(posting.Line); account != "" {
+					accounts[account] = true
+				}
+			}
+			for _, account := range []string{order.MinusAccount, order.PlusAccount} {
+				if account != "" {
+					accounts[account] = true
+				}
+			}
+			for _, account := range order.ExtraAccounts {
+				if account != "" {
+					accounts[account] = true
+				}
+			}
+		}
+	}
 	var sortedAccounts []string
 	for k := range accounts {
 		if k != "" {
@@ -200,6 +230,22 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 	default:
 		fallthrough
 	case ir.OrderTypeNormal:
+		if len(o.Postings) > 0 {
+			postings := make([]string, 0, len(o.Postings))
+			for _, posting := range o.Postings {
+				postings = append(postings, posting.Line)
+			}
+			err = runtimeOrderTemplate.Execute(&buf, &NormalOrderVars{
+				PayTime:  o.PayTime,
+				Peer:     o.Peer,
+				Item:     o.Item,
+				Note:     o.Note,
+				Metadata: o.Metadata,
+				Tags:     o.Tags,
+				Postings: postings,
+			})
+			break
+		}
 		currency := b.getCurrency(o)
 		err = normalOrderTemplate.Execute(&buf, &NormalOrderVars{
 			PayTime:           o.PayTime,
@@ -432,4 +478,15 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 		return err
 	}
 	return nil
+}
+
+func postingAccount(line string) string {
+	fields := strings.Fields(line)
+	if len(fields) == 0 {
+		return ""
+	}
+	if strings.Contains(fields[0], ":") {
+		return fields[0]
+	}
+	return ""
 }
