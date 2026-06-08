@@ -77,7 +77,7 @@ func (a *Alipay) Translate(filename string) (*ir.IR, error) {
 
 		a.LineNum++
 
-		if a.LineNum <= 23 {
+		if a.LineNum <= 22 {
 			// bypass the useless
 			continue
 		}
