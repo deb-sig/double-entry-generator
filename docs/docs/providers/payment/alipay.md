@@ -41,6 +41,8 @@ title: 支付宝账单转换
 layout: default
 
 alipay:
+  # 保留已匹配的退款记录和原交易，便于对账
+  keepRefundRecords: false
   rules:
     # 收入类交易
     - type: 收入
@@ -122,6 +124,17 @@ alipay:
 - `methodAccount`: 指定支付账户（如余额、信用卡等）
 - `targetAccount`: 指定目标账户
 - `pnlAccount`: 投资收益账户（用于基金、黄金交易）
+
+### 退款对账
+
+默认情况下，如果同一 CSV 文件中的全额退款记录能够匹配到原交易，Provider 会同时移除这两条记录。退款可能晚于原交易到账；需要保留两条记录进行阶段性对账时，可以设置：
+
+```yaml
+alipay:
+  keepRefundRecords: true
+```
+
+该选项只影响已匹配退款记录与原交易的自动移除。未匹配退款、部分退款、跨文件退款、规则中的 `ignore: true`，以及“交易关闭且不计收支”记录的处理方式保持不变。
 
 ## 账户关系
 

@@ -73,6 +73,9 @@ func (fr *SimpleFileReader) ProcessFileWithFormat(fileName string, fileData []by
 	switch fr.currentProvider {
 	case "alipay":
 		provider := alipay.New()
+		if fr.config != nil {
+			provider.Config = fr.config.Alipay
+		}
 		// Alipay 只支持 CSV
 		orders, err = provider.Translate(string(fileData))
 

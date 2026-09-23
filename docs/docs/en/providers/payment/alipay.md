@@ -41,6 +41,8 @@ title: Alipay Bill Conversion
 layout: default
 
 alipay:
+  # Keep matched refund records and their original orders for reconciliation.
+  keepRefundRecords: false
   rules:
     # Income transactions
     - type: 收入
@@ -122,6 +124,17 @@ The Alipay Provider provides rule-based matching, you can specify:
 - `methodAccount`: Specify payment account (e.g., balance, credit card, etc.)
 - `targetAccount`: Specify target account
 - `pnlAccount`: Investment profit and loss account (for fund, gold trading)
+
+### Refund Reconciliation
+
+By default, when a full refund record is matched with its original order in the same CSV file, the Provider removes both records. A refund can arrive later than the original order; to keep both records for period reconciliation, configure:
+
+```yaml
+alipay:
+  keepRefundRecords: true
+```
+
+This option only disables automatic removal of matched refund records and their original orders. Unmatched refunds, partial refunds, refunds across files, rule-level `ignore: true`, and closed non-income/non-expense records keep their existing behavior.
 
 ## Account Relationships
 

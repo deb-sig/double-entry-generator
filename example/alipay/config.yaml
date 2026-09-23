@@ -3,6 +3,8 @@ defaultPlusAccount: Expenses:FIXME
 defaultCurrency: CNY
 title: 测试
 alipay:
+  # 保留已匹配的退款记录和原交易，便于退款到账前后的对账
+  keepRefundRecords: false
   rules:
     # 泛匹配结果应当放在前面
     - type: 收入 # 其他转账收款

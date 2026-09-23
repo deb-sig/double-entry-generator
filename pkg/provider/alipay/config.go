@@ -18,7 +18,10 @@ package alipay
 
 // Config is the configuration for Alipay.
 type Config struct {
-	Rules []Rule `mapstructure:"rules,omitempty"`
+	// KeepRefundRecords keeps a matched refund record and its original order
+	// in the intermediate representation for reconciliation.
+	KeepRefundRecords bool   `mapstructure:"keepRefundRecords,omitempty" yaml:"keepRefundRecords,omitempty"`
+	Rules             []Rule `mapstructure:"rules,omitempty"`
 }
 
 // Rule is the type for match rules.
