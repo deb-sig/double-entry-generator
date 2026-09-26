@@ -1056,16 +1056,39 @@ func conditionFieldValue(field string, row Row, order ir.Order) string {
 	}
 	switch field {
 	case "date":
+		if !order.PayTime.IsZero() {
+			return order.PayTime.Format("2006-01-02")
+		}
 		return row.Date
 	case "amount":
+		if order.ExactMoney != nil {
+			return order.ExactMoney.String()
+		}
 		return row.Amount
 	case "currency":
+		if order.Currency != "" {
+			return order.Currency
+		}
 		return row.Currency
 	case "payee":
+		if order.Peer != "" {
+			return order.Peer
+		}
 		return row.Payee
 	case "narration":
+		if order.Item != "" {
+			return order.Item
+		}
 		return row.Narration
 	default:
+		if order.Metadata != nil {
+			if v, ok := order.Metadata[field]; ok {
+				return v
+			}
+			if v, ok := order.Metadata["metadata."+field]; ok {
+				return v
+			}
+		}
 		return ""
 	}
 }
