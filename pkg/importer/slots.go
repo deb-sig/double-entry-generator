@@ -38,11 +38,23 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 		if !matches {
 			continue
 		}
-		if err := applySlotPersonalActions(&order, &row, rule.Actions, &ignore); err != nil {
+		if err := applySlotPersonalActions(&order, &row, rule, &ignore); err != nil {
 			return ir.Order{}, false, err
 		}
 		if err := mergeV2Actions(&merged, rule.Actions); err != nil {
 			return ir.Order{}, false, err
+		}
+		if account := strings.TrimSpace(rule.Actions.From.Account); account != "" {
+			putFieldSource(&order, ruleFieldSource(rule, "from", rule.Actions.From.Account))
+		}
+		if account := strings.TrimSpace(rule.Actions.To.Account); account != "" {
+			putFieldSource(&order, ruleFieldSource(rule, "to", rule.Actions.To.Account))
+		}
+		if strings.TrimSpace(rule.Actions.Amount) != "" {
+			putFieldSource(&order, ruleFieldSource(rule, "amount", rule.Actions.Amount))
+		}
+		if strings.TrimSpace(rule.Actions.Currency) != "" {
+			putFieldSource(&order, ruleFieldSource(rule, "currency", rule.Actions.Currency))
 		}
 	}
 	if ignore {
@@ -57,7 +69,15 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 	if strings.TrimSpace(merged.Currency) == "" {
 		merged.Currency = order.Currency
 	}
+	fromMissing := strings.TrimSpace(merged.From.Account) == ""
+	toMissing := strings.TrimSpace(merged.To.Account) == ""
 	fillMissingSides(&merged, mapped.expense)
+	if fromMissing {
+		putFieldSource(&order, ir.FieldSource{Slot: "from", Origin: ir.FieldOriginEngine})
+	}
+	if toMissing {
+		putFieldSource(&order, ir.FieldSource{Slot: "to", Origin: ir.FieldOriginEngine})
+	}
 	if err := renderV2Postings(&order, row, merged); err != nil {
 		return ir.Order{}, false, err
 	}
@@ -92,29 +112,46 @@ func applySlotMapping(profile *Profile, row Row) (slotMapped, error) {
 		}
 		order.Metadata[key] = value
 		row.Metadata[key] = value
+		putFieldSource(&order, templateFieldSource(metadataSlot(key), slots.Metadata.Values[key]))
 	}
 	order.MetadataKeys = metadataKeyOrder(keys, order.Metadata)
 
 	if slots.Payee != "" {
 		order.Peer = strings.TrimSpace(renderRuleText(slots.Payee, row, order))
 		row.Payee = order.Peer
+		putFieldSource(&order, templateFieldSource("payee", slots.Payee))
 	}
 	if slots.Narration != "" {
 		order.Item = strings.TrimSpace(renderRuleText(slots.Narration, row, order))
 		row.Narration = order.Item
+		putFieldSource(&order, templateFieldSource("narration", slots.Narration))
 	}
 	if slots.Flag != "" {
 		order.Flag = strings.TrimSpace(renderRuleText(slots.Flag, row, order))
+		if order.Flag != "" {
+			putFieldSource(&order, templateFieldSource("flag", slots.Flag))
+		}
 	}
 	if slots.Tags != "" {
 		order.Tags = splitList(renderRuleText(slots.Tags, row, order))
+		if len(order.Tags) > 0 {
+			putFieldSource(&order, templateFieldSource("tags", slots.Tags))
+		}
 	}
 	if slots.Links != "" {
 		order.Links = splitList(renderRuleText(slots.Links, row, order))
+		if len(order.Links) > 0 {
+			putFieldSource(&order, templateFieldSource("links", slots.Links))
+		}
 	}
 	if slots.Currency != "" {
 		order.Currency = strings.TrimSpace(renderRuleText(slots.Currency, row, order))
 		row.Currency = order.Currency
+		if order.Currency != "" {
+			putFieldSource(&order, templateFieldSource("currency", slots.Currency))
+		}
+	} else if strings.TrimSpace(order.Currency) != "" {
+		putFieldSource(&order, ir.FieldSource{Slot: "currency", Origin: ir.FieldOriginTemplate})
 	}
 	if slots.Date != "" {
 		rendered := strings.TrimSpace(renderRuleText(slots.Date, row, order))
@@ -124,6 +161,7 @@ func applySlotMapping(profile *Profile, row Row) (slotMapped, error) {
 			return slotMapped{}, fmt.Errorf("slots.date %q: %w", slots.Date, err)
 		}
 		order.PayTime = payTime
+		putFieldSource(&order, templateFieldSource("date", slots.Date))
 	}
 
 	renderedAmount, err := renderPostingTextStrict(slots.Amount, row, order)
@@ -153,6 +191,7 @@ func applySlotMapping(profile *Profile, row Row) (slotMapped, error) {
 	if expense {
 		row.Amount = "-" + absolute
 	}
+	putFieldSource(&order, templateFieldSource("amount", slots.Amount))
 	return slotMapped{row: row, order: order, absolute: absolute, expense: expense}, nil
 }
 
@@ -169,33 +208,50 @@ func metadataNegates(meta map[string]string, sign AmountSign) bool {
 	return false
 }
 
-func applySlotPersonalActions(order *ir.Order, row *Row, actions Actions, ignore *bool) error {
+func applySlotPersonalActions(order *ir.Order, row *Row, rule Rule, ignore *bool) error {
+	actions := rule.Actions
 	if actions.Ignore {
 		*ignore = true
 	}
 	if actions.Payee != "" {
 		order.Peer = resolveActionValue(actions.Payee, *row, *order)
 		row.Payee = order.Peer
+		putFieldSource(order, ruleFieldSource(rule, "payee", actions.Payee))
 	}
 	if actions.Narration != "" {
 		order.Item = resolveActionValue(actions.Narration, *row, *order)
 		row.Narration = order.Item
+		putFieldSource(order, ruleFieldSource(rule, "narration", actions.Narration))
 	}
 	if actions.Flag != "" {
 		order.Flag = strings.TrimSpace(resolveActionValue(actions.Flag, *row, *order))
+		if order.Flag == "" {
+			dropFieldSource(order, "flag")
+		} else {
+			putFieldSource(order, ruleFieldSource(rule, "flag", actions.Flag))
+		}
 	}
 	if actions.Link != "" {
 		link := strings.TrimSpace(resolveActionValue(actions.Link, *row, *order))
 		if link != "" {
 			order.Links = append(order.Links, link)
+			putFieldSource(order, ruleFieldSource(rule, "links", actions.Link))
 		}
 	}
 	if actions.Tag != "" {
-		order.Tags = append(order.Tags, splitList(resolveActionValue(actions.Tag, *row, *order))...)
+		tags := splitList(resolveActionValue(actions.Tag, *row, *order))
+		if len(tags) > 0 {
+			order.Tags = append(order.Tags, tags...)
+			putFieldSource(order, ruleFieldSource(rule, "tags", actions.Tag))
+		}
 	}
-	order.Tags = append(order.Tags, actions.Tags...)
+	if len(actions.Tags) > 0 {
+		order.Tags = append(order.Tags, actions.Tags...)
+		putFieldSource(order, ir.FieldSource{Slot: "tags", RuleID: rule.ID, Origin: ir.FieldOriginRule})
+	}
 	if actions.Note != "" {
 		order.Note = resolveActionValue(actions.Note, *row, *order)
+		putFieldSource(order, ruleFieldSource(rule, "note", actions.Note))
 	}
 	if order.Metadata == nil {
 		order.Metadata = map[string]string{}
@@ -206,6 +262,7 @@ func applySlotPersonalActions(order *ir.Order, row *Row, actions Actions, ignore
 			delete(order.Metadata, key)
 			delete(row.Metadata, key)
 			order.MetadataKeys = removeString(order.MetadataKeys, key)
+			dropFieldSource(order, metadataSlot(key))
 			continue
 		}
 		order.Metadata[key] = rendered
@@ -216,6 +273,7 @@ func applySlotPersonalActions(order *ir.Order, row *Row, actions Actions, ignore
 		if !containsString(order.MetadataKeys, key) {
 			order.MetadataKeys = append(order.MetadataKeys, key)
 		}
+		putFieldSource(order, ruleFieldSource(rule, metadataSlot(key), value))
 	}
 	for _, key := range actions.MetadataDrop {
 		key = strings.TrimSpace(key)
@@ -225,6 +283,7 @@ func applySlotPersonalActions(order *ir.Order, row *Row, actions Actions, ignore
 		delete(order.Metadata, key)
 		delete(row.Metadata, key)
 		order.MetadataKeys = removeString(order.MetadataKeys, key)
+		dropFieldSource(order, metadataSlot(key))
 	}
 	return nil
 }
@@ -254,6 +313,82 @@ func metadataKeyOrder(declared []string, values map[string]string) []string {
 		}
 	}
 	return out
+}
+
+func templateFieldSource(slot, expr string) ir.FieldSource {
+	return ir.FieldSource{
+		Slot:    slot,
+		Columns: expressionColumns(expr),
+		Origin:  ir.FieldOriginTemplate,
+	}
+}
+
+func ruleFieldSource(rule Rule, slot, expr string) ir.FieldSource {
+	return ir.FieldSource{
+		Slot:    slot,
+		RuleID:  rule.ID,
+		Columns: expressionColumns(expr),
+		Origin:  ir.FieldOriginRule,
+	}
+}
+
+func metadataSlot(key string) string {
+	return "metadata." + key
+}
+
+// putFieldSource keeps the latest writer for a scalar slot. Tags and links
+// accumulate one entry per write.
+func putFieldSource(order *ir.Order, src ir.FieldSource) {
+	if src.Slot == "tags" || src.Slot == "links" {
+		order.Sources = append(order.Sources, src)
+		return
+	}
+	for i := range order.Sources {
+		if order.Sources[i].Slot == src.Slot {
+			order.Sources[i] = src
+			return
+		}
+	}
+	order.Sources = append(order.Sources, src)
+}
+
+func dropFieldSource(order *ir.Order, slot string) {
+	out := make([]ir.FieldSource, 0, len(order.Sources))
+	for _, src := range order.Sources {
+		if src.Slot != slot {
+			out = append(out, src)
+		}
+	}
+	order.Sources = out
+}
+
+// expressionColumns lists <列名> references. Bracket refs are logical names,
+// and a fully quoted literal contributes no column.
+func expressionColumns(expr string) []string {
+	expr = strings.TrimSpace(expr)
+	if expr == "" {
+		return nil
+	}
+	if _, ok := parseActionLiteral(expr); ok {
+		return nil
+	}
+	var cols []string
+	seen := map[string]struct{}{}
+	for _, match := range columnExprPattern.FindAllStringSubmatch(expr, -1) {
+		if !strings.HasPrefix(match[0], "<") {
+			continue
+		}
+		name := strings.TrimSpace(match[2])
+		if name == "" {
+			continue
+		}
+		if _, ok := seen[name]; ok {
+			continue
+		}
+		seen[name] = struct{}{}
+		cols = append(cols, name)
+	}
+	return cols
 }
 
 func containsString(values []string, want string) bool {

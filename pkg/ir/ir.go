@@ -63,6 +63,39 @@ type Order struct {
 	Flag         string
 	Links        []string
 	Postings     []Posting
+	// Sources records where each written value came from. Legacy templateRules
+	// orders leave this empty. Compilers do not read it.
+	Sources []FieldSource
+}
+
+// FieldOrigin identifies who wrote a value onto a transaction.
+type FieldOrigin string
+
+const (
+	// FieldOriginTemplate is the template slot mapping.
+	FieldOriginTemplate FieldOrigin = "template"
+	// FieldOriginRule is a personal rule.
+	FieldOriginRule FieldOrigin = "rule"
+	// FieldOriginEngine is a side nobody wrote. The importer filled
+	// Assets:FIXME, Expenses:FIXME, or Income:FIXME. RuleID is empty.
+	FieldOriginEngine FieldOrigin = "engine"
+)
+
+// FieldSource is the provenance of one value written onto a transaction.
+//
+// Slot is a Beancount slot (date, payee, narration, amount, currency, flag,
+// tags, links), a metadata key prefixed with "metadata.", or an account side
+// ("from", "to"). Tags and links may have one entry per write. Other slots
+// keep the latest writer.
+//
+// RuleID is set only for FieldOriginRule. Columns are bill column names
+// referenced with <列名>, in appearance order. A quoted literal and an engine
+// fallback have no columns.
+type FieldSource struct {
+	Slot    string
+	RuleID  string
+	Columns []string
+	Origin  FieldOrigin
 }
 
 // Posting is a rendered, template-driven posting line. Runtime v2 rules
