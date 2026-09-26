@@ -237,15 +237,16 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 				postings = append(postings, posting.Line)
 			}
 			err = runtimeOrderTemplate.Execute(&buf, &NormalOrderVars{
-				PayTime:  o.PayTime,
-				Peer:     o.Peer,
-				Item:     o.Item,
-				Note:     o.Note,
-				Metadata: o.Metadata,
-				Tags:     o.Tags,
-				Flag:     o.Flag,
-				Links:    o.Links,
-				Postings: postings,
+				PayTime:      o.PayTime,
+				Peer:         o.Peer,
+				Item:         o.Item,
+				Note:         o.Note,
+				Metadata:     o.Metadata,
+				MetadataKeys: o.MetadataKeys,
+				Tags:         o.Tags,
+				Flag:         o.Flag,
+				Links:        o.Links,
+				Postings:     postings,
 			})
 			break
 		}

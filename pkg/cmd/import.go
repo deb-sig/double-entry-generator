@@ -75,9 +75,8 @@ func init() {
 func runImport(templateRef, filename string) {
 	projectCfg := loadProjectImportConfig()
 	templateRef = firstNonEmpty(templateRef, projectCfg.DefaultTemplate)
-	if id, version := importer.ParseTemplateRef(templateRef); version != "" {
-		log.Printf("Using pinned template %s@%s", id, version)
-	}
+	resolvedRef := importer.ResolvedTemplateRef(templateRef)
+	log.Printf("Using template %s", resolvedRef)
 	profile, err := importer.LoadProfileRef(templateRef)
 	logErrorIfNotNil(err)
 
@@ -92,6 +91,9 @@ func runImport(templateRef, filename string) {
 		ruleCfg, err := loadRuleFile(rulesPath)
 		logErrorIfNotNil(err)
 		appendRulesToProfile(profile, ruleCfg)
+		for _, warning := range importer.PersonalRuleWarnings(profile, ruleCfg.PersonalRules, resolvedRef, ruleCfg.Template) {
+			log.Printf("rule warning: %s", warning)
+		}
 	}
 
 	i, err := importer.ImportFile(profile, filename)
@@ -125,6 +127,7 @@ func loadProjectImportConfig() projectImportConfig {
 type importRuleConfig struct {
 	ProtocolVersion       string          `yaml:"protocolVersion"`
 	RequiredCapabilities  []string        `yaml:"requiredCapabilities"`
+	Template              string          `yaml:"template"`
 	TemplateRules         []importer.Rule `yaml:"templateRules"`
 	TemplateRuleOverrides []importer.Rule `yaml:"templateRuleOverrides"`
 	PersonalRules         []importer.Rule `yaml:"personalRules"`

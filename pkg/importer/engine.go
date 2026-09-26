@@ -367,7 +367,7 @@ func buildRowsFromRecords(profile *Profile, headers []string, records [][]string
 			Metadata:  metadata,
 			Raw:       raw,
 		}
-		if !profile.IsV2() && strings.TrimSpace(row.Amount) == "" {
+		if !profile.IsV2() && !profile.Template.HasSlotContract() && strings.TrimSpace(row.Amount) == "" {
 			continue
 		}
 		rows = append(rows, row)
@@ -448,6 +448,9 @@ func nonEmptyAmount(value string) bool {
 }
 
 func rowToImportOrder(profile *Profile, row Row) (ir.Order, bool, error) {
+	if profile.Template.HasSlotContract() {
+		return rowToSlotOrder(profile, row)
+	}
 	if !profile.IsV2() {
 		return rowToOrder(profile, row)
 	}
@@ -949,6 +952,12 @@ func fieldValue(field string, row Row, order ir.Order) string {
 // date.time / date.date / date.timestamp suffixes remain for DEG native when.
 func conditionFieldValue(field string, row Row, order ir.Order) string {
 	field = strings.TrimSpace(field)
+	if key, ok := strings.CutPrefix(field, "metadata."); ok && key != "" && !strings.Contains(key, ".") {
+		if row.Metadata == nil {
+			return ""
+		}
+		return row.Metadata[key]
+	}
 	if base, suffix, ok := strings.Cut(field, "."); ok && (suffix == "time" || suffix == "date" || suffix == "timestamp") {
 		value := conditionFieldValue(base, row, order)
 		if base == "date" || base == "交易时间" || value == "" {

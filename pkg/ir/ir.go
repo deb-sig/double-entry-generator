@@ -41,7 +41,7 @@ type Order struct {
 	Money float64
 	// ExactMoney, when non-nil, is the authoritative decimal amount for the
 	// runtime path (parse → rules → IR → Beancount).
-	ExactMoney *Decimal
+	ExactMoney     *Decimal
 	Note           string
 	PayTime        time.Time
 	Type           Type // 方向，一般为 收/支
@@ -52,15 +52,17 @@ type Order struct {
 	Price          float64
 	Currency       string
 	Commission     float64 // 手续费/服务费
-	Units           map[Unit]string
-	ExtraAccounts   map[Account]string
-	MinusAccount    string
-	PlusAccount     string
-	Metadata        map[string]string
-	Tags            []string
-	Flag            string
-	Links           []string
-	Postings        []Posting
+	Units          map[Unit]string
+	ExtraAccounts  map[Account]string
+	MinusAccount   string
+	PlusAccount    string
+	Metadata       map[string]string
+	// MetadataKeys is the template-declared metadata order. Empty keeps map order.
+	MetadataKeys []string
+	Tags         []string
+	Flag         string
+	Links        []string
+	Postings     []Posting
 }
 
 // Posting is a rendered, template-driven posting line. Runtime v2 rules

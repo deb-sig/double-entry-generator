@@ -13,14 +13,13 @@ description: 使用运行时模板和规则导入账单
 
 ```text
 账单文件
-  -> 模板解析字段
-  -> 统一中间结构
-  -> 模板规则
-  -> 个人规则
+  -> 槽位和元数据映射
+  -> 个人规则（账户、元数据增删改）
+  -> 没写到的一侧补 FIXME
   -> beancount / ledger
 ```
 
-模板规则用于解释账单本身，例如收支方向、退款、手续费、状态等。个人规则用于表达用户自己的账户分类习惯，例如某个商户对应哪个支出账户。个人规则后执行，因此可以覆盖模板规则的结果。
+模板只声明 Beancount 已有的槽位，以及这份账单自己的元数据键。账户名只写在个人规则里。下面的「槽位契约」是现在要写的格式。更早的 `templateRules` 仍然可以导入旧模板。
 
 ## 查看模板
 
@@ -389,6 +388,51 @@ personalRules:
   actions:
       ignore: true
 ```
+
+## 槽位契约
+
+槽位只有 Beancount 交易本身有的字段：`date`、`payee`、`narration`、`amount`、`currency`、`flag`、`tags`、`links`，以及 `metadata` 里的键。不要增加 `method`、`type` 这种槽位。支付方式、收/支写成元数据。没有该列的账单就不声明这个键。
+
+```yaml
+template:
+  fileFormat: csv
+  sourceHeaders: [交易时间, 交易对方, 商品, 收/支, 金额(元), 支付方式, 交易单号]
+  slots:
+    date: <交易时间>
+    payee: <交易对方>
+    narration: <商品>
+    amount: <金额(元)>.number
+    currency: CNY
+    metadata:
+      method: <支付方式>
+      type: <收/支>
+      orderId: <交易单号>
+  amountSign:
+    metadata: type
+    negate: [支出, 支]
+```
+
+`amountSign` 只决定金额正负。个人规则是唯一写 `from` / `to` 的地方。某一侧没写时，支出用 `Assets:FIXME` 和 `Expenses:FIXME`，收入用 `Income:FIXME` 和 `Assets:FIXME`。
+
+```yaml
+template: wechat@2026-04-28
+personalRules:
+  - id: 一卡通
+    when: payee ~ "一卡通"
+    actions:
+      from: Assets:Current:零钱
+  - id: 去掉订单号
+    actions:
+      metadataDrop: [orderId]
+  - id: 补充备注
+    actions:
+      metadata:
+        note: <备注>
+```
+
+`when` 里的 `payee`、`narration`、`amount` 和 `metadata.method` 读取的是映射之后的值。`<交易对方>` 仍然可以直接点名列。列名改了之后，只引用槽位的规则不用改；引用了被删列名或被删元数据键的规则，导入时会提示规则 `id`。
+
+`double-entry-generator config init <template>` 会把槽位映射和元数据键写进个人文件的注释，并记下模板版本。规则 `id` 可以用中文。
 
 ## 使用建议
 

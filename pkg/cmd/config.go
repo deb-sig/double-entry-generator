@@ -64,7 +64,11 @@ func initPersonalRules(templateRef, output string, force bool) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	b, err = personalRuleSkeleton(b)
+	profile, err := importer.LoadProfileRef(templateRef)
+	if err != nil {
+		return "", err
+	}
+	b, err = personalRuleSkeleton(importer.ResolvedTemplateRef(templateRef), profile, b)
 	if err != nil {
 		return "", err
 	}
@@ -93,7 +97,10 @@ func initPersonalRules(templateRef, output string, force bool) (string, error) {
 	return output, nil
 }
 
-func personalRuleSkeleton(b []byte) ([]byte, error) {
+func personalRuleSkeleton(templateRef string, profile *importer.Profile, b []byte) ([]byte, error) {
+	if profile != nil && profile.Template.HasSlotContract() {
+		return []byte(importer.SlotSkeleton(templateRef, profile)), nil
+	}
 	ruleCfg, err := parseRuleBytes(b)
 	if err != nil {
 		return nil, err

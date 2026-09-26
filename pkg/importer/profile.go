@@ -33,22 +33,82 @@ type Profile struct {
 }
 
 type Template struct {
-	FileFormat      string            `json:"fileFormat,omitempty" yaml:"fileFormat,omitempty"`
-	Encoding        string            `json:"encoding,omitempty" yaml:"encoding,omitempty"`
-	Delimiter       string            `json:"delimiter,omitempty" yaml:"delimiter,omitempty"`
-	StripTabs       bool              `json:"stripTabs,omitempty" yaml:"stripTabs,omitempty"`
-	SkipLeadingRows int               `json:"skipLeadingRows,omitempty" yaml:"skipLeadingRows,omitempty"`
-	SkipInvalidRows bool              `json:"skipInvalidRows,omitempty" yaml:"skipInvalidRows,omitempty"`
-	DateFormat      string            `json:"dateFormat,omitempty" yaml:"dateFormat,omitempty"`
-	AmountPrefix    string            `json:"amountPrefix,omitempty" yaml:"amountPrefix,omitempty"`
-	SourceHeaders   []string          `json:"sourceHeaders,omitempty" yaml:"sourceHeaders,omitempty"`
-	HeaderLocate bool `json:"headerLocate,omitempty" yaml:"headerLocate,omitempty"`
-	HeaderScanMaxRows int `json:"headerScanMaxRows,omitempty" yaml:"headerScanMaxRows,omitempty"`
-	Columns         ColumnMapping     `json:"columns,omitempty" yaml:"columns,omitempty"`
-	Metadata        map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-	DefaultMinus    string            `json:"defaultMinusAccount,omitempty" yaml:"defaultMinusAccount,omitempty"`
-	DefaultPlus     string            `json:"defaultPlusAccount,omitempty" yaml:"defaultPlusAccount,omitempty"`
-	DefaultCurrency string            `json:"defaultCurrency,omitempty" yaml:"defaultCurrency,omitempty"`
+	FileFormat        string            `json:"fileFormat,omitempty" yaml:"fileFormat,omitempty"`
+	Encoding          string            `json:"encoding,omitempty" yaml:"encoding,omitempty"`
+	Delimiter         string            `json:"delimiter,omitempty" yaml:"delimiter,omitempty"`
+	StripTabs         bool              `json:"stripTabs,omitempty" yaml:"stripTabs,omitempty"`
+	SkipLeadingRows   int               `json:"skipLeadingRows,omitempty" yaml:"skipLeadingRows,omitempty"`
+	SkipInvalidRows   bool              `json:"skipInvalidRows,omitempty" yaml:"skipInvalidRows,omitempty"`
+	DateFormat        string            `json:"dateFormat,omitempty" yaml:"dateFormat,omitempty"`
+	AmountPrefix      string            `json:"amountPrefix,omitempty" yaml:"amountPrefix,omitempty"`
+	SourceHeaders     []string          `json:"sourceHeaders,omitempty" yaml:"sourceHeaders,omitempty"`
+	HeaderLocate      bool              `json:"headerLocate,omitempty" yaml:"headerLocate,omitempty"`
+	HeaderScanMaxRows int               `json:"headerScanMaxRows,omitempty" yaml:"headerScanMaxRows,omitempty"`
+	Columns           ColumnMapping     `json:"columns,omitempty" yaml:"columns,omitempty"`
+	Metadata          map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	// Slots is the Beancount field contract. When set, the template only fills
+	// these fields and metadata; it does not assign accounts.
+	Slots           SlotMapping `json:"slots,omitempty" yaml:"slots,omitempty"`
+	AmountSign      AmountSign  `json:"amountSign,omitempty" yaml:"amountSign,omitempty"`
+	DefaultMinus    string      `json:"defaultMinusAccount,omitempty" yaml:"defaultMinusAccount,omitempty"`
+	DefaultPlus     string      `json:"defaultPlusAccount,omitempty" yaml:"defaultPlusAccount,omitempty"`
+	DefaultCurrency string      `json:"defaultCurrency,omitempty" yaml:"defaultCurrency,omitempty"`
+}
+
+// SlotMapping binds bill columns to Beancount transaction fields.
+// Provider-specific columns (支付方式, 收/支, …) belong in Metadata, not here.
+type SlotMapping struct {
+	Date      string         `json:"date,omitempty" yaml:"date,omitempty"`
+	Payee     string         `json:"payee,omitempty" yaml:"payee,omitempty"`
+	Narration string         `json:"narration,omitempty" yaml:"narration,omitempty"`
+	Amount    string         `json:"amount,omitempty" yaml:"amount,omitempty"`
+	Currency  string         `json:"currency,omitempty" yaml:"currency,omitempty"`
+	Flag      string         `json:"flag,omitempty" yaml:"flag,omitempty"`
+	Tags      string         `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Links     string         `json:"links,omitempty" yaml:"links,omitempty"`
+	Metadata  orderedStrings `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+}
+
+// AmountSign negates the parsed amount when a metadata value matches.
+// 收/支 stays metadata; the sign is applied onto the posting amount.
+type AmountSign struct {
+	Metadata string   `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Negate   []string `json:"negate,omitempty" yaml:"negate,omitempty"`
+}
+
+// orderedStrings keeps YAML mapping order for metadata keys.
+type orderedStrings struct {
+	Keys   []string
+	Values map[string]string
+}
+
+func (m *orderedStrings) UnmarshalYAML(value *yaml.Node) error {
+	if value.Kind != yaml.MappingNode {
+		return fmt.Errorf("metadata must be a mapping")
+	}
+	m.Values = make(map[string]string, len(value.Content)/2)
+	for i := 0; i+1 < len(value.Content); i += 2 {
+		key := strings.TrimSpace(value.Content[i].Value)
+		var text string
+		if err := value.Content[i+1].Decode(&text); err != nil {
+			return err
+		}
+		if key == "" {
+			continue
+		}
+		if _, ok := m.Values[key]; !ok {
+			m.Keys = append(m.Keys, key)
+		}
+		m.Values[key] = text
+	}
+	return nil
+}
+
+func (t Template) HasSlotContract() bool {
+	s := t.Slots
+	return s.Date != "" || s.Payee != "" || s.Narration != "" || s.Amount != "" ||
+		s.Currency != "" || s.Flag != "" || s.Tags != "" || s.Links != "" ||
+		len(s.Metadata.Keys) > 0
 }
 
 type ColumnMapping struct {
@@ -73,22 +133,23 @@ type Rule struct {
 }
 
 type Actions struct {
-	Date      string            `json:"date,omitempty" yaml:"date,omitempty"`
-	Type      string            `json:"type,omitempty" yaml:"type,omitempty"`
-	Note      string            `json:"note,omitempty" yaml:"note,omitempty"`
-	From      TransferSide      `json:"from,omitempty" yaml:"from,omitempty"`
-	To        TransferSide      `json:"to,omitempty" yaml:"to,omitempty"`
-	Payee     string            `json:"payee,omitempty" yaml:"payee,omitempty"`
-	Narration string            `json:"narration,omitempty" yaml:"narration,omitempty"`
-	Amount    string            `json:"amount,omitempty" yaml:"amount,omitempty"`
-	Currency  string            `json:"currency,omitempty" yaml:"currency,omitempty"`
-	Tag       string            `json:"tag,omitempty" yaml:"tag,omitempty"`
-	Tags      []string          `json:"tags,omitempty" yaml:"tags,omitempty"`
-	Ignore    bool              `json:"ignore,omitempty" yaml:"ignore,omitempty"`
-	Flag      string            `json:"flag,omitempty" yaml:"flag,omitempty"`
-	Link      string            `json:"link,omitempty" yaml:"link,omitempty"`
+	Date         string            `json:"date,omitempty" yaml:"date,omitempty"`
+	Type         string            `json:"type,omitempty" yaml:"type,omitempty"`
+	Note         string            `json:"note,omitempty" yaml:"note,omitempty"`
+	From         TransferSide      `json:"from,omitempty" yaml:"from,omitempty"`
+	To           TransferSide      `json:"to,omitempty" yaml:"to,omitempty"`
+	Payee        string            `json:"payee,omitempty" yaml:"payee,omitempty"`
+	Narration    string            `json:"narration,omitempty" yaml:"narration,omitempty"`
+	Amount       string            `json:"amount,omitempty" yaml:"amount,omitempty"`
+	Currency     string            `json:"currency,omitempty" yaml:"currency,omitempty"`
+	Tag          string            `json:"tag,omitempty" yaml:"tag,omitempty"`
+	Tags         []string          `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Ignore       bool              `json:"ignore,omitempty" yaml:"ignore,omitempty"`
+	Flag         string            `json:"flag,omitempty" yaml:"flag,omitempty"`
+	Link         string            `json:"link,omitempty" yaml:"link,omitempty"`
 	Vars         map[string]string `json:"vars,omitempty" yaml:"vars,omitempty"`
 	Metadata     map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	MetadataDrop []string          `json:"metadataDrop,omitempty" yaml:"metadataDrop,omitempty"`
 	Postings     []string          `json:"postings,omitempty" yaml:"postings,omitempty"`
 	// PostingsMode controls how Postings combine with auto from/to legs.
 	// "" or "append" (DEG legacy default): render from/to then append Postings.
@@ -144,22 +205,23 @@ func (r *Rule) UnmarshalYAML(value *yaml.Node) error {
 
 func (a *Actions) UnmarshalYAML(value *yaml.Node) error {
 	type actions struct {
-		Date      flexibleString            `yaml:"date,omitempty"`
-		Type      flexibleString            `yaml:"type,omitempty"`
-		Note      flexibleString            `yaml:"note,omitempty"`
-		From      TransferSide              `yaml:"from,omitempty"`
-		To        TransferSide              `yaml:"to,omitempty"`
-		Payee     flexibleString            `yaml:"payee,omitempty"`
-		Narration flexibleString            `yaml:"narration,omitempty"`
-		Amount    flexibleString            `yaml:"amount,omitempty"`
-		Currency  flexibleString            `yaml:"currency,omitempty"`
-		Tag       flexibleString            `yaml:"tag,omitempty"`
-		Tags      []string                  `yaml:"tags,omitempty"`
-		Ignore    bool                      `yaml:"ignore,omitempty"`
-		Flag      flexibleString            `yaml:"flag,omitempty"`
-		Link      flexibleString            `yaml:"link,omitempty"`
+		Date         flexibleString            `yaml:"date,omitempty"`
+		Type         flexibleString            `yaml:"type,omitempty"`
+		Note         flexibleString            `yaml:"note,omitempty"`
+		From         TransferSide              `yaml:"from,omitempty"`
+		To           TransferSide              `yaml:"to,omitempty"`
+		Payee        flexibleString            `yaml:"payee,omitempty"`
+		Narration    flexibleString            `yaml:"narration,omitempty"`
+		Amount       flexibleString            `yaml:"amount,omitempty"`
+		Currency     flexibleString            `yaml:"currency,omitempty"`
+		Tag          flexibleString            `yaml:"tag,omitempty"`
+		Tags         []string                  `yaml:"tags,omitempty"`
+		Ignore       bool                      `yaml:"ignore,omitempty"`
+		Flag         flexibleString            `yaml:"flag,omitempty"`
+		Link         flexibleString            `yaml:"link,omitempty"`
 		Vars         map[string]flexibleString `yaml:"vars,omitempty"`
 		Metadata     map[string]flexibleString `yaml:"metadata,omitempty"`
+		MetadataDrop []string                  `yaml:"metadataDrop,omitempty"`
 		Postings     []flexibleString          `yaml:"postings,omitempty"`
 		PostingsMode flexibleString            `yaml:"postingsMode,omitempty"`
 	}
@@ -184,6 +246,7 @@ func (a *Actions) UnmarshalYAML(value *yaml.Node) error {
 		Link:         string(out.Link),
 		Vars:         flexibleStringMap(out.Vars),
 		Metadata:     flexibleStringMap(out.Metadata),
+		MetadataDrop: out.MetadataDrop,
 		Postings:     flexibleStringSlice(out.Postings),
 		PostingsMode: string(out.PostingsMode),
 	}
@@ -264,6 +327,7 @@ func isZeroActions(actions Actions) bool {
 		actions.Link == "" &&
 		len(actions.Vars) == 0 &&
 		len(actions.Metadata) == 0 &&
+		len(actions.MetadataDrop) == 0 &&
 		len(actions.Postings) == 0 &&
 		actions.PostingsMode == ""
 }
@@ -321,6 +385,15 @@ func normalizeTemplate(t *Template, defaults map[string]string) {
 
 func validateTemplate(p Profile) error {
 	t := p.Template
+	if t.HasSlotContract() {
+		if t.Slots.Date == "" {
+			return fmt.Errorf("template slots.date is required")
+		}
+		if t.Slots.Amount == "" {
+			return fmt.Errorf("template slots.amount is required")
+		}
+		return nil
+	}
 	if p.IsV2() && t.hasNoColumns() {
 		return nil
 	}
@@ -352,20 +425,20 @@ func (p *Profile) IsV2() bool {
 // SupportedCapabilities lists runtime features this DEG build implements for
 // Mirato personal-rules exports. Unknown requiredCapabilities must fail closed.
 var SupportedCapabilities = map[string]struct{}{
-	"when.starts_with":       {},
-	"when.ends_with":         {},
-	"when.regex":             {},
-	"when.literalFieldLookup": {},
-	"actions.flag":           {},
-	"actions.link":           {},
-	"actions.replace":        {},
-	"actions.quoted_literal": {},
-	"actions.rawColumnRef":           {},
-	"actions.postingsMode":           {},
-	"actions.postingPriceCost":       {},
+	"when.starts_with":                {},
+	"when.ends_with":                  {},
+	"when.regex":                      {},
+	"when.literalFieldLookup":         {},
+	"actions.flag":                    {},
+	"actions.link":                    {},
+	"actions.replace":                 {},
+	"actions.quoted_literal":          {},
+	"actions.rawColumnRef":            {},
+	"actions.postingsMode":            {},
+	"actions.postingPriceCost":        {},
 	"actions.dynamicPostingPriceCost": {},
-	"rule.templateId":                {},
-	"template.headerLocate":          {},
+	"rule.templateId":                 {},
+	"template.headerLocate":           {},
 }
 
 func (p *Profile) ValidateCapabilities() error {
