@@ -19,13 +19,16 @@ import (
 //
 // 任何未登记的新 provider 目录都会让测试失败，避免又悄悄多一个丢精度的实现。
 var exactMoneyMigrated = []string{
-	"jd", // 源即整数分，ExactFromCents 精确构造
+	"jd",    // 源即整数分，ExactFromCents 精确构造
+	"huobi", // 成交额原文 → ExactFromTextOrNil
+	"hxsec", // 结算金额/成交金额原文
+	"oklink", // 代币数量原文（8 位小数，float64 必丢精度）
 }
 
 var exactMoneyNotYet = []string{
 	"abc_debit", "alipay", "bmo", "boc", "bocom_credit", "bocom_debit", "ccb",
-	"cgb_credit", "citic", "cmb", "hsbchk", "htsec", "huobi", "hxsec", "icbc",
-	"mt", "oklink", "spdb_debit", "td", "wechat",
+	"cgb_credit", "citic", "cmb", "hsbchk", "htsec", "icbc",
+	"mt", "spdb_debit", "td", "wechat",
 }
 
 func providerDirs(t *testing.T) []string {

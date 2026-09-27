@@ -262,6 +262,7 @@ func (e *OKLink) parseEthereumRecord(fieldMap map[string]string) (Order, error) 
 			return order, fmt.Errorf("invalid token value: %w", err)
 		}
 		order.TokenValue = value
+		order.TokenValueText = tokenValueStr
 	}
 
 	// 合约地址保存原始值和小写值
@@ -372,6 +373,7 @@ func (e *OKLink) parseTronRecord(fieldMap map[string]string) (Order, error) {
 			return order, fmt.Errorf("invalid token value: %w", err)
 		}
 		order.TokenValue = value
+		order.TokenValueText = tokenValueStr
 	}
 
 	// 合约地址保存原始值和小写值
@@ -680,6 +682,7 @@ func (e *OKLink) buildIROrder(order *Order, matchedRules []*Rule, addrConfig *Ad
 		PayTime:   order.DateTime,
 		Peer:      order.Peer,
 		Money:     order.TokenValue,
+		ExactMoney: ir.ExactFromTextOrNil(order.TokenValueText),
 		Currency:  tokenSymbol,       // 使用代币符号作为货币单位
 		Tags:      make([]string, 0), // 初始化 tags 切片
 	}
@@ -731,6 +734,7 @@ func (e *OKLink) buildTransferOrder(order *Order, fromRules []*Rule, toRules []*
 		PayTime:   order.DateTime,
 		Peer:      order.ToOriginal, // 使用 to 地址作为 peer
 		Money:     order.TokenValue,
+		ExactMoney: ir.ExactFromTextOrNil(order.TokenValueText),
 		Currency:  tokenSymbol,       // 使用代币符号作为货币单位
 		Tags:      make([]string, 0), // 初始化 tags 切片
 	}

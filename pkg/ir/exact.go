@@ -1,5 +1,7 @@
 package ir
 
+import "strings"
+
 // Decimal 收尾（2026-09-27）：把「精确金额」的构造收敛到一处。
 //
 // 背景：引擎侧早已按 ExactMoney 求值（`order.ExactMoney` 权威、
@@ -37,4 +39,18 @@ func (o *Order) SetExactFromCents(cents int64) {
 	d := ExactFromCents(cents)
 	o.ExactMoney = d
 	o.Money = d.Float64Approx()
+}
+
+// ExactFromTextOrNil 是 ExactFromText 的「拿不到就 nil」版本，给 provider 用：
+// 原文解析失败时退回让引擎走旧的 float64 视图，而不是让整次导入失败。
+func ExactFromTextOrNil(text string) *Decimal {
+	text = strings.TrimSpace(text)
+	if text == "" {
+		return nil
+	}
+	d, err := ParseDecimal(text)
+	if err != nil {
+		return nil
+	}
+	return &d
 }

@@ -96,6 +96,7 @@ func (h *Hxsec) fieldsToIR(fields []string) error {
 			return fmt.Errorf("parse amount %s error: %v", fields[colSettlementAmount], err)
 		}
 		irO.Money = amount
+		irO.ExactMoney = ir.ExactFromTextOrNil(fields[colSettlementAmount])
 		irO.Type = ir.TypeUnknown
 		irO.Metadata["account_number"] = fields[colAccountNumber]
 	case "证券转银行":
@@ -105,6 +106,7 @@ func (h *Hxsec) fieldsToIR(fields []string) error {
 			return fmt.Errorf("parse amount %s error: %v", fields[colSettlementAmount], err)
 		}
 		irO.Money = amount
+		irO.ExactMoney = ir.ExactFromTextOrNil(fields[colSettlementAmount])
 		irO.Type = ir.TypeUnknown
 		irO.Metadata["account_number"] = fields[colAccountNumber]
 	case "利息归本":
@@ -114,6 +116,7 @@ func (h *Hxsec) fieldsToIR(fields []string) error {
 			return fmt.Errorf("parse amount %s error: %v", fields[colSettlementAmount], err)
 		}
 		irO.Money = amount
+		irO.ExactMoney = ir.ExactFromTextOrNil(fields[colSettlementAmount])
 		irO.Type = ir.TypeUnknown
 		irO.Metadata["account_number"] = fields[colAccountNumber]
 	case "红利入账":
@@ -126,6 +129,7 @@ func (h *Hxsec) fieldsToIR(fields []string) error {
 			return fmt.Errorf("parse amount %s error: %v", fields[colSettlementAmount], err)
 		}
 		irO.Money = amount
+		irO.ExactMoney = ir.ExactFromTextOrNil(fields[colSettlementAmount])
 		irO.Type = ir.TypeRecv
 		code := fmt.Sprintf("%06s", fields[colSecurityCode])
 		irO.Item = code + "-" + fields[colSecurityName]
@@ -154,6 +158,7 @@ func (h *Hxsec) fieldsToIR(fields []string) error {
 		irO.Price = price
 		irO.Commission = commission
 		irO.Money, _ = strconv.ParseFloat(fields[colTradeAmount], 64)
+		irO.ExactMoney = ir.ExactFromTextOrNil(fields[colTradeAmount])
 
 		if fields[colBusinessType] == "证券买入" {
 			irO.Type = ir.TypeSend
@@ -186,6 +191,7 @@ func (h *Hxsec) fieldsToIR(fields []string) error {
 		irO.Price = price
 		irO.Commission = commission
 		irO.Money, _ = strconv.ParseFloat(fields[colTradeAmount], 64)
+		irO.ExactMoney = ir.ExactFromTextOrNil(fields[colTradeAmount])
 
 		if fields[colBusinessType] == "融券回购" {
 			irO.Type = ir.TypeSend

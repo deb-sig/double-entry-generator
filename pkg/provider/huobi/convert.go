@@ -14,6 +14,7 @@ func (h *Huobi) convertToIR() *ir.IR {
 			TypeOriginal:   string(o.Type),
 			Item:           o.Item,
 			Money:          o.Money,
+			ExactMoney:     ir.ExactFromTextOrNil(o.MoneyText),
 			Amount:         o.Amount,
 			Price:          o.Price,
 			Commission:     o.Commission,

@@ -49,6 +49,7 @@ func (h *Huobi) translateToOrders(arr []string) error {
 		return fmt.Errorf("parse amount %s error: %v", arr[5], err)
 	}
 	bill.Money, err = strconv.ParseFloat(arr[6], 64)
+	bill.MoneyText = arr[6]
 	if err != nil {
 		return fmt.Errorf("parse money %s error: %v", arr[6], err)
 	}
