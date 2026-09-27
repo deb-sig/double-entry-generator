@@ -308,42 +308,7 @@ func (p *exprParser) parseComparison() (bool, error) {
 			}
 		}
 	}
-	// 金额字段的 == / != 走数值比较。Decimal 的 Abs()/Normalize() 会丢尾随零
-	// （99.00 规范化成 "99"），纯字符串比较会让 `amount == "99.00"` 静默失效；
-	// 而 >= / <= / > / < 一直是数值比较，== 应与它们一致。
-	if isMoneyFieldToken(left) && (op.val == "==" || op.val == "!=") {
-		if l, lErr := ParseAmountDecimal(leftVal, ""); lErr == nil {
-			if r, rErr := ParseAmountDecimal(rightVal, ""); rErr == nil {
-				equal := l.Cmp(r) == 0
-				if op.val == "!=" {
-					equal = !equal
-				}
-				return equal, nil
-			}
-		}
-	}
 	return compareValues(leftVal, op.val, rightVal)
-}
-
-// isMoneyFieldToken reports whether a condition's left side is a money field,
-// in any spelling the engine accepts: `amount`, `<amount>`, `raw[amount]`,
-// plus the immutable `original_amount` / `imported_amount` aliases.
-func isMoneyFieldToken(token exprToken) bool {
-	if token.typ != exprTokenValue {
-		return false
-	}
-	name := strings.TrimSpace(token.val)
-	if i := strings.Index(name, "]"); strings.HasPrefix(name, "raw[") && i > 0 {
-		name = name[len("raw["):i]
-	} else if i := strings.Index(name, "."); i > 0 {
-		name = name[:i]
-	}
-	name = strings.TrimPrefix(strings.TrimSuffix(name, ">"), "<")
-	switch strings.ToLower(strings.TrimSpace(name)) {
-	case "amount", "original_amount", "imported_amount":
-		return true
-	}
-	return false
 }
 
 func (p *exprParser) valueOf(token exprToken) string {

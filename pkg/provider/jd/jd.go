@@ -206,7 +206,10 @@ func (c *JD) convertToIR(s Order) ir.Order {
 		Category:        s.Category,
 		MerchantOrderID: &s.MerchantId,
 		OrderID:         &s.DealNo,
+		// 权威值走精确 Decimal（源就是整数分，不经过 float64）；
+		// Money 只保留给旧消费者当视图。
 		Money:           float64(s.Money) / 100.0,
+		ExactMoney:      ir.ExactFromCents(s.Money),
 		Note:            s.Notes,
 		PayTime:         s.PayTime,
 		Type:            c.convertToIRType(s.Type),
