@@ -1055,6 +1055,21 @@ func conditionFieldValue(field string, row Row, order ir.Order) string {
 		return v
 	}
 	switch field {
+	// 不可变原始值：`original_*` / `imported_*` 永远读账单原始行，不受前面规则改写影响。
+	// 顺序语义（本批确认：规则按序执行、后面的条件看到前面的改写）下，作者要用原始值
+	// 匹配就必须有显式入口 —— 与 Actual Budget 的 `imported payee` 同一套思路。
+	case "original_amount", "imported_amount":
+		return row.Amount
+	case "original_payee", "imported_payee":
+		return row.Payee
+	case "original_narration", "imported_narration":
+		return row.Narration
+	case "original_date", "imported_date":
+		return row.Date
+	case "original_currency", "imported_currency":
+		return row.Currency
+	case "original_type", "imported_type":
+		return row.Type
 	case "date":
 		if !order.PayTime.IsZero() {
 			return order.PayTime.Format("2006-01-02")
@@ -1062,7 +1077,7 @@ func conditionFieldValue(field string, row Row, order ir.Order) string {
 		return row.Date
 	case "amount":
 		if order.ExactMoney != nil {
-			return order.ExactMoney.String()
+			return order.ExactMoney.Text(0)
 		}
 		return row.Amount
 	case "currency":

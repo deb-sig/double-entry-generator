@@ -151,7 +151,10 @@ func TestSequenceMissingAndEmptyFieldsAreEmptyString(t *testing.T) {
 	}
 }
 
-func TestSequenceConditionsReadOriginalNotMutated(t *testing.T) {
+// 顺序语义（2026-09-27 定案，对齐 Actual Budget / Firefly III）：
+// 规则按序执行，后面的条件看到前面**改写后**的值；要原值必须用 original_* 显式引用。
+// 本用例的 trap 规则因此**会**命中（旧断言假设它不命中，是错的）。
+func TestSequenceConditionsSeeMutatedOrder(t *testing.T) {
 	dir := t.TempDir()
 	csvPath := filepath.Join(dir, "bill.csv")
 	body := "交易时间,交易对方,商品,收/支,金额,支付方式\n" +
@@ -175,7 +178,7 @@ func TestSequenceConditionsReadOriginalNotMutated(t *testing.T) {
 		},
 		{
 			Enabled: &enabled,
-			When:    `payee == "原始条件店"`,
+			When:    `original_payee == "原始条件店"`,
 			Actions: Actions{To: TransferSide{Account: "Expenses:Food"}, Tag: "orig"},
 		},
 	}
@@ -187,12 +190,13 @@ func TestSequenceConditionsReadOriginalNotMutated(t *testing.T) {
 	if o.Peer != "已改名店" {
 		t.Fatalf("payee rewrite: %q", o.Peer)
 	}
+	// trap 命中（条件看到改写值）→ ShouldNot；orig 用 original_payee 也命中 → 后写的 Food 胜
 	assertPostingsEqual(t, postingLines(o), []expectPosting{
 		{Account: "Expenses:Food", Amount: "5.00", Currency: "CNY"},
 	})
 	joined := strings.Join(o.Tags, ",")
-	if strings.Contains(joined, "trap") || !strings.Contains(joined, "orig") {
-		t.Fatalf("tags=%v", o.Tags)
+	if !strings.Contains(joined, "trap") || !strings.Contains(joined, "orig") {
+		t.Fatalf("两条规则都该命中（trap=看到新值、orig=读原值），tags=%v", o.Tags)
 	}
 }
 

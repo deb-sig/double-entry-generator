@@ -11,6 +11,8 @@ import (
 
 // Lookup contract: conditions use five lowercase logical fallbacks with literal
 // custom columns; action <col> refs are Raw-only (Mirato __from_column family).
+//
+// 顺序语义（2026-09-27 定案）：raw 同名列 > 当前 order 槽；要账单原值用 original_*/imported_*。
 
 func TestLookupConditionFiveLogicalsAndLiteralCustom(t *testing.T) {
 	row := Row{
@@ -35,8 +37,14 @@ func TestLookupConditionFiveLogicalsAndLiteralCustom(t *testing.T) {
 		// Raw same-name wins over logical.
 		{`payee == "RawPayee"`, true},
 		{`payee == "LogicalPayee"`, false},
-		// Absent standard field falls back to logical.
-		{`narration == "LogicalNarr"`, true},
+		// 缺失的标准字段回落逻辑槽 —— 但读的是**当前 order 值**（顺序语义，2026-09-27 定案）：
+		// order.Narration 已被改成 "Mutated"，所以逻辑槽看到的是 Mutated 而不是 row 原值。
+		{`narration == "LogicalNarr"`, false},
+		{`narration == "Mutated"`, true},
+		// 要读账单原值必须用不可变字段（对标 Actual Budget 的 imported payee）
+		{`original_narration == "LogicalNarr"`, true},
+		{`original_narration == "Mutated"`, false},
+		{`original_payee == "LogicalPayee"`, true}, // 不被 raw 同名列遮蔽，也不被改写影响
 		{`amount == "5.00"`, true},
 		{`currency == "CNY"`, true},
 		{`date == "2026-09-01"`, true},
