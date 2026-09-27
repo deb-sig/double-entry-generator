@@ -1062,7 +1062,7 @@ func conditionFieldValue(field string, row Row, order ir.Order) string {
 		return row.Date
 	case "amount":
 		if order.ExactMoney != nil {
-			return order.ExactMoney.String()
+			return order.ExactMoney.Text(0)
 		}
 		return row.Amount
 	case "currency":
