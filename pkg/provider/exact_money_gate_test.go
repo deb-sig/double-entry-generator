@@ -10,6 +10,11 @@ import (
 
 // ExactMoney 迁移门禁（2026-09-27）
 //
+// 注意（同日实测）：已迁移 ≠ 修了可见 bug。现有流程里引擎都从**原文**重建
+// ExactMoney，迁移前后输出逐字节一致（见 pkg/ir/exact.go 头部实测说明）。
+// 这份清单的真正作用是**防止新增丢精度的 provider**，以及为「将来真出现
+// 直接消费 order.Money 的路径」留好精确来源。
+//
 // 引擎只认 `order.ExactMoney` 为权威金额，`order.Money`(float64) 是遗留视图。
 // 但**当前没有一个 provider 写 ExactMoney**，全在 `float64(x)/100.0` 上丢精度。
 // 这个测试把「谁迁了、谁还没迁」变成显式清单：

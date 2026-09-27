@@ -4,9 +4,14 @@ import "strings"
 
 // Decimal 收尾（2026-09-27）：把「精确金额」的构造收敛到一处。
 //
-// 背景：引擎侧早已按 ExactMoney 求值（`order.ExactMoney` 权威、
-// `order.Money`(float64) 仅作遗留视图），但**21 个 provider 没有一个写 ExactMoney** ——
-// 全都在 `Money: float64(x)/100.0` 这条路上丢精度（USDT/币量 8 位小数尤其明显）。
+// 背景：引擎侧按 ExactMoney 求值（`order.ExactMoney` 权威、`order.Money`(float64) 为遗留视图）。
+//
+// **2026-09-27 实测纠正**：provider 的 `Money`(float64) 在现有两条实际流程里
+// **都不是权威来源** —— 引擎会从**原文**（列映射的金额列 / 规则里的 `amount:` 动作）
+// 重新构造 ExactMoney。用「迁移前 / 迁移后」两个二进制跑
+//   ① profile 流程 19 家模板 + ② provider 流程（oklink/huobi 例子）
+// 输出**逐字节一致**；全仓 `order.Money` 只剩两处用途：赋值本身 + `inferType` 方向推断。
+// 所以本文件的构造函数是**防退化**用（挡住未来新增的丢精度实现），不是修可见 bug。
 //
 // 迁移口径：能拿到**整数分/整数单位或原文**的 provider 一律改走下面的构造函数，
 // 不再从 float64 反推；拿不到的（原文在解析时已被 float64 吃掉）需要先改那个

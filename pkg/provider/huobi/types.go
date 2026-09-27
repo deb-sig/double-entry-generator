@@ -23,7 +23,7 @@ type Order struct {
 	Price          float64   // 价格
 	Amount         float64   // 数量
 	Money          float64   // 成交额
-	MoneyText      string    // 成交额原文（8 位小数币量，float64 会丢精度）
+	MoneyText      string    // 成交额原文：留给 ExactMoney 构造（float64 视图在 >15 位有效数字或浮点算术后才会漂移）
 	Commission     float64   // 手续费
 	BaseUnit       string    // 基准单位
 	TargetUnit     string    // 目标单位

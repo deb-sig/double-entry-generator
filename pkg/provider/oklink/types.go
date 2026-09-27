@@ -29,7 +29,7 @@ type Order struct {
 	To                      string    // 接收地址（小写，用于匹配）
 	ToOriginal              string    // 接收地址（原始值，用于输出）
 	TokenValue              float64   // 代币数量
-	TokenValueText          string    // 代币数量原文（币量多为 8 位小数，float64 会丢精度）
+	TokenValueText          string    // 代币数量原文：留给 ExactMoney 构造（float64 视图在 >15 位有效数字或浮点算术后才会漂移）
 	ContractAddress         string    // 合约地址（小写，用于匹配）
 	ContractAddressOriginal string    // 合约地址（原始值，用于输出）
 	TokenName               string    // 代币名称
