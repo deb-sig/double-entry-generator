@@ -26,7 +26,9 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/compiler"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
@@ -85,6 +87,8 @@ func run(args []string) {
 		fallthrough
 	case consts.ProviderBocomDebit:
 		fallthrough
+	case consts.ProviderCibDebit:
+		fallthrough
 	case consts.ProviderCCB:
 		if c.DefaultCurrency == "" ||
 			c.DefaultMinusAccount == "" ||
@@ -108,10 +112,26 @@ func run(args []string) {
 			c.DefaultPnlAccount == "" {
 			log.Fatalf("Failed to get default options in config")
 		}
+	case consts.ProviderIbkr:
+		if c.DefaultCurrency == "" ||
+			c.DefaultMinusAccount == "" ||
+			c.DefaultPlusAccount == "" ||
+			c.DefaultCashAccount == "" ||
+			c.DefaultPositionAccount == "" ||
+			c.DefaultCommissionAccount == "" ||
+			c.DefaultPnlAccount == "" {
+			log.Fatalf("Failed to get default options in config")
+		}
 	}
 
 	p, err := provider.New(providerName)
 	logErrorIfNotNil(err)
+
+	if providerName == consts.ProviderAlipay {
+		if a, ok := p.(*alipay.Alipay); ok {
+			a.Config = c.Alipay
+		}
+	}
 
 	if providerName == consts.ProviderWechat {
 		if w, ok := p.(*wechat.Wechat); ok {
@@ -156,7 +176,16 @@ func run(args []string) {
 		}
 	}
 
-	i, err := p.Translate(args[0])
+	var i *ir.IR
+	if len(args) > 1 {
+		multiProvider, ok := p.(provider.MultiFileInterface)
+		if !ok {
+			log.Fatalf("Failed to translate: provider %s does not support multi-file input", providerName)
+		}
+		i, err = multiProvider.TranslateFiles(args)
+	} else {
+		i, err = p.Translate(args[0])
+	}
 	logErrorIfNotNil(err)
 
 	cpl, err := compiler.New(providerName, targetName, output, appendMode, c, i)

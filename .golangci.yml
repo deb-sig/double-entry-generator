@@ -1,0 +1,28 @@
+# Preserve the v1 default checks and exclusions when upgrading to v2.
+version: "2"
+linters:
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+  settings:
+    staticcheck:
+      # v1 enabled staticcheck and gosimple, but not stylecheck or quick fixes.
+      checks:
+        - all
+        - '-ST*'
+        - '-QF*'
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
