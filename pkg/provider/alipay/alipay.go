@@ -32,6 +32,7 @@ type Alipay struct {
 	Statistics Statistics `json:"statistics,omitempty"`
 	LineNum    int        `json:"line_num,omitempty"`
 	Orders     []Order    `json:"orders,omitempty"`
+	Config     *Config    `json:"-"`
 
 	// TitleParsed is a workaround to ignore the title row.
 	TitleParsed bool `json:"title_parsed,omitempty"`
@@ -43,6 +44,7 @@ func New() *Alipay {
 		Statistics:  Statistics{},
 		LineNum:     0,
 		Orders:      make([]Order, 0),
+		Config:      nil,
 		TitleParsed: false,
 	}
 }
@@ -99,7 +101,7 @@ func (a *Alipay) postProcess(ir_ *ir.IR) *ir.IR {
 	for i := 0; i < len(ir_.Orders); i++ {
 		var order = ir_.Orders[i]
 		// found alipay refund tx
-		if order.Metadata["status"] == "退款成功" && order.Category == "退款" {
+		if !a.keepRefundRecords() && order.Metadata["status"] == "退款成功" && order.Category == "退款" {
 			for j := 0; j < len(ir_.Orders); j++ {
 				// find the order corresponding to the refund
 				// (different tx) && (prefix match) && (money equal)
@@ -138,4 +140,8 @@ func (a *Alipay) postProcess(ir_ *ir.IR) *ir.IR {
 	ir_.Orders = orders
 	// 超时
 	return ir_
+}
+
+func (a *Alipay) keepRefundRecords() bool {
+	return a.Config != nil && a.Config.KeepRefundRecords
 }
