@@ -60,6 +60,6 @@ bocom_debit:
 
 ## 示例文件
 
-- [交易明细 CSV 示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_debit/example-bocom-debit-records.csv)
-- [转换后 Beancount 示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_debit/example-bocom-debit-output.beancount)
+- [交易明细 CSV 示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_debit/example-bocom_debit-records.csv)
+- [转换后 Beancount 示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_debit/example-bocom_debit-output.beancount)
 - [配置文件示例](https://github.com/deb-sig/double-entry-generator/blob/master/example/bocom_debit/config.yaml)

@@ -1,0 +1,16 @@
+defaultMinusAccount: Equity:Opening-Balances
+defaultPlusAccount: Expenses:FIXME
+defaultCashAccount: Assets:IBKR:Cash
+defaultPositionAccount: Assets:IBKR:Positions
+defaultCommissionAccount: Expenses:IBKR:Fees
+defaultPnlAccount: Income:IBKR:PnL
+defaultCurrency: USD
+bookingMethod: FIFO
+title: IBKR
+ibkr:
+  rules:
+    - item: "TSLA,NIO"
+      sep: ","
+      positionAccount: Assets:IBKR:Positions:Stocks
+    - type: "Withholding Tax"
+      commissionAccount: Expenses:IBKR:Tax
