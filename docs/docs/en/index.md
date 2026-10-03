@@ -17,7 +17,7 @@ Intelligently convert various bill formats to Beancount or Ledger formats, makin
 <div class="features">
   <div class="feature">
     <h3>🏦 Multi-Bank Support</h3>
-    <p>Supports major banks including CCB, ICBC, CITIC, HSBC, and more</p>
+    <p>Supports major banks including CCB, BOC, ICBC, CITIC, HSBC, and more</p>
   </div>
   <div class="feature">
     <h3>💰 Payment Tools</h3>
@@ -72,6 +72,7 @@ double-entry-generator translate -p ccb -t beancount ccb_records.xls
 
 ### 🏦 Banks
 - [China Construction Bank (CCB)](providers/banks/ccb.md) - Supports CSV, XLS, XLSX formats
+- [Bank of China (BOC)](providers/banks/boc.md) - Supports debit and credit card statements
 - [Industrial and Commercial Bank of China (ICBC)](providers/banks/icbc.md) - Auto-detects debit/credit cards
 - [China CITIC Bank (CITIC)](providers/banks/citic.md) - Credit card statements
 - [HSBC Hong Kong](providers/banks/hsbchk.md) - HSBC Hong Kong

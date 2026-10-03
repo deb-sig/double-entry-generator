@@ -142,4 +142,4 @@ The CMB Provider provides rule-based matching, you can specify:
 - [CMB Credit Card Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/cmb/credit/example-cmb-records.csv)
 - [Savings Card Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/cmb/debit/config.yaml)
 - [Credit Card Configuration Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/cmb/credit/config.yaml)
-- [Output Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/cmb/debit/example-cmb-output.beancount)
+- [Output Example](https://github.com/deb-sig/double-entry-generator/blob/master/example/cmb/debit/example-cmb-debit-output.beancount)

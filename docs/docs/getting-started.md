@@ -204,7 +204,7 @@ option "operating_currency" "CNY"
 - 📖 查看 [基本使用示例](examples/basic-usage.md) - 了解更多实际使用场景（微信、银行账单等）
 - ⚙️ 查看 [配置指南](configuration/README.md) - 了解详细的配置选项和规则编写
 - 📋 浏览 [支持的 Providers](providers.md) - 查看所有支持的数据源
-## 常见问题
+## 常见问题 {#common-questions}
 
 ### Q: 如何处理不支持的账单格式？
 
