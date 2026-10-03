@@ -54,7 +54,7 @@ func (boc *Boc) TranslateToCreditOrders(arr []string) error {
 	}
 	bill.Method = arr[2]
 	bill.ItemName = arr[3]
-	if arr[4] == "" { 
+	if arr[4] == "" {
 		bill.Type = TypeSend
 		bill.Money, err = strconv.ParseFloat(strings.TrimLeft(arr[5], "-"), 64)
 	} else {

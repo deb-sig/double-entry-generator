@@ -1,10 +1,10 @@
 option "title" "mt"
 option "operating_currency" "CNY"
 
-1970-01-01 open Assests:Test:Wx
 1970-01-01 open Assets:DC:BoC:3147
 1970-01-01 open Assets:FIXME
 1970-01-01 open Assets:MT:Balance:zwyyy456
+1970-01-01 open Assets:Test:Wx
 1970-01-01 open Expenses:FIXME
 1970-01-01 open Expenses:Food:Meal:Coupon
 1970-01-01 open Expenses:Food:Meal:Dinner

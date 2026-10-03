@@ -8,12 +8,16 @@ description: 支持的银行和服务提供商列表
 
 Double Entry Generator 支持以下金融服务提供商的数据转换：
 
+## 通用模板
+- [通用模板 Provider](providers/template.md ) - 使用运行时模板和规则导入账单，适合新增或迭代账单格式。
+
 ## 🏦 银行
 - [中国建设银行 (CCB)](providers/banks/ccb.md)
 - [中国银行 (BOC)](providers/banks/boc.md) - 支持借记卡和信用卡账单
 - [中国工商银行 (ICBC)](providers/banks/icbc.md)
 - [中信银行 (CITIC)](providers/banks/citic.md)
 - [招商银行 (CMB)](providers/banks/cmb.md) - 支持储蓄卡和信用卡
+- [广发银行信用卡 (CGB Credit)](providers/banks/cgb_credit.md)
 - [中国农业银行储蓄卡 (ABC Debit)](providers/banks/abc_debit.md)
 - [兴业银行借记卡 (CIB Debit)](providers/banks/cib_debit.md)
 - [香港上海汇丰银行 (HSBCHK)](providers/banks/hsbchk.md)

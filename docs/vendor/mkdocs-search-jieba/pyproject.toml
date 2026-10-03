@@ -16,3 +16,8 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["mkdocs_search_jieba"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"prebuild-index-cjk.js" = "prebuild-index-cjk.js"
+"mkdocs_search_jieba/dict.txt" = "mkdocs_search_jieba/dict.txt"
+"LICENSE.jieba" = "LICENSE.jieba"

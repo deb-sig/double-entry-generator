@@ -6,14 +6,39 @@ title: 浦发银行借记卡配置
 # Provider 特定配置
 spdb_debit:
   rules:
+    # 按交易类型匹配 - 转账
+    - txType: 转账
+      targetAccount: Expenses:Transfer
+      tags: transfer
+    # 按交易类型匹配 - 消费
+    - txType: 消费
+      targetAccount: Expenses:Consumption
+      tags: consumption
+    # 基金投资 - 带标签
     - peer: 基金销售有限公司
       targetAccount: Expenses:Investment:Funds
+      tags: investment,fund
+    # 餐饮消费 - 带标签
     - category: 餐饮美食
       peer: 餐厅
       targetAccount: Expenses:Food:Restaurant
+      tags: food,dining
+    # 交通出行 - 带标签
     - category: 交通出行
       peer: 地铁
       targetAccount: Expenses:Transport:Metro
+      tags: transport,metro
+    # 购物消费 - 带标签
     - category: 购物消费
       peer: 超市
       targetAccount: Expenses:Shopping:Supermarket
+      tags: shopping,grocery
+    # 工资收入 - 带标签示例
+    - peer: 工资
+      targetAccount: Income:Salary
+      tags: salary,monthly
+    # 多标签使用自定义分隔符示例
+    - peer: 奖金
+      targetAccount: Income:Bonus
+      tags: bonus|year-end
+      sep: "|"

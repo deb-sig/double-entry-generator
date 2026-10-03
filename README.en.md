@@ -64,6 +64,7 @@ For more usage instructions, please refer to the [Getting Started Guide](https:/
 - [Bank of China (BOC)](https://deb-sig.github.io/double-entry-generator/providers/banks/boc.html) - Supports debit and credit card statements
 - [Industrial and Commercial Bank of China (ICBC)](https://deb-sig.github.io/double-entry-generator/providers/banks/icbc.html) - Auto-detects debit/credit cards
 - [China CITIC Bank (CITIC)](https://deb-sig.github.io/double-entry-generator/providers/banks/citic.html) - Credit card statements
+- [CGB Credit Card (CGB Credit)](https://deb-sig.github.io/double-entry-generator/providers/banks/cgb_credit.html)
 - [HSBC Hong Kong](https://deb-sig.github.io/double-entry-generator/providers/banks/hsbchk.html) - HSBC Hong Kong
 - [Bank of Montreal (BMO)](https://deb-sig.github.io/double-entry-generator/providers/banks/bmo.html)
 - [Toronto-Dominion Bank (TD)](https://deb-sig.github.io/double-entry-generator/providers/banks/td.html)

@@ -8,12 +8,16 @@ description: List of supported banks and service providers
 
 Double Entry Generator supports data conversion from the following financial service providers:
 
+## Generic Template
+- [Generic Template Provider](providers/template.md) - Import bills with runtime templates and rules. Useful for adding or iterating bill formats.
+
 ## 🏦 Banks
 - [China Construction Bank (CCB)](providers/banks/ccb.md)
 - [Bank of China (BOC)](providers/banks/boc.md) - Supports debit and credit card statements
 - [Industrial and Commercial Bank of China (ICBC)](providers/banks/icbc.md)
 - [China CITIC Bank (CITIC)](providers/banks/citic.md)
 - [China Merchants Bank (CMB)](providers/banks/cmb.md) - Supports savings and credit cards
+- [CGB Credit Card (CGB Credit)](providers/banks/cgb_credit.md)
 - [Agricultural Bank of China Debit Card (ABC Debit)](providers/banks/abc_debit.md)
 - [Industrial Bank Debit Card (CIB Debit)](providers/banks/cib_debit.md)
 - [HSBC Hong Kong (HSBCHK)](providers/banks/hsbchk.md)

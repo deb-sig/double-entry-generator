@@ -28,6 +28,7 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/provider"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/provider/alipay"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/bmo"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/ccb"
 	_ "github.com/deb-sig/double-entry-generator/v2/pkg/provider/citic"
@@ -95,6 +96,8 @@ func run(args []string) {
 			log.Fatalf("Failed to get default options in config")
 		}
 	case consts.ProviderBocomCredit:
+		fallthrough
+	case consts.ProviderCgbCredit:
 		if c.DefaultCurrency == "" ||
 			c.DefaultMinusAccount == "" ||
 			c.DefaultPlusAccount == "" ||
@@ -123,6 +126,12 @@ func run(args []string) {
 
 	p, err := provider.New(providerName)
 	logErrorIfNotNil(err)
+
+	if providerName == consts.ProviderAlipay {
+		if a, ok := p.(*alipay.Alipay); ok {
+			a.Config = c.Alipay
+		}
+	}
 
 	if providerName == consts.ProviderWechat {
 		if w, ok := p.(*wechat.Wechat); ok {

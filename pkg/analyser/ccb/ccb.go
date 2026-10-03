@@ -133,4 +133,4 @@ func (c CCB) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provide
 	}
 
 	return ignore, resMinus, resPlus, nil, tags
-} 
+}

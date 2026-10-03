@@ -29,7 +29,7 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "double-entry-generator",
-	Short: "Generate Double-Entry Bookkeeping Code From Bills",
+	Short: msg("Generate double-entry bookkeeping files from bills", "从账单生成复式记账文件"),
 	Long:  ``,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -55,11 +55,8 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.double-entry-generator.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", msg("config file (default is $HOME/.double-entry-generator.yaml)", "配置文件，默认 $HOME/.double-entry-generator.yaml"))
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -11,6 +11,8 @@ from mkdocs.plugins import BasePlugin
 
 log = logging.getLogger(__name__)
 ZWS = "\u200b"
+JIEBA_DICT = Path(__file__).resolve().parent / "dict.txt"
+_segmenter = None
 
 # lunr 在加载时把 QueryLexer.termSeparator 设为当时的 tokenizer.separator，之后 worker 只改了
 # tokenizer.separator，导致查询分词仍用默认分隔符、\u200b 不生效。构建后补一行同步 termSeparator。
@@ -105,14 +107,29 @@ MAIN_FORMATRESULT_OLD = "joinUrl(base_url, location)"
 MAIN_FORMATRESULT_NEW = "joinUrl(_linkBase, location)"
 
 
-def _segment_chinese(text: str) -> str:
+def _get_segmenter():
+    global _segmenter
+    if _segmenter is not None:
+        return _segmenter
+
     try:
         import jieba
-    except ImportError:
-        return text
+    except ImportError as e:
+        raise RuntimeError("未安装 jieba，无法构建中文搜索索引。请运行: uv sync") from e
+
+    jieba.set_dictionary(str(JIEBA_DICT))
+    # Force dictionary initialization here so dictionary problems fail during
+    # config loading, not halfway through page rendering.
+    list(jieba.cut("中文搜索"))
+    _segmenter = lambda s: list(jieba.cut(s))
+    return _segmenter
+
+
+def _segment_chinese(text: str) -> str:
+    segmenter = _get_segmenter()
 
     def replace_chinese(m: re.Match) -> str:
-        return ZWS.join(jieba.cut(m.group(0)))
+        return ZWS.join(segmenter(m.group(0)))
 
     return re.sub(r"[\u4e00-\u9fff]+", replace_chinese, text)
 
@@ -128,11 +145,7 @@ def _patched_add_entry(self, title: str | None, text: str, loc: str) -> None:
 
 class SearchJiebaPlugin(BasePlugin):
     def on_config(self, config, **kwargs):
-        try:
-            import jieba
-        except ImportError:
-            log.warning("未安装 jieba，中文搜索将不可用。请运行: uv add jieba")
-            return config
+        _get_segmenter()
 
         from mkdocs.contrib.search import search_index
 

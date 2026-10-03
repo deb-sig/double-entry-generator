@@ -199,4 +199,4 @@ func (ccb *CCB) updateStatistics(bill Order) {
 	if ccb.Statistics.End.IsZero() || bill.PayTime.After(ccb.Statistics.End) {
 		ccb.Statistics.End = bill.PayTime
 	}
-} 
+}
