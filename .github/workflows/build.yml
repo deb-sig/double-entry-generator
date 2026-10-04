@@ -7,26 +7,15 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
-          go-version: 1.23.0
-      - uses: actions/checkout@v3
-      - name: Cache Go modules
-        uses: actions/cache@preview
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-build-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.OS }}-build-${{ env.cache-name }}-
-            ${{ runner.OS }}-build-
-            ${{ runner.OS }}-
+          go-version-file: go.mod
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v8
         with:
           args: --timeout=5m
-          version: latest
-          # Ref https://github.com/golangci/golangci-lint-action/issues/244
-          skip-pkg-cache: true
+          version: v2.5.0
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -37,14 +26,15 @@ jobs:
         working-directory: ${{ env.GOPATH }}/src/github.com/deb-sig/double-entry-generator
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: ${{ env.GOPATH }}/src/github.com/deb-sig/double-entry-generator
 
       - name: Setup Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.23.0
+          go-version-file: ${{ env.GOPATH }}/src/github.com/deb-sig/double-entry-generator/go.mod
+          cache-dependency-path: ${{ env.GOPATH }}/src/github.com/deb-sig/double-entry-generator/go.sum
 
       - name: Check Go modules
         run: |

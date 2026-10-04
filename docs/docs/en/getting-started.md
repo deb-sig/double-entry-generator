@@ -162,7 +162,7 @@ Match fields (`peer`, `category`, `type`, `item`, `method`, `time`, `minPrice`, 
 - Browse [Supported Providers](providers.md) to see all supported data sources
 - View [Examples](examples/basic-usage.md) to learn advanced usage
 
-## Common Questions
+## Common Questions {#common-questions}
 
 ### Q: How to handle unsupported bill formats?
 

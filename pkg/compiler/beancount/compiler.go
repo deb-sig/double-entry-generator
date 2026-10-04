@@ -62,6 +62,10 @@ func (b *BeanCount) initTemplates() error {
 	if err != nil {
 		return fmt.Errorf("Failed to init the normalOrder template. %v", err)
 	}
+	currencyExchangeOrderTemplate, err = template.New("currencyExchangeOrder").Funcs(funcMap).Parse(currencyExchangeOrder)
+	if err != nil {
+		return fmt.Errorf("Failed to init the currencyExchangeOrder template. %v", err)
+	}
 	runtimeOrderTemplate, err = template.New("runtimeOrder").Funcs(funcMap).Parse(runtimeOrder)
 	if err != nil {
 		return fmt.Errorf("Failed to init the runtimeOrder template. %v", err)
@@ -148,6 +152,12 @@ func (b *BeanCount) writeHeader(file io.Writer) error {
 		"option \"operating_currency\" \""+b.Config.DefaultCurrency+"\"\n\n")
 	if err != nil {
 		return fmt.Errorf("write option currency error: %v", err)
+	}
+	if b.Config.BookingMethod != "" {
+		_, err = io.WriteString(file, "option \"booking_method\" \""+b.Config.BookingMethod+"\"\n\n")
+		if err != nil {
+			return fmt.Errorf("write option booking_method error: %v", err)
+		}
 	}
 
 	accounts := b.GetAllCandidateAccounts(b.Config)
@@ -267,6 +277,19 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 			Currency:          currency,
 			Tags:              o.Tags,
 		})
+	case ir.OrderTypeCurrencyExchange:
+		err = currencyExchangeOrderTemplate.Execute(&buf, &CurrencyExchangeOrderVars{
+			PayTime:        o.PayTime,
+			Peer:           o.Peer,
+			Item:           o.Item,
+			SourceAmount:   o.Money,
+			SourceCurrency: o.Currency,
+			TargetAmount:   o.Amount,
+			TargetCurrency: o.Units[ir.TargetUnit],
+			PlusAccount:    o.PlusAccount,
+			MinusAccount:   o.MinusAccount,
+			Metadata:       o.Metadata,
+		})
 	case ir.OrderTypeCrypto: // Crypto transactions (high precision)
 		currency := b.getCurrency(o)
 		err = cryptoOrderTemplate.Execute(&buf, &NormalOrderVars{
@@ -365,6 +388,7 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 			err = fmt.Errorf("Failed to get the TxType.")
 		}
 	case ir.OrderTypeSecuritiesTrade:
+		currency := b.getCurrency(o)
 		switch o.Type {
 		case ir.TypeSend: // buy, 融券回购
 			err = htsecTradeBuyOrderTemplate.Execute(&buf, &HtsecTradeBuyOrderVars{
@@ -381,7 +405,7 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 				PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
 				CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
 				PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
-				Currency:          b.Config.DefaultCurrency,
+				Currency:          currency,
 				Metadata:          o.Metadata,
 			})
 		case ir.TypeRecv: // sell, 融券购回
@@ -399,7 +423,7 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 				PositionAccount:   o.ExtraAccounts[ir.PositionAccount],
 				CommissionAccount: o.ExtraAccounts[ir.CommissionAccount],
 				PnlAccount:        o.ExtraAccounts[ir.PnlAccount],
-				Currency:          b.Config.DefaultCurrency,
+				Currency:          currency,
 				Metadata:          o.Metadata,
 			})
 		default:
