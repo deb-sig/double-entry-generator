@@ -1,23 +1,16 @@
 package importer
 
 import (
-	"bytes"
-	"encoding/csv"
 	"fmt"
-	"io"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
-	"unicode"
 	"time"
+	"unicode"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
-	xlsreader "github.com/shakinm/xlsReader/xls"
-	"github.com/xuri/excelize/v2"
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/reader"
 )
 
 type Row struct {
@@ -102,52 +95,78 @@ func isAccountName(value string) bool {
 	}
 }
 
+// ReaderConfig is the reader block the engine will use for this profile.
+// A `reader:` block wins; otherwise the legacy template.* file fields are
+// translated so old templates keep working unchanged.
+func ReaderConfig(profile *Profile) reader.Config {
+	if profile.Reader != nil {
+		cfg := *profile.Reader
+		if cfg.Format == "" {
+			cfg.Format = profile.Template.FileFormat
+		}
+		if cfg.Encoding == "" {
+			cfg.Encoding = profile.Template.Encoding
+		}
+		if cfg.Delimiter == "" {
+			cfg.Delimiter = profile.Template.Delimiter
+		}
+		cfg.StripTabs = cfg.StripTabs || profile.Template.StripTabs
+		cfg.KeepBlankLines = cfg.KeepBlankLines || profile.Template.HeaderLocate
+		return cfg.Normalize()
+	}
+	return reader.Config{
+		Format:         profile.Template.FileFormat,
+		Encoding:       profile.Template.Encoding,
+		Delimiter:      profile.Template.Delimiter,
+		StripTabs:      profile.Template.StripTabs,
+		KeepBlankLines: profile.Template.HeaderLocate,
+	}.Normalize()
+}
+
 func ParseFile(profile *Profile, filename string) ([]Row, error) {
 	if err := validateBillMatchesTemplate(profile, filename); err != nil {
 		return nil, err
 	}
-	format := templateFileFormat(profile)
-	switch format {
-	case "csv":
-		return parseCSV(profile, filename)
-	case "xls":
-		return parseXLS(profile, filename)
-	case "xlsx":
-		return parseXLSX(profile, filename)
-	default:
-		return nil, fmt.Errorf("unsupported template fileFormat %q", profile.Template.FileFormat)
+	table, err := reader.ReadFile(filename, ReaderConfig(profile))
+	if err != nil {
+		return nil, err
 	}
+	return tableToRows(profile, table)
 }
 
-func templateFileFormat(profile *Profile) string {
-	return normalizeFileFormat(profile.Template.FileFormat, "csv")
-}
-
-func billFileFormat(filename string) string {
-	ext := strings.TrimPrefix(strings.ToLower(filepath.Ext(filename)), ".")
-	return normalizeFileFormat(ext, "")
-}
-
-func normalizeFileFormat(format, fallback string) string {
-	switch strings.ToLower(strings.TrimSpace(format)) {
-	case "txt", "text":
-		return "csv"
-	case "xls":
-		return "xls"
-	case "csv", "xlsx":
-		return strings.ToLower(strings.TrimSpace(format))
-	default:
-		return fallback
+// ParseBytes is ParseFile for callers that hold the bill in memory (the
+// browser build). name carries the extension used for format checks.
+func ParseBytes(profile *Profile, name string, data []byte) ([]Row, error) {
+	if err := validateBillMatchesTemplate(profile, name); err != nil {
+		return nil, err
 	}
+	table, err := reader.ReadBytes(name, data, ReaderConfig(profile))
+	if err != nil {
+		return nil, err
+	}
+	return tableToRows(profile, table)
+}
+
+func tableToRows(profile *Profile, table reader.Table) ([]Row, error) {
+	if table.Headers != nil {
+		// Named readers (json, xml, text) already know their columns; there
+		// is no header row to locate and nothing to skip.
+		headers := normalizeCells(table.Headers)
+		if err := validateHeaders(profile, headers); err != nil {
+			return nil, err
+		}
+		return buildRowsFromRecords(profile, headers, table.Rows)
+	}
+	return recordsToRows(profile, table.Rows)
 }
 
 func validateBillMatchesTemplate(profile *Profile, filename string) error {
-	templateFmt := templateFileFormat(profile)
-	billFmt := billFileFormat(filename)
+	cfg := ReaderConfig(profile)
+	billFmt := reader.FormatForFile(filename)
 	if billFmt == "" {
-		return fmt.Errorf("无法识别账单文件格式 %q，请使用 csv 或 xlsx", filepath.Ext(filename))
+		return fmt.Errorf("无法识别账单文件格式 %q，请使用 csv、xlsx、xls、json、xml、txt 或 pdf", filepath.Ext(filename))
 	}
-	if templateFmt == billFmt {
+	if cfg.Compatible(filename) {
 		return nil
 	}
 	templateID := profile.ID
@@ -162,129 +181,10 @@ func validateBillMatchesTemplate(profile *Profile, filename string) error {
 		filepath.Base(filename),
 		billFmt,
 		templateID,
-		templateFmt,
-		templateFmt,
+		cfg.Format,
+		cfg.Format,
 		billFmt,
 	)
-}
-
-func parseCSV(profile *Profile, filename string) ([]Row, error) {
-	file, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	var r io.Reader = file
-	if strings.EqualFold(profile.Template.Encoding, "gbk") || strings.EqualFold(profile.Template.Encoding, "gb18030") {
-		r = transform.NewReader(file, simplifiedchinese.GB18030.NewDecoder())
-	}
-	if profile.Template.StripTabs {
-		b, err := io.ReadAll(r)
-		if err != nil {
-			return nil, err
-		}
-		r = strings.NewReader(strings.ReplaceAll(string(b), "\t", ""))
-	}
-
-	data, err := io.ReadAll(r)
-	if err != nil {
-		return nil, err
-	}
-	reader := csv.NewReader(bytes.NewReader(data))
-	reader.FieldsPerRecord = -1
-	reader.LazyQuotes = true
-	if delimiter := normalizeDelimiter(profile.Template.Delimiter); delimiter != 0 {
-		reader.Comma = delimiter
-	}
-
-	var records [][]string
-	if profile.Template.HeaderLocate {
-		// encoding/csv skips blank lines. Restore their positions for header
-		// windows so CSV and spreadsheet layouts obey the same contract.
-		// FieldPos identifies logical records, including quoted multiline cells.
-		nextLine := 1
-		var previousOffset int64
-		for {
-			record, readErr := reader.Read()
-			if readErr == io.EOF { break }
-			if readErr != nil { return nil, readErr }
-			startLine, _ := reader.FieldPos(0)
-			for line := nextLine; line < startLine; line++ { records = append(records, nil) }
-			records = append(records, record)
-			offset := reader.InputOffset()
-			nextLine += bytes.Count(data[previousOffset:offset], []byte{'\n'})
-			previousOffset = offset
-		}
-	} else {
-		records, err = reader.ReadAll()
-		if err != nil { return nil, err }
-	}
-	return recordsToRows(profile, records)
-}
-
-func parseXLSX(profile *Profile, filename string) ([]Row, error) {
-	f, err := excelize.OpenFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	sheets := f.GetSheetList()
-	if len(sheets) == 0 {
-		return nil, fmt.Errorf("xlsx has no sheets")
-	}
-	records, err := f.GetRows(sheets[0])
-	if err != nil {
-		return nil, err
-	}
-	return recordsToRows(profile, records)
-}
-
-func parseXLS(profile *Profile, filename string) ([]Row, error) {
-	if !hasOLEHeader(filename) {
-		return parseCSV(profile, filename)
-	}
-	wb, err := xlsreader.OpenFile(filename)
-	if err != nil {
-		return parseCSV(profile, filename)
-	}
-	sheet, err := wb.GetSheet(0)
-	if err != nil {
-		return nil, fmt.Errorf("xls has no first sheet")
-	}
-	records := make([][]string, 0, int(sheet.GetNumberRows())+1)
-	for i := 0; i <= int(sheet.GetNumberRows()); i++ {
-		row, err := sheet.GetRow(i)
-		if err != nil {
-			records = append(records, nil)
-			continue
-		}
-		if row == nil {
-			records = append(records, nil)
-			continue
-		}
-		cols := row.GetCols()
-		record := make([]string, 0, len(cols))
-		for _, col := range cols {
-			record = append(record, col.GetString())
-		}
-		records = append(records, record)
-	}
-	return recordsToRows(profile, records)
-}
-
-func hasOLEHeader(filename string) bool {
-	f, err := os.Open(filename)
-	if err != nil {
-		return false
-	}
-	defer f.Close()
-	header := make([]byte, 8)
-	if _, err := io.ReadFull(f, header); err != nil {
-		return false
-	}
-	return bytes.Equal(header, []byte{0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1})
 }
 
 func recordsToRows(profile *Profile, records [][]string) ([]Row, error) {
@@ -1027,6 +927,7 @@ func fieldValue(field string, row Row, order ir.Order) string {
 //  2. else exact lowercase logical payee|narration|amount|date|currency;
 //  3. else "" — custom columns keep literal identity (no raw./metadata.
 //     namespace strip, no case fold, no peer/item aliases).
+//
 // date.time / date.date / date.timestamp suffixes remain for DEG native when.
 func conditionFieldValue(field string, row Row, order ir.Order) string {
 	field = strings.TrimSpace(field)
@@ -1223,22 +1124,6 @@ func normalizeDateLayout(layout string) string {
 	return replacer.Replace(layout)
 }
 
-func normalizeDelimiter(value string) rune {
-	if value == "\t" {
-		return '\t'
-	}
-	switch strings.ToLower(strings.TrimSpace(value)) {
-	case "", "comma", ",":
-		return ','
-	case "\\t", "tab", "tsv":
-		return '\t'
-	case "semicolon", ";":
-		return ';'
-	default:
-		return []rune(value)[0]
-	}
-}
-
 func normalizeCells(values []string) []string {
 	out := make([]string, len(values))
 	for i, value := range values {
@@ -1286,6 +1171,7 @@ var columnExprPattern = regexp.MustCompile(`(?:\[([^\]]+)\]|<([^>]+)>)((?:\.(?:e
 // resolveActionValue implements the Mirato↔DEG action literal/ref protocol:
 //   - fully quoted "..." / '...' => string literal (escapes: \\ \" \' \n \r \t)
 //   - otherwise interpolate <col> / [col] refs (and methods) via renderRuleText
+//
 // Fixed text such as "<金额>", "payee", or "1+2" must be quoted so it is not
 // treated as a column ref or arithmetic expression.
 func resolveActionValue(value string, row Row, order ir.Order) string {

@@ -123,6 +123,59 @@ template:
 
 导入时，`sourceHeaders` 会成为规则可引用的字段。字段引用写作 `<字段名>`，例如 `<金额>`、`<交易日期>`。
 
+### reader 块
+
+`template.fileFormat / encoding / delimiter` 只够描述表格文件。账单不是表格时（JSON、XML、PDF 转出的文本），用 `reader:` 块说明字节怎么变成表格。有 `reader:` 时它优先；没有时沿用 `template.*` 的旧字段，旧模板不用改。
+
+Reader 只认结构，不认语义：无论什么格式，产出都是一张字符串表格，后面的规则一视同仁。
+
+```yaml
+reader:
+  format: csv            # csv | xlsx | xls | json | xml | text
+  encoding: gb18030      # utf-8（默认）/ gbk / gb18030 / utf-16le / utf-16be
+  delimiter: ","
+  stripTabs: true
+  sheet: 交易明细          # xlsx / xls：工作表名或 0 起的序号，缺省第一张
+```
+
+**json / xml**：`records` 是一个 XPath，每个命中的节点是一行；`columns` 把列名映射到相对于该节点的 XPath。两种格式用同一种查询语法。
+
+```yaml
+reader:
+  format: xml
+  records: "//Ntry"                       # camt.053 的每条分录
+  columns:
+    date: BookgDt/Dt
+    amount: Amt
+    currency: Amt/@Ccy                    # 属性
+    direction: CdtDbtInd
+    narration: NtryDtls/TxDtls/RmtInf/Ustrd
+```
+
+```yaml
+reader:
+  format: json
+  records: "//result/*"                   # 数组的每个元素
+  columns:
+    hash: hash
+    time: timeStamp
+    value: value
+```
+
+`columns` 里声明的名字就是 `sourceHeaders`，规则里用 `<date>`、`<hash>` 引用。
+
+**text**：面向版面文本，主要是 PDF 对账单经 `pdftotext -layout` 转出的结果。`record` 是带命名分组的正则，命中的行成为一行，分组名就是列名；`continuation` 匹配续行（PDF 里摘要换行很常见），其分组内容追加到上一行同名列。两者都不命中的行（页眉、页脚、合计）直接忽略。
+
+```yaml
+reader:
+  format: text
+  convert: pdftotext-layout               # 输入是 pdf 时先转文本；需要安装 poppler-utils
+  record: '^(?P<date>\d{4}-\d{2}-\d{2})\s+(?P<narration>.+?)\s+(?P<amount>-?[\d,]+\.\d{2})\s+(?P<balance>[\d,]+\.\d{2})$'
+  continuation: '^\s{10,}(?P<narration>\S.*)$'
+```
+
+没有 `pdftotext` 时导入会报错并给出手工转换命令；也可以自己转好后导入 `.txt`。浏览器端由前端用 pdf.js 转文本后交给同一个模板。
+
 ## 规则文件
 
 规则文件通常包含三块：

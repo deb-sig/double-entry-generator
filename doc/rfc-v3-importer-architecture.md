@@ -1,6 +1,14 @@
 # RFC: v3 导入器架构 —— 五层流水线
 
-状态：草案。目标分支 `dev-v3`。
+状态：已定稿两项决策，实施中。目标分支 `dev-v3`。
+
+已决：
+
+- `role` 用**封闭核心集** `from / to / cash / position / fee / pnl / gas / custody`，引擎校验；机构特有的腿用 `x-` 前缀扩展（如 `x-margin`），引擎不校验、不推 FIXME 类型，只按用户 `accounts:` 绑定。
+- PDF 走 `pdftotext -layout`，CLI 接受这个系统依赖；浏览器端用 pdf.js 转文本。引擎不解析 PDF 二进制。
+- json / xml 统一用 **XPath**（不用 JSONPath），一种查询语法覆盖两种格式。
+
+进度：第 1 步 Reader 已落地（`pkg/reader`，csv/xlsx/xls/json/xml/text），模板 `reader:` 块可用，旧字段兼容。
 
 ## 要解决什么
 
@@ -65,7 +73,7 @@ reader:
 
 **表格类（csv / xlsx / xls）**：现有参数照搬。`xlsx` 加 `sheet`（名字或序号，缺省第一张）。
 
-**树形类（json / xml）**：树怎么变成表格，用两个参数说清楚。
+**树形类（json / xml）**：树怎么变成表格，用两个参数说清楚。两种格式都用 XPath。
 
 ```yaml
 reader:
@@ -118,15 +126,15 @@ Reader 可以嵌套一层。交行 EML 里套 HTML 表格，招行邮件里套 P
 reader:
   format: api
   url: "https://api.etherscan.io/v2/api?chainid={chain}&module=account&action=txlist&address={address}&apikey={env.ETHERSCAN_KEY}"
-  records: "$.result[*]"
+  records: "//result/*"
   columns:
-    hash: "$.hash"
-    time: "$.timeStamp"
-    from: "$.from"
-    to: "$.to"
-    value: "$.value"
-    gasUsed: "$.gasUsed"
-    gasPrice: "$.gasPrice"
+    hash: hash
+    time: timeStamp
+    from: from
+    to: to
+    value: value
+    gasUsed: gasUsed
+    gasPrice: gasPrice
 ```
 
 Reader 的 Go 接口：
@@ -229,7 +237,7 @@ map:
   when: '<操作> == "证券买入"'        # map 可以有多个分支，按 when 选第一个命中的
 ```
 
-`role` 的词表模板自己定，常用的（`from/to/cash/position/fee/pnl/gas/custody`）文档里给推荐名。普通收支就是两条腿 `from` 和 `to`，是 `legs` 的特例，所以 `direction` + `amount` 这种简写在引擎内部展开成两条腿。
+`role` 是封闭核心集 `from / to / cash / position / fee / pnl / gas / custody`，引擎校验拼写并据此推 FIXME 的账户类型；机构特有的腿用 `x-` 前缀（如 `x-margin`），只做绑定不做推断。普通收支就是两条腿 `from` 和 `to`，是 `legs` 的特例，所以 `direction` + `amount` 这种简写在引擎内部展开成两条腿。
 
 映射层允许多个分支（证券买入、卖出、红利、转账各一个），`when` 用现有的条件语法。这就是现在 `templateRules` 在做的事，但产物里没有账户。
 

@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"gopkg.in/yaml.v3"
+
+	"github.com/deb-sig/double-entry-generator/v2/pkg/reader"
 )
 
 const DefaultProviderName = "template"
@@ -18,6 +20,9 @@ type Profile struct {
 	ProtocolVersion       string            `json:"protocolVersion,omitempty" yaml:"protocolVersion,omitempty"`
 	RequiredCapabilities  []string          `json:"requiredCapabilities,omitempty" yaml:"requiredCapabilities,omitempty"`
 	Template              Template          `json:"template" yaml:"template"`
+	// Reader is the `reader:` block: how bytes become a table. When absent the
+	// legacy template.fileFormat/encoding/delimiter fields are used instead.
+	Reader                *reader.Config    `json:"reader,omitempty" yaml:"reader,omitempty"`
 	TemplateRules         []Rule            `json:"templateRules,omitempty" yaml:"templateRules,omitempty"`
 	TemplateRuleOverrides []Rule            `json:"templateRuleOverrides,omitempty" yaml:"templateRuleOverrides,omitempty"`
 	PersonalRules         []Rule            `json:"personalRules,omitempty" yaml:"personalRules,omitempty"`
