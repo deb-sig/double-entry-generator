@@ -28,6 +28,8 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 		return order, true, nil
 	}
 
+	applyOutputText(profile, &order, &row)
+
 	ignore := false
 	merged := Actions{Amount: mapped.absolute, Currency: order.Currency}
 	// Role bindings: file-level accounts first, then each matching rule's
@@ -96,6 +98,7 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 		if err := renderRoleLegs(profile, &order, row, *mapped.branch, bound, merged); err != nil {
 			return ir.Order{}, false, err
 		}
+		applyOutputMetadata(profile, &order)
 		return order, false, nil
 	}
 	// self is the bill's own account: it pays on an outflow and receives
@@ -136,7 +139,58 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 	}
 	order.MinusAccount = strings.TrimSpace(merged.From.Account)
 	order.PlusAccount = strings.TrimSpace(merged.To.Account)
+	applyOutputMetadata(profile, &order)
 	return order, false, nil
+}
+
+// applyOutputText writes the user's default payee and narration, after the
+// template mapping and before personal rules, which may still override.
+func applyOutputText(profile *Profile, order *ir.Order, row *Row) {
+	o := profile.Output
+	if o.IsZero() {
+		return
+	}
+	src := func(slot, expr string) ir.FieldSource {
+		return ir.FieldSource{Slot: slot, RuleID: "output", Columns: expressionColumns(expr), Origin: ir.FieldOriginRule}
+	}
+	if o.Payee != "" {
+		order.Peer = strings.TrimSpace(resolveActionValue(o.Payee, *row, *order))
+		row.Payee = order.Peer
+		putFieldSource(order, src("payee", o.Payee))
+	}
+	if o.Narration != "" {
+		order.Item = strings.TrimSpace(resolveActionValue(o.Narration, *row, *order))
+		row.Narration = order.Item
+		putFieldSource(order, src("narration", o.Narration))
+	}
+}
+
+// applyOutputMetadata filters metadata last, so keys added by rules are
+// covered too. keep wins over drop when both are given.
+func applyOutputMetadata(profile *Profile, order *ir.Order) {
+	o := profile.Output
+	if o.IsZero() || len(o.Metadata.Drop) == 0 && len(o.Metadata.Keep) == 0 {
+		return
+	}
+	keep := map[string]bool{}
+	for _, k := range o.Metadata.Keep {
+		keep[strings.TrimSpace(k)] = true
+	}
+	drop := map[string]bool{}
+	for _, k := range o.Metadata.Drop {
+		drop[strings.TrimSpace(k)] = true
+	}
+	for key := range order.Metadata {
+		remove := drop[key]
+		if len(keep) > 0 {
+			remove = !keep[key]
+		}
+		if remove {
+			delete(order.Metadata, key)
+			order.MetadataKeys = removeString(order.MetadataKeys, key)
+			dropFieldSource(order, metadataSlot(key))
+		}
+	}
 }
 
 type slotMapped struct {
@@ -867,6 +921,17 @@ func SlotSkeleton(templateRef string, profile *Profile) string {
 	b.WriteString("accounts:\n")
 	for _, role := range templateRoles(profile) {
 		fmt.Fprintf(&b, "  %s: %s\n", role, roleSkeletonAccount(role))
+	}
+	b.WriteString("# 输出设置：每笔交易的默认写法和要保留的元数据；个人规则仍可逐笔覆盖。\n")
+	b.WriteString("# output:\n")
+	if slots.Payee != "" {
+		fmt.Fprintf(&b, "#   payee: %s\n", slots.Payee)
+	}
+	if slots.Narration != "" {
+		fmt.Fprintf(&b, "#   narration: %s\n", slots.Narration)
+	}
+	if len(slots.Metadata.Keys) > 0 {
+		fmt.Fprintf(&b, "#   metadata:\n#     drop: [%s]\n", slots.Metadata.Keys[0])
 	}
 	b.WriteString("rules:\n")
 	b.WriteString("  - id: 示例\n")

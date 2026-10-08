@@ -91,7 +91,7 @@ func runImport(templateRef, filename string) {
 		ruleCfg, err := loadRuleFile(rulesPath)
 		logErrorIfNotNil(err)
 		appendRulesToProfile(profile, ruleCfg)
-		for _, warning := range importer.PersonalRuleWarnings(profile, ruleCfg.personalRules(), resolvedRef, ruleCfg.Template) {
+		for _, warning := range importer.PersonalRuleWarnings(profile, ruleCfg.AllPersonalRules(), resolvedRef, ruleCfg.Template) {
 			log.Printf("rule warning: %s", warning)
 		}
 	}
@@ -127,29 +127,9 @@ func loadProjectImportConfig() projectImportConfig {
 	return cfg
 }
 
-type importRuleConfig struct {
-	ProtocolVersion       string          `yaml:"protocolVersion"`
-	RequiredCapabilities  []string        `yaml:"requiredCapabilities"`
-	Template              string          `yaml:"template"`
-	TemplateRules         []importer.Rule `yaml:"templateRules"`
-	TemplateRuleOverrides []importer.Rule `yaml:"templateRuleOverrides"`
-	PersonalRules         []importer.Rule `yaml:"personalRules"`
-	// Rules is the short spelling of personalRules for slot templates.
-	Rules    []importer.Rule   `yaml:"rules"`
-	Accounts  map[string]string   `yaml:"accounts"`
-	Reconcile *importer.Reconcile `yaml:"reconcile"`
-	Options   importOptions       `yaml:"options"`
-}
-
-// personalRules returns personalRules followed by rules.
-func (c importRuleConfig) personalRules() []importer.Rule {
-	return append(append([]importer.Rule{}, c.PersonalRules...), c.Rules...)
-}
-
-type importOptions struct {
-	Title             string `yaml:"title"`
-	OperatingCurrency string `yaml:"operatingCurrency"`
-}
+// importRuleConfig is the rules file as the importer defines it; the CLI
+// adds nothing of its own.
+type importRuleConfig = importer.RulesFile
 
 func loadRuleFile(path string) (importRuleConfig, error) {
 	b, err := os.ReadFile(path)
@@ -172,46 +152,11 @@ func loadRegistryStarterRules(templateRef string) (importRuleConfig, error) {
 }
 
 func parseRuleBytes(b []byte) (importRuleConfig, error) {
-	var wrapper importRuleConfig
-	if err := yaml.Unmarshal(b, &wrapper); err != nil {
-		return importRuleConfig{}, err
-	}
-	// Validate each source before merging: a later supported file must not
-	// overwrite an unknown protocol or discard starter-rule requirements.
-	contract := importer.Profile{ProtocolVersion: wrapper.ProtocolVersion, RequiredCapabilities: wrapper.RequiredCapabilities}
-	if err := contract.ValidateCapabilities(); err != nil {
-		return importRuleConfig{}, err
-	}
-	return wrapper, nil
+	return importer.ParseRulesFile(b)
 }
 
 func appendRulesToProfile(profile *importer.Profile, ruleCfg importRuleConfig) {
-	profile.TemplateRules = append(profile.TemplateRules, ruleCfg.TemplateRules...)
-	profile.TemplateRuleOverrides = append(profile.TemplateRuleOverrides, ruleCfg.TemplateRuleOverrides...)
-	profile.PersonalRules = append(profile.PersonalRules, ruleCfg.personalRules()...)
-	if len(ruleCfg.Accounts) > 0 {
-		if profile.Accounts == nil {
-			profile.Accounts = map[string]string{}
-		}
-		for role, account := range ruleCfg.Accounts {
-			profile.Accounts[role] = account
-		}
-	}
-	if ruleCfg.Reconcile != nil {
-		profile.Reconcile = ruleCfg.Reconcile
-	}
-	if ruleCfg.ProtocolVersion != "" {
-		profile.ProtocolVersion = ruleCfg.ProtocolVersion
-	}
-	if len(ruleCfg.RequiredCapabilities) > 0 {
-		profile.RequiredCapabilities = append(profile.RequiredCapabilities, ruleCfg.RequiredCapabilities...)
-	}
-	if ruleCfg.Options.Title != "" {
-		profile.Name = ruleCfg.Options.Title
-	}
-	if ruleCfg.Options.OperatingCurrency != "" {
-		profile.Template.DefaultCurrency = ruleCfg.Options.OperatingCurrency
-	}
+	profile.ApplyRulesFile(ruleCfg)
 }
 
 func appendTemplateRulesToProfile(profile *importer.Profile, ruleCfg importRuleConfig) {

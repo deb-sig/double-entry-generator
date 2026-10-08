@@ -19,6 +19,7 @@ type RulesFile struct {
 	Rules                 []Rule            `yaml:"rules"`
 	Accounts              map[string]string `yaml:"accounts"`
 	Reconcile             *Reconcile        `yaml:"reconcile"`
+	Output                *OutputPrefs      `yaml:"output"`
 	Options               RulesOptions      `yaml:"options"`
 }
 
@@ -62,6 +63,9 @@ func (p *Profile) ApplyRulesFile(rf RulesFile) {
 	}
 	if rf.Reconcile != nil {
 		p.Reconcile = rf.Reconcile
+	}
+	if !rf.Output.IsZero() {
+		p.Output = rf.Output
 	}
 	if rf.ProtocolVersion != "" {
 		p.ProtocolVersion = rf.ProtocolVersion

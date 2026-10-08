@@ -34,6 +34,9 @@ type Profile struct {
 	Accounts              map[string]string `json:"accounts,omitempty" yaml:"accounts,omitempty"`
 	// Reconcile is the user's dedupe and review-flag policy.
 	Reconcile             *Reconcile        `json:"reconcile,omitempty" yaml:"reconcile,omitempty"`
+	// Output is the user's default spelling of every transaction: payee and
+	// narration expressions, and which metadata keys to keep.
+	Output                *OutputPrefs      `json:"output,omitempty" yaml:"output,omitempty"`
 	Defaults              map[string]string `json:"defaults,omitempty" yaml:"defaults,omitempty"`
 }
 
@@ -97,6 +100,33 @@ type AmountSign struct {
 }
 
 func (a AmountSign) IsZero() bool { return a.Metadata == "" && len(a.Negate) == 0 }
+
+// OutputPrefs is the `output:` block of a rules file.
+//
+//	output:
+//	  payee: <交易对方>
+//	  narration: <交易类型>｜<商品>
+//	  metadata:
+//	    drop: [orderId, merchantId]   # or keep: [method, status]
+//
+// Payee and narration replace the template's defaults for every
+// transaction; personal rules run afterwards and can still override a
+// single one. Metadata filtering applies last, so it also covers keys a
+// rule added.
+type OutputPrefs struct {
+	Payee     string         `json:"payee,omitempty" yaml:"payee,omitempty"`
+	Narration string         `json:"narration,omitempty" yaml:"narration,omitempty"`
+	Metadata  OutputMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+}
+
+type OutputMetadata struct {
+	Drop []string `json:"drop,omitempty" yaml:"drop,omitempty"`
+	Keep []string `json:"keep,omitempty" yaml:"keep,omitempty"`
+}
+
+func (o *OutputPrefs) IsZero() bool {
+	return o == nil || o.Payee == "" && o.Narration == "" && len(o.Metadata.Drop) == 0 && len(o.Metadata.Keep) == 0
+}
 
 // Direction decides whether an amount is an outflow (expense side) or an
 // inflow. Exactly one form is used:

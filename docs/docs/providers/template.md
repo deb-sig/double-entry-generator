@@ -584,6 +584,23 @@ rules:
         position: Assets:Rule1:Positions
 ```
 
+### 输出设置：自己的摘要、不要的元数据
+
+规则文件的 `output:` 块决定每笔交易的默认写法，不用逐条规则去改：
+
+```yaml
+output:
+  payee: <交易对方>
+  narration: <交易类型>｜<商品>        # 用 <列名> 引用账单列
+  metadata:
+    drop: [orderId, merchantId]        # 不输出这些键
+    # keep: [method, status]           # 或者只保留这些键（keep 优先于 drop）
+```
+
+- `payee` / `narration` 在模板映射之后、个人规则之前生效，所以个人规则仍然可以逐笔覆盖。
+- `metadata` 过滤在最后执行，规则补上的键也会被过滤。
+- `config init` 生成的文件里带着注释掉的 `output:` 示例，模板站的「输出设置」表单改的也是这一块。
+
 ### 对账：余额断言、去重、复核标记
 
 交易都生成之后、写进账本之前，还有一道关。

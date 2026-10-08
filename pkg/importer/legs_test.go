@@ -301,3 +301,54 @@ accounts: { self: Assets:Bank }
 		t.Errorf("default direction should be outflow, got %v", out.Orders[2].Type)
 	}
 }
+
+func TestOutputPrefsRewriteTextAndFilterMetadata(t *testing.T) {
+	tpl := `
+schema: https://deg.dev/template-profile/v2
+template:
+  fileFormat: csv
+  dateFormat: yyyy-MM-dd
+  defaultCurrency: CNY
+  sourceHeaders: [d, kind, who, what, a, no]
+  slots:
+    date: <d>
+    payee: <who>
+    narration: <what>
+    amount: <a>.number
+    metadata: { orderId: <no>, type: <kind> }
+`
+	bill := "d,kind,who,what,a,no\n2026-01-01,支出,商户,咖啡,-10,42\n"
+	out := importCSV(t, tpl+`
+output:
+  narration: <kind>｜<what>
+  metadata: { drop: [orderId] }
+personalRules:
+  - id: 单笔覆盖
+    when: <no> == "42"
+    actions:
+      payee: 覆盖后的对手方
+      metadata: { note: 加的 }
+`, bill)
+	o := out.Orders[0]
+	if o.Item != "支出｜咖啡" || o.Peer != "覆盖后的对手方" {
+		t.Fatalf("text: %q %q", o.Item, o.Peer)
+	}
+	if _, ok := o.Metadata["orderId"]; ok || o.Metadata["type"] != "支出" || o.Metadata["note"] != "加的" {
+		t.Fatalf("metadata: %v", o.Metadata)
+	}
+	if strings.Join(o.MetadataKeys, ",") != "type,note" {
+		t.Fatalf("keys: %v", o.MetadataKeys)
+	}
+	keepOnly := importCSV(t, tpl+"\noutput: { metadata: { keep: [type] } }\n", bill)
+	if got := keepOnly.Orders[0].Metadata; len(got) != 1 || got["type"] == "" {
+		t.Fatalf("keep: %v", got)
+	}
+	// Rules files parse the block and config init documents it.
+	rf, err := ParseRulesFile([]byte("output:\n  payee: Bank\n  metadata:\n    drop: [a]\npersonalRules: []\n"))
+	if err != nil || rf.Output == nil || rf.Output.Payee != "Bank" || len(rf.Output.Metadata.Drop) != 1 {
+		t.Fatalf("rules file: %+v %v", rf.Output, err)
+	}
+	if text := SlotSkeleton("x", loadProfileYAML(t, tpl)); !strings.Contains(text, "# output:") || !strings.Contains(text, "drop: [orderId]") {
+		t.Fatalf("skeleton:\n%s", text)
+	}
+}
