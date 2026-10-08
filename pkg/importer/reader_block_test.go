@@ -83,3 +83,7 @@ reader:
 		t.Fatalf("err = %v", err)
 	}
 }
+
+func yamlUnmarshal(src string, out interface{}) error {
+	return yaml.Unmarshal([]byte(src), out)
+}

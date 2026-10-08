@@ -99,6 +99,11 @@ func initPersonalRules(templateRef, output string, force bool) (string, error) {
 
 func personalRuleSkeleton(templateRef string, profile *importer.Profile, b []byte) ([]byte, error) {
 	if profile != nil && profile.Template.HasSlotContract() {
+		// The registry's starter rules are the maintainer's recommended file;
+		// the generated skeleton is only for templates that ship none.
+		if strings.TrimSpace(string(b)) != "" {
+			return b, nil
+		}
 		return []byte(importer.SlotSkeleton(templateRef, profile)), nil
 	}
 	ruleCfg, err := parseRuleBytes(b)

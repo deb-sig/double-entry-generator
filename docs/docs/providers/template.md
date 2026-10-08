@@ -412,7 +412,102 @@ template:
     negate: [支出, 支]
 ```
 
-`amountSign` 只决定金额正负。个人规则是唯一写 `from` / `to` 的地方。某一侧没写时，支出用 `Assets:FIXME` 和 `Expenses:FIXME`，收入用 `Income:FIXME` 和 `Assets:FIXME`。
+`amountSign` 是旧写法，仍然可用；新模板请写 `direction`（见下）。个人规则是唯一写 `from` / `to` 的地方。某一侧没写时，支出用 `Assets:FIXME` 和 `Expenses:FIXME`，收入用 `Income:FIXME` 和 `Assets:FIXME`。
+
+### direction：金额方向
+
+方向是输入，不是输出，所以单独声明，不从 metadata 反推。三种形态任选一种：
+
+```yaml
+template:
+  direction:                       # 一列的取值决定方向
+    column: <收/支>
+    outflow: [支出, /]              # 命中为流出（支出）
+    inflow: [收入]                  # 命中为流入；都没命中时看金额自身正负
+```
+
+```yaml
+template:
+  direction:                       # 支出、收入各一列（银行流水常见）；此时 slots.amount 可省略
+    outflowColumn: <支出金额>
+    inflowColumn: <收入金额>
+```
+
+```yaml
+template:
+  direction: {}                    # 不声明：金额自带正负，负数为流出
+```
+
+### vars：模板变量
+
+`template.vars` 是模板级变量，规则和 legs 里用 `<var.名字>` 引用。它只能放币种符号、计算出的金额这类值，**不能放账户名**（校验会拒绝）。可以带条件，后面的覆盖前面的：
+
+```yaml
+template:
+  vars:
+    - vars:
+        security: SZ<证券代码>.format("%06.0f")
+        fee: <手续费>.number + <印花税>.number
+    - when: <股东账号> ~ "A"
+      vars:
+        security: SH<证券代码>.format("%06.0f")
+```
+
+### legs：多腿交易按角色声明
+
+证券、交易所、链上转账一笔不止两条腿。模板只声明每条腿的**角色**和金额，账户留给用户绑定：
+
+```yaml
+template:
+  legs:
+    - id: 买入
+      when: <操作> == "买"
+      legs:
+        - { role: cash,     amount: "-<var.amount>", currency: CNY }
+        - { role: position, amount: '<成交数量>.format("%.2f")', currency: <var.security>, cost: '<成交价格>.format("%.3f") CNY', price: "@@ <var.amount> CNY" }
+        - { role: cash,     amount: "-<var.fee>", currency: CNY }
+        - { role: fee,      amount: <var.fee>,  currency: CNY }
+    - id: 卖出
+      when: <操作> == "卖"
+      narration: 卖出-<证券名称>          # 分支可以覆盖 payee / narration / metadata
+      legs:
+        - { role: position, amount: '-<成交数量>.format("%.2f")', currency: <var.security>, cost: "{}", price: '@ <成交价格>.format("%.3f") CNY' }
+        - { role: cash,     amount: <var.amount> }
+        - { role: pnl }                   # 不写 amount：交给 Beancount 自动配平
+```
+
+- 分支按顺序取第一个 `when` 成立的；没有 `when` 的分支是默认分支；都不命中就退回普通的 `from`/`to` 两腿。
+- `role` 是封闭核心集：`from` `to` `cash` `custody` `position` `fee` `gas` `pnl`。机构特有的腿用 `x-` 前缀（如 `x-margin`），这类角色必须在规则文件里绑定，引擎不会补 FIXME。
+- 腿里写 `account:` 会被拒绝。
+- `cost` 自动加 `{}`，`price` 不带 `@` 时自动加 `@ `；写 `{}` 和 `@@ …` 都按原样保留。
+
+### 用户侧：accounts 绑定 + rules
+
+用户的规则文件只需要两块。`accounts:` 把角色一次绑到自己的账户；`rules:` 用 `when` 覆盖个别交易（`personalRules:` 是同义写法）。
+
+```yaml
+template: htsec@2026-05-28
+
+accounts:
+  cash: Assets:Htsec:Cash
+  position: Assets:Htsec:Positions
+  fee: Expenses:Htsec:Commission
+  pnl: Income:Htsec:PnL
+
+rules:
+  - id: 忽略新增证券
+    when: <证券名称> == "新增证券"
+    actions:
+      ignore: true
+  - id: 兴业转债单独记
+    when: <证券名称> ~ "兴业转债"
+    actions:
+      accounts:                        # 只对命中的交易改绑
+        cash: Assets:Rule1:Cash
+        position: Assets:Rule1:Positions
+```
+
+普通收支用 `from:` / `to:`，它们就是 `accounts: {from: …, to: …}` 的简写。没绑到的核心角色由引擎补 FIXME：`cash/custody/position → Assets:FIXME`，`fee/gas → Expenses:FIXME`，`pnl → Income:FIXME`，`from/to` 按方向。补的那一侧在来源记录（`Sources`）里标为 `engine`，网页端可以据此高亮。
 
 ```yaml
 template: wechat@2026-04-28

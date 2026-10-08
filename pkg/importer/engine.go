@@ -34,6 +34,9 @@ func ImportFile(profile *Profile, filename string) (*ir.IR, error) {
 	}
 	orders := ir.New()
 	collectRuleOpenAccounts(orders, profile.Rules())
+	for _, account := range profile.Accounts {
+		collectStaticAccount(orders, account)
+	}
 	for _, row := range rows {
 		order, ignore, err := rowToImportOrder(profile, row)
 		if err != nil {
@@ -54,6 +57,9 @@ func collectRuleOpenAccounts(orders *ir.IR, rules []Rule) {
 	for _, rule := range rules {
 		collectStaticAccount(orders, rule.Actions.From.Account)
 		collectStaticAccount(orders, rule.Actions.To.Account)
+		for _, value := range rule.Actions.Accounts {
+			collectStaticAccount(orders, value)
+		}
 		for _, value := range rule.Actions.Vars {
 			collectStaticAccount(orders, value)
 		}
@@ -904,6 +910,10 @@ func forceAmountDirection(expr, direction string) string {
 		return expr[:loc[1]] + "." + direction + expr[loc[1]:]
 	}
 	if direction == "-" {
+		// A plain number keeps its spelling; arithmetic would rescale it.
+		if _, err := parseAmountExact(expr, ""); err == nil {
+			return "-" + expr
+		}
 		return "-(" + expr + ")"
 	}
 	return expr
@@ -1546,6 +1556,30 @@ func formatAmountLike(amount float64, original string) string {
 	return formatAmountLikeDecimal(d, original)
 }
 
+// formatArithmeticResult prints an arithmetic result with the widest scale
+// among its numeric operands (at least 2): "0.85 + 0" prints "0.85", and
+// "1.2 * 3.45" prints "4.140". The expression text itself is not a number,
+// so it must not be fed to formatAmountLikeDecimal.
+func formatArithmeticResult(amount ir.Decimal, expr string) string {
+	minScale := uint32(2)
+	for _, tok := range arithmeticNumberPattern.FindAllString(expr, -1) {
+		if dot := strings.LastIndex(tok, "."); dot >= 0 {
+			if n := uint32(len(tok) - dot - 1); n > minScale {
+				minScale = n
+			}
+		}
+	}
+	text0 := amount.Text(0)
+	if dot := strings.LastIndex(text0, "."); dot >= 0 {
+		if n := uint32(len(text0) - dot - 1); n > minScale {
+			minScale = n
+		}
+	}
+	return amount.Text(minScale)
+}
+
+var arithmeticNumberPattern = regexp.MustCompile(`\d+(?:\.\d+)?`)
+
 func formatAmountLikeDecimal(amount ir.Decimal, original string) string {
 	minScale := uint32(2)
 	cleaned := normalizeAmountString(original)
@@ -1601,6 +1635,29 @@ func formatDecimalPrintfExact(d ir.Decimal, pattern string) (string, bool) {
 	}
 	prefix := pattern[:percent]
 	rest := pattern[percent+1:]
+	// Flags and width: %06.0f, %-8.2f, %+.2f.
+	zeroPad, leftAlign, plus, space := false, false, false, false
+flags:
+	for rest != "" {
+		switch rest[0] {
+		case '0':
+			zeroPad = true
+		case '-':
+			leftAlign = true
+		case '+':
+			plus = true
+		case ' ':
+			space = true
+		default:
+			break flags
+		}
+		rest = rest[1:]
+	}
+	width := 0
+	for rest != "" && rest[0] >= '0' && rest[0] <= '9' {
+		width = width*10 + int(rest[0]-'0')
+		rest = rest[1:]
+	}
 	prec := 6 // fmt default for %f
 	if strings.HasPrefix(rest, ".") {
 		rest = rest[1:]
@@ -1620,7 +1677,7 @@ func formatDecimalPrintfExact(d ir.Decimal, pattern string) (string, bool) {
 		return "", false
 	}
 	suffix := rest[1:]
-	// Reject remaining % verbs / flags / width that we do not implement exactly.
+	// Reject remaining % verbs that we do not implement exactly.
 	if strings.ContainsRune(suffix, '%') || strings.ContainsAny(prefix, "eEgG") {
 		return "", false
 	}
@@ -1628,7 +1685,26 @@ func formatDecimalPrintfExact(d ir.Decimal, pattern string) (string, bool) {
 	if frac > prec {
 		return "", false
 	}
-	return prefix + d.Text(uint32(prec)) + suffix, true
+	body := d.Text(uint32(prec))
+	sign := ""
+	if strings.HasPrefix(body, "-") {
+		sign, body = "-", body[1:]
+	} else if plus {
+		sign = "+"
+	} else if space {
+		sign = " "
+	}
+	if pad := width - len(sign) - len(body); pad > 0 {
+		switch {
+		case leftAlign:
+			body += strings.Repeat(" ", pad)
+		case zeroPad:
+			body = strings.Repeat("0", pad) + body
+		default:
+			sign = strings.Repeat(" ", pad) + sign
+		}
+	}
+	return prefix + sign + body + suffix, true
 }
 
 func printfFloatPrecision(pattern string) (int, bool) {
@@ -1709,7 +1785,7 @@ func evalSimpleArithmetic(value string) string {
 		// Soft helper: leave expression unchanged on failure (runtime paths use strict).
 		return value
 	}
-	return formatAmountLikeDecimal(out, trimmed)
+	return formatArithmeticResult(out, trimmed)
 }
 
 func isPlainNumberToken(value string) bool {
@@ -1729,14 +1805,14 @@ func evalArithmeticInTextStrict(value string) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return formatAmountLikeDecimal(out, trimmed), nil
+			return formatArithmeticResult(out, trimmed), nil
 		}
 		if looksLikeArithmetic(trimmed) && (strings.HasPrefix(trimmed, "-") || strings.HasPrefix(trimmed, "+")) {
 			out, err := evalArithmeticExpression(trimmed)
 			if err != nil {
 				return "", err
 			}
-			return formatAmountLikeDecimal(out, trimmed), nil
+			return formatArithmeticResult(out, trimmed), nil
 		}
 	}
 	return rewriteArithmeticRegionsStrict(value)

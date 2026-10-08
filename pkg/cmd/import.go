@@ -91,7 +91,7 @@ func runImport(templateRef, filename string) {
 		ruleCfg, err := loadRuleFile(rulesPath)
 		logErrorIfNotNil(err)
 		appendRulesToProfile(profile, ruleCfg)
-		for _, warning := range importer.PersonalRuleWarnings(profile, ruleCfg.PersonalRules, resolvedRef, ruleCfg.Template) {
+		for _, warning := range importer.PersonalRuleWarnings(profile, ruleCfg.personalRules(), resolvedRef, ruleCfg.Template) {
 			log.Printf("rule warning: %s", warning)
 		}
 	}
@@ -131,7 +131,15 @@ type importRuleConfig struct {
 	TemplateRules         []importer.Rule `yaml:"templateRules"`
 	TemplateRuleOverrides []importer.Rule `yaml:"templateRuleOverrides"`
 	PersonalRules         []importer.Rule `yaml:"personalRules"`
-	Options               importOptions   `yaml:"options"`
+	// Rules is the short spelling of personalRules for slot templates.
+	Rules    []importer.Rule   `yaml:"rules"`
+	Accounts map[string]string `yaml:"accounts"`
+	Options  importOptions     `yaml:"options"`
+}
+
+// personalRules returns personalRules followed by rules.
+func (c importRuleConfig) personalRules() []importer.Rule {
+	return append(append([]importer.Rule{}, c.PersonalRules...), c.Rules...)
 }
 
 type importOptions struct {
@@ -176,7 +184,15 @@ func parseRuleBytes(b []byte) (importRuleConfig, error) {
 func appendRulesToProfile(profile *importer.Profile, ruleCfg importRuleConfig) {
 	profile.TemplateRules = append(profile.TemplateRules, ruleCfg.TemplateRules...)
 	profile.TemplateRuleOverrides = append(profile.TemplateRuleOverrides, ruleCfg.TemplateRuleOverrides...)
-	profile.PersonalRules = append(profile.PersonalRules, ruleCfg.PersonalRules...)
+	profile.PersonalRules = append(profile.PersonalRules, ruleCfg.personalRules()...)
+	if len(ruleCfg.Accounts) > 0 {
+		if profile.Accounts == nil {
+			profile.Accounts = map[string]string{}
+		}
+		for role, account := range ruleCfg.Accounts {
+			profile.Accounts[role] = account
+		}
+	}
 	if ruleCfg.ProtocolVersion != "" {
 		profile.ProtocolVersion = ruleCfg.ProtocolVersion
 	}

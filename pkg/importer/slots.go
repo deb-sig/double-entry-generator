@@ -27,6 +27,14 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 
 	ignore := false
 	merged := Actions{Amount: mapped.absolute, Currency: order.Currency}
+	// Role bindings: file-level accounts first, then each matching rule's
+	// accounts action, with from/to as shorthand for the from/to roles.
+	bound := map[string]roleBinding{}
+	for role, account := range profile.Accounts {
+		if account = strings.TrimSpace(account); account != "" {
+			bound[role] = roleBinding{account: account, origin: ir.FieldOriginRule}
+		}
+	}
 	for _, rule := range enabledRules(profile.PersonalRules) {
 		if !ruleInScope(rule, profile.ID) {
 			continue
@@ -44,10 +52,20 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 		if err := mergeV2Actions(&merged, rule.Actions); err != nil {
 			return ir.Order{}, false, err
 		}
+		for role, account := range rule.Actions.Accounts {
+			if err := validateRole(role); err != nil {
+				return ir.Order{}, false, fmt.Errorf("rule %q accounts: %w", rule.ID, err)
+			}
+			if account = strings.TrimSpace(account); account != "" {
+				bound[role] = roleBinding{account: account, origin: ir.FieldOriginRule, ruleID: rule.ID}
+			}
+		}
 		if account := strings.TrimSpace(rule.Actions.From.Account); account != "" {
+			bound["from"] = roleBinding{account: account, origin: ir.FieldOriginRule, ruleID: rule.ID}
 			putFieldSource(&order, ruleFieldSource(rule, "from", rule.Actions.From.Account))
 		}
 		if account := strings.TrimSpace(rule.Actions.To.Account); account != "" {
+			bound["to"] = roleBinding{account: account, origin: ir.FieldOriginRule, ruleID: rule.ID}
 			putFieldSource(&order, ruleFieldSource(rule, "to", rule.Actions.To.Account))
 		}
 		if strings.TrimSpace(rule.Actions.Amount) != "" {
@@ -68,6 +86,26 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 	}
 	if strings.TrimSpace(merged.Currency) == "" {
 		merged.Currency = order.Currency
+	}
+	if mapped.branch != nil {
+		// Multi-leg shape: the template's legs, bound through roles. Rule
+		// postings (append mode) still add onto them.
+		if err := renderRoleLegs(profile, &order, row, *mapped.branch, bound, merged); err != nil {
+			return ir.Order{}, false, err
+		}
+		return order, false, nil
+	}
+	if strings.TrimSpace(merged.From.Account) == "" {
+		if b, ok := bound["from"]; ok {
+			merged.From.Account = b.account
+			putFieldSource(&order, ir.FieldSource{Slot: "from", RuleID: b.ruleID, Origin: b.origin})
+		}
+	}
+	if strings.TrimSpace(merged.To.Account) == "" {
+		if b, ok := bound["to"]; ok {
+			merged.To.Account = b.account
+			putFieldSource(&order, ir.FieldSource{Slot: "to", RuleID: b.ruleID, Origin: b.origin})
+		}
 	}
 	fromMissing := strings.TrimSpace(merged.From.Account) == ""
 	toMissing := strings.TrimSpace(merged.To.Account) == ""
@@ -91,6 +129,13 @@ type slotMapped struct {
 	order    ir.Order
 	absolute string
 	expense  bool
+	branch   *LegBranch
+}
+
+type roleBinding struct {
+	account string
+	origin  ir.FieldOrigin
+	ruleID  string
 }
 
 func applySlotMapping(profile *Profile, row Row) (slotMapped, error) {
@@ -102,6 +147,10 @@ func applySlotMapping(profile *Profile, row Row) (slotMapped, error) {
 	}
 	if row.Metadata == nil {
 		row.Metadata = map[string]string{}
+	}
+	row, err := rowWithVarSets(row, profile.Template.Vars, order)
+	if err != nil {
+		return slotMapped{}, err
 	}
 
 	keys := append([]string{}, slots.Metadata.Keys...)
@@ -164,27 +213,16 @@ func applySlotMapping(profile *Profile, row Row) (slotMapped, error) {
 		putFieldSource(&order, templateFieldSource("date", slots.Date))
 	}
 
-	renderedAmount, err := renderPostingTextStrict(slots.Amount, row, order)
+	amount, renderedAmount, expense, err := resolveDirection(profile, row, order)
 	if err != nil {
-		return slotMapped{}, fmt.Errorf("slots.amount %q: %w", slots.Amount, err)
-	}
-	amount, err := parseAmountExact(renderedAmount, profile.Template.AmountPrefix)
-	if err != nil {
-		return slotMapped{}, fmt.Errorf("slots.amount %q => %q: %w", slots.Amount, renderedAmount, err)
-	}
-	expense := metadataNegates(order.Metadata, profile.Template.AmountSign)
-	if expense && amount.Sign() > 0 {
-		amount = amount.Neg()
-	}
-	if !expense && amount.Sign() < 0 {
-		expense = true
+		return slotMapped{}, err
 	}
 	if amount.Sign() < 0 {
 		order.Type = ir.TypeSend
 	} else {
 		order.Type = ir.TypeRecv
 	}
-	order.TypeOriginal = order.Metadata[profile.Template.AmountSign.Metadata]
+	order.TypeOriginal = directionOriginal(profile, row, order)
 	setOrderExactMoney(&order, amount)
 	absolute := formatAmountLikeDecimal(amount.Abs(), renderedAmount)
 	row.Amount = absolute
@@ -192,7 +230,230 @@ func applySlotMapping(profile *Profile, row Row) (slotMapped, error) {
 		row.Amount = "-" + absolute
 	}
 	putFieldSource(&order, templateFieldSource("amount", slots.Amount))
-	return slotMapped{row: row, order: order, absolute: absolute, expense: expense}, nil
+
+	branch, err := selectLegBranch(profile, row, order)
+	if err != nil {
+		return slotMapped{}, err
+	}
+	if branch != nil {
+		if branch.Payee != "" {
+			order.Peer = strings.TrimSpace(renderRuleText(branch.Payee, row, order))
+			row.Payee = order.Peer
+			putFieldSource(&order, templateFieldSource("payee", branch.Payee))
+		}
+		if branch.Narration != "" {
+			order.Item = strings.TrimSpace(renderRuleText(branch.Narration, row, order))
+			row.Narration = order.Item
+			putFieldSource(&order, templateFieldSource("narration", branch.Narration))
+		}
+		for key, expr := range branch.Metadata {
+			value := strings.TrimSpace(renderRuleText(expr, row, order))
+			if value == "" {
+				continue
+			}
+			order.Metadata[key] = value
+			row.Metadata[key] = value
+			if !containsString(order.MetadataKeys, key) {
+				order.MetadataKeys = append(order.MetadataKeys, key)
+			}
+			putFieldSource(&order, templateFieldSource(metadataSlot(key), expr))
+		}
+	}
+	return slotMapped{row: row, order: order, absolute: absolute, expense: expense, branch: branch}, nil
+}
+
+// rowWithVarSets applies template var sets in order; a set with a `when`
+// only applies where the condition holds, and later sets override.
+func rowWithVarSets(row Row, sets VarSets, order ir.Order) (Row, error) {
+	for i, set := range sets {
+		if strings.TrimSpace(set.When) != "" {
+			ok, err := evalWhen(set.When, row, order)
+			if err != nil {
+				return row, fmt.Errorf("template vars[%d] when %q: %w", i, set.When, err)
+			}
+			if !ok {
+				continue
+			}
+		}
+		row = rowWithVars(row, set.Vars, order)
+	}
+	return row, nil
+}
+
+// resolveDirection parses the amount and decides outflow/inflow according
+// to template.direction (or the legacy amountSign). The returned amount is
+// signed: negative for outflow.
+func resolveDirection(profile *Profile, row Row, order ir.Order) (ir.Decimal, string, bool, error) {
+	t := profile.Template
+	d := t.Direction
+	prefix := t.AmountPrefix
+
+	if d.OutflowColumn != "" {
+		out := strings.TrimSpace(renderRuleText(d.OutflowColumn, row, order))
+		in := strings.TrimSpace(renderRuleText(d.InflowColumn, row, order))
+		if nonEmptyAmount(out) {
+			amount, err := parseAmountExact(out, prefix)
+			if err != nil {
+				return ir.Decimal{}, "", false, fmt.Errorf("direction.outflowColumn %q => %q: %w", d.OutflowColumn, out, err)
+			}
+			return amount.Abs().Neg(), out, true, nil
+		}
+		if nonEmptyAmount(in) {
+			amount, err := parseAmountExact(in, prefix)
+			if err != nil {
+				return ir.Decimal{}, "", false, fmt.Errorf("direction.inflowColumn %q => %q: %w", d.InflowColumn, in, err)
+			}
+			return amount.Abs(), in, false, nil
+		}
+		return ir.Decimal{}, "", false, fmt.Errorf("direction: neither %q nor %q has an amount", d.OutflowColumn, d.InflowColumn)
+	}
+
+	rendered, err := renderPostingTextStrict(t.Slots.Amount, row, order)
+	if err != nil {
+		return ir.Decimal{}, "", false, fmt.Errorf("slots.amount %q: %w", t.Slots.Amount, err)
+	}
+	amount, err := parseAmountExact(rendered, prefix)
+	if err != nil {
+		return ir.Decimal{}, "", false, fmt.Errorf("slots.amount %q => %q: %w", t.Slots.Amount, rendered, err)
+	}
+
+	var expense bool
+	switch {
+	case d.Column != "":
+		got := strings.TrimSpace(renderRuleText(d.Column, row, order))
+		switch {
+		case containsTrimmed(d.Outflow, got):
+			expense = true
+		case containsTrimmed(d.Inflow, got):
+			expense = false
+		default:
+			// Value in neither list: trust the amount's own sign.
+			expense = amount.Sign() < 0
+		}
+	case !t.AmountSign.IsZero():
+		expense = metadataNegates(order.Metadata, t.AmountSign)
+	default:
+		expense = amount.Sign() < 0
+	}
+	if expense {
+		amount = amount.Abs().Neg()
+	} else {
+		amount = amount.Abs()
+	}
+	return amount, rendered, expense, nil
+}
+
+func directionOriginal(profile *Profile, row Row, order ir.Order) string {
+	d := profile.Template.Direction
+	switch {
+	case d.Column != "":
+		return strings.TrimSpace(renderRuleText(d.Column, row, order))
+	case profile.Template.AmountSign.Metadata != "":
+		return order.Metadata[profile.Template.AmountSign.Metadata]
+	default:
+		return ""
+	}
+}
+
+func containsTrimmed(values []string, want string) bool {
+	for _, v := range values {
+		if strings.TrimSpace(v) == want {
+			return true
+		}
+	}
+	return false
+}
+
+func selectLegBranch(profile *Profile, row Row, order ir.Order) (*LegBranch, error) {
+	for i := range profile.Template.Legs {
+		branch := &profile.Template.Legs[i]
+		if strings.TrimSpace(branch.When) == "" {
+			return branch, nil
+		}
+		ok, err := evalWhen(branch.When, row, order)
+		if err != nil {
+			return nil, fmt.Errorf("template legs[%d] when %q: %w", i, branch.When, err)
+		}
+		if ok {
+			return branch, nil
+		}
+	}
+	return nil, nil
+}
+
+// renderRoleLegs turns a leg branch into postings, binding each role to an
+// account from the rules file or to the role's FIXME account.
+func renderRoleLegs(profile *Profile, order *ir.Order, row Row, branch LegBranch, bound map[string]roleBinding, merged Actions) error {
+	row = rowWithVars(row, merged.Vars, *order)
+	expense := order.Type == ir.TypeSend
+	for i, leg := range branch.Legs {
+		role := strings.TrimSpace(leg.Role)
+		account, src, err := bindRole(role, bound, expense)
+		if err != nil {
+			return fmt.Errorf("template legs %q leg %d: %w", branch.ID, i, err)
+		}
+		putFieldSource(order, src)
+
+		if strings.TrimSpace(leg.Amount) == "" {
+			// Bare account: Beancount balances it.
+			order.Postings = append(order.Postings, ir.Posting{Line: account})
+			continue
+		}
+		// Render the leg exactly as a hand-written posting line would be, so
+		// amounts, costs and prices follow the same rules as rule postings.
+		parts := []string{account, strings.TrimSpace(leg.Amount), firstNonEmptyString(leg.Currency, merged.Currency, order.Currency)}
+		if cost := strings.TrimSpace(leg.Cost); cost != "" {
+			if !strings.HasPrefix(cost, "{") {
+				cost = "{" + cost + "}"
+			}
+			parts = append(parts, cost)
+		}
+		if price := strings.TrimSpace(leg.Price); price != "" {
+			if !strings.HasPrefix(price, "@") {
+				price = "@ " + price
+			}
+			parts = append(parts, price)
+		}
+		line, err := renderPostingTextStrict(strings.Join(nonEmptyStrings(parts), " "), row, *order)
+		if err != nil {
+			return fmt.Errorf("leg %s: %w", role, err)
+		}
+		order.Postings = append(order.Postings, ir.Posting{Line: strings.TrimSpace(line)})
+	}
+	for _, line := range merged.Postings {
+		rendered, err := renderPostingTextStrict(line, row, *order)
+		if err != nil {
+			return err
+		}
+		if rendered = strings.TrimSpace(rendered); rendered != "" {
+			order.Postings = append(order.Postings, ir.Posting{Line: rendered})
+		}
+	}
+	return nil
+}
+
+func bindRole(role string, bound map[string]roleBinding, expense bool) (string, ir.FieldSource, error) {
+	slot := "leg." + role
+	if b, ok := bound[role]; ok {
+		return b.account, ir.FieldSource{Slot: slot, RuleID: b.ruleID, Origin: b.origin}, nil
+	}
+	fallback, core := CoreRoles[role]
+	if !core {
+		return "", ir.FieldSource{}, fmt.Errorf("role %q has no account; bind it in the rules file under accounts:", role)
+	}
+	switch role {
+	case "from":
+		fallback = fallbackIncome
+		if expense {
+			fallback = fallbackAsset
+		}
+	case "to":
+		fallback = fallbackAsset
+		if expense {
+			fallback = fallbackExpense
+		}
+	}
+	return fallback, ir.FieldSource{Slot: slot, Origin: ir.FieldOriginEngine}, nil
 }
 
 func metadataNegates(meta map[string]string, sign AmountSign) bool {
@@ -498,12 +759,51 @@ func SlotSkeleton(templateRef string, profile *Profile) string {
 		}
 	}
 	fmt.Fprintf(&b, "template: %s\n", ref)
-	b.WriteString("personalRules:\n")
+	b.WriteString("# 角色绑定：把模板里的角色一次绑到你的账户。没绑的角色会补 FIXME。\n")
+	b.WriteString("accounts:\n")
+	for _, role := range templateRoles(profile) {
+		fmt.Fprintf(&b, "  %s: %s\n", role, roleSkeletonAccount(role))
+	}
+	b.WriteString("rules:\n")
 	b.WriteString("  - id: 示例\n")
 	b.WriteString("    when: payee ~ \"商户名\"\n")
 	b.WriteString("    actions:\n")
 	b.WriteString("      to: Expenses:FIXME\n")
 	return b.String()
+}
+
+// templateRoles lists the roles a template's legs use, from/to first,
+// in first-appearance order.
+func templateRoles(profile *Profile) []string {
+	roles := []string{"from", "to"}
+	seen := map[string]bool{"from": true, "to": true}
+	for _, branch := range profile.Template.Legs {
+		for _, leg := range branch.Legs {
+			role := strings.TrimSpace(leg.Role)
+			if role != "" && !seen[role] {
+				seen[role] = true
+				roles = append(roles, role)
+			}
+		}
+	}
+	if len(profile.Template.Legs) > 0 {
+		// Multi-leg templates seldom use from/to; list them last.
+		return append(roles[2:], roles[:2]...)
+	}
+	return roles
+}
+
+func roleSkeletonAccount(role string) string {
+	switch role {
+	case "from", "cash", "custody", "position":
+		return "Assets:FIXME"
+	case "to", "fee", "gas":
+		return "Expenses:FIXME"
+	case "pnl":
+		return "Income:FIXME"
+	default:
+		return "Equity:FIXME"
+	}
 }
 
 func writeSlotLine(b *strings.Builder, name, expr string) {
