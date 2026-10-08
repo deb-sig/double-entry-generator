@@ -23,6 +23,9 @@ type Profile struct {
 	// Reader is the `reader:` block: how bytes become a table. When absent the
 	// legacy template.fileFormat/encoding/delimiter fields are used instead.
 	Reader                *reader.Config    `json:"reader,omitempty" yaml:"reader,omitempty"`
+	// Shape is the ordered list of row-level steps run between the reader
+	// and the rules: header location, dropping, merging and splitting rows.
+	Shape                 []ShapeOp         `json:"shape,omitempty" yaml:"shape,omitempty"`
 	TemplateRules         []Rule            `json:"templateRules,omitempty" yaml:"templateRules,omitempty"`
 	TemplateRuleOverrides []Rule            `json:"templateRuleOverrides,omitempty" yaml:"templateRuleOverrides,omitempty"`
 	PersonalRules         []Rule            `json:"personalRules,omitempty" yaml:"personalRules,omitempty"`

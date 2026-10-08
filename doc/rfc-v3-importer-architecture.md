@@ -8,7 +8,7 @@
 - PDF 走 `pdftotext -layout`，CLI 接受这个系统依赖；浏览器端用 pdf.js 转文本。引擎不解析 PDF 二进制。
 - json / xml 统一用 **XPath**（不用 JSONPath），一种查询语法覆盖两种格式。
 
-进度：第 1 步 Reader 已落地（`pkg/reader`，csv/xlsx/xls/json/xml/text），模板 `reader:` 块可用，旧字段兼容。
+进度：第 1 步 Reader 已落地（`pkg/reader`，csv/xlsx/xls/json/xml/text），模板 `reader:` 块可用，旧字段兼容。第 2 步 Shaper 已落地（`pkg/importer/shape.go`，`shape:` 列表：`locateHeader / dropMatching / dropIf / merge / split`），没写 `locateHeader` 时沿用旧表头字段。
 
 ## 要解决什么
 
@@ -156,7 +156,7 @@ type Reader interface {
 ```yaml
 shape:
   - locateHeader: { anchor: "交易时间", scanRows: 50 }   # 用锚点定位表头，不数行数 → 杀掉 #236 这类 bug
-  - dropWhile: '^(导出|说明|共计|---)'                   # 表头之前/之后的说明行
+  - dropMatching: '^(导出|说明|共计|---)'                # 表头之前/之后的说明行，整行文本匹配
   - dropIf: '<当前状态> ~ "失败|撤销|已关闭"'            # #123 的失败还款、#71 的 0 元记录在这里过滤
   - merge:                                                # hxsec：一笔成交拆成「金额行」和「数量价格行」
       key: ["<合同号>", "<成交号>"]

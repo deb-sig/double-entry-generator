@@ -176,6 +176,35 @@ reader:
 
 没有 `pdftotext` 时导入会报错并给出手工转换命令；也可以自己转好后导入 `.txt`。浏览器端由前端用 pdf.js 转文本后交给同一个模板。
 
+### shape 块
+
+Reader 产出表格之后、规则运行之前，`shape:` 回答一个问题：哪些行是一笔交易。表头在第几行、说明行和合计行、失败的订单、一笔拆成两行、一行带两笔，都在这里处理完，规则层只会看到"一条记录就是一笔交易"。
+
+`shape:` 是有序步骤列表，按写的顺序执行：
+
+```yaml
+shape:
+  - locateHeader: { anchor: [交易时间, 金额(元)], scanRows: 50 }   # 用锚点列名找表头，不数行数
+  - dropMatching: '^(共计|合计|导出说明)'                           # 整行文本匹配正则就丢，表头前后都可
+  - dropIf: '<当前状态> ~ "失败|已关闭" || <金额(元)>.number == 0'  # 条件语法同规则的 when
+  - merge:                                                        # 多行一笔：按 key 合并
+      key: [<合同号>, <成交号>]
+      take: { 成交金额: first-nonzero, 成交数量: first-nonzero, 手续费: sum, 备注: join }
+  - split:                                                        # 一行多笔：拆成多条记录
+      when: '<交易类型> == "零钱提现" && <备注> ~ "服务费"'
+      into:
+        - {}                                                      # 原行
+        - { 交易类型: 手续费, 金额(元): '<备注>.extract("服务费.?([.0-9]+)")' }
+```
+
+- `locateHeader`：第一个包含全部 `anchor` 列名的行就是表头，它之前的行全部丢掉。微信、支付宝、建行历次改版多数只是说明行多了少了一行，用锚点就不受影响。
+- `dropMatching`：正则对整行（单元格以空格连接）匹配，适合页眉页脚、合计行。
+- `dropIf`：对列求条件，适合按状态、金额过滤。
+- `merge`：`key` 相同的记录合成一条，`take` 决定每列怎么合：`first`（默认）、`last`、`first-nonzero`、`sum`、`join`。`key` 为空的记录不参与合并。
+- `split`：命中 `when` 的记录替换成 `into` 里的若干条，每条是原记录加上覆盖的列；`{}` 表示原样复制。
+
+没写 `locateHeader` 时，表头仍按 `template.skipLeadingRows / sourceHeaders / headerLocate` 的旧规则确定，所以可以只加一个 `dropIf` 而不改别的。
+
 ## 规则文件
 
 规则文件通常包含三块：

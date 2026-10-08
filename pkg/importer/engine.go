@@ -148,6 +148,16 @@ func ParseBytes(profile *Profile, name string, data []byte) ([]Row, error) {
 }
 
 func tableToRows(profile *Profile, table reader.Table) ([]Row, error) {
+	if len(profile.Shape) > 0 {
+		headers, rows, err := shapeTable(profile, table)
+		if err != nil {
+			return nil, err
+		}
+		if err := validateHeaders(profile, headers); err != nil {
+			return nil, err
+		}
+		return buildRowsFromRecords(profile, headers, rows)
+	}
 	if table.Headers != nil {
 		// Named readers (json, xml, text) already know their columns; there
 		// is no header row to locate and nothing to skip.
@@ -188,12 +198,26 @@ func validateBillMatchesTemplate(profile *Profile, filename string) error {
 }
 
 func recordsToRows(profile *Profile, records [][]string) ([]Row, error) {
+	headers, rows, err := legacyHeaders(profile, records)
+	if err != nil {
+		return nil, err
+	}
+	if err := validateHeaders(profile, headers); err != nil {
+		return nil, err
+	}
+	return buildRowsFromRecords(profile, headers, rows)
+}
+
+// legacyHeaders applies the template.* header fields (skipLeadingRows,
+// sourceHeaders, headerLocate) and returns the header names and the data
+// rows after them.
+func legacyHeaders(profile *Profile, records [][]string) ([]string, [][]string, error) {
 	skip := profile.Template.SkipLeadingRows
 	if skip < 0 {
 		skip = 0
 	}
 	if len(records) <= skip {
-		return nil, fmt.Errorf("no rows after skipLeadingRows=%d", skip)
+		return nil, nil, fmt.Errorf("no rows after skipLeadingRows=%d", skip)
 	}
 
 	if profile.Template.HeaderLocate {
@@ -208,16 +232,13 @@ func recordsToRows(profile *Profile, records [][]string) ([]Row, error) {
 	} else if sameCells(headers, normalizeCells(records[skip])) {
 		start = skip + 1
 	}
-	if err := validateHeaders(profile, headers); err != nil {
-		return nil, err
-	}
-	return buildRowsFromRecords(profile, headers, records[start:])
+	return headers, records[start:], nil
 }
 
-func recordsToRowsHeaderLocate(profile *Profile, records [][]string, skip int) ([]Row, error) {
+func recordsToRowsHeaderLocate(profile *Profile, records [][]string, skip int) ([]string, [][]string, error) {
 	wanted := normalizeCells(profile.Template.SourceHeaders)
 	if len(wanted) == 0 {
-		return nil, fmt.Errorf("headerLocate requires non-empty sourceHeaders")
+		return nil, nil, fmt.Errorf("headerLocate requires non-empty sourceHeaders")
 	}
 	wantedSet := make(map[string]struct{}, len(wanted))
 	for _, name := range wanted {
@@ -225,12 +246,12 @@ func recordsToRowsHeaderLocate(profile *Profile, records [][]string, skip int) (
 			continue
 		}
 		if _, dup := wantedSet[name]; dup {
-			return nil, fmt.Errorf("sourceHeaders contains duplicate column name %q", name)
+			return nil, nil, fmt.Errorf("sourceHeaders contains duplicate column name %q", name)
 		}
 		wantedSet[name] = struct{}{}
 	}
 	if len(wantedSet) == 0 {
-		return nil, fmt.Errorf("headerLocate requires non-empty sourceHeaders")
+		return nil, nil, fmt.Errorf("headerLocate requires non-empty sourceHeaders")
 	}
 
 	scanEnd := len(records)
@@ -255,13 +276,13 @@ func recordsToRowsHeaderLocate(profile *Profile, records [][]string, skip int) (
 		}
 		// Candidate header row: duplicate column names fail closed immediately.
 		if err := rejectDuplicateHeaderNames(headers); err != nil {
-			return nil, fmt.Errorf("header row at index %d: %w", i, err)
+			return nil, nil, fmt.Errorf("header row at index %d: %w", i, err)
 		}
 		candidates = append(candidates, candidate{index: i, headers: headers})
 	}
 	switch len(candidates) {
 	case 0:
-		return nil, fmt.Errorf(
+		return nil, nil, fmt.Errorf(
 			"headerLocate: no header row containing all sourceHeaders within scan window (skipLeadingRows=%d, headerScanMaxRows=%d)",
 			skip, profile.Template.HeaderScanMaxRows,
 		)
@@ -272,17 +293,14 @@ func recordsToRowsHeaderLocate(profile *Profile, records [][]string, skip int) (
 		for i, c := range candidates {
 			idxs[i] = fmt.Sprintf("%d", c.index)
 		}
-		return nil, fmt.Errorf(
+		return nil, nil, fmt.Errorf(
 			"headerLocate: ambiguous header rows at indices [%s]; refine skipLeadingRows or sourceHeaders",
 			strings.Join(idxs, ", "),
 		)
 	}
 
 	found := candidates[0]
-	if err := validateHeaders(profile, found.headers); err != nil {
-		return nil, err
-	}
-	return buildRowsFromRecords(profile, found.headers, records[found.index+1:])
+	return found.headers, records[found.index+1:], nil
 }
 
 func rejectDuplicateHeaderNames(headers []string) error {
