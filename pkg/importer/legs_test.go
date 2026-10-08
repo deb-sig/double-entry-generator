@@ -271,9 +271,33 @@ func TestDirectionValidation(t *testing.T) {
 func TestSlotSkeletonListsRoles(t *testing.T) {
 	profile := loadProfileYAML(t, securitiesTemplate)
 	text := SlotSkeleton("broker@2026-01-01", profile)
-	for _, want := range []string{"accounts:", "  cash: Assets:FIXME", "  position: Assets:FIXME", "  fee: Expenses:FIXME", "  pnl: Income:FIXME", "rules:"} {
+	for _, want := range []string{"accounts:", "  self: Assets:FIXME", "  cash: Assets:FIXME", "  position: Assets:FIXME", "  fee: Expenses:FIXME", "  pnl: Income:FIXME", "rules:"} {
 		if !strings.Contains(text, want) {
 			t.Errorf("skeleton missing %q:\n%s", want, text)
 		}
+	}
+}
+
+func TestSelfRoleFollowsDirection(t *testing.T) {
+	tpl := `
+schema: https://deg.dev/template-profile/v2
+template:
+  fileFormat: csv
+  dateFormat: yyyy-MM-dd
+  defaultCurrency: CNY
+  sourceHeaders: [d, kind, a]
+  slots: { date: <d>, amount: <a>.number }
+  direction: { column: <kind>, outflow: [支出], inflow: [收入], default: outflow }
+accounts: { self: Assets:Bank }
+`
+	out := importCSV(t, tpl, "d,kind,a\n2026-01-01,支出,10\n2026-01-02,收入,20\n2026-01-03,其他,5\n")
+	if got := joinPostings(out.Orders[0]); !strings.Contains(got, "Assets:Bank -10") || !strings.Contains(got, "Expenses:FIXME 10") {
+		t.Errorf("outflow:\n%s", got)
+	}
+	if got := joinPostings(out.Orders[1]); !strings.Contains(got, "Assets:Bank 20") || !strings.Contains(got, "Income:FIXME -20") {
+		t.Errorf("inflow:\n%s", got)
+	}
+	if out.Orders[2].Type != ir.TypeSend {
+		t.Errorf("default direction should be outflow, got %v", out.Orders[2].Type)
 	}
 }

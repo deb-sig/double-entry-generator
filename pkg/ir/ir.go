@@ -59,10 +59,13 @@ type Order struct {
 	Metadata       map[string]string
 	// MetadataKeys is the template-declared metadata order. Empty keeps map order.
 	MetadataKeys []string
-	Tags         []string
-	Flag         string
-	Links        []string
-	Postings     []Posting
+	// DeclaredMetadataKeys is every key the template may emit, in order,
+	// including ones empty for this transaction. Compilers do not read it.
+	DeclaredMetadataKeys []string
+	Tags                 []string
+	Flag                 string
+	Links                []string
+	Postings             []Posting
 	// Sources records where each written value came from. Legacy templateRules
 	// orders leave this empty. Compilers do not read it.
 	Sources []FieldSource

@@ -24,6 +24,9 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 	}
 	order := mapped.order
 	row = mapped.row
+	if mapped.ignore {
+		return order, true, nil
+	}
 
 	ignore := false
 	merged := Actions{Amount: mapped.absolute, Currency: order.Currency}
@@ -95,6 +98,18 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 		}
 		return order, false, nil
 	}
+	// self is the bill's own account: it pays on an outflow and receives
+	// on an inflow.
+	if b, ok := bound["self"]; ok {
+		if mapped.expense && strings.TrimSpace(merged.From.Account) == "" {
+			merged.From.Account = b.account
+			putFieldSource(&order, ir.FieldSource{Slot: "from", RuleID: b.ruleID, Origin: b.origin})
+		}
+		if !mapped.expense && strings.TrimSpace(merged.To.Account) == "" {
+			merged.To.Account = b.account
+			putFieldSource(&order, ir.FieldSource{Slot: "to", RuleID: b.ruleID, Origin: b.origin})
+		}
+	}
 	if strings.TrimSpace(merged.From.Account) == "" {
 		if b, ok := bound["from"]; ok {
 			merged.From.Account = b.account
@@ -130,6 +145,7 @@ type slotMapped struct {
 	absolute string
 	expense  bool
 	branch   *LegBranch
+	ignore   bool
 }
 
 type roleBinding struct {
@@ -164,6 +180,7 @@ func applySlotMapping(profile *Profile, row Row) (slotMapped, error) {
 		putFieldSource(&order, templateFieldSource(metadataSlot(key), slots.Metadata.Values[key]))
 	}
 	order.MetadataKeys = metadataKeyOrder(keys, order.Metadata)
+	order.DeclaredMetadataKeys = keys
 
 	if slots.Payee != "" {
 		order.Peer = strings.TrimSpace(renderRuleText(slots.Payee, row, order))
@@ -231,6 +248,45 @@ func applySlotMapping(profile *Profile, row Row) (slotMapped, error) {
 	}
 	putFieldSource(&order, templateFieldSource("amount", slots.Amount))
 
+	// Template rules in slot mode only shape fields: a conditional payee,
+	// a narration with the memo appended, a currency that depends on a
+	// column, extra metadata, vars for legs. Accounts are rejected upfront.
+	templateIgnore := false
+	for _, rule := range enabledRules(applyTemplateRuleOverrides(profile.TemplateRules, profile.TemplateRuleOverrides)) {
+		if !ruleInScope(rule, profile.ID) {
+			continue
+		}
+		matches, err := ruleMatches(rule, row, order)
+		if err != nil {
+			return slotMapped{}, err
+		}
+		if !matches {
+			continue
+		}
+		if err := applySlotPersonalActions(&order, &row, rule, &templateIgnore); err != nil {
+			return slotMapped{}, err
+		}
+		if rule.Actions.Date != "" {
+			rendered := strings.TrimSpace(resolveActionValue(rule.Actions.Date, row, order))
+			if payTime, err := parseDate(rendered, profile.Template.DateFormat); err == nil {
+				order.PayTime = payTime
+				row.Date = rendered
+				putFieldSource(&order, ruleFieldSource(rule, "date", rule.Actions.Date))
+			}
+		}
+		if rule.Actions.Currency != "" {
+			order.Currency = strings.TrimSpace(resolveActionValue(rule.Actions.Currency, row, order))
+			row.Currency = order.Currency
+			putFieldSource(&order, ruleFieldSource(rule, "currency", rule.Actions.Currency))
+		}
+		if len(rule.Actions.Vars) > 0 {
+			row = rowWithVars(row, rule.Actions.Vars, order)
+		}
+	}
+	if templateIgnore {
+		return slotMapped{row: row, order: order, absolute: absolute, expense: expense, ignore: true}, nil
+	}
+
 	branch, err := selectLegBranch(profile, row, order)
 	if err != nil {
 		return slotMapped{}, err
@@ -291,19 +347,24 @@ func resolveDirection(profile *Profile, row Row, order ir.Order) (ir.Decimal, st
 	if d.OutflowColumn != "" {
 		out := strings.TrimSpace(renderRuleText(d.OutflowColumn, row, order))
 		in := strings.TrimSpace(renderRuleText(d.InflowColumn, row, order))
-		if nonEmptyAmount(out) {
+		// A zero on one side next to a value on the other is a placeholder.
+		switch {
+		case isNonzeroCell(out, prefix):
 			amount, err := parseAmountExact(out, prefix)
 			if err != nil {
 				return ir.Decimal{}, "", false, fmt.Errorf("direction.outflowColumn %q => %q: %w", d.OutflowColumn, out, err)
 			}
 			return amount.Abs().Neg(), out, true, nil
-		}
-		if nonEmptyAmount(in) {
+		case isNonzeroCell(in, prefix):
 			amount, err := parseAmountExact(in, prefix)
 			if err != nil {
 				return ir.Decimal{}, "", false, fmt.Errorf("direction.inflowColumn %q => %q: %w", d.InflowColumn, in, err)
 			}
 			return amount.Abs(), in, false, nil
+		case nonEmptyAmount(out):
+			return ir.Decimal{}, out, true, nil
+		case nonEmptyAmount(in):
+			return ir.Decimal{}, in, false, nil
 		}
 		return ir.Decimal{}, "", false, fmt.Errorf("direction: neither %q nor %q has an amount", d.OutflowColumn, d.InflowColumn)
 	}
@@ -326,6 +387,10 @@ func resolveDirection(profile *Profile, row Row, order ir.Order) (ir.Decimal, st
 			expense = true
 		case containsTrimmed(d.Inflow, got):
 			expense = false
+		case d.Default == "outflow":
+			expense = true
+		case d.Default == "inflow":
+			expense = false
 		default:
 			// Value in neither list: trust the amount's own sign.
 			expense = amount.Sign() < 0
@@ -334,6 +399,9 @@ func resolveDirection(profile *Profile, row Row, order ir.Order) (ir.Decimal, st
 		expense = metadataNegates(order.Metadata, t.AmountSign)
 	default:
 		expense = amount.Sign() < 0
+		if d.Invert {
+			expense = !expense && amount.Sign() != 0
+		}
 	}
 	if expense {
 		amount = amount.Abs().Neg()
@@ -531,9 +599,7 @@ func applySlotPersonalActions(order *ir.Order, row *Row, rule Rule, ignore *bool
 			row.Metadata = map[string]string{}
 		}
 		row.Metadata[key] = rendered
-		if !containsString(order.MetadataKeys, key) {
-			order.MetadataKeys = append(order.MetadataKeys, key)
-		}
+		order.MetadataKeys = insertMetadataKey(order.MetadataKeys, declaredMetadataKeys(order), key)
 		putFieldSource(order, ruleFieldSource(rule, metadataSlot(key), value))
 	}
 	for _, key := range actions.MetadataDrop {
@@ -547,6 +613,44 @@ func applySlotPersonalActions(order *ir.Order, row *Row, rule Rule, ignore *bool
 		dropFieldSource(order, metadataSlot(key))
 	}
 	return nil
+}
+
+// declaredMetadataKeys is the template's full key list, stashed on the
+// order so rule-added keys can keep their declared position.
+func declaredMetadataKeys(order *ir.Order) []string {
+	return order.DeclaredMetadataKeys
+}
+
+// insertMetadataKey adds key to keys. A key the template declared goes
+// where the declaration puts it relative to the keys already present; an
+// undeclared key is appended.
+func insertMetadataKey(keys, declared []string, key string) []string {
+	if containsString(keys, key) {
+		return keys
+	}
+	pos := -1
+	for i, d := range declared {
+		if d == key {
+			pos = i
+			break
+		}
+	}
+	if pos < 0 {
+		return append(keys, key)
+	}
+	after := map[string]bool{}
+	for _, d := range declared[pos+1:] {
+		after[d] = true
+	}
+	for i, k := range keys {
+		if after[k] {
+			out := make([]string, 0, len(keys)+1)
+			out = append(out, keys[:i]...)
+			out = append(out, key)
+			return append(out, keys[i:]...)
+		}
+	}
+	return append(keys, key)
 }
 
 func fillMissingSides(actions *Actions, expense bool) {
@@ -672,7 +776,7 @@ func removeString(values []string, drop string) []string {
 }
 
 var (
-	columnRefPattern   = regexp.MustCompile(`<([^>]+)>`)
+	columnRefPattern   = regexp.MustCompile(`<([^<>=!\s][^<>]*)>`)
 	metadataRefPattern = regexp.MustCompile(`metadata\.([A-Za-z][A-Za-z0-9_-]*)`)
 )
 
@@ -775,8 +879,8 @@ func SlotSkeleton(templateRef string, profile *Profile) string {
 // templateRoles lists the roles a template's legs use, from/to first,
 // in first-appearance order.
 func templateRoles(profile *Profile) []string {
-	roles := []string{"from", "to"}
-	seen := map[string]bool{"from": true, "to": true}
+	roles := []string{"self", "from", "to"}
+	seen := map[string]bool{"self": true, "from": true, "to": true}
 	for _, branch := range profile.Template.Legs {
 		for _, leg := range branch.Legs {
 			role := strings.TrimSpace(leg.Role)
@@ -788,14 +892,14 @@ func templateRoles(profile *Profile) []string {
 	}
 	if len(profile.Template.Legs) > 0 {
 		// Multi-leg templates seldom use from/to; list them last.
-		return append(roles[2:], roles[:2]...)
+		return append(roles[3:], roles[:3]...)
 	}
 	return roles
 }
 
 func roleSkeletonAccount(role string) string {
 	switch role {
-	case "from", "cash", "custody", "position":
+	case "self", "from", "cash", "custody", "position":
 		return "Assets:FIXME"
 	case "to", "fee", "gas":
 		return "Expenses:FIXME"

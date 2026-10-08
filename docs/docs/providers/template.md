@@ -480,7 +480,28 @@ template:
 ```yaml
 template:
   direction: {}                    # 不声明：金额自带正负，负数为流出
+  direction: { invert: true }      # 信用卡账单常见：正数是消费（流出）
 ```
+
+列值两边都没命中时默认看金额正负；加 `default: outflow` 可以把「不计收支」这类值一律按流出处理。
+
+### 槽位模式下的 templateRules
+
+声明了 `slots` 之后，`templateRules` 仍然可以用，但只能整理**字段**：按条件改 `payee`、`narration`、`date`、`currency`、增删 `metadata`、设置 `vars`、`ignore`。写 `from`/`to`/`postings`/`accounts` 会被拒绝。它们在槽位映射之后、legs 分支选择之前执行：
+
+```yaml
+templateRules:
+  - id: 对手方为空时用银行名
+    when: <对手信息> == "" || <对手信息> == "--"
+    actions:
+      payee: ABC Debit
+  - id: 外币
+    when: <币别> != "人民币"
+    actions:
+      currency: USD
+```
+
+元数据键的输出顺序以 `slots.metadata` 的声明顺序为准；规则补上的键如果在声明里（值可以写空串占位），会落到声明的位置。
 
 ### vars：模板变量
 
@@ -521,7 +542,7 @@ template:
 ```
 
 - 分支按顺序取第一个 `when` 成立的；没有 `when` 的分支是默认分支；都不命中就退回普通的 `from`/`to` 两腿。
-- `role` 是封闭核心集：`from` `to` `cash` `custody` `position` `fee` `gas` `pnl`。机构特有的腿用 `x-` 前缀（如 `x-margin`），这类角色必须在规则文件里绑定，引擎不会补 FIXME。
+- `role` 是封闭核心集：`self` `from` `to` `cash` `custody` `position` `fee` `gas` `pnl`。`self` 是这份账单自己的账户（银行卡、信用卡、钱包）：支出时它是 `from`，收入时它是 `to`，相当于 hledger 的 `account1`。普通账单在 `accounts:` 里只需绑 `self` 一个。机构特有的腿用 `x-` 前缀（如 `x-margin`），这类角色必须在规则文件里绑定，引擎不会补 FIXME。
 - 腿里写 `account:` 会被拒绝。
 - `cost` 自动加 `{}`，`price` 不带 `@` 时自动加 `@ `；写 `{}` 和 `@@ …` 都按原样保留。
 
@@ -530,7 +551,19 @@ template:
 用户的规则文件只需要两块。`accounts:` 把角色一次绑到自己的账户；`rules:` 用 `when` 覆盖个别交易（`personalRules:` 是同义写法）。
 
 ```yaml
-template: htsec@2026-05-28
+template: abc_debit            # 普通银行卡：只绑 self
+
+accounts:
+  self: Assets:ABC:DebitCard
+personalRules:
+  - id: 房租
+    when: narration ~ "房租"
+    actions:
+      to: Expenses:Housing:Rent
+```
+
+```yaml
+template: htsec@2026-10-08     # 证券：按角色绑
 
 accounts:
   cash: Assets:Htsec:Cash

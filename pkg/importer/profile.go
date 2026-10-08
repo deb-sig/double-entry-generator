@@ -110,10 +110,16 @@ type Direction struct {
 	Inflow        []string `json:"inflow,omitempty" yaml:"inflow,omitempty"`
 	OutflowColumn string   `json:"outflowColumn,omitempty" yaml:"outflowColumn,omitempty"`
 	InflowColumn  string   `json:"inflowColumn,omitempty" yaml:"inflowColumn,omitempty"`
+	// Invert flips the sign convention: positive amounts are outflows.
+	// Credit-card statements usually list charges as positive numbers.
+	Invert bool `json:"invert,omitempty" yaml:"invert,omitempty"`
+	// Default is the direction ("outflow" or "inflow") when the column's
+	// value is in neither list. Empty means: trust the amount's sign.
+	Default string `json:"default,omitempty" yaml:"default,omitempty"`
 }
 
 func (d Direction) IsZero() bool {
-	return d.Column == "" && len(d.Outflow) == 0 && len(d.Inflow) == 0 && d.OutflowColumn == "" && d.InflowColumn == ""
+	return d.Column == "" && len(d.Outflow) == 0 && len(d.Inflow) == 0 && d.OutflowColumn == "" && d.InflowColumn == "" && !d.Invert
 }
 
 // VarSet is a group of template vars, optionally guarded by a condition.
@@ -212,6 +218,7 @@ func (l *LegSpec) UnmarshalYAML(value *yaml.Node) error {
 var CoreRoles = map[string]string{
 	"from":     "", // decided by direction
 	"to":       "", // decided by direction
+	"self":     "Assets:FIXME", // the account this bill belongs to: from on outflow, to on inflow
 	"cash":     "Assets:FIXME",
 	"custody":  "Assets:FIXME",
 	"position": "Assets:FIXME",
@@ -231,7 +238,7 @@ func validateRole(role string) error {
 	if strings.HasPrefix(role, "x-") && len(role) > 2 {
 		return nil
 	}
-	return fmt.Errorf("unknown leg role %q; use one of from, to, cash, custody, position, fee, gas, pnl, or an x- prefixed custom role", role)
+	return fmt.Errorf("unknown leg role %q; use one of self, from, to, cash, custody, position, fee, gas, pnl, or an x- prefixed custom role", role)
 }
 
 // orderedStrings keeps YAML mapping order for metadata keys.
@@ -561,8 +568,11 @@ func validateTemplate(p Profile) error {
 		if twoColumns && (d.Column != "" || len(d.Outflow) > 0 || len(d.Inflow) > 0) {
 			return fmt.Errorf("template direction: use either column/outflow/inflow or outflowColumn/inflowColumn, not both")
 		}
-		if d.Column == "" && (len(d.Outflow) > 0 || len(d.Inflow) > 0) {
-			return fmt.Errorf("template direction.outflow/inflow need direction.column")
+		if d.Column == "" && (len(d.Outflow) > 0 || len(d.Inflow) > 0 || d.Default != "") {
+			return fmt.Errorf("template direction.outflow/inflow/default need direction.column")
+		}
+		if d.Default != "" && d.Default != "outflow" && d.Default != "inflow" {
+			return fmt.Errorf("template direction.default must be outflow or inflow")
 		}
 		if t.Slots.Amount == "" && !twoColumns {
 			return fmt.Errorf("template slots.amount is required (or direction.outflowColumn/inflowColumn)")
@@ -571,6 +581,17 @@ func validateTemplate(p Profile) error {
 			for name, value := range set.Vars {
 				if isAccountName(strings.TrimSpace(value)) {
 					return fmt.Errorf("template vars.%s is an account name; templates bind roles, accounts belong in the rules file", name)
+				}
+			}
+		}
+		for _, rule := range append(append([]Rule{}, p.TemplateRules...), p.TemplateRuleOverrides...) {
+			a := rule.Actions
+			if !a.From.IsZero() || !a.To.IsZero() || len(a.Postings) > 0 || len(a.Accounts) > 0 {
+				return fmt.Errorf("templateRules %q: with slots, template rules may only set fields (payee, narration, date, currency, metadata, vars, tags, ignore); accounts belong in the rules file", rule.ID)
+			}
+			for name, value := range a.Vars {
+				if isAccountName(strings.TrimSpace(value)) {
+					return fmt.Errorf("templateRules %q vars.%s is an account name; accounts belong in the rules file", rule.ID, name)
 				}
 			}
 		}
