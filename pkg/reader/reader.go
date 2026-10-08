@@ -58,7 +58,23 @@ type Config struct {
 	// Convert names a pre-processor that produces text from a binary file.
 	// Currently "pdftotext-layout".
 	Convert string `json:"convert,omitempty" yaml:"convert,omitempty"`
+
+	// Part selects a MIME part of an e-mail (eml): a media type such as
+	// text/html, or attachment:<glob>. Inner is the reader for that part.
+	Part  string  `json:"part,omitempty" yaml:"part,omitempty"`
+	Inner *Config `json:"inner,omitempty" yaml:"inner,omitempty"`
+
+	// URL is the endpoint template for api; {source} is the import argument
+	// and {env.NAME} an environment variable. Headers are sent with the
+	// request and may use the same placeholders. Response is json (default)
+	// or xml, then records/columns apply.
+	URL      string            `json:"url,omitempty" yaml:"url,omitempty"`
+	Headers  map[string]string `json:"headers,omitempty" yaml:"headers,omitempty"`
+	Response string            `json:"response,omitempty" yaml:"response,omitempty"`
 }
+
+// IsAPI reports whether the reader fetches its bill instead of opening a file.
+func (c Config) IsAPI() bool { return NormalizeFormat(c.Format) == "api" }
 
 // Normalize fills defaults and canonicalizes Format.
 func (c Config) Normalize() Config {
@@ -72,8 +88,10 @@ func NormalizeFormat(format string) string {
 	switch f := strings.ToLower(strings.TrimSpace(format)); f {
 	case "", "txt", "csv", "tsv":
 		return "csv"
-	case "xlsx", "xls", "json", "xml":
+	case "xlsx", "xls", "json", "xml", "html", "eml", "api":
 		return f
+	case "htm":
+		return "html"
 	case "text", "pdf":
 		return "text"
 	default:
@@ -87,8 +105,10 @@ func FormatForFile(filename string) string {
 	switch ext := strings.ToLower(strings.TrimPrefix(filepath.Ext(filename), ".")); ext {
 	case "csv", "tsv", "txt":
 		return "csv"
-	case "xlsx", "xls", "json", "xml":
+	case "xlsx", "xls", "json", "xml", "html", "eml":
 		return ext
+	case "htm":
+		return "html"
 	case "pdf":
 		return "text"
 	default:
@@ -103,6 +123,8 @@ func (c Config) Compatible(filename string) bool {
 	billFmt := FormatForFile(filename)
 	ext := strings.ToLower(strings.TrimPrefix(filepath.Ext(filename), "."))
 	switch c.Format {
+	case "api":
+		return true
 	case "text":
 		if ext == "pdf" {
 			return c.Convert != ""
@@ -117,6 +139,13 @@ func (c Config) Compatible(filename string) bool {
 
 // ReadFile reads a bill file with the configured reader.
 func ReadFile(filename string, cfg Config) (Table, error) {
+	if cfg.IsAPI() {
+		data, err := fetchAPI(filename, cfg.Normalize())
+		if err != nil {
+			return Table{}, err
+		}
+		return ReadBytes(filename, data, cfg)
+	}
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return Table{}, err
@@ -145,6 +174,12 @@ func ReadBytes(name string, data []byte, cfg Config) (Table, error) {
 		table, err = readXML(data, cfg)
 	case "text":
 		table, err = readText(name, data, cfg)
+	case "html":
+		table, err = readHTML(data, cfg)
+	case "eml":
+		table, err = readEML(data, cfg)
+	case "api":
+		table, err = readAPIResponse(data, cfg)
 	default:
 		return Table{}, fmt.Errorf("unsupported reader format %q", cfg.Format)
 	}

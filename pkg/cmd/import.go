@@ -96,8 +96,11 @@ func runImport(templateRef, filename string) {
 		}
 	}
 
-	i, err := importer.ImportFile(profile, filename)
+	i, report, err := importer.ImportFileReport(profile, filename)
 	logErrorIfNotNil(err)
+	if profile.Reconcile != nil {
+		log.Printf("reconcile: %s", report)
+	}
 
 	c := &config.Config{
 		Title:               firstNonEmpty(profile.Name, profile.ID, "DEG Import"),
@@ -133,8 +136,9 @@ type importRuleConfig struct {
 	PersonalRules         []importer.Rule `yaml:"personalRules"`
 	// Rules is the short spelling of personalRules for slot templates.
 	Rules    []importer.Rule   `yaml:"rules"`
-	Accounts map[string]string `yaml:"accounts"`
-	Options  importOptions     `yaml:"options"`
+	Accounts  map[string]string   `yaml:"accounts"`
+	Reconcile *importer.Reconcile `yaml:"reconcile"`
+	Options   importOptions       `yaml:"options"`
 }
 
 // personalRules returns personalRules followed by rules.
@@ -192,6 +196,9 @@ func appendRulesToProfile(profile *importer.Profile, ruleCfg importRuleConfig) {
 		for role, account := range ruleCfg.Accounts {
 			profile.Accounts[role] = account
 		}
+	}
+	if ruleCfg.Reconcile != nil {
+		profile.Reconcile = ruleCfg.Reconcile
 	}
 	if ruleCfg.ProtocolVersion != "" {
 		profile.ProtocolVersion = ruleCfg.ProtocolVersion

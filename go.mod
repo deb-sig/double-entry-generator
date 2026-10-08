@@ -3,6 +3,7 @@ module github.com/deb-sig/double-entry-generator/v2
 go 1.24.0
 
 require (
+	github.com/antchfx/htmlquery v1.3.7
 	github.com/antchfx/jsonquery v1.3.8
 	github.com/antchfx/xmlquery v1.5.2
 	github.com/antchfx/xpath v1.3.9

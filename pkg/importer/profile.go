@@ -32,6 +32,8 @@ type Profile struct {
 	// Accounts binds leg roles to the user's accounts, once for the whole
 	// file. A rule's from/to or accounts action overrides it per transaction.
 	Accounts              map[string]string `json:"accounts,omitempty" yaml:"accounts,omitempty"`
+	// Reconcile is the user's dedupe and review-flag policy.
+	Reconcile             *Reconcile        `json:"reconcile,omitempty" yaml:"reconcile,omitempty"`
 	Defaults              map[string]string `json:"defaults,omitempty" yaml:"defaults,omitempty"`
 }
 
@@ -65,6 +67,9 @@ type Template struct {
 	// `when` holds is used; a branch without `when` is the default. With no
 	// matching branch the transaction is the plain two-leg from/to shape.
 	Legs []LegBranch `json:"legs,omitempty" yaml:"legs,omitempty"`
+	// Balance names the bill's running-balance column; consecutive rows
+	// are checked against it after import.
+	Balance Balance `json:"balance,omitempty" yaml:"balance,omitempty"`
 	DefaultMinus    string      `json:"defaultMinusAccount,omitempty" yaml:"defaultMinusAccount,omitempty"`
 	DefaultPlus     string      `json:"defaultPlusAccount,omitempty" yaml:"defaultPlusAccount,omitempty"`
 	DefaultCurrency string      `json:"defaultCurrency,omitempty" yaml:"defaultCurrency,omitempty"`

@@ -175,6 +175,50 @@ reader:
 
 没有 `pdftotext` 时导入会报错并给出手工转换命令；也可以自己转好后导入 `.txt`。浏览器端由前端用 pdf.js 转文本后交给同一个模板。
 
+**html**：银行邮件账单、导出的网页对账单。和 json/xml 一样用 `records` + `columns`，XPath 作用在 DOM 上：
+
+```yaml
+reader:
+  format: html
+  records: "//table[@id='txns']//tr[position()>1]"
+  columns: { date: "td[1]", narration: "td[2]", amount: "td[3]" }
+```
+
+**eml**：保存下来的邮件是容器，不是账单格式。`part` 选一个 MIME 部分（`text/html`、`text/plain` 或 `attachment:*.pdf` 这样的附件名通配），`inner` 是读那一部分用的 Reader，可以嵌套：
+
+```yaml
+reader:
+  format: eml
+  part: text/html                         # 交行：邮件正文是 HTML 表格
+  inner:
+    format: html
+    records: "//table//tr[td]"
+    columns: { date: "td[1]", narration: "td[3]", amount: "td[5]" }
+```
+
+```yaml
+reader:
+  format: eml
+  part: "attachment:*.pdf"                # 招行：邮件附件是 PDF
+  inner: { format: text, convert: pdftotext-layout, record: '...' }
+```
+
+**api**：账单不是文件而是接口（链上地址、交易所 API）。`import` 的第二个参数是来源（地址、账号），填进 `{source}`；`{env.NAME}` 读环境变量，密钥不进模板。响应按 `response`（默认 json，可选 xml）用 `records`/`columns` 读：
+
+```yaml
+reader:
+  format: api
+  url: "https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist&address={source}&apikey={env.ETHERSCAN_KEY}"
+  records: "//result/*"
+  columns: { hash: hash, time: timeStamp, from: from, to: to, value: value, gasUsed: gasUsed, gasPrice: gasPrice }
+```
+
+```bash
+ETHERSCAN_KEY=... double-entry-generator import etherscan-eth 0x1234... --rules eth-rules.yaml
+```
+
+环境变量缺失时直接报错，不会带着空密钥去请求。
+
 ### shape 块
 
 Reader 产出表格之后、规则运行之前，`shape:` 回答一个问题：哪些行是一笔交易。表头在第几行、说明行和合计行、失败的订单、一笔拆成两行、一行带两笔，都在这里处理完，规则层只会看到"一条记录就是一笔交易"。
@@ -506,6 +550,35 @@ rules:
         cash: Assets:Rule1:Cash
         position: Assets:Rule1:Positions
 ```
+
+### 对账：余额断言、去重、复核标记
+
+交易都生成之后、写进账本之前，还有一道关。
+
+**余额断言**（模板侧）：账单有余额列时声明出来，引擎逐行核对「上一行余额 ± 本行金额 = 本行余额」，账单按时间正序或倒序都能识别。版面文本正则漏读一行，这里立刻报错而不是默默出错账：
+
+```yaml
+template:
+  balance:
+    column: <余额>
+```
+
+**去重与标记**（用户侧，写在规则文件）：
+
+```yaml
+reconcile:
+  dedupe:
+    key: [metadata.orderId]        # 识别同一笔的字段：date / payee / narration / amount / metadata.<键>
+    against: ./main.bean           # 已有账本；按 key 命中的交易不再写入
+    window: 2d                     # 账本里 ±2 天内有同金额交易：标为 ! 供复核，不丢
+  flagEngineFilled: "!"            # 引擎补过 FIXME 的交易也标 !
+```
+
+- `key` 的任一字段为空时不参与去重，不会因为信息不全而误删。
+- 账单内部重复（同一 key 出现两次）只保留第一条。
+- 导入结束会打印 `reconcile: N repeated in bill, N already in ledger, N flagged for review`。
+
+跨来源的重复（微信里付的京东订单，京东账单里又出现一次）没有共同的订单号，只能靠 `window` 模糊匹配加人工复核，所以标 `!` 而不是直接丢。
 
 普通收支用 `from:` / `to:`，它们就是 `accounts: {from: …, to: …}` 的简写。没绑到的核心角色由引擎补 FIXME：`cash/custody/position → Assets:FIXME`，`fee/gas → Expenses:FIXME`，`pnl → Income:FIXME`，`from/to` 按方向。补的那一侧在来源记录（`Sources`）里标为 `engine`，网页端可以据此高亮。
 

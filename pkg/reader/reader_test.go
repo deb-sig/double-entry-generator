@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"encoding/base64"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -178,5 +179,134 @@ func TestXLSXExampleReads(t *testing.T) {
 	}
 	if _, err := ReadFile(path, Config{Format: "xlsx", Sheet: "nope"}); err == nil {
 		t.Fatal("want sheet error")
+	}
+}
+
+func TestHTMLTableRows(t *testing.T) {
+	cfg := parseConfig(t, `
+format: html
+records: "//table[@id='txns']//tr[position()>1]"
+columns:
+  date: td[1]
+  narration: td[2]
+  amount: td[3]
+`)
+	data := []byte(`<html><body><table id="txns">
+<tr><th>日期</th><th>摘要</th><th>金额</th></tr>
+<tr><td>2026-01-02</td><td> 星巴克 <b>朝阳</b> </td><td>-32.00</td></tr>
+<tr><td>2026-01-03</td><td>工资</td><td>8,000.00</td></tr>
+</table></body></html>`)
+	table, err := ReadBytes("mail.html", data, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := [][]string{{"2026-01-02", "星巴克 朝阳", "-32.00"}, {"2026-01-03", "工资", "8,000.00"}}
+	if !reflect.DeepEqual(table.Rows, want) {
+		t.Fatalf("rows = %q", table.Rows)
+	}
+}
+
+func TestEMLPicksHTMLPartAndAttachment(t *testing.T) {
+	html := "<html><body><table id=\"t\"><tr><td>2026-01-02</td><td>咖啡</td><td>-5.00</td></tr></table></body></html>"
+	csv := "d,a\n2026-01-05,1.50\n"
+	eml := strings.Join([]string{
+		"From: bank@example.com",
+		"Subject: =?UTF-8?B?6LSm5Y2V?=",
+		"MIME-Version: 1.0",
+		"Content-Type: multipart/mixed; boundary=\"outer\"",
+		"",
+		"--outer",
+		"Content-Type: multipart/alternative; boundary=\"inner\"",
+		"",
+		"--inner",
+		"Content-Type: text/plain; charset=utf-8",
+		"",
+		"plain text",
+		"--inner",
+		"Content-Type: text/html; charset=utf-8",
+		"Content-Transfer-Encoding: base64",
+		"",
+		base64Lines(html),
+		"--inner--",
+		"--outer",
+		"Content-Type: text/csv; name=\"bill.csv\"",
+		"Content-Disposition: attachment; filename=\"bill.csv\"",
+		"Content-Transfer-Encoding: quoted-printable",
+		"",
+		"d,a\n2026-01-05,1.50\n",
+		"--outer--",
+		"",
+	}, "\r\n")
+
+	htmlCfg := parseConfig(t, `
+format: eml
+part: text/html
+inner:
+  format: html
+  records: "//table[@id='t']//tr"
+  columns: { date: "td[1]", narration: "td[2]", amount: "td[3]" }
+`)
+	table, err := ReadBytes("bill.eml", []byte(eml), htmlCfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := [][]string{{"2026-01-02", "咖啡", "-5.00"}}; !reflect.DeepEqual(table.Rows, want) {
+		t.Fatalf("html part rows = %q", table.Rows)
+	}
+
+	csvCfg := parseConfig(t, `
+format: eml
+part: "attachment:*.csv"
+inner: { format: csv }
+`)
+	table, err = ReadBytes("bill.eml", []byte(eml), csvCfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := [][]string{{"d", "a"}, {"2026-01-05", "1.50"}}; !reflect.DeepEqual(table.Rows, want) {
+		t.Fatalf("attachment rows = %q (csv=%q)", table.Rows, csv)
+	}
+
+	_, err = ReadBytes("bill.eml", []byte(eml), parseConfig(t, "format: eml\npart: attachment:*.pdf\ninner: {format: text, record: '(?P<a>.)'}"))
+	if err == nil || !strings.Contains(err.Error(), "no part matches") {
+		t.Fatalf("err = %v", err)
+	}
+}
+
+func base64Lines(s string) string {
+	enc := base64.StdEncoding.EncodeToString([]byte(s))
+	var b strings.Builder
+	for len(enc) > 76 {
+		b.WriteString(enc[:76] + "\r\n")
+		enc = enc[76:]
+	}
+	b.WriteString(enc)
+	return b.String()
+}
+
+func TestAPIExpandURLAndResponse(t *testing.T) {
+	t.Setenv("DEG_TEST_KEY", "k3y")
+	got, err := ExpandURL("https://x.test/api?address={source}&apikey={env.DEG_TEST_KEY}", "0xAB C")
+	if err != nil || got != "https://x.test/api?address=0xAB+C&apikey=k3y" {
+		t.Fatalf("got %q err %v", got, err)
+	}
+	if _, err := ExpandURL("https://x.test/?k={env.DEG_MISSING_KEY}", "s"); err == nil || !strings.Contains(err.Error(), "DEG_MISSING_KEY") {
+		t.Fatalf("missing env should error, got %v", err)
+	}
+	cfg := parseConfig(t, `
+format: api
+url: "https://x.test/api?address={source}"
+records: "//result/*"
+columns: { hash: hash, value: value }
+`)
+	if !cfg.Compatible("0xabc") {
+		t.Fatal("api reader should accept any source")
+	}
+	table, err := ReadBytes("0xabc", []byte(`{"result":[{"hash":"0x1","value":"2"}]}`), cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := [][]string{{"0x1", "2"}}; !reflect.DeepEqual(table.Rows, want) {
+		t.Fatalf("rows = %q", table.Rows)
 	}
 }

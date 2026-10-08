@@ -25,32 +25,67 @@ type Row struct {
 }
 
 func ImportFile(profile *Profile, filename string) (*ir.IR, error) {
+	out, _, err := ImportFileReport(profile, filename)
+	return out, err
+}
+
+// ImportFileReport is ImportFile plus what the reconcile stage did.
+func ImportFileReport(profile *Profile, filename string) (*ir.IR, ReconcileReport, error) {
 	if err := profile.ValidateCapabilities(); err != nil {
-		return nil, err
+		return nil, ReconcileReport{}, err
 	}
 	rows, err := ParseFile(profile, filename)
 	if err != nil {
-		return nil, err
+		return nil, ReconcileReport{}, err
 	}
+	return rowsToIR(profile, rows)
+}
+
+// ImportBytes is ImportFile for a bill already in memory.
+func ImportBytes(profile *Profile, name string, data []byte) (*ir.IR, ReconcileReport, error) {
+	if err := profile.ValidateCapabilities(); err != nil {
+		return nil, ReconcileReport{}, err
+	}
+	rows, err := ParseBytes(profile, name, data)
+	if err != nil {
+		return nil, ReconcileReport{}, err
+	}
+	return rowsToIR(profile, rows)
+}
+
+func rowsToIR(profile *Profile, rows []Row) (*ir.IR, ReconcileReport, error) {
 	orders := ir.New()
 	collectRuleOpenAccounts(orders, profile.Rules())
 	for _, account := range profile.Accounts {
 		collectStaticAccount(orders, account)
 	}
+	var pairs []rowOrder
 	for _, row := range rows {
 		order, ignore, err := rowToImportOrder(profile, row)
 		if err != nil {
 			if profile.Template.SkipInvalidRows {
 				continue
 			}
-			return nil, err
+			return nil, ReconcileReport{}, err
 		}
 		if ignore {
 			continue
 		}
-		orders.Orders = append(orders.Orders, order)
+		pairs = append(pairs, rowOrder{row: row, order: order})
 	}
-	return orders, nil
+	if err := checkRunningBalance(profile, pairs); err != nil {
+		return nil, ReconcileReport{}, err
+	}
+	built := make([]ir.Order, 0, len(pairs))
+	for _, p := range pairs {
+		built = append(built, p.order)
+	}
+	final, report, err := applyReconcile(profile, built)
+	if err != nil {
+		return nil, ReconcileReport{}, err
+	}
+	orders.Orders = final
+	return orders, report, nil
 }
 
 func collectRuleOpenAccounts(orders *ir.IR, rules []Rule) {
@@ -178,9 +213,12 @@ func tableToRows(profile *Profile, table reader.Table) ([]Row, error) {
 
 func validateBillMatchesTemplate(profile *Profile, filename string) error {
 	cfg := ReaderConfig(profile)
+	if cfg.IsAPI() {
+		return nil
+	}
 	billFmt := reader.FormatForFile(filename)
 	if billFmt == "" {
-		return fmt.Errorf("无法识别账单文件格式 %q，请使用 csv、xlsx、xls、json、xml、txt 或 pdf", filepath.Ext(filename))
+		return fmt.Errorf("无法识别账单文件格式 %q，请使用 csv、xlsx、xls、json、xml、html、eml、txt 或 pdf", filepath.Ext(filename))
 	}
 	if cfg.Compatible(filename) {
 		return nil

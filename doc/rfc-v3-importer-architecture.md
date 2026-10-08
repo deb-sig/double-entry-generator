@@ -8,7 +8,7 @@
 - PDF 走 `pdftotext -layout`，CLI 接受这个系统依赖；浏览器端用 pdf.js 转文本。引擎不解析 PDF 二进制。
 - json / xml 统一用 **XPath**（不用 JSONPath），一种查询语法覆盖两种格式。
 
-进度：第 1 步 Reader 已落地（`pkg/reader`，csv/xlsx/xls/json/xml/text），模板 `reader:` 块可用，旧字段兼容。第 2 步 Shaper 已落地（`pkg/importer/shape.go`，`shape:` 列表：`locateHeader / dropMatching / dropIf / merge / split`），没写 `locateHeader` 时沿用旧表头字段。第 3、4 步已落地：PR #2/#3 的槽位与来源记录合入，加 `template.direction`（三形态）、`template.vars`（可带条件）、`template.legs`（角色分支）、用户侧 `accounts:` 绑定与 `rules:`；模板仓库 htsec（legs）和 wechat（direction）已迁移，输出与原 expected 一致。
+进度：第 1 步 Reader 已落地（`pkg/reader`，csv/xlsx/xls/json/xml/text），模板 `reader:` 块可用，旧字段兼容。第 2 步 Shaper 已落地（`pkg/importer/shape.go`，`shape:` 列表：`locateHeader / dropMatching / dropIf / merge / split`），没写 `locateHeader` 时沿用旧表头字段。第 3、4 步已落地：PR #2/#3 的槽位与来源记录合入，加 `template.direction`（三形态）、`template.vars`（可带条件）、`template.legs`（角色分支）、用户侧 `accounts:` 绑定与 `rules:`；模板仓库 htsec（legs）和 wechat（direction）已迁移，输出与原 expected 一致。第 5–7 步已落地：`html` / `eml`（容器，`part` + `inner`）/ `api`（`{source}`、`{env.X}`）Reader；`template.balance.column` 余额断言；`reconcile.dedupe`（精确 key、已有账本、`window` 模糊标记）与 `flagEngineFilled`。
 
 ## 要解决什么
 
