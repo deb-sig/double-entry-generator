@@ -11,7 +11,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser"
+	analyser "github.com/deb-sig/double-entry-generator/v2/pkg/analyser/api"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/importer"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/io/writer"

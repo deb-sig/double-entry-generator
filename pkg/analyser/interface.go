@@ -5,6 +5,7 @@ import (
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/abc_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/alipay"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/api"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bmo"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/boc"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/bocom_credit"
@@ -24,17 +25,12 @@ import (
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/spdb_debit"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/td"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/wechat"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/consts"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/importer"
-	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
 )
 
 // Interface is the interface of analyser.
-type Interface interface {
-	GetAllCandidateAccounts(cfg *config.Config) map[string]bool
-	GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (bool, string, string, map[ir.Account]string, []string)
-}
+type Interface = api.Interface
 
 // New creates a new analyser.
 func New(providerName string) (Interface, error) {
@@ -88,36 +84,5 @@ func New(providerName string) (Interface, error) {
 	}
 }
 
-// Runtime is the analyser used by template-driven imports. Accounts and tags
-// are already produced by the rule engine, so this analyser only fills defaults.
-type Runtime struct{}
-
-func (Runtime) GetAllCandidateAccounts(cfg *config.Config) map[string]bool {
-	accounts := map[string]bool{}
-	for _, account := range []string{
-		cfg.DefaultMinusAccount,
-		cfg.DefaultPlusAccount,
-		cfg.DefaultCashAccount,
-		cfg.DefaultPositionAccount,
-		cfg.DefaultCommissionAccount,
-		cfg.DefaultPnlAccount,
-		cfg.DefaultThirdPartyCustodyAccount,
-	} {
-		if account != "" {
-			accounts[account] = true
-		}
-	}
-	return accounts
-}
-
-func (Runtime) GetAccountsAndTags(o *ir.Order, cfg *config.Config, target, provider string) (bool, string, string, map[ir.Account]string, []string) {
-	minus := o.MinusAccount
-	if minus == "" {
-		minus = cfg.DefaultMinusAccount
-	}
-	plus := o.PlusAccount
-	if plus == "" {
-		plus = cfg.DefaultPlusAccount
-	}
-	return false, minus, plus, o.ExtraAccounts, o.Tags
-}
+// Runtime is the analyser used by template-driven imports; see api.Runtime.
+type Runtime = api.Runtime
