@@ -938,9 +938,20 @@ func rowWithVars(row Row, vars map[string]string, order ir.Order) Row {
 	withVars := row
 	withVars.Raw = raw
 	for key, value := range vars {
-		raw["var."+key] = renderPostingText(value, withVars, order)
+		raw["var."+key] = renderVarText(value, withVars, order)
 	}
 	return withVars
+}
+
+// renderVarText evaluates arithmetic only when the template wrote an
+// operator. A value copied from the bill, such as the date "12/29" or the
+// code "2024-01", is text and must not be divided or subtracted.
+func renderVarText(value string, row Row, order ir.Order) string {
+	outside := columnExprPattern.ReplaceAllString(value, "")
+	if !strings.ContainsAny(outside, "+-*/()") {
+		return strings.TrimSpace(renderRuleText(value, row, order))
+	}
+	return renderPostingText(value, row, order)
 }
 
 func renderTransferPosting(side TransferSide, defaultAmount, defaultCurrency, direction string, row Row, order ir.Order) (string, error) {

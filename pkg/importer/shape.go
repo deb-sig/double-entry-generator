@@ -457,9 +457,11 @@ func shapeSplit(profile *Profile, op SplitOp, headers []string, rows [][]string,
 }
 
 func rawRow(headers []string, row []string) Row {
+	// Same cell cleanup as the rows rules see (BOM, ="…" wrappers, quotes).
+	cells := normalizeCells(row)
 	raw := make(map[string]string, len(headers))
 	for i, h := range headers {
-		raw[h] = strings.TrimSpace(cell(row, i))
+		raw[h] = strings.TrimSpace(cell(cells, i))
 	}
 	return Row{Raw: raw, Metadata: map[string]string{}}
 }

@@ -200,3 +200,14 @@ template:
 	}
 	_ = time.UTC
 }
+
+func TestVarsKeepBillTextLiteral(t *testing.T) {
+	row := Row{Raw: map[string]string{"日": "12/29", "y": "2024"}}
+	got := rowWithVars(row, map[string]string{"md": "<日>", "prev": "<y> - 1"}, ir.Order{})
+	if got.Raw["var.md"] != "12/29" {
+		t.Fatalf("bill text was evaluated: %q", got.Raw["var.md"])
+	}
+	if got.Raw["var.prev"] != "2023.00" && got.Raw["var.prev"] != "2023" {
+		t.Fatalf("template arithmetic not evaluated: %q", got.Raw["var.prev"])
+	}
+}
