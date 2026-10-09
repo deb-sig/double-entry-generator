@@ -57,7 +57,7 @@ func (e *OKLink) Translate(filename string) (*ir.IR, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %w", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	reader := csv.NewReader(file)
 	return e.translateFromCSVReader(reader)
@@ -285,7 +285,7 @@ func (e *OKLink) parseEthereumRecord(fieldMap map[string]string) (Order, error) 
 		// 检查是否全部是十六进制字符
 		isHex := true
 		for _, c := range order.TokenSymbol[2:] {
-			if !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
+			if (c < '0' || c > '9') && (c < 'a' || c > 'f') && (c < 'A' || c > 'F') {
 				isHex = false
 				break
 			}
@@ -689,9 +689,10 @@ func (e *OKLink) buildIROrder(order *Order, matchedRules []*Rule, addrConfig *Ad
 
 	// 构建描述
 	direction := "Transfer"
-	if order.Direction == "recv" {
+	switch order.Direction {
+	case "recv":
 		direction = "Receive"
-	} else if order.Direction == "send" {
+	case "send":
 		direction = "Send"
 	}
 	irOrder.Item = fmt.Sprintf("%s %s", tokenSymbol, direction)

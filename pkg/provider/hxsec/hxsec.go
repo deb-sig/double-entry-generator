@@ -281,7 +281,7 @@ func (h *Hxsec) Translate(filename string) (*ir.IR, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("Error reading file: %v", err)
+		return nil, fmt.Errorf("error reading file: %v", err)
 	}
 
 	log.Printf("Finished to parse the file %s", filename)

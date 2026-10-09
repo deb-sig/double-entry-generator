@@ -233,7 +233,7 @@ func (l *LegSpec) UnmarshalYAML(value *yaml.Node) error {
 		switch key := value.Content[i].Value; key {
 		case "role", "amount", "currency", "cost", "price":
 		case "account":
-			return fmt.Errorf("leg %q: templates bind roles, not accounts; put the account in the rules file under accounts:", value.Content[i+1].Value)
+			return fmt.Errorf("leg %q: templates bind roles, not accounts; put the account in the rules file under accounts", value.Content[i+1].Value)
 		default:
 			return fmt.Errorf("leg: unknown key %q", key)
 		}

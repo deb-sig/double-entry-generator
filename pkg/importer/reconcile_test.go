@@ -48,7 +48,7 @@ func TestRunningBalanceCatchesMisreadRow(t *testing.T) {
 func TestDedupeWithinBillAndAgainstLedger(t *testing.T) {
 	dir := t.TempDir()
 	ledger := filepath.Join(dir, "main.bean")
-	os.WriteFile(ledger, []byte(`option "title" "x"
+	if err := os.WriteFile(ledger, []byte(`option "title" "x"
 
 2026-01-01 * "工资"
 	serial: "a"
@@ -58,7 +58,9 @@ func TestDedupeWithinBillAndAgainstLedger(t *testing.T) {
 2026-01-05 * "超市" "买菜"
 	Assets:Bank -42.00 CNY
 	Expenses:Food 42.00 CNY
-`), 0o644)
+`), 0o644); err != nil {
+		t.Fatal(err)
+	}
 	profile := loadProfileYAML(t, bankTemplate+`
 reconcile:
   dedupe:
@@ -116,7 +118,9 @@ reconcile:
 func TestLedgerIndexParsesPayeeNarrationMetadataAmounts(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "l.bean")
-	os.WriteFile(path, []byte("2026-02-01 * \"商户\" \"说明 \\\"引号\\\"\"\n\torderId: \"42\"\n\tAssets:Digital:微信 -1,234.50 CNY\n\tExpenses:Food 1234.50 CNY\n\n2026-02-02 ! \"只有说明\"\n\tAssets:A 1 CNY\n"), 0o644)
+	if err := os.WriteFile(path, []byte("2026-02-01 * \"商户\" \"说明 \\\"引号\\\"\"\n\torderId: \"42\"\n\tAssets:Digital:微信 -1,234.50 CNY\n\tExpenses:Food 1234.50 CNY\n\n2026-02-02 ! \"只有说明\"\n\tAssets:A 1 CNY\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
 	idx, err := loadLedgerIndex(path)
 	if err != nil {
 		t.Fatal(err)

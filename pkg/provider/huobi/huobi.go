@@ -55,7 +55,7 @@ func (h *Huobi) Translate(filename string) (*ir.IR, error) {
 
 		err = h.translateToOrders(line)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to translate bill: line %d: %v", h.LineNum, err)
+			return nil, fmt.Errorf("failed to translate bill: line %d: %v", h.LineNum, err)
 		}
 	}
 	log.Printf("Finished to parse the file %s", filename)

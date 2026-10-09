@@ -586,7 +586,7 @@ func bindRole(role string, bound map[string]roleBinding, expense bool) (string, 
 	}
 	fallback, core := CoreRoles[role]
 	if !core {
-		return "", ir.FieldSource{}, fmt.Errorf("role %q has no account; bind it in the rules file under accounts:", role)
+		return "", ir.FieldSource{}, fmt.Errorf("role %q has no account; bind it in the rules file under accounts", role)
 	}
 	switch role {
 	case "other":

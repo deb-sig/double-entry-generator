@@ -184,10 +184,11 @@ func (ccb *CCB) translateToOrders(array []string) error {
 func (ccb *CCB) updateStatistics(bill Order) {
 	ccb.Statistics.ParsedItems++
 
-	if bill.Type == OrderTypeRecv {
+	switch bill.Type {
+	case OrderTypeRecv:
 		ccb.Statistics.TotalInRecords++
 		ccb.Statistics.TotalInMoney += bill.Money
-	} else if bill.Type == OrderTypeSend {
+	case OrderTypeSend:
 		ccb.Statistics.TotalOutRecords++
 		ccb.Statistics.TotalOutMoney += -bill.Money // 支出金额为正数
 	}

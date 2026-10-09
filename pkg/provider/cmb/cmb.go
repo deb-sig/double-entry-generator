@@ -81,13 +81,13 @@ func (cmb *Cmb) Translate(filename string) (*ir.IR, error) {
 		if isValidDebitDateFormat(safeAccessStrList(row, 0)) {
 			err = cmb.translateDebitToOrders(fillDebitRow(cmb.DebitRealHeaders, row))
 			if err != nil {
-				return nil, fmt.Errorf("Failed to translate bill: line %d: %v",
+				return nil, fmt.Errorf("failed to translate bill: line %d: %v",
 					cmb.LineNum, err)
 			}
 		} else if isValidCreditCardNoFormat(safeAccessStrList(row, 4)) {
 			err = cmb.translateCreditToOrders(row)
 			if err != nil {
-				return nil, fmt.Errorf("Failed to translate bill: line %d: %v",
+				return nil, fmt.Errorf("failed to translate bill: line %d: %v",
 					cmb.LineNum, err)
 			}
 		}

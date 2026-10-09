@@ -31,6 +31,6 @@ func New(providerName, targetName, output string,
 	case consts.CompilerLedger:
 		return ledger.New(providerName, targetName, output, appendMode, c, i, a)
 	default:
-		return nil, fmt.Errorf("Fail to create the compiler for the given name %s", targetName)
+		return nil, fmt.Errorf("fail to create the compiler for the given name %s", targetName)
 	}
 }

@@ -31,14 +31,14 @@ func (h *HsbcHK) translateToDebitOrders(line []string) error {
 	}
 
 	// 解析交易金额
-	moneyStr := strings.Replace(strings.Replace(line[2], ",", "", -1), "\"", "", -1)
+	moneyStr := strings.ReplaceAll(strings.ReplaceAll(line[2], ",", ""), "\"", "")
 	money, err := strconv.ParseFloat(moneyStr, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse billing amount: %v", err)
 	}
 
 	// 解析余额
-	balanceStr := strings.Replace(strings.Replace(line[4], ",", "", -1), "\"", "", -1)
+	balanceStr := strings.ReplaceAll(strings.ReplaceAll(line[4], ",", ""), "\"", "")
 	balance, err := strconv.ParseFloat(balanceStr, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse balance: %v", err)
@@ -55,10 +55,11 @@ func (h *HsbcHK) translateToDebitOrders(line []string) error {
 
 	// 记录统计
 	h.Statistics.ParsedItems++
-	if orderType == OrderTypeSend {
+	switch orderType {
+	case OrderTypeSend:
 		h.Statistics.TotalOutRecords++
 		h.Statistics.TotalOutMoney += -money
-	} else if orderType == OrderTypeRecv {
+	case OrderTypeRecv:
 		h.Statistics.TotalInRecords++
 		h.Statistics.TotalInMoney += money
 	}
@@ -106,7 +107,7 @@ func (h *HsbcHK) translateToCreditOrders(line []string) error {
 	}
 
 	// 解析交易金额
-	moneyStr := strings.Replace(strings.Replace(line[3], ",", "", -1), "\"", "", -1)
+	moneyStr := strings.ReplaceAll(strings.ReplaceAll(line[3], ",", ""), "\"", "")
 	money, err := strconv.ParseFloat(moneyStr, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse billing amount: %v", err)
@@ -115,19 +116,21 @@ func (h *HsbcHK) translateToCreditOrders(line []string) error {
 	// 信用卡中 CREDIT 是收入(还款等), DEBIT 是支出(消费)
 	orderType := OrderTypeUnknown
 	creditOrDebit := strings.TrimSpace(line[9])
-	if creditOrDebit == "DEBIT" {
+	switch creditOrDebit {
+	case "DEBIT":
 		orderType = OrderTypeSend
 		money = -money
-	} else if creditOrDebit == "CREDIT" {
+	case "CREDIT":
 		orderType = OrderTypeRecv
 	}
 
 	// 记录统计
 	h.Statistics.ParsedItems++
-	if orderType == OrderTypeSend {
+	switch orderType {
+	case OrderTypeSend:
 		h.Statistics.TotalOutRecords++
 		h.Statistics.TotalOutMoney += -money
-	} else if orderType == OrderTypeRecv {
+	case OrderTypeRecv:
 		h.Statistics.TotalInRecords++
 		h.Statistics.TotalInMoney += money
 	}

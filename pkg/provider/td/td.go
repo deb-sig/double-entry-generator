@@ -54,7 +54,7 @@ func (td *Td) Translate(filename string) (*ir.IR, error) {
 
 		err = td.translateToOrders(line)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to translate bill: line %d: %v", td.LineNum, err)
+			return nil, fmt.Errorf("failed to translate bill: line %d: %v", td.LineNum, err)
 		}
 	}
 	log.Printf("Finished to parse the file %s", filename)

@@ -12,6 +12,7 @@ import (
 	"log"
 	"strings"
 	"syscall/js"
+	_ "time/tzdata" // the browser has no zoneinfo directory
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser/api"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/compiler/beancount"
@@ -33,9 +34,32 @@ func main() {
 
 // runtimeImport(templateYAML string, rulesYAML string, billName string, bill Uint8Array)
 //
-//	-> { ok, beancount, error, transactions, fixme, warnings[], report }
+//	-> Promise<{ ok, beancount, error, transactions, fixme, warnings[], report }>
+//
+// The work runs on its own goroutine: anything that reaches syscall/js fs
+// (time.LoadLocation probing for zoneinfo, for one) waits on a JS callback,
+// which can never fire while this function still holds the event loop.
 func runtimeImport(_ js.Value, args []js.Value) any {
+	args = append([]js.Value(nil), args...)
+	var executor js.Func
+	executor = js.FuncOf(func(_ js.Value, p []js.Value) any {
+		resolve := p[0]
+		go func() {
+			defer executor.Release()
+			resolve.Invoke(runImport(args))
+		}()
+		return nil
+	})
+	return js.Global().Get("Promise").New(executor)
+}
+
+func runImport(args []js.Value) (out js.Value) {
 	result := map[string]any{"ok": false}
+	defer func() {
+		if r := recover(); r != nil {
+			out = js.ValueOf(map[string]any{"ok": false, "error": fmt.Sprint(r)})
+		}
+	}()
 	if len(args) < 4 {
 		result["error"] = "degRuntimeImport(templateYAML, rulesYAML, billName, billBytes)"
 		return js.ValueOf(result)

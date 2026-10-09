@@ -65,7 +65,7 @@ func (h *Htsec) translateToOrders(arr []string) error {
 
 	bill.Type = getTxType(arr[8])
 	if bill.Type == TxTypeNil {
-		return fmt.Errorf("Failed to get the tx type: %s: %v", arr[8], err)
+		return fmt.Errorf("failed to get the tx type: %s: %v", arr[8], err)
 	}
 
 	bill.OrderID = arr[9]

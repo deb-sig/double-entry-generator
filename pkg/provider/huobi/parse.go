@@ -24,21 +24,21 @@ func (h *Huobi) translateToOrders(arr []string) error {
 
 	bill.TxType = getTxType(arr[1])
 	if bill.TxType == TxTypeUnknown {
-		return fmt.Errorf("Failed to get the order type %s: %v", arr[1], err)
+		return fmt.Errorf("failed to get the order type %s: %v", arr[1], err)
 	}
 	bill.TxTypeOriginal = arr[1]
 
 	bill.Item = arr[2]
 	units := strings.Split(arr[2], "/")
 	if len(units) != 2 {
-		return fmt.Errorf("Failed to get the base & target units from %s", arr[2])
+		return fmt.Errorf("failed to get the base & target units from %s", arr[2])
 	}
 	bill.BaseUnit = units[1]
 	bill.TargetUnit = units[0]
 
 	bill.Type = getOrderType(arr[3])
 	if bill.Type == TypeNil {
-		return fmt.Errorf("Failed to get the tx type: %s: %v", arr[3], err)
+		return fmt.Errorf("failed to get the tx type: %s: %v", arr[3], err)
 	}
 	bill.Price, err = strconv.ParseFloat(arr[4], 64)
 	if err != nil {
@@ -56,7 +56,7 @@ func (h *Huobi) translateToOrders(arr []string) error {
 
 	co, err := regexp.Compile(`([.\d]*)(\w+)`)
 	if err != nil {
-		return fmt.Errorf("Failed to compile the regex")
+		return fmt.Errorf("failed to compile the regex")
 	}
 	co_res := co.FindStringSubmatch(arr[7])
 	bill.Commission, err = strconv.ParseFloat(co_res[1], 64)
