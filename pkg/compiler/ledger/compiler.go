@@ -175,7 +175,7 @@ func (ledger *Ledger) writeBills(file io.Writer) error {
 	// If the bills are the same day, the transaction which has lower
 	// line number is considered happened earlier than the transaction
 	// which has a higher line number.
-	sort.Slice(ledger.IR.Orders, func(i, j int) bool {
+	sort.SliceStable(ledger.IR.Orders, func(i, j int) bool {
 		return ledger.IR.Orders[i].PayTime.Before(ledger.IR.Orders[j].PayTime)
 	})
 

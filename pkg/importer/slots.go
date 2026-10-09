@@ -35,6 +35,7 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 	// Role bindings: file-level accounts first, then each matching rule's
 	// accounts action, with from/to as shorthand for the from/to roles.
 	bound := map[string]roleBinding{}
+	directionRule := ""
 	for role, account := range profile.Accounts {
 		if account = strings.TrimSpace(account); account != "" {
 			bound[role] = roleBinding{account: account, origin: ir.FieldOriginRule}
@@ -56,6 +57,17 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 		}
 		if err := mergeV2Actions(&merged, rule.Actions); err != nil {
 			return ir.Order{}, false, err
+		}
+		if account := strings.TrimSpace(rule.Actions.Other); account != "" {
+			bound["other"] = roleBinding{account: account, origin: ir.FieldOriginRule, ruleID: rule.ID}
+		}
+		switch d := strings.TrimSpace(rule.Actions.Direction); d {
+		case "":
+		case "outflow", "inflow":
+			mapped.expense = d == "outflow"
+			directionRule = rule.ID
+		default:
+			return ir.Order{}, false, fmt.Errorf("rule %q direction %q: use outflow or inflow", rule.ID, d)
 		}
 		for role, account := range rule.Actions.Accounts {
 			if err := validateRole(role); err != nil {
@@ -86,6 +98,14 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 	if order.PayTime.IsZero() {
 		return ir.Order{}, false, fmt.Errorf("slots.date did not set date")
 	}
+	if directionRule != "" {
+		if mapped.expense {
+			order.Type = ir.TypeSend
+		} else {
+			order.Type = ir.TypeRecv
+		}
+		putFieldSource(&order, ir.FieldSource{Slot: "direction", RuleID: directionRule, Origin: ir.FieldOriginRule})
+	}
 	if strings.TrimSpace(merged.Amount) == "" {
 		merged.Amount = mapped.absolute
 	}
@@ -101,17 +121,22 @@ func rowToSlotOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 		applyOutputMetadata(profile, &order)
 		return order, false, nil
 	}
-	// self is the bill's own account: it pays on an outflow and receives
-	// on an inflow.
-	if b, ok := bound["self"]; ok {
-		if mapped.expense && strings.TrimSpace(merged.From.Account) == "" {
-			merged.From.Account = b.account
-			putFieldSource(&order, ir.FieldSource{Slot: "from", RuleID: b.ruleID, Origin: b.origin})
-		}
-		if !mapped.expense && strings.TrimSpace(merged.To.Account) == "" {
-			merged.To.Account = b.account
-			putFieldSource(&order, ir.FieldSource{Slot: "to", RuleID: b.ruleID, Origin: b.origin})
-		}
+	// self is the bill's own account and other the counterparty: on an
+	// outflow self pays (from) and other receives (to); on an inflow they
+	// swap. Explicit from/to always win.
+	selfSide, otherSide := &merged.From, &merged.To
+	selfSlot, otherSlot := "from", "to"
+	if !mapped.expense {
+		selfSide, otherSide = &merged.To, &merged.From
+		selfSlot, otherSlot = "to", "from"
+	}
+	if b, ok := bound["self"]; ok && strings.TrimSpace(selfSide.Account) == "" {
+		selfSide.Account = b.account
+		putFieldSource(&order, ir.FieldSource{Slot: selfSlot, RuleID: b.ruleID, Origin: b.origin})
+	}
+	if b, ok := bound["other"]; ok && strings.TrimSpace(otherSide.Account) == "" {
+		otherSide.Account = b.account
+		putFieldSource(&order, ir.FieldSource{Slot: otherSlot, RuleID: b.ruleID, Origin: b.origin})
 	}
 	if strings.TrimSpace(merged.From.Account) == "" {
 		if b, ok := bound["from"]; ok {
@@ -276,7 +301,7 @@ func applySlotMapping(profile *Profile, row Row) (slotMapped, error) {
 	if slots.Date != "" {
 		rendered := strings.TrimSpace(renderRuleText(slots.Date, row, order))
 		row.Date = rendered
-		payTime, err := parseDate(rendered, profile.Template.DateFormat)
+		payTime, err := parseDateIn(rendered, profile.Template.DateFormat, row.Loc)
 		if err != nil {
 			return slotMapped{}, fmt.Errorf("slots.date %q: %w", slots.Date, err)
 		}
@@ -322,7 +347,7 @@ func applySlotMapping(profile *Profile, row Row) (slotMapped, error) {
 		}
 		if rule.Actions.Date != "" {
 			rendered := strings.TrimSpace(resolveActionValue(rule.Actions.Date, row, order))
-			if payTime, err := parseDate(rendered, profile.Template.DateFormat); err == nil {
+			if payTime, err := parseDateIn(rendered, profile.Template.DateFormat, row.Loc); err == nil {
 				order.PayTime = payTime
 				row.Date = rendered
 				putFieldSource(&order, ruleFieldSource(rule, "date", rule.Actions.Date))
@@ -564,6 +589,11 @@ func bindRole(role string, bound map[string]roleBinding, expense bool) (string, 
 		return "", ir.FieldSource{}, fmt.Errorf("role %q has no account; bind it in the rules file under accounts:", role)
 	}
 	switch role {
+	case "other":
+		fallback = fallbackIncome
+		if expense {
+			fallback = fallbackExpense
+		}
 	case "from":
 		fallback = fallbackIncome
 		if expense {
@@ -870,7 +900,7 @@ func PersonalRuleWarnings(profile *Profile, rules []Rule, resolvedRef, recordedR
 			if checkColumns {
 				for _, match := range columnRefPattern.FindAllStringSubmatch(text, -1) {
 					name := strings.TrimSpace(match[1])
-					if name == "" {
+					if name == "" || strings.HasPrefix(name, "file.") || strings.HasPrefix(name, "var.") {
 						continue
 					}
 					if _, ok := columns[name]; ok {
@@ -944,8 +974,8 @@ func SlotSkeleton(templateRef string, profile *Profile) string {
 // templateRoles lists the roles a template's legs use, from/to first,
 // in first-appearance order.
 func templateRoles(profile *Profile) []string {
-	roles := []string{"self", "from", "to"}
-	seen := map[string]bool{"self": true, "from": true, "to": true}
+	roles := []string{"self", "other", "from", "to"}
+	seen := map[string]bool{"self": true, "other": true, "from": true, "to": true}
 	for _, branch := range profile.Template.Legs {
 		for _, leg := range branch.Legs {
 			role := strings.TrimSpace(leg.Role)
@@ -957,7 +987,7 @@ func templateRoles(profile *Profile) []string {
 	}
 	if len(profile.Template.Legs) > 0 {
 		// Multi-leg templates seldom use from/to; list them last.
-		return append(roles[3:], roles[:3]...)
+		return append(roles[4:], roles[:4]...)
 	}
 	return roles
 }
@@ -966,7 +996,7 @@ func roleSkeletonAccount(role string) string {
 	switch role {
 	case "self", "from", "cash", "custody", "position":
 		return "Assets:FIXME"
-	case "to", "fee", "gas":
+	case "to", "other", "fee", "gas":
 		return "Expenses:FIXME"
 	case "pnl":
 		return "Income:FIXME"

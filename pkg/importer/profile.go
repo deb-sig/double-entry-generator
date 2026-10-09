@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 
@@ -14,30 +15,30 @@ import (
 const DefaultProviderName = "template"
 
 type Profile struct {
-	Schema                string            `json:"schema,omitempty" yaml:"schema,omitempty"`
-	ID                    string            `json:"id,omitempty" yaml:"id,omitempty"`
-	Name                  string            `json:"name,omitempty" yaml:"name,omitempty"`
-	ProtocolVersion       string            `json:"protocolVersion,omitempty" yaml:"protocolVersion,omitempty"`
-	RequiredCapabilities  []string          `json:"requiredCapabilities,omitempty" yaml:"requiredCapabilities,omitempty"`
-	Template              Template          `json:"template" yaml:"template"`
+	Schema               string   `json:"schema,omitempty" yaml:"schema,omitempty"`
+	ID                   string   `json:"id,omitempty" yaml:"id,omitempty"`
+	Name                 string   `json:"name,omitempty" yaml:"name,omitempty"`
+	ProtocolVersion      string   `json:"protocolVersion,omitempty" yaml:"protocolVersion,omitempty"`
+	RequiredCapabilities []string `json:"requiredCapabilities,omitempty" yaml:"requiredCapabilities,omitempty"`
+	Template             Template `json:"template" yaml:"template"`
 	// Reader is the `reader:` block: how bytes become a table. When absent the
 	// legacy template.fileFormat/encoding/delimiter fields are used instead.
-	Reader                *reader.Config    `json:"reader,omitempty" yaml:"reader,omitempty"`
+	Reader *reader.Config `json:"reader,omitempty" yaml:"reader,omitempty"`
 	// Shape is the ordered list of row-level steps run between the reader
 	// and the rules: header location, dropping, merging and splitting rows.
-	Shape                 []ShapeOp         `json:"shape,omitempty" yaml:"shape,omitempty"`
-	TemplateRules         []Rule            `json:"templateRules,omitempty" yaml:"templateRules,omitempty"`
-	TemplateRuleOverrides []Rule            `json:"templateRuleOverrides,omitempty" yaml:"templateRuleOverrides,omitempty"`
-	PersonalRules         []Rule            `json:"personalRules,omitempty" yaml:"personalRules,omitempty"`
+	Shape                 []ShapeOp `json:"shape,omitempty" yaml:"shape,omitempty"`
+	TemplateRules         []Rule    `json:"templateRules,omitempty" yaml:"templateRules,omitempty"`
+	TemplateRuleOverrides []Rule    `json:"templateRuleOverrides,omitempty" yaml:"templateRuleOverrides,omitempty"`
+	PersonalRules         []Rule    `json:"personalRules,omitempty" yaml:"personalRules,omitempty"`
 	// Accounts binds leg roles to the user's accounts, once for the whole
 	// file. A rule's from/to or accounts action overrides it per transaction.
-	Accounts              map[string]string `json:"accounts,omitempty" yaml:"accounts,omitempty"`
+	Accounts map[string]string `json:"accounts,omitempty" yaml:"accounts,omitempty"`
 	// Reconcile is the user's dedupe and review-flag policy.
-	Reconcile             *Reconcile        `json:"reconcile,omitempty" yaml:"reconcile,omitempty"`
+	Reconcile *Reconcile `json:"reconcile,omitempty" yaml:"reconcile,omitempty"`
 	// Output is the user's default spelling of every transaction: payee and
 	// narration expressions, and which metadata keys to keep.
-	Output                *OutputPrefs      `json:"output,omitempty" yaml:"output,omitempty"`
-	Defaults              map[string]string `json:"defaults,omitempty" yaml:"defaults,omitempty"`
+	Output   *OutputPrefs      `json:"output,omitempty" yaml:"output,omitempty"`
+	Defaults map[string]string `json:"defaults,omitempty" yaml:"defaults,omitempty"`
 }
 
 type Template struct {
@@ -56,7 +57,7 @@ type Template struct {
 	Metadata          map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 	// Slots is the Beancount field contract. When set, the template only fills
 	// these fields and metadata; it does not assign accounts.
-	Slots           SlotMapping `json:"slots,omitempty" yaml:"slots,omitempty"`
+	Slots SlotMapping `json:"slots,omitempty" yaml:"slots,omitempty"`
 	// Direction says which way money moves. It replaces AmountSign, which
 	// read the sign back out of metadata; AmountSign is still honoured when
 	// Direction is empty.
@@ -73,9 +74,12 @@ type Template struct {
 	// Balance names the bill's running-balance column; consecutive rows
 	// are checked against it after import.
 	Balance Balance `json:"balance,omitempty" yaml:"balance,omitempty"`
-	DefaultMinus    string      `json:"defaultMinusAccount,omitempty" yaml:"defaultMinusAccount,omitempty"`
-	DefaultPlus     string      `json:"defaultPlusAccount,omitempty" yaml:"defaultPlusAccount,omitempty"`
-	DefaultCurrency string      `json:"defaultCurrency,omitempty" yaml:"defaultCurrency,omitempty"`
+	// Timezone is the IANA zone of the bill's wall-clock times, such as
+	// Asia/Shanghai. Empty means the machine's local zone.
+	Timezone        string `json:"timezone,omitempty" yaml:"timezone,omitempty"`
+	DefaultMinus    string `json:"defaultMinusAccount,omitempty" yaml:"defaultMinusAccount,omitempty"`
+	DefaultPlus     string `json:"defaultPlusAccount,omitempty" yaml:"defaultPlusAccount,omitempty"`
+	DefaultCurrency string `json:"defaultCurrency,omitempty" yaml:"defaultCurrency,omitempty"`
 }
 
 // SlotMapping binds bill columns to Beancount transaction fields.
@@ -246,9 +250,10 @@ func (l *LegSpec) UnmarshalYAML(value *yaml.Node) error {
 // maps to the FIXME account used when nobody binds it. Roles outside the
 // set must start with "x-" and must be bound by the rules file.
 var CoreRoles = map[string]string{
-	"from":     "", // decided by direction
-	"to":       "", // decided by direction
+	"from":     "",             // decided by direction
+	"to":       "",             // decided by direction
 	"self":     "Assets:FIXME", // the account this bill belongs to: from on outflow, to on inflow
+	"other":    "",             // the counterparty: to on outflow, from on inflow
 	"cash":     "Assets:FIXME",
 	"custody":  "Assets:FIXME",
 	"position": "Assets:FIXME",
@@ -268,7 +273,7 @@ func validateRole(role string) error {
 	if strings.HasPrefix(role, "x-") && len(role) > 2 {
 		return nil
 	}
-	return fmt.Errorf("unknown leg role %q; use one of self, from, to, cash, custody, position, fee, gas, pnl, or an x- prefixed custom role", role)
+	return fmt.Errorf("unknown leg role %q; use one of self, other, from, to, cash, custody, position, fee, gas, pnl, or an x- prefixed custom role", role)
 }
 
 // orderedStrings keeps YAML mapping order for metadata keys.
@@ -297,6 +302,19 @@ func (m *orderedStrings) UnmarshalYAML(value *yaml.Node) error {
 		m.Values[key] = text
 	}
 	return nil
+}
+
+// Location resolves Timezone. An unknown zone was rejected at load time,
+// so a failure here falls back to the local zone.
+func (t Template) Location() *time.Location {
+	if strings.TrimSpace(t.Timezone) == "" {
+		return nil
+	}
+	loc, err := time.LoadLocation(strings.TrimSpace(t.Timezone))
+	if err != nil {
+		return nil
+	}
+	return loc
 }
 
 func (t Template) HasSlotContract() bool {
@@ -348,7 +366,14 @@ type Actions struct {
 	// Accounts binds leg roles for this transaction. from/to are shorthand
 	// for accounts: {from: …, to: …}.
 	Accounts map[string]string `json:"accounts,omitempty" yaml:"accounts,omitempty"`
-	Postings     []string          `json:"postings,omitempty" yaml:"postings,omitempty"`
+	// Other is shorthand for accounts: {other: …}: the counterparty side,
+	// whichever way the money moves.
+	Other string `json:"other,omitempty" yaml:"other,omitempty"`
+	// Direction overrides the template's outflow/inflow decision for this
+	// transaction: "outflow" or "inflow". Use it when only the user knows,
+	// such as which of two wallet addresses is theirs.
+	Direction string `json:"direction,omitempty" yaml:"direction,omitempty"`
+	Postings []string          `json:"postings,omitempty" yaml:"postings,omitempty"`
 	// PostingsMode controls how Postings combine with auto from/to legs.
 	// "" or "append" (DEG legacy default): render from/to then append Postings.
 	// "replace" (Mirato export): Postings are the complete leg set; do not also
@@ -421,6 +446,8 @@ func (a *Actions) UnmarshalYAML(value *yaml.Node) error {
 		Metadata     map[string]flexibleString `yaml:"metadata,omitempty"`
 		MetadataDrop []string                  `yaml:"metadataDrop,omitempty"`
 		Accounts     map[string]flexibleString `yaml:"accounts,omitempty"`
+		Other        flexibleString            `yaml:"other,omitempty"`
+		Direction    flexibleString            `yaml:"direction,omitempty"`
 		Postings     []flexibleString          `yaml:"postings,omitempty"`
 		PostingsMode flexibleString            `yaml:"postingsMode,omitempty"`
 	}
@@ -447,6 +474,8 @@ func (a *Actions) UnmarshalYAML(value *yaml.Node) error {
 		Metadata:     flexibleStringMap(out.Metadata),
 		MetadataDrop: out.MetadataDrop,
 		Accounts:     flexibleStringMap(out.Accounts),
+		Other:        string(out.Other),
+		Direction:    string(out.Direction),
 		Postings:     flexibleStringSlice(out.Postings),
 		PostingsMode: string(out.PostingsMode),
 	}
@@ -529,6 +558,8 @@ func isZeroActions(actions Actions) bool {
 		len(actions.Metadata) == 0 &&
 		len(actions.MetadataDrop) == 0 &&
 		len(actions.Accounts) == 0 &&
+		actions.Other == "" &&
+		actions.Direction == "" &&
 		len(actions.Postings) == 0 &&
 		actions.PostingsMode == ""
 }
@@ -586,6 +617,11 @@ func normalizeTemplate(t *Template, defaults map[string]string) {
 
 func validateTemplate(p Profile) error {
 	t := p.Template
+	if tz := strings.TrimSpace(t.Timezone); tz != "" {
+		if _, err := time.LoadLocation(tz); err != nil {
+			return fmt.Errorf("template timezone %q: %w", tz, err)
+		}
+	}
 	if t.HasSlotContract() {
 		if t.Slots.Date == "" {
 			return fmt.Errorf("template slots.date is required")

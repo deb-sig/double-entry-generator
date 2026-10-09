@@ -22,6 +22,9 @@ type Row struct {
 	Type      string
 	Metadata  map[string]string
 	Raw       map[string]string
+	// Loc is the template's time zone for wall-clock dates in the bill.
+	// Nil means the machine's local zone.
+	Loc *time.Location
 }
 
 func ImportFile(profile *Profile, filename string) (*ir.IR, error) {
@@ -80,6 +83,14 @@ func rowsToIR(profile *Profile, rows []Row) (*ir.IR, ReconcileReport, error) {
 	for _, p := range pairs {
 		built = append(built, p.order)
 	}
+	// Many statements list the newest transaction first. Compilers sort by
+	// time with a stable sort, so put same-day entries in the order they
+	// happened: reverse a bill whose first entry is later than its last.
+	if n := len(built); n > 1 && built[0].PayTime.After(built[n-1].PayTime) {
+		for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
+			built[i], built[j] = built[j], built[i]
+		}
+	}
 	final, report, err := applyReconcile(profile, built)
 	if err != nil {
 		return nil, ReconcileReport{}, err
@@ -95,6 +106,7 @@ func collectRuleOpenAccounts(orders *ir.IR, rules []Rule) {
 		for _, value := range rule.Actions.Accounts {
 			collectStaticAccount(orders, value)
 		}
+		collectStaticAccount(orders, rule.Actions.Other)
 		for _, value := range rule.Actions.Vars {
 			collectStaticAccount(orders, value)
 		}
@@ -190,14 +202,24 @@ func ParseBytes(profile *Profile, name string, data []byte) ([]Row, error) {
 
 func tableToRows(profile *Profile, table reader.Table) ([]Row, error) {
 	if len(profile.Shape) > 0 {
-		headers, rows, err := shapeTable(profile, table)
+		headers, rows, file, err := shapeTableFile(profile, table)
 		if err != nil {
 			return nil, err
 		}
 		if err := validateHeaders(profile, headers); err != nil {
 			return nil, err
 		}
-		return buildRowsFromRecords(profile, headers, rows)
+		out, err := buildRowsFromRecords(profile, headers, rows)
+		if err != nil {
+			return nil, err
+		}
+		// Captured statement values are visible to every row as <file.x>.
+		for i := range out {
+			for k, v := range file {
+				out[i].Raw["file."+k] = v
+			}
+		}
+		return out, nil
 	}
 	if table.Headers != nil {
 		// Named readers (json, xml, text) already know their columns; there
@@ -402,6 +424,7 @@ func buildRowsFromRecords(profile *Profile, headers []string, records [][]string
 			date = strings.TrimSpace(date + " " + raw[profile.Template.Columns.Time])
 		}
 		row := Row{
+			Loc:       profile.Template.Location(),
 			Date:      date,
 			Amount:    rowAmount(profile, raw),
 			Currency:  raw[profile.Template.Columns.Currency],
@@ -511,7 +534,7 @@ func rowToV2Order(profile *Profile, row Row) (ir.Order, bool, error) {
 		order.Metadata = map[string]string{}
 	}
 	if row.Date != "" {
-		if payTime, err := parseDate(row.Date, profile.Template.DateFormat); err == nil {
+		if payTime, err := parseDateIn(row.Date, profile.Template.DateFormat, row.Loc); err == nil {
 			order.PayTime = payTime
 		}
 	}
@@ -568,7 +591,7 @@ func rowToOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 		return ir.Order{}, false, fmt.Errorf("parse amount %q failed for date=%q payee=%q: %w", row.Amount, row.Date, row.Payee, err)
 	}
 	txType := inferTypeDecimal(row.Type, amount)
-	payTime, err := parseDate(row.Date, profile.Template.DateFormat)
+	payTime, err := parseDateIn(row.Date, profile.Template.DateFormat, row.Loc)
 	if err != nil {
 		return ir.Order{}, false, err
 	}
@@ -732,7 +755,7 @@ func applyV2ScalarActions(order *ir.Order, row Row, actions Actions, ignore *boo
 		*ignore = true
 	}
 	if actions.Date != "" {
-		if payTime, err := parseDate(resolveActionValue(actions.Date, row, *order), dateFormat); err == nil {
+		if payTime, err := parseDateIn(resolveActionValue(actions.Date, row, *order), dateFormat, row.Loc); err == nil {
 			order.PayTime = payTime
 		}
 	}
@@ -1017,7 +1040,7 @@ func conditionFieldValue(field string, row Row, order ir.Order) string {
 			}
 			return order.PayTime.Format("2006-01-02")
 		}
-		if t, err := parseDate(value, ""); err == nil {
+		if t, err := parseDateIn(value, "", row.Loc); err == nil {
 			if suffix == "time" {
 				return t.Format("15:04")
 			}
@@ -1108,6 +1131,15 @@ func parseAmountExact(value, prefix string) (ir.Decimal, error) {
 }
 
 func parseDate(value, layout string) (time.Time, error) {
+	return parseDateIn(value, layout, nil)
+}
+
+// parseDateIn parses a wall-clock date in loc (time.Local when nil). A
+// value carrying its own offset (RFC 3339) keeps it.
+func parseDateIn(value, layout string, loc *time.Location) (time.Time, error) {
+	if loc == nil {
+		loc = time.Local
+	}
 	value = strings.TrimSpace(value)
 	layouts := []string{
 		normalizeDateLayout(layout),
@@ -1130,7 +1162,7 @@ func parseDate(value, layout string) (time.Time, error) {
 		if candidate == "" {
 			continue
 		}
-		if t, err := time.ParseInLocation(candidate, value, time.Local); err == nil {
+		if t, err := time.ParseInLocation(candidate, value, loc); err == nil {
 			return t, nil
 		}
 	}
@@ -1490,7 +1522,7 @@ func applyColumnMethod(value, method, arg string, row Row, order ir.Order) strin
 	case "format":
 		return formatValue(value, arg)
 	case "date", "time", "timestamp":
-		if t, err := parseDate(value, ""); err == nil {
+		if t, err := parseDateIn(value, "", row.Loc); err == nil {
 			switch method {
 			case "date":
 				return t.Format("2006-01-02")

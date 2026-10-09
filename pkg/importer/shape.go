@@ -30,6 +30,25 @@ type ShapeOp struct {
 	Merge *MergeOp `json:"merge,omitempty" yaml:"merge,omitempty"`
 	// Split fans one record out into several.
 	Split *SplitOp `json:"split,omitempty" yaml:"split,omitempty"`
+	// Capture reads statement-level values (account number, card alias,
+	// statement month) from rows outside the table, usually the notice
+	// lines above the header. Named groups become <file.name>.
+	Capture *CaptureOp `json:"capture,omitempty" yaml:"capture,omitempty"`
+	// FailIf stops the import when any record matches, naming the row.
+	// Use it to catch an export whose format changed instead of writing
+	// wrong entries.
+	FailIf string `json:"failIf,omitempty" yaml:"failIf,omitempty"`
+	// Message explains a FailIf to the person importing.
+	Message string `json:"message,omitempty" yaml:"message,omitempty"`
+}
+
+type CaptureOp struct {
+	// Pattern is a regexp with named groups, matched against each row's
+	// cells joined by a space. The first match of each group wins.
+	Pattern string `json:"pattern" yaml:"pattern"`
+	// ScanRows bounds the search from the top of the remaining rows.
+	// 0 means every row.
+	ScanRows int `json:"scanRows,omitempty" yaml:"scanRows,omitempty"`
 }
 
 type LocateHeader struct {
@@ -76,14 +95,29 @@ func (f *FlexStrings) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // shapeTable runs the ops and returns the header names and the records.
 func shapeTable(profile *Profile, table reader.Table) ([]string, [][]string, error) {
+	headers, rows, _, err := shapeTableFile(profile, table)
+	return headers, rows, err
+}
+
+// shapeTableFile is shapeTable plus the statement-level values captured
+// along the way, keyed by group name.
+func shapeTableFile(profile *Profile, table reader.Table) ([]string, [][]string, map[string]string, error) {
 	headers := table.Headers
 	rows := table.Rows
+	file := map[string]string{}
 	for i, op := range profile.Shape {
 		var err error
 		switch {
+		case op.Capture != nil:
+			err = shapeCapture(*op.Capture, rows, file)
+		case op.FailIf != "":
+			headers, rows, err = ensureHeaders(profile, headers, rows)
+			if err == nil {
+				err = shapeFailIf(profile, op.FailIf, op.Message, headers, rows, file)
+			}
 		case op.LocateHeader != nil:
 			if headers != nil {
-				return nil, nil, fmt.Errorf("shape[%d] locateHeader: header already known", i)
+				return nil, nil, nil, fmt.Errorf("shape[%d] locateHeader: header already known", i)
 			}
 			headers, rows, err = shapeLocateHeader(*op.LocateHeader, rows)
 		case op.DropMatching != "":
@@ -91,30 +125,98 @@ func shapeTable(profile *Profile, table reader.Table) ([]string, [][]string, err
 		case op.DropIf != "":
 			headers, rows, err = ensureHeaders(profile, headers, rows)
 			if err == nil {
-				rows, err = shapeDropIf(op.DropIf, headers, rows)
+				rows, err = shapeDropIf(profile, op.DropIf, headers, rows, file)
 			}
 		case op.Merge != nil:
 			headers, rows, err = ensureHeaders(profile, headers, rows)
 			if err == nil {
-				rows, err = shapeMerge(profile, *op.Merge, headers, rows)
+				rows, err = shapeMerge(profile, *op.Merge, headers, rows, file)
 			}
 		case op.Split != nil:
 			headers, rows, err = ensureHeaders(profile, headers, rows)
 			if err == nil {
-				rows, err = shapeSplit(*op.Split, headers, rows)
+				rows, err = shapeSplit(profile, *op.Split, headers, rows, file)
 			}
 		default:
-			return nil, nil, fmt.Errorf("shape[%d]: empty step", i)
+			return nil, nil, nil, fmt.Errorf("shape[%d]: empty step", i)
 		}
 		if err != nil {
-			return nil, nil, fmt.Errorf("shape[%d]: %w", i, err)
+			return nil, nil, nil, fmt.Errorf("shape[%d]: %w", i, err)
 		}
 	}
 	headers, rows, err := ensureHeaders(profile, headers, rows)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
-	return headers, rows, nil
+	return headers, rows, file, nil
+}
+
+func shapeCapture(op CaptureOp, rows [][]string, file map[string]string) error {
+	re, err := regexp.Compile(op.Pattern)
+	if err != nil {
+		return fmt.Errorf("capture %q: %w", op.Pattern, err)
+	}
+	names := namedGroupNames(re)
+	if len(names) == 0 {
+		return fmt.Errorf("capture %q has no named groups; use (?P<name>...)", op.Pattern)
+	}
+	end := len(rows)
+	if op.ScanRows > 0 && op.ScanRows < end {
+		end = op.ScanRows
+	}
+	for i := 0; i < end; i++ {
+		if rows[i] == nil {
+			continue
+		}
+		m := re.FindStringSubmatch(strings.Join(normalizeCells(rows[i]), " "))
+		if m == nil {
+			continue
+		}
+		for gi, name := range re.SubexpNames() {
+			if name == "" {
+				continue
+			}
+			if _, seen := file[name]; !seen && strings.TrimSpace(m[gi]) != "" {
+				file[name] = strings.TrimSpace(m[gi])
+			}
+		}
+	}
+	for _, name := range names {
+		if _, ok := file[name]; !ok {
+			return fmt.Errorf("capture %q: group %q not found in the first %d rows", op.Pattern, name, end)
+		}
+	}
+	return nil
+}
+
+func namedGroupNames(re *regexp.Regexp) []string {
+	var out []string
+	for _, n := range re.SubexpNames() {
+		if n != "" {
+			out = append(out, n)
+		}
+	}
+	return out
+}
+
+func shapeFailIf(profile *Profile, cond, message string, headers []string, rows [][]string, file map[string]string) error {
+	for i, row := range rows {
+		if emptyRecord(row) {
+			continue
+		}
+		hit, err := evalWhen(cond, shapeRow(profile, headers, row, file), ir.Order{})
+		if err != nil {
+			return fmt.Errorf("failIf %q: %w", cond, err)
+		}
+		if !hit {
+			continue
+		}
+		if message == "" {
+			message = "the statement has a row this template does not understand"
+		}
+		return fmt.Errorf("%s (data row %d: %s; failIf %s)", message, i+1, strings.Join(normalizeCells(row), " | "), cond)
+	}
+	return nil
 }
 
 // ensureHeaders falls back to the legacy header rules (skipLeadingRows,
@@ -169,13 +271,13 @@ func shapeDropMatching(pattern string, rows [][]string) ([][]string, error) {
 	return out, nil
 }
 
-func shapeDropIf(cond string, headers []string, rows [][]string) ([][]string, error) {
+func shapeDropIf(profile *Profile, cond string, headers []string, rows [][]string, file map[string]string) ([][]string, error) {
 	out := rows[:0:0]
 	for _, row := range rows {
 		if emptyRecord(row) {
 			continue
 		}
-		drop, err := evalWhen(cond, rawRow(headers, row), ir.Order{})
+		drop, err := evalWhen(cond, shapeRow(profile, headers, row, file), ir.Order{})
 		if err != nil {
 			return nil, fmt.Errorf("dropIf %q: %w", cond, err)
 		}
@@ -186,7 +288,7 @@ func shapeDropIf(cond string, headers []string, rows [][]string) ([][]string, er
 	return out, nil
 }
 
-func shapeMerge(profile *Profile, op MergeOp, headers []string, rows [][]string) ([][]string, error) {
+func shapeMerge(profile *Profile, op MergeOp, headers []string, rows [][]string, file map[string]string) ([][]string, error) {
 	if len(op.Key) == 0 {
 		return nil, fmt.Errorf("merge needs a key")
 	}
@@ -207,7 +309,7 @@ func shapeMerge(profile *Profile, op MergeOp, headers []string, rows [][]string)
 		if emptyRecord(row) {
 			continue
 		}
-		raw := rawRow(headers, row)
+		raw := shapeRow(profile, headers, row, file)
 		parts := make([]string, len(op.Key))
 		for i, k := range op.Key {
 			parts[i] = strings.TrimSpace(renderRuleText(k, raw, ir.Order{}))
@@ -312,7 +414,7 @@ func isNonzeroCell(value, amountPrefix string) bool {
 	return !d.IsZero()
 }
 
-func shapeSplit(op SplitOp, headers []string, rows [][]string) ([][]string, error) {
+func shapeSplit(profile *Profile, op SplitOp, headers []string, rows [][]string, file map[string]string) ([][]string, error) {
 	if len(op.Into) == 0 {
 		return nil, fmt.Errorf("split needs `into`")
 	}
@@ -329,7 +431,7 @@ func shapeSplit(op SplitOp, headers []string, rows [][]string) ([][]string, erro
 		if emptyRecord(row) {
 			continue
 		}
-		raw := rawRow(headers, row)
+		raw := shapeRow(profile, headers, row, file)
 		if strings.TrimSpace(op.When) != "" {
 			hit, err := evalWhen(op.When, raw, ir.Order{})
 			if err != nil {
@@ -357,6 +459,17 @@ func rawRow(headers []string, row []string) Row {
 		raw[h] = strings.TrimSpace(cell(row, i))
 	}
 	return Row{Raw: raw, Metadata: map[string]string{}}
+}
+
+// shapeRow is a record as conditions see it during shaping: its columns,
+// the captured <file.x> values and the template's time zone.
+func shapeRow(profile *Profile, headers []string, row []string, file map[string]string) Row {
+	r := rawRow(headers, row)
+	for k, v := range file {
+		r.Raw["file."+k] = v
+	}
+	r.Loc = profile.Template.Location()
+	return r
 }
 
 func headerIndex(headers []string) map[string]int {
