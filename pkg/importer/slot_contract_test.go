@@ -21,10 +21,16 @@ func TestSlotContractMapsBeancountFieldsAndLeavesAccountsToPersonalRules(t *test
 		t.Fatal(err)
 	}
 	profile := slotProfile()
+	// Template rules that name accounts break the slot contract: the
+	// import refuses them instead of silently ignoring them.
 	profile.TemplateRules = []Rule{{
 		ID:      "不应生效的账户规则",
 		Actions: Actions{From: TransferSide{Account: "Assets:ShouldNotApply"}},
 	}}
+	if _, err := ImportFile(profile, csvPath); err == nil || !strings.Contains(err.Error(), "不应生效的账户规则") {
+		t.Fatalf("account in template rules should be rejected, got %v", err)
+	}
+	profile.TemplateRules = nil
 	profile.PersonalRules = []Rule{{
 		ID:      "一卡通",
 		When:    `payee ~ "一卡通"`,

@@ -44,7 +44,8 @@ type ShapeOp struct {
 
 type CaptureOp struct {
 	// Pattern is a regexp with named groups, matched against each row's
-	// cells joined by a space. The first match of each group wins.
+	// cells joined by a space. The first non-empty match of each group
+	// wins; the import fails if the pattern matches no row at all.
 	Pattern string `json:"pattern" yaml:"pattern"`
 	// ScanRows bounds the search from the top of the remaining rows.
 	// 0 means every row.
@@ -176,7 +177,9 @@ func shapeCapture(op CaptureOp, rows [][]string, file map[string]string) error {
 			if name == "" {
 				continue
 			}
-			if _, seen := file[name]; !seen && strings.TrimSpace(m[gi]) != "" {
+			// A matched but empty group (a blank card alias) is a value too;
+			// a later non-empty match still replaces it.
+			if have, seen := file[name]; !seen || have == "" {
 				file[name] = strings.TrimSpace(m[gi])
 			}
 		}

@@ -34,7 +34,7 @@ func ImportFile(profile *Profile, filename string) (*ir.IR, error) {
 
 // ImportFileReport is ImportFile plus what the reconcile stage did.
 func ImportFileReport(profile *Profile, filename string) (*ir.IR, ReconcileReport, error) {
-	if err := profile.ValidateCapabilities(); err != nil {
+	if err := validateMerged(profile); err != nil {
 		return nil, ReconcileReport{}, err
 	}
 	rows, err := ParseFile(profile, filename)
@@ -46,7 +46,7 @@ func ImportFileReport(profile *Profile, filename string) (*ir.IR, ReconcileRepor
 
 // ImportBytes is ImportFile for a bill already in memory.
 func ImportBytes(profile *Profile, name string, data []byte) (*ir.IR, ReconcileReport, error) {
-	if err := profile.ValidateCapabilities(); err != nil {
+	if err := validateMerged(profile); err != nil {
 		return nil, ReconcileReport{}, err
 	}
 	rows, err := ParseBytes(profile, name, data)
@@ -54,6 +54,19 @@ func ImportBytes(profile *Profile, name string, data []byte) (*ir.IR, ReconcileR
 		return nil, ReconcileReport{}, err
 	}
 	return rowsToIR(profile, rows)
+}
+
+// validateMerged re-checks a profile after rules files were merged in:
+// template rules from a rules file must obey the same slot contract as
+// the template's own, or they would be silently ignored.
+func validateMerged(profile *Profile) error {
+	if err := profile.ValidateCapabilities(); err != nil {
+		return err
+	}
+	if profile.Template.HasSlotContract() {
+		return validateTemplate(*profile)
+	}
+	return nil
 }
 
 func rowsToIR(profile *Profile, rows []Row) (*ir.IR, ReconcileReport, error) {
