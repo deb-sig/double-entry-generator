@@ -248,6 +248,33 @@ shape:
 
 没写 `locateHeader` 时，表头仍按 `template.skipLeadingRows / sourceHeaders / headerLocate` 的旧规则确定，所以可以只加一个 `dropIf` 而不改别的。
 
+还有两个步骤：
+
+```yaml
+shape:
+  - capture: { pattern: '账[\s\p{Zs}]*号[：:][\s\p{Zs}]*(?P<account>\S+)', scanRows: 6 }
+  - capture: { pattern: '(?P<year>\d{4})年(?P<month>\d{2})月', scanRows: 3 }
+  - locateHeader: { anchor: [交易日期, 金额] }
+  - failIf: '<交易类型> != "消费" && <交易类型> != "还款"'
+    message: 出现了模板不认识的交易类型，账单格式可能变了
+```
+
+- `capture`：从表格以外的行（通常是表头上方的说明区）取账单级的值，比如账号、卡别名、出账年月。命名分组就是名字，之后在任何地方用 `<file.account>` 引用。要放在 `locateHeader` 之前，否则说明行已经被丢掉了。中文账单常用全角空格，`\s` 不匹配全角空格，要写 `[\s\p{Zs}]`。找不到某个分组时导入直接报错。
+- `failIf`：任意一条记录命中就停止导入，报出 `message` 和那一行的内容。用来在账单格式变化时尽早失败，而不是悄悄写出错账。
+
+没有年份的日期（如信用卡账单的 `12/30`）不需要专门的语法，用 `capture` 加 `vars` 组合：
+
+```yaml
+template:
+  vars:
+    - vars: { prev: '<file.year> - 1' }
+    - vars: { year: <file.year> }
+    - when: '<交易日>.extract("^(\d+)") > <file.month>'   # 账单月之后的月份属于上一年
+      vars: { year: '<var.prev>.format("%.0f")' }
+  slots:
+    date: <var.year>/<交易日>
+```
+
 ## 规则文件
 
 规则文件通常包含三块：
@@ -292,11 +319,15 @@ when: (<方向> == "买入" || <方向> == "卖出") && <交易类型> == "币�
 支持的比较符：
 
 - `==`、`!=`
-- `>`、`>=`、`<`、`<=`
+- `>`、`>=`、`<`、`<=`（两边都是数字时按数值比较）
 - `~` 包含
 - `!~` 不包含
+- `^=` 以…开头，`$=` 以…结尾
+- `=~` 整串匹配正则，例如 `<地址> =~ "(?i)0x1429.*"`（`(?i)` 忽略大小写）
 - `&&` 与
 - `||` 或
+
+`<file.x>` 引用 `shape.capture` 从说明行取到的值，`<var.x>` 引用模板变量，`metadata.x` 引用映射后的元数据。
 
 ## 字段方法
 
@@ -542,9 +573,18 @@ template:
 ```
 
 - 分支按顺序取第一个 `when` 成立的；没有 `when` 的分支是默认分支；都不命中就退回普通的 `from`/`to` 两腿。
-- `role` 是封闭核心集：`self` `from` `to` `cash` `custody` `position` `fee` `gas` `pnl`。`self` 是这份账单自己的账户（银行卡、信用卡、钱包）：支出时它是 `from`，收入时它是 `to`，相当于 hledger 的 `account1`。普通账单在 `accounts:` 里只需绑 `self` 一个。机构特有的腿用 `x-` 前缀（如 `x-margin`），这类角色必须在规则文件里绑定，引擎不会补 FIXME。
+- `role` 是封闭核心集：`self` `other` `from` `to` `cash` `custody` `position` `fee` `gas` `pnl`。`other` 是对手方，方向与 `self` 相反。`self` 是这份账单自己的账户（银行卡、信用卡、钱包）：支出时它是 `from`，收入时它是 `to`，相当于 hledger 的 `account1`。普通账单在 `accounts:` 里只需绑 `self` 一个。机构特有的腿用 `x-` 前缀（如 `x-margin`），这类角色必须在规则文件里绑定，引擎不会补 FIXME。
 - 腿里写 `account:` 会被拒绝。
 - `cost` 自动加 `{}`，`price` 不带 `@` 时自动加 `@ `；写 `{}` 和 `@@ …` 都按原样保留。
+
+### timezone：时区
+
+账单里的时间通常是当地时间，没有时区。默认按运行机器的时区解析；写上 `timezone` 后，日期和 `.timestamp` 比较都按这个时区算，换台机器结果也一样：
+
+```yaml
+template:
+  timezone: Asia/Shanghai
+```
 
 ### 用户侧：accounts 绑定 + rules
 
@@ -630,7 +670,21 @@ reconcile:
 
 跨来源的重复（微信里付的京东订单，京东账单里又出现一次）没有共同的订单号，只能靠 `window` 模糊匹配加人工复核，所以标 `!` 而不是直接丢。
 
-普通收支用 `from:` / `to:`，它们就是 `accounts: {from: …, to: …}` 的简写。没绑到的核心角色由引擎补 FIXME：`cash/custody/position → Assets:FIXME`，`fee/gas → Expenses:FIXME`，`pnl → Income:FIXME`，`from/to` 按方向。补的那一侧在来源记录（`Sources`）里标为 `engine`，网页端可以据此高亮。
+普通收支用 `other:` 最省事：它是对手方，支出时记在 `to`，收入（含退款）时记在 `from`，一条规则同时覆盖消费和它的退款。`from:` / `to:` 是按方向写死的两侧，显式写了就优先于 `self` / `other`。
+
+```yaml
+accounts:
+  self: Assets:Bank:CMB
+personalRules:
+  - id: 咖啡
+    when: payee ~ "咖啡"
+    actions:
+      other: Expenses:Food:Coffee      # 消费：Coffee 增加；退款：Coffee 减少
+  - id: 我发出的转账
+    when: metadata.from == "0x1429…"
+    actions:
+      direction: outflow               # 只有用户知道哪个地址是自己的，规则可以指定方向
+```没绑到的核心角色由引擎补 FIXME：`cash/custody/position → Assets:FIXME`，`fee/gas → Expenses:FIXME`，`pnl → Income:FIXME`，`from/to` 按方向。补的那一侧在来源记录（`Sources`）里标为 `engine`，网页端可以据此高亮。
 
 ```yaml
 template: wechat@2026-04-28
