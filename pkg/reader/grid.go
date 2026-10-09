@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	xlsreader "github.com/shakinm/xlsReader/xls"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/reader/internal/xls"
 	"github.com/xuri/excelize/v2"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/simplifiedchinese"
@@ -124,23 +124,39 @@ func readXLSX(data []byte, cfg Config) (Table, error) {
 	return Table{Rows: rows}, nil
 }
 
-func readXLS(data []byte, cfg Config) (Table, error) {
+// XLSRows returns the cells of the first sheet of an .xls workbook, one
+// slice per row (nil for rows the file does not define). Legacy providers
+// use it so the whole tool reads .xls through one permissively licensed
+// reader.
+func XLSRows(data []byte) ([][]string, error) {
+	t, err := readXLS(data, Config{})
+	return t.Rows, err
+}
+
+func readXLS(data []byte, cfg Config) (table Table, err error) {
 	// Many "xls" exports are really csv or html with a spreadsheet extension.
 	if !hasOLEHeader(data) {
 		return readCSV(data, cfg)
 	}
-	wb, err := xlsreader.OpenReader(bytes.NewReader(data))
+	// internal/xls is a patched copy of extrame/xls (Apache-2.0); the reader
+	// DEG used before was GPL-3.0, which rules out embedding the engine in
+	// closed apps. It can panic on malformed files, so a panic is reported
+	// as an ordinary read error.
+	defer func() {
+		if r := recover(); r != nil {
+			table, err = Table{}, fmt.Errorf("xls: unreadable workbook: %v", r)
+		}
+	}()
+	wb, err := xls.OpenReader(bytes.NewReader(data), "utf-8")
 	if err != nil {
 		return readCSV(data, cfg)
 	}
 	index := 0
 	if cfg.Sheet != "" {
-		names := make([]string, 0, wb.GetNumberSheets())
-		for i := 0; i < wb.GetNumberSheets(); i++ {
-			if s, err := wb.GetSheet(i); err == nil {
-				names = append(names, s.GetName())
-			} else {
-				names = append(names, "")
+		names := make([]string, wb.NumSheets())
+		for i := range names {
+			if s := wb.GetSheet(i); s != nil {
+				names[i] = s.Name
 			}
 		}
 		name, err := pickSheet(names, cfg.Sheet)
@@ -153,21 +169,20 @@ func readXLS(data []byte, cfg Config) (Table, error) {
 			}
 		}
 	}
-	sheet, err := wb.GetSheet(index)
-	if err != nil {
+	sheet := wb.GetSheet(index)
+	if sheet == nil {
 		return Table{}, fmt.Errorf("xls has no sheet %d", index)
 	}
-	rows := make([][]string, 0, int(sheet.GetNumberRows())+1)
-	for i := 0; i <= int(sheet.GetNumberRows()); i++ {
-		row, err := sheet.GetRow(i)
-		if err != nil || row == nil {
+	rows := make([][]string, 0, int(sheet.MaxRow)+1)
+	for i := 0; i <= int(sheet.MaxRow); i++ {
+		row := sheet.Row(i)
+		if row == nil {
 			rows = append(rows, nil)
 			continue
 		}
-		cols := row.GetCols()
-		record := make([]string, 0, len(cols))
-		for _, col := range cols {
-			record = append(record, col.GetString())
+		record := make([]string, 0, row.DefinedCols())
+		for c := 0; c < row.DefinedCols(); c++ {
+			record = append(record, row.Col(c))
 		}
 		rows = append(rows, record)
 	}
