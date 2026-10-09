@@ -220,6 +220,25 @@ func resolveRegistryAssetURL(registryURL, assetPath, latest, version string) str
 	return base + versionedPath
 }
 
+// ResolvedTemplateRef turns "wechat" into "wechat@<latest>" when the registry
+// knows that version. Pinned, local, and URL refs are returned unchanged.
+func ResolvedTemplateRef(ref string) string {
+	ref = strings.TrimSpace(ref)
+	id, version := ParseTemplateRef(ref)
+	if ref == "" || version != "" || IsHTTPURL(ref) || IsLocalPathRef(ref) {
+		return ref
+	}
+	registry, err := LoadRemoteRegistry("")
+	if err != nil {
+		return ref
+	}
+	template, _, err := lookupRegistryTemplate(registry, id)
+	if err != nil || strings.TrimSpace(template.Latest) == "" {
+		return ref
+	}
+	return id + "@" + template.Latest
+}
+
 func TemplateURLFromRegistry(id string) (string, error) {
 	registry, err := LoadRemoteRegistry("")
 	if err != nil {

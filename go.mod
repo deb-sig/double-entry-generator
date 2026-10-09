@@ -3,6 +3,10 @@ module github.com/deb-sig/double-entry-generator/v2
 go 1.24.0
 
 require (
+	github.com/antchfx/htmlquery v1.3.7
+	github.com/antchfx/jsonquery v1.3.8
+	github.com/antchfx/xmlquery v1.5.2
+	github.com/antchfx/xpath v1.3.9
 	github.com/extrame/xls v0.0.2-0.20200426124601-4a6cf263071b
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/onsi/ginkgo/v2 v2.23.0
@@ -22,6 +26,7 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/pprof v0.0.0-20250315033105-103756e64e1d // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

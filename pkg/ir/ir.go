@@ -41,7 +41,7 @@ type Order struct {
 	Money float64
 	// ExactMoney, when non-nil, is the authoritative decimal amount for the
 	// runtime path (parse → rules → IR → Beancount).
-	ExactMoney *Decimal
+	ExactMoney     *Decimal
 	Note           string
 	PayTime        time.Time
 	Type           Type // 方向，一般为 收/支
@@ -52,15 +52,53 @@ type Order struct {
 	Price          float64
 	Currency       string
 	Commission     float64 // 手续费/服务费
-	Units           map[Unit]string
-	ExtraAccounts   map[Account]string
-	MinusAccount    string
-	PlusAccount     string
-	Metadata        map[string]string
-	Tags            []string
-	Flag            string
-	Links           []string
-	Postings        []Posting
+	Units          map[Unit]string
+	ExtraAccounts  map[Account]string
+	MinusAccount   string
+	PlusAccount    string
+	Metadata       map[string]string
+	// MetadataKeys is the template-declared metadata order. Empty keeps map order.
+	MetadataKeys []string
+	// DeclaredMetadataKeys is every key the template may emit, in order,
+	// including ones empty for this transaction. Compilers do not read it.
+	DeclaredMetadataKeys []string
+	Tags                 []string
+	Flag                 string
+	Links                []string
+	Postings             []Posting
+	// Sources records where each written value came from. Legacy templateRules
+	// orders leave this empty. Compilers do not read it.
+	Sources []FieldSource
+}
+
+// FieldOrigin identifies who wrote a value onto a transaction.
+type FieldOrigin string
+
+const (
+	// FieldOriginTemplate is the template slot mapping.
+	FieldOriginTemplate FieldOrigin = "template"
+	// FieldOriginRule is a personal rule.
+	FieldOriginRule FieldOrigin = "rule"
+	// FieldOriginEngine is a side nobody wrote. The importer filled
+	// Assets:FIXME, Expenses:FIXME, or Income:FIXME. RuleID is empty.
+	FieldOriginEngine FieldOrigin = "engine"
+)
+
+// FieldSource is the provenance of one value written onto a transaction.
+//
+// Slot is a Beancount slot (date, payee, narration, amount, currency, flag,
+// tags, links), a metadata key prefixed with "metadata.", or an account side
+// ("from", "to"). Tags and links may have one entry per write. Other slots
+// keep the latest writer.
+//
+// RuleID is set only for FieldOriginRule. Columns are bill column names
+// referenced with <列名>, in appearance order. A quoted literal and an engine
+// fallback have no columns.
+type FieldSource struct {
+	Slot    string
+	RuleID  string
+	Columns []string
+	Origin  FieldOrigin
 }
 
 // Posting is a rendered, template-driven posting line. Runtime v2 rules

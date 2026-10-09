@@ -1,23 +1,16 @@
 package importer
 
 import (
-	"bytes"
-	"encoding/csv"
 	"fmt"
-	"io"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
-	"unicode"
 	"time"
+	"unicode"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
-	xlsreader "github.com/shakinm/xlsReader/xls"
-	"github.com/xuri/excelize/v2"
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/reader"
 )
 
 type Row struct {
@@ -29,38 +22,104 @@ type Row struct {
 	Type      string
 	Metadata  map[string]string
 	Raw       map[string]string
+	// Loc is the template's time zone for wall-clock dates in the bill.
+	// Nil means the machine's local zone.
+	Loc *time.Location
 }
 
 func ImportFile(profile *Profile, filename string) (*ir.IR, error) {
-	if err := profile.ValidateCapabilities(); err != nil {
-		return nil, err
+	out, _, err := ImportFileReport(profile, filename)
+	return out, err
+}
+
+// ImportFileReport is ImportFile plus what the reconcile stage did.
+func ImportFileReport(profile *Profile, filename string) (*ir.IR, ReconcileReport, error) {
+	if err := validateMerged(profile); err != nil {
+		return nil, ReconcileReport{}, err
 	}
 	rows, err := ParseFile(profile, filename)
 	if err != nil {
-		return nil, err
+		return nil, ReconcileReport{}, err
 	}
+	return rowsToIR(profile, rows)
+}
+
+// ImportBytes is ImportFile for a bill already in memory.
+func ImportBytes(profile *Profile, name string, data []byte) (*ir.IR, ReconcileReport, error) {
+	if err := validateMerged(profile); err != nil {
+		return nil, ReconcileReport{}, err
+	}
+	rows, err := ParseBytes(profile, name, data)
+	if err != nil {
+		return nil, ReconcileReport{}, err
+	}
+	return rowsToIR(profile, rows)
+}
+
+// validateMerged re-checks a profile after rules files were merged in:
+// template rules from a rules file must obey the same slot contract as
+// the template's own, or they would be silently ignored.
+func validateMerged(profile *Profile) error {
+	if err := profile.ValidateCapabilities(); err != nil {
+		return err
+	}
+	if profile.Template.HasSlotContract() {
+		return validateTemplate(*profile)
+	}
+	return nil
+}
+
+func rowsToIR(profile *Profile, rows []Row) (*ir.IR, ReconcileReport, error) {
 	orders := ir.New()
 	collectRuleOpenAccounts(orders, profile.Rules())
+	for _, account := range profile.Accounts {
+		collectStaticAccount(orders, account)
+	}
+	var pairs []rowOrder
 	for _, row := range rows {
 		order, ignore, err := rowToImportOrder(profile, row)
 		if err != nil {
 			if profile.Template.SkipInvalidRows {
 				continue
 			}
-			return nil, err
+			return nil, ReconcileReport{}, err
 		}
 		if ignore {
 			continue
 		}
-		orders.Orders = append(orders.Orders, order)
+		pairs = append(pairs, rowOrder{row: row, order: order})
 	}
-	return orders, nil
+	if err := checkRunningBalance(profile, pairs); err != nil {
+		return nil, ReconcileReport{}, err
+	}
+	built := make([]ir.Order, 0, len(pairs))
+	for _, p := range pairs {
+		built = append(built, p.order)
+	}
+	// Many statements list the newest transaction first. Compilers sort by
+	// time with a stable sort, so put same-day entries in the order they
+	// happened: reverse a bill whose first entry is later than its last.
+	if n := len(built); n > 1 && built[0].PayTime.After(built[n-1].PayTime) {
+		for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
+			built[i], built[j] = built[j], built[i]
+		}
+	}
+	final, report, err := applyReconcile(profile, built)
+	if err != nil {
+		return nil, ReconcileReport{}, err
+	}
+	orders.Orders = final
+	return orders, report, nil
 }
 
 func collectRuleOpenAccounts(orders *ir.IR, rules []Rule) {
 	for _, rule := range rules {
 		collectStaticAccount(orders, rule.Actions.From.Account)
 		collectStaticAccount(orders, rule.Actions.To.Account)
+		for _, value := range rule.Actions.Accounts {
+			collectStaticAccount(orders, value)
+		}
+		collectStaticAccount(orders, rule.Actions.Other)
 		for _, value := range rule.Actions.Vars {
 			collectStaticAccount(orders, value)
 		}
@@ -102,52 +161,101 @@ func isAccountName(value string) bool {
 	}
 }
 
+// ReaderConfig is the reader block the engine will use for this profile.
+// A `reader:` block wins; otherwise the legacy template.* file fields are
+// translated so old templates keep working unchanged.
+func ReaderConfig(profile *Profile) reader.Config {
+	if profile.Reader != nil {
+		cfg := *profile.Reader
+		if cfg.Format == "" {
+			cfg.Format = profile.Template.FileFormat
+		}
+		if cfg.Encoding == "" {
+			cfg.Encoding = profile.Template.Encoding
+		}
+		if cfg.Delimiter == "" {
+			cfg.Delimiter = profile.Template.Delimiter
+		}
+		cfg.StripTabs = cfg.StripTabs || profile.Template.StripTabs
+		cfg.KeepBlankLines = cfg.KeepBlankLines || profile.Template.HeaderLocate
+		return cfg.Normalize()
+	}
+	return reader.Config{
+		Format:         profile.Template.FileFormat,
+		Encoding:       profile.Template.Encoding,
+		Delimiter:      profile.Template.Delimiter,
+		StripTabs:      profile.Template.StripTabs,
+		KeepBlankLines: profile.Template.HeaderLocate,
+	}.Normalize()
+}
+
 func ParseFile(profile *Profile, filename string) ([]Row, error) {
 	if err := validateBillMatchesTemplate(profile, filename); err != nil {
 		return nil, err
 	}
-	format := templateFileFormat(profile)
-	switch format {
-	case "csv":
-		return parseCSV(profile, filename)
-	case "xls":
-		return parseXLS(profile, filename)
-	case "xlsx":
-		return parseXLSX(profile, filename)
-	default:
-		return nil, fmt.Errorf("unsupported template fileFormat %q", profile.Template.FileFormat)
+	table, err := reader.ReadFile(filename, ReaderConfig(profile))
+	if err != nil {
+		return nil, err
 	}
+	return tableToRows(profile, table)
 }
 
-func templateFileFormat(profile *Profile) string {
-	return normalizeFileFormat(profile.Template.FileFormat, "csv")
-}
-
-func billFileFormat(filename string) string {
-	ext := strings.TrimPrefix(strings.ToLower(filepath.Ext(filename)), ".")
-	return normalizeFileFormat(ext, "")
-}
-
-func normalizeFileFormat(format, fallback string) string {
-	switch strings.ToLower(strings.TrimSpace(format)) {
-	case "txt", "text":
-		return "csv"
-	case "xls":
-		return "xls"
-	case "csv", "xlsx":
-		return strings.ToLower(strings.TrimSpace(format))
-	default:
-		return fallback
+// ParseBytes is ParseFile for callers that hold the bill in memory (the
+// browser build). name carries the extension used for format checks.
+func ParseBytes(profile *Profile, name string, data []byte) ([]Row, error) {
+	if err := validateBillMatchesTemplate(profile, name); err != nil {
+		return nil, err
 	}
+	table, err := reader.ReadBytes(name, data, ReaderConfig(profile))
+	if err != nil {
+		return nil, err
+	}
+	return tableToRows(profile, table)
+}
+
+func tableToRows(profile *Profile, table reader.Table) ([]Row, error) {
+	if len(profile.Shape) > 0 {
+		headers, rows, file, err := shapeTableFile(profile, table)
+		if err != nil {
+			return nil, err
+		}
+		if err := validateHeaders(profile, headers); err != nil {
+			return nil, err
+		}
+		out, err := buildRowsFromRecords(profile, headers, rows)
+		if err != nil {
+			return nil, err
+		}
+		// Captured statement values are visible to every row as <file.x>.
+		for i := range out {
+			for k, v := range file {
+				out[i].Raw["file."+k] = v
+			}
+		}
+		return out, nil
+	}
+	if table.Headers != nil {
+		// Named readers (json, xml, text) already know their columns; there
+		// is no header row to locate and nothing to skip.
+		headers := normalizeCells(table.Headers)
+		if err := validateHeaders(profile, headers); err != nil {
+			return nil, err
+		}
+		return buildRowsFromRecords(profile, headers, table.Rows)
+	}
+	return recordsToRows(profile, table.Rows)
 }
 
 func validateBillMatchesTemplate(profile *Profile, filename string) error {
-	templateFmt := templateFileFormat(profile)
-	billFmt := billFileFormat(filename)
-	if billFmt == "" {
-		return fmt.Errorf("无法识别账单文件格式 %q，请使用 csv 或 xlsx", filepath.Ext(filename))
+	cfg := ReaderConfig(profile)
+	if cfg.IsAPI() {
+		return nil
 	}
-	if templateFmt == billFmt {
+	billFmt := reader.FormatForFile(filename)
+	if billFmt == "" {
+		return fmt.Errorf("无法识别账单文件格式 %q，请使用 csv、xlsx、xls、json、xml、html、eml、txt 或 pdf", filepath.Ext(filename))
+	}
+	if cfg.Compatible(filename) {
 		return nil
 	}
 	templateID := profile.ID
@@ -162,138 +270,33 @@ func validateBillMatchesTemplate(profile *Profile, filename string) error {
 		filepath.Base(filename),
 		billFmt,
 		templateID,
-		templateFmt,
-		templateFmt,
+		cfg.Format,
+		cfg.Format,
 		billFmt,
 	)
 }
 
-func parseCSV(profile *Profile, filename string) ([]Row, error) {
-	file, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	var r io.Reader = file
-	if strings.EqualFold(profile.Template.Encoding, "gbk") || strings.EqualFold(profile.Template.Encoding, "gb18030") {
-		r = transform.NewReader(file, simplifiedchinese.GB18030.NewDecoder())
-	}
-	if profile.Template.StripTabs {
-		b, err := io.ReadAll(r)
-		if err != nil {
-			return nil, err
-		}
-		r = strings.NewReader(strings.ReplaceAll(string(b), "\t", ""))
-	}
-
-	data, err := io.ReadAll(r)
-	if err != nil {
-		return nil, err
-	}
-	reader := csv.NewReader(bytes.NewReader(data))
-	reader.FieldsPerRecord = -1
-	reader.LazyQuotes = true
-	if delimiter := normalizeDelimiter(profile.Template.Delimiter); delimiter != 0 {
-		reader.Comma = delimiter
-	}
-
-	var records [][]string
-	if profile.Template.HeaderLocate {
-		// encoding/csv skips blank lines. Restore their positions for header
-		// windows so CSV and spreadsheet layouts obey the same contract.
-		// FieldPos identifies logical records, including quoted multiline cells.
-		nextLine := 1
-		var previousOffset int64
-		for {
-			record, readErr := reader.Read()
-			if readErr == io.EOF { break }
-			if readErr != nil { return nil, readErr }
-			startLine, _ := reader.FieldPos(0)
-			for line := nextLine; line < startLine; line++ { records = append(records, nil) }
-			records = append(records, record)
-			offset := reader.InputOffset()
-			nextLine += bytes.Count(data[previousOffset:offset], []byte{'\n'})
-			previousOffset = offset
-		}
-	} else {
-		records, err = reader.ReadAll()
-		if err != nil { return nil, err }
-	}
-	return recordsToRows(profile, records)
-}
-
-func parseXLSX(profile *Profile, filename string) ([]Row, error) {
-	f, err := excelize.OpenFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	sheets := f.GetSheetList()
-	if len(sheets) == 0 {
-		return nil, fmt.Errorf("xlsx has no sheets")
-	}
-	records, err := f.GetRows(sheets[0])
-	if err != nil {
-		return nil, err
-	}
-	return recordsToRows(profile, records)
-}
-
-func parseXLS(profile *Profile, filename string) ([]Row, error) {
-	if !hasOLEHeader(filename) {
-		return parseCSV(profile, filename)
-	}
-	wb, err := xlsreader.OpenFile(filename)
-	if err != nil {
-		return parseCSV(profile, filename)
-	}
-	sheet, err := wb.GetSheet(0)
-	if err != nil {
-		return nil, fmt.Errorf("xls has no first sheet")
-	}
-	records := make([][]string, 0, int(sheet.GetNumberRows())+1)
-	for i := 0; i <= int(sheet.GetNumberRows()); i++ {
-		row, err := sheet.GetRow(i)
-		if err != nil {
-			records = append(records, nil)
-			continue
-		}
-		if row == nil {
-			records = append(records, nil)
-			continue
-		}
-		cols := row.GetCols()
-		record := make([]string, 0, len(cols))
-		for _, col := range cols {
-			record = append(record, col.GetString())
-		}
-		records = append(records, record)
-	}
-	return recordsToRows(profile, records)
-}
-
-func hasOLEHeader(filename string) bool {
-	f, err := os.Open(filename)
-	if err != nil {
-		return false
-	}
-	defer f.Close()
-	header := make([]byte, 8)
-	if _, err := io.ReadFull(f, header); err != nil {
-		return false
-	}
-	return bytes.Equal(header, []byte{0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1})
-}
-
 func recordsToRows(profile *Profile, records [][]string) ([]Row, error) {
+	headers, rows, err := legacyHeaders(profile, records)
+	if err != nil {
+		return nil, err
+	}
+	if err := validateHeaders(profile, headers); err != nil {
+		return nil, err
+	}
+	return buildRowsFromRecords(profile, headers, rows)
+}
+
+// legacyHeaders applies the template.* header fields (skipLeadingRows,
+// sourceHeaders, headerLocate) and returns the header names and the data
+// rows after them.
+func legacyHeaders(profile *Profile, records [][]string) ([]string, [][]string, error) {
 	skip := profile.Template.SkipLeadingRows
 	if skip < 0 {
 		skip = 0
 	}
 	if len(records) <= skip {
-		return nil, fmt.Errorf("no rows after skipLeadingRows=%d", skip)
+		return nil, nil, fmt.Errorf("no rows after skipLeadingRows=%d", skip)
 	}
 
 	if profile.Template.HeaderLocate {
@@ -308,16 +311,13 @@ func recordsToRows(profile *Profile, records [][]string) ([]Row, error) {
 	} else if sameCells(headers, normalizeCells(records[skip])) {
 		start = skip + 1
 	}
-	if err := validateHeaders(profile, headers); err != nil {
-		return nil, err
-	}
-	return buildRowsFromRecords(profile, headers, records[start:])
+	return headers, records[start:], nil
 }
 
-func recordsToRowsHeaderLocate(profile *Profile, records [][]string, skip int) ([]Row, error) {
+func recordsToRowsHeaderLocate(profile *Profile, records [][]string, skip int) ([]string, [][]string, error) {
 	wanted := normalizeCells(profile.Template.SourceHeaders)
 	if len(wanted) == 0 {
-		return nil, fmt.Errorf("headerLocate requires non-empty sourceHeaders")
+		return nil, nil, fmt.Errorf("headerLocate requires non-empty sourceHeaders")
 	}
 	wantedSet := make(map[string]struct{}, len(wanted))
 	for _, name := range wanted {
@@ -325,12 +325,12 @@ func recordsToRowsHeaderLocate(profile *Profile, records [][]string, skip int) (
 			continue
 		}
 		if _, dup := wantedSet[name]; dup {
-			return nil, fmt.Errorf("sourceHeaders contains duplicate column name %q", name)
+			return nil, nil, fmt.Errorf("sourceHeaders contains duplicate column name %q", name)
 		}
 		wantedSet[name] = struct{}{}
 	}
 	if len(wantedSet) == 0 {
-		return nil, fmt.Errorf("headerLocate requires non-empty sourceHeaders")
+		return nil, nil, fmt.Errorf("headerLocate requires non-empty sourceHeaders")
 	}
 
 	scanEnd := len(records)
@@ -355,13 +355,13 @@ func recordsToRowsHeaderLocate(profile *Profile, records [][]string, skip int) (
 		}
 		// Candidate header row: duplicate column names fail closed immediately.
 		if err := rejectDuplicateHeaderNames(headers); err != nil {
-			return nil, fmt.Errorf("header row at index %d: %w", i, err)
+			return nil, nil, fmt.Errorf("header row at index %d: %w", i, err)
 		}
 		candidates = append(candidates, candidate{index: i, headers: headers})
 	}
 	switch len(candidates) {
 	case 0:
-		return nil, fmt.Errorf(
+		return nil, nil, fmt.Errorf(
 			"headerLocate: no header row containing all sourceHeaders within scan window (skipLeadingRows=%d, headerScanMaxRows=%d)",
 			skip, profile.Template.HeaderScanMaxRows,
 		)
@@ -372,17 +372,14 @@ func recordsToRowsHeaderLocate(profile *Profile, records [][]string, skip int) (
 		for i, c := range candidates {
 			idxs[i] = fmt.Sprintf("%d", c.index)
 		}
-		return nil, fmt.Errorf(
+		return nil, nil, fmt.Errorf(
 			"headerLocate: ambiguous header rows at indices [%s]; refine skipLeadingRows or sourceHeaders",
 			strings.Join(idxs, ", "),
 		)
 	}
 
 	found := candidates[0]
-	if err := validateHeaders(profile, found.headers); err != nil {
-		return nil, err
-	}
-	return buildRowsFromRecords(profile, found.headers, records[found.index+1:])
+	return found.headers, records[found.index+1:], nil
 }
 
 func rejectDuplicateHeaderNames(headers []string) error {
@@ -440,6 +437,7 @@ func buildRowsFromRecords(profile *Profile, headers []string, records [][]string
 			date = strings.TrimSpace(date + " " + raw[profile.Template.Columns.Time])
 		}
 		row := Row{
+			Loc:       profile.Template.Location(),
 			Date:      date,
 			Amount:    rowAmount(profile, raw),
 			Currency:  raw[profile.Template.Columns.Currency],
@@ -449,7 +447,7 @@ func buildRowsFromRecords(profile *Profile, headers []string, records [][]string
 			Metadata:  metadata,
 			Raw:       raw,
 		}
-		if !profile.IsV2() && strings.TrimSpace(row.Amount) == "" {
+		if !profile.IsV2() && !profile.Template.HasSlotContract() && strings.TrimSpace(row.Amount) == "" {
 			continue
 		}
 		rows = append(rows, row)
@@ -530,6 +528,9 @@ func nonEmptyAmount(value string) bool {
 }
 
 func rowToImportOrder(profile *Profile, row Row) (ir.Order, bool, error) {
+	if profile.Template.HasSlotContract() {
+		return rowToSlotOrder(profile, row)
+	}
 	if !profile.IsV2() {
 		return rowToOrder(profile, row)
 	}
@@ -546,7 +547,7 @@ func rowToV2Order(profile *Profile, row Row) (ir.Order, bool, error) {
 		order.Metadata = map[string]string{}
 	}
 	if row.Date != "" {
-		if payTime, err := parseDate(row.Date, profile.Template.DateFormat); err == nil {
+		if payTime, err := parseDateIn(row.Date, profile.Template.DateFormat, row.Loc); err == nil {
 			order.PayTime = payTime
 		}
 	}
@@ -603,7 +604,7 @@ func rowToOrder(profile *Profile, row Row) (ir.Order, bool, error) {
 		return ir.Order{}, false, fmt.Errorf("parse amount %q failed for date=%q payee=%q: %w", row.Amount, row.Date, row.Payee, err)
 	}
 	txType := inferTypeDecimal(row.Type, amount)
-	payTime, err := parseDate(row.Date, profile.Template.DateFormat)
+	payTime, err := parseDateIn(row.Date, profile.Template.DateFormat, row.Loc)
 	if err != nil {
 		return ir.Order{}, false, err
 	}
@@ -767,7 +768,7 @@ func applyV2ScalarActions(order *ir.Order, row Row, actions Actions, ignore *boo
 		*ignore = true
 	}
 	if actions.Date != "" {
-		if payTime, err := parseDate(resolveActionValue(actions.Date, row, *order), dateFormat); err == nil {
+		if payTime, err := parseDateIn(resolveActionValue(actions.Date, row, *order), dateFormat, row.Loc); err == nil {
 			order.PayTime = payTime
 		}
 	}
@@ -937,9 +938,20 @@ func rowWithVars(row Row, vars map[string]string, order ir.Order) Row {
 	withVars := row
 	withVars.Raw = raw
 	for key, value := range vars {
-		raw["var."+key] = renderPostingText(value, withVars, order)
+		raw["var."+key] = renderVarText(value, withVars, order)
 	}
 	return withVars
+}
+
+// renderVarText evaluates arithmetic only when the template wrote an
+// operator. A value copied from the bill, such as the date "12/29" or the
+// code "2024-01", is text and must not be divided or subtracted.
+func renderVarText(value string, row Row, order ir.Order) string {
+	outside := columnExprPattern.ReplaceAllString(value, "")
+	if !strings.ContainsAny(outside, "+-*/()") {
+		return strings.TrimSpace(renderRuleText(value, row, order))
+	}
+	return renderPostingText(value, row, order)
 }
 
 func renderTransferPosting(side TransferSide, defaultAmount, defaultCurrency, direction string, row Row, order ir.Order) (string, error) {
@@ -983,6 +995,10 @@ func forceAmountDirection(expr, direction string) string {
 		return expr[:loc[1]] + "." + direction + expr[loc[1]:]
 	}
 	if direction == "-" {
+		// A plain number keeps its spelling; arithmetic would rescale it.
+		if _, err := parseAmountExact(expr, ""); err == nil {
+			return "-" + expr
+		}
 		return "-(" + expr + ")"
 	}
 	return expr
@@ -1027,9 +1043,16 @@ func fieldValue(field string, row Row, order ir.Order) string {
 //  2. else exact lowercase logical payee|narration|amount|date|currency;
 //  3. else "" — custom columns keep literal identity (no raw./metadata.
 //     namespace strip, no case fold, no peer/item aliases).
+//
 // date.time / date.date / date.timestamp suffixes remain for DEG native when.
 func conditionFieldValue(field string, row Row, order ir.Order) string {
 	field = strings.TrimSpace(field)
+	if key, ok := strings.CutPrefix(field, "metadata."); ok && key != "" && !strings.Contains(key, ".") {
+		if row.Metadata == nil {
+			return ""
+		}
+		return row.Metadata[key]
+	}
 	if base, suffix, ok := strings.Cut(field, "."); ok && (suffix == "time" || suffix == "date" || suffix == "timestamp") {
 		value := conditionFieldValue(base, row, order)
 		if base == "date" || base == "交易时间" || value == "" {
@@ -1041,7 +1064,7 @@ func conditionFieldValue(field string, row Row, order ir.Order) string {
 			}
 			return order.PayTime.Format("2006-01-02")
 		}
-		if t, err := parseDate(value, ""); err == nil {
+		if t, err := parseDateIn(value, "", row.Loc); err == nil {
 			if suffix == "time" {
 				return t.Format("15:04")
 			}
@@ -1132,6 +1155,15 @@ func parseAmountExact(value, prefix string) (ir.Decimal, error) {
 }
 
 func parseDate(value, layout string) (time.Time, error) {
+	return parseDateIn(value, layout, nil)
+}
+
+// parseDateIn parses a wall-clock date in loc (time.Local when nil). A
+// value carrying its own offset (RFC 3339) keeps it.
+func parseDateIn(value, layout string, loc *time.Location) (time.Time, error) {
+	if loc == nil {
+		loc = time.Local
+	}
 	value = strings.TrimSpace(value)
 	layouts := []string{
 		normalizeDateLayout(layout),
@@ -1154,7 +1186,7 @@ func parseDate(value, layout string) (time.Time, error) {
 		if candidate == "" {
 			continue
 		}
-		if t, err := time.ParseInLocation(candidate, value, time.Local); err == nil {
+		if t, err := time.ParseInLocation(candidate, value, loc); err == nil {
 			return t, nil
 		}
 	}
@@ -1223,22 +1255,6 @@ func normalizeDateLayout(layout string) string {
 	return replacer.Replace(layout)
 }
 
-func normalizeDelimiter(value string) rune {
-	if value == "\t" {
-		return '\t'
-	}
-	switch strings.ToLower(strings.TrimSpace(value)) {
-	case "", "comma", ",":
-		return ','
-	case "\\t", "tab", "tsv":
-		return '\t'
-	case "semicolon", ";":
-		return ';'
-	default:
-		return []rune(value)[0]
-	}
-}
-
 func normalizeCells(values []string) []string {
 	out := make([]string, len(values))
 	for i, value := range values {
@@ -1286,6 +1302,7 @@ var columnExprPattern = regexp.MustCompile(`(?:\[([^\]]+)\]|<([^>]+)>)((?:\.(?:e
 // resolveActionValue implements the Mirato↔DEG action literal/ref protocol:
 //   - fully quoted "..." / '...' => string literal (escapes: \\ \" \' \n \r \t)
 //   - otherwise interpolate <col> / [col] refs (and methods) via renderRuleText
+//
 // Fixed text such as "<金额>", "payee", or "1+2" must be quoted so it is not
 // treated as a column ref or arithmetic expression.
 func resolveActionValue(value string, row Row, order ir.Order) string {
@@ -1529,7 +1546,7 @@ func applyColumnMethod(value, method, arg string, row Row, order ir.Order) strin
 	case "format":
 		return formatValue(value, arg)
 	case "date", "time", "timestamp":
-		if t, err := parseDate(value, ""); err == nil {
+		if t, err := parseDateIn(value, "", row.Loc); err == nil {
 			switch method {
 			case "date":
 				return t.Format("2006-01-02")
@@ -1633,6 +1650,30 @@ func formatAmountLike(amount float64, original string) string {
 	return formatAmountLikeDecimal(d, original)
 }
 
+// formatArithmeticResult prints an arithmetic result with the widest scale
+// among its numeric operands (at least 2): "0.85 + 0" prints "0.85", and
+// "1.2 * 3.45" prints "4.140". The expression text itself is not a number,
+// so it must not be fed to formatAmountLikeDecimal.
+func formatArithmeticResult(amount ir.Decimal, expr string) string {
+	minScale := uint32(2)
+	for _, tok := range arithmeticNumberPattern.FindAllString(expr, -1) {
+		if dot := strings.LastIndex(tok, "."); dot >= 0 {
+			if n := uint32(len(tok) - dot - 1); n > minScale {
+				minScale = n
+			}
+		}
+	}
+	text0 := amount.Text(0)
+	if dot := strings.LastIndex(text0, "."); dot >= 0 {
+		if n := uint32(len(text0) - dot - 1); n > minScale {
+			minScale = n
+		}
+	}
+	return amount.Text(minScale)
+}
+
+var arithmeticNumberPattern = regexp.MustCompile(`\d+(?:\.\d+)?`)
+
 func formatAmountLikeDecimal(amount ir.Decimal, original string) string {
 	minScale := uint32(2)
 	cleaned := normalizeAmountString(original)
@@ -1688,6 +1729,29 @@ func formatDecimalPrintfExact(d ir.Decimal, pattern string) (string, bool) {
 	}
 	prefix := pattern[:percent]
 	rest := pattern[percent+1:]
+	// Flags and width: %06.0f, %-8.2f, %+.2f.
+	zeroPad, leftAlign, plus, space := false, false, false, false
+flags:
+	for rest != "" {
+		switch rest[0] {
+		case '0':
+			zeroPad = true
+		case '-':
+			leftAlign = true
+		case '+':
+			plus = true
+		case ' ':
+			space = true
+		default:
+			break flags
+		}
+		rest = rest[1:]
+	}
+	width := 0
+	for rest != "" && rest[0] >= '0' && rest[0] <= '9' {
+		width = width*10 + int(rest[0]-'0')
+		rest = rest[1:]
+	}
 	prec := 6 // fmt default for %f
 	if strings.HasPrefix(rest, ".") {
 		rest = rest[1:]
@@ -1707,7 +1771,7 @@ func formatDecimalPrintfExact(d ir.Decimal, pattern string) (string, bool) {
 		return "", false
 	}
 	suffix := rest[1:]
-	// Reject remaining % verbs / flags / width that we do not implement exactly.
+	// Reject remaining % verbs that we do not implement exactly.
 	if strings.ContainsRune(suffix, '%') || strings.ContainsAny(prefix, "eEgG") {
 		return "", false
 	}
@@ -1715,7 +1779,26 @@ func formatDecimalPrintfExact(d ir.Decimal, pattern string) (string, bool) {
 	if frac > prec {
 		return "", false
 	}
-	return prefix + d.Text(uint32(prec)) + suffix, true
+	body := d.Text(uint32(prec))
+	sign := ""
+	if strings.HasPrefix(body, "-") {
+		sign, body = "-", body[1:]
+	} else if plus {
+		sign = "+"
+	} else if space {
+		sign = " "
+	}
+	if pad := width - len(sign) - len(body); pad > 0 {
+		switch {
+		case leftAlign:
+			body += strings.Repeat(" ", pad)
+		case zeroPad:
+			body = strings.Repeat("0", pad) + body
+		default:
+			sign = strings.Repeat(" ", pad) + sign
+		}
+	}
+	return prefix + sign + body + suffix, true
 }
 
 func printfFloatPrecision(pattern string) (int, bool) {
@@ -1796,7 +1879,7 @@ func evalSimpleArithmetic(value string) string {
 		// Soft helper: leave expression unchanged on failure (runtime paths use strict).
 		return value
 	}
-	return formatAmountLikeDecimal(out, trimmed)
+	return formatArithmeticResult(out, trimmed)
 }
 
 func isPlainNumberToken(value string) bool {
@@ -1816,14 +1899,14 @@ func evalArithmeticInTextStrict(value string) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return formatAmountLikeDecimal(out, trimmed), nil
+			return formatArithmeticResult(out, trimmed), nil
 		}
 		if looksLikeArithmetic(trimmed) && (strings.HasPrefix(trimmed, "-") || strings.HasPrefix(trimmed, "+")) {
 			out, err := evalArithmeticExpression(trimmed)
 			if err != nil {
 				return "", err
 			}
-			return formatAmountLikeDecimal(out, trimmed), nil
+			return formatArithmeticResult(out, trimmed), nil
 		}
 	}
 	return rewriteArithmeticRegionsStrict(value)

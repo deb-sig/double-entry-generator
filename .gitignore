@@ -53,3 +53,4 @@ node_modules/
 # WASM 构建产物
 wasm/*.wasm
 wasm/wasm_exec.js
+/wasm-runtime

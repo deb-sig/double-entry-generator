@@ -1,0 +1,196 @@
+package reader
+
+import (
+	"bytes"
+	"encoding/csv"
+	"fmt"
+	"io"
+	"strconv"
+	"strings"
+
+	xlsreader "github.com/shakinm/xlsReader/xls"
+	"github.com/xuri/excelize/v2"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/encoding/unicode"
+	"golang.org/x/text/transform"
+)
+
+func decodeText(data []byte, enc string) ([]byte, error) {
+	var dec *encoding.Decoder
+	switch strings.ToLower(strings.TrimSpace(enc)) {
+	case "", "utf-8", "utf8":
+		return data, nil
+	case "gbk", "gb2312", "gb18030":
+		dec = simplifiedchinese.GB18030.NewDecoder()
+	case "utf-16le", "utf16le":
+		dec = unicode.UTF16(unicode.LittleEndian, unicode.UseBOM).NewDecoder()
+	case "utf-16be", "utf16be":
+		dec = unicode.UTF16(unicode.BigEndian, unicode.UseBOM).NewDecoder()
+	case "utf-16", "utf16":
+		dec = unicode.UTF16(unicode.LittleEndian, unicode.ExpectBOM).NewDecoder()
+	default:
+		return nil, fmt.Errorf("unsupported encoding %q", enc)
+	}
+	out, err := io.ReadAll(transform.NewReader(bytes.NewReader(data), dec))
+	if err != nil {
+		return nil, fmt.Errorf("decode %s: %w", enc, err)
+	}
+	return out, nil
+}
+
+// Delimiter turns the template spelling of a csv delimiter into a rune.
+func Delimiter(value string) rune {
+	if value == "\t" {
+		return '\t'
+	}
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "", "comma", ",":
+		return ','
+	case "\\t", "tab", "tsv":
+		return '\t'
+	case "semicolon", ";":
+		return ';'
+	default:
+		return []rune(value)[0]
+	}
+}
+
+func readCSV(data []byte, cfg Config) (Table, error) {
+	data, err := decodeText(data, cfg.Encoding)
+	if err != nil {
+		return Table{}, err
+	}
+	if cfg.StripTabs {
+		data = bytes.ReplaceAll(data, []byte{'\t'}, nil)
+	}
+	reader := csv.NewReader(bytes.NewReader(data))
+	reader.FieldsPerRecord = -1
+	reader.LazyQuotes = true
+	reader.Comma = Delimiter(cfg.Delimiter)
+
+	if !cfg.KeepBlankLines {
+		rows, err := reader.ReadAll()
+		if err != nil {
+			return Table{}, err
+		}
+		return Table{Rows: rows}, nil
+	}
+
+	// encoding/csv skips blank lines. Restore their positions so header
+	// windows behave the same for csv and spreadsheets. FieldPos identifies
+	// logical records, including quoted multiline cells.
+	var rows [][]string
+	nextLine := 1
+	var previousOffset int64
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return Table{}, err
+		}
+		startLine, _ := reader.FieldPos(0)
+		for line := nextLine; line < startLine; line++ {
+			rows = append(rows, nil)
+		}
+		rows = append(rows, record)
+		offset := reader.InputOffset()
+		nextLine += bytes.Count(data[previousOffset:offset], []byte{'\n'})
+		previousOffset = offset
+	}
+	return Table{Rows: rows}, nil
+}
+
+func readXLSX(data []byte, cfg Config) (Table, error) {
+	f, err := excelize.OpenReader(bytes.NewReader(data))
+	if err != nil {
+		return Table{}, err
+	}
+	defer f.Close()
+	sheets := f.GetSheetList()
+	if len(sheets) == 0 {
+		return Table{}, fmt.Errorf("xlsx has no sheets")
+	}
+	name, err := pickSheet(sheets, cfg.Sheet)
+	if err != nil {
+		return Table{}, err
+	}
+	rows, err := f.GetRows(name)
+	if err != nil {
+		return Table{}, err
+	}
+	return Table{Rows: rows}, nil
+}
+
+func readXLS(data []byte, cfg Config) (Table, error) {
+	// Many "xls" exports are really csv or html with a spreadsheet extension.
+	if !hasOLEHeader(data) {
+		return readCSV(data, cfg)
+	}
+	wb, err := xlsreader.OpenReader(bytes.NewReader(data))
+	if err != nil {
+		return readCSV(data, cfg)
+	}
+	index := 0
+	if cfg.Sheet != "" {
+		names := make([]string, 0, wb.GetNumberSheets())
+		for i := 0; i < wb.GetNumberSheets(); i++ {
+			if s, err := wb.GetSheet(i); err == nil {
+				names = append(names, s.GetName())
+			} else {
+				names = append(names, "")
+			}
+		}
+		name, err := pickSheet(names, cfg.Sheet)
+		if err != nil {
+			return Table{}, err
+		}
+		for i, n := range names {
+			if n == name {
+				index = i
+			}
+		}
+	}
+	sheet, err := wb.GetSheet(index)
+	if err != nil {
+		return Table{}, fmt.Errorf("xls has no sheet %d", index)
+	}
+	rows := make([][]string, 0, int(sheet.GetNumberRows())+1)
+	for i := 0; i <= int(sheet.GetNumberRows()); i++ {
+		row, err := sheet.GetRow(i)
+		if err != nil || row == nil {
+			rows = append(rows, nil)
+			continue
+		}
+		cols := row.GetCols()
+		record := make([]string, 0, len(cols))
+		for _, col := range cols {
+			record = append(record, col.GetString())
+		}
+		rows = append(rows, record)
+	}
+	return Table{Rows: rows}, nil
+}
+
+// pickSheet resolves a sheet selector (name or 0-based index) against the
+// workbook's sheet names.
+func pickSheet(names []string, selector string) (string, error) {
+	selector = strings.TrimSpace(selector)
+	if selector == "" {
+		return names[0], nil
+	}
+	for _, n := range names {
+		if n == selector {
+			return n, nil
+		}
+	}
+	if i, err := strconv.Atoi(selector); err == nil {
+		if i < 0 || i >= len(names) {
+			return "", fmt.Errorf("sheet index %d out of range (workbook has %d sheets)", i, len(names))
+		}
+		return names[i], nil
+	}
+	return "", fmt.Errorf("sheet %q not found; available: %s", selector, strings.Join(names, ", "))
+}

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser"
+	analyser "github.com/deb-sig/double-entry-generator/v2/pkg/analyser/api"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/importer"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/io/writer"
@@ -202,7 +202,7 @@ func (b *BeanCount) writeBills(file io.Writer) error {
 	// If the bills are the same day, the tx which has lower
 	// line number is considered happened earlier than the tx
 	// which has a higher line number by beancount default.
-	sort.Slice(b.IR.Orders, func(i, j int) bool {
+	sort.SliceStable(b.IR.Orders, func(i, j int) bool {
 		return b.IR.Orders[i].PayTime.Before(b.IR.Orders[j].PayTime)
 	})
 
@@ -237,15 +237,16 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 				postings = append(postings, posting.Line)
 			}
 			err = runtimeOrderTemplate.Execute(&buf, &NormalOrderVars{
-				PayTime:  o.PayTime,
-				Peer:     o.Peer,
-				Item:     o.Item,
-				Note:     o.Note,
-				Metadata: o.Metadata,
-				Tags:     o.Tags,
-				Flag:     o.Flag,
-				Links:    o.Links,
-				Postings: postings,
+				PayTime:      o.PayTime,
+				Peer:         o.Peer,
+				Item:         o.Item,
+				Note:         o.Note,
+				Metadata:     o.Metadata,
+				MetadataKeys: o.MetadataKeys,
+				Tags:         o.Tags,
+				Flag:         o.Flag,
+				Links:        o.Links,
+				Postings:     postings,
 			})
 			break
 		}
