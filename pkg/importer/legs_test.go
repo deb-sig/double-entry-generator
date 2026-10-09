@@ -166,7 +166,7 @@ template:
     - legs:
         - { role: cash, account: Assets:Mine, amount: "1" }
 `, &p)
-	if err == nil || !strings.Contains(err.Error(), "accounts:") {
+	if err == nil || !strings.Contains(err.Error(), "under accounts") {
 		t.Fatalf("account in template leg should be rejected, got %v", err)
 	}
 	profile := loadProfileYAML(t, `

@@ -74,7 +74,7 @@ func (boc *Boc) Translate(filename string) (*ir.IR, error) {
 			err = boc.TranslateToCreditOrders(line)
 		}
 		if err != nil {
-			return nil, fmt.Errorf("Failed to translate bill: data line %d: error: %v", boc.LineNum, err)
+			return nil, fmt.Errorf("failed to translate bill: data line %d: error: %v", boc.LineNum, err)
 		}
 	}
 	log.Printf("Finished to parse the file %s", filename)

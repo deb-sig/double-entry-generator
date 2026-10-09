@@ -84,7 +84,7 @@ func (a *Alipay) Translate(filename string) (*ir.IR, error) {
 
 		err = a.translateToOrders(line)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to translate bill: line %d: %v",
+			return nil, fmt.Errorf("failed to translate bill: line %d: %v",
 				a.LineNum, err)
 		}
 	}

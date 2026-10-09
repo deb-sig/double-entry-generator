@@ -19,7 +19,7 @@ func (mt *MT) translateToOrders(array []string) error {
 	bill.Type = getTxType(array[4])
 	if bill.Type == TypeNil {
 		log.Println("get tx type error:", array[4], array)
-		return fmt.Errorf("Failed to get the tx type %s", array[4])
+		return fmt.Errorf("failed to get the tx type %s", array[4])
 	}
 	bill.TypeOriginal = array[4]
 	bill.ItemName = array[3]

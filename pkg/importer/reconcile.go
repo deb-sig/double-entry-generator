@@ -262,7 +262,7 @@ func loadLedgerIndex(path string) (*ledgerIndex, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	idx := &ledgerIndex{keys: map[string]struct{}{}}
 	var cur *ledgerTxn
 	flush := func() {

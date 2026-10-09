@@ -70,12 +70,12 @@ func (bmo *Bmo) Translate(filename string) (*ir.IR, error) {
 		if bmo.Mode == DebitMode {
 			err = bmo.translateDebitToOrders(line)
 			if err != nil {
-				return nil, fmt.Errorf("Failed to translate debit bill: line %d: %v", bmo.LineNum, err)
+				return nil, fmt.Errorf("failed to translate debit bill: line %d: %v", bmo.LineNum, err)
 			}
 		} else {
 			err = bmo.translateCreditToOrders(line)
 			if err != nil {
-				return nil, fmt.Errorf("Failed to translate credit bill: line %d: %v", bmo.LineNum, err)
+				return nil, fmt.Errorf("failed to translate credit bill: line %d: %v", bmo.LineNum, err)
 			}
 		}
 	}

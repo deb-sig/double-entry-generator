@@ -35,12 +35,14 @@ func pdftotext(filename string, data []byte) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		defer os.Remove(tmp.Name())
+		defer func() { _ = os.Remove(tmp.Name()) }()
 		if _, err := tmp.Write(data); err != nil {
-			tmp.Close()
+			_ = tmp.Close()
 			return nil, err
 		}
-		tmp.Close()
+		if err := tmp.Close(); err != nil {
+			return nil, err
+		}
 		input = tmp.Name()
 	}
 	cmd := exec.Command(bin, "-layout", "-enc", "UTF-8", input, "-")

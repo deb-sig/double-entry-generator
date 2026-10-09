@@ -80,7 +80,7 @@ func New(providerName string) (Interface, error) {
 	case consts.ProviderBoc:
 		return boc.Boc{}, nil
 	default:
-		return nil, fmt.Errorf("Fail to create the analyser for the given name %s", providerName)
+		return nil, fmt.Errorf("fail to create the analyser for the given name %s", providerName)
 	}
 }
 

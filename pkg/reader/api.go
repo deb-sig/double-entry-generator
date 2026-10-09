@@ -76,7 +76,7 @@ func fetchAPI(source string, cfg Config) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("api reader: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	body, err := io.ReadAll(io.LimitReader(resp.Body, 64<<20))
 	if err != nil {
 		return nil, err

@@ -64,7 +64,7 @@ func (mt *MT) Translate(filename string) (*ir.IR, error) {
 
 		err = mt.translateToOrders(line)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to translate bill: data line %d: %v", mt.LineNum, err)
+			return nil, fmt.Errorf("failed to translate bill: data line %d: %v", mt.LineNum, err)
 		}
 	}
 	log.Printf("Finished to parse the file %s", filename)

@@ -108,7 +108,7 @@ func readXLSX(data []byte, cfg Config) (Table, error) {
 	if err != nil {
 		return Table{}, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	sheets := f.GetSheetList()
 	if len(sheets) == 0 {
 		return Table{}, fmt.Errorf("xlsx has no sheets")

@@ -1032,12 +1032,6 @@ const (
 	lookupActionRaw
 )
 
-// fieldValue is the shared condition lookup (Mirato baseline). Prefer
-// conditionFieldValue / actionColumnValue at call sites that know the context.
-func fieldValue(field string, row Row, order ir.Order) string {
-	return conditionFieldValue(field, row, order)
-}
-
 // conditionFieldValue implements Mirato↔DEG shared condition lookup:
 //  1. exact Raw key wins (including present empty string);
 //  2. else exact lowercase logical payee|narration|amount|date|currency;
@@ -1142,20 +1136,8 @@ func actionColumnValue(field string, row Row) string {
 	return ""
 }
 
-func parseAmount(value, prefix string) (float64, error) {
-	d, err := ParseAmountDecimal(value, prefix)
-	if err != nil {
-		return 0, err
-	}
-	return d.Float64Approx(), nil
-}
-
 func parseAmountExact(value, prefix string) (ir.Decimal, error) {
 	return ParseAmountDecimal(value, prefix)
-}
-
-func parseDate(value, layout string) (time.Time, error) {
-	return parseDateIn(value, layout, nil)
 }
 
 // parseDateIn parses a wall-clock date in loc (time.Local when nil). A
@@ -1310,12 +1292,6 @@ func resolveActionValue(value string, row Row, order ir.Order) string {
 		return lit
 	}
 	return renderRuleText(value, row, order)
-}
-
-func renderRuleTextMode(value string, row Row, order ir.Order, mode columnLookupMode) string {
-	return columnExprPattern.ReplaceAllStringFunc(value, func(match string) string {
-		return evalColumnString(match, row, order, mode)
-	})
 }
 
 func parseActionLiteral(value string) (string, bool) {
@@ -1633,23 +1609,6 @@ func normalizeAmountString(value string) string {
 	return cleaned
 }
 
-func formatAmountLike(amount float64, original string) string {
-	// Legacy helper retained for float call sites; prefer formatAmountLikeDecimal.
-	d, err := ir.ParseDecimal(strconv.FormatFloat(amount, 'f', -1, 64))
-	if err != nil {
-		precision := 2
-		cleaned := normalizeAmountString(original)
-		if dot := strings.LastIndex(cleaned, "."); dot >= 0 {
-			precision = len(cleaned) - dot - 1
-		}
-		if precision < 2 {
-			precision = 2
-		}
-		return strconv.FormatFloat(amount, 'f', precision, 64)
-	}
-	return formatAmountLikeDecimal(d, original)
-}
-
 // formatArithmeticResult prints an arithmetic result with the widest scale
 // among its numeric operands (at least 2): "0.85 + 0" prints "0.85", and
 // "1.2 * 3.45" prints "4.140". The expression text itself is not a number,
@@ -1801,36 +1760,6 @@ flags:
 	return prefix + sign + body + suffix, true
 }
 
-func printfFloatPrecision(pattern string) (int, bool) {
-	// Supports literal%[.]Nf literal (e.g. "-%.2f") without float64.
-	if !strings.ContainsAny(pattern, "fF") || strings.ContainsAny(pattern, "eEgG") {
-		return 0, false
-	}
-	percent, ok := indexSinglePrintfVerb(pattern)
-	if !ok {
-		return 0, false
-	}
-	rest := pattern[percent+1:]
-	prec := 6
-	if strings.HasPrefix(rest, ".") {
-		rest = rest[1:]
-		n, i := 0, 0
-		for i < len(rest) && rest[i] >= '0' && rest[i] <= '9' {
-			n = n*10 + int(rest[i]-'0')
-			i++
-		}
-		if i == 0 {
-			return 0, false
-		}
-		prec = n
-		rest = rest[i:]
-	}
-	if rest == "" || (rest[0] != 'f' && rest[0] != 'F') {
-		return 0, false
-	}
-	return prec, true
-}
-
 // indexSinglePrintfVerb finds the sole unescaped % in pattern.
 func indexSinglePrintfVerb(pattern string) (int, bool) {
 	idx := -1
@@ -1910,34 +1839,4 @@ func evalArithmeticInTextStrict(value string) (string, error) {
 		}
 	}
 	return rewriteArithmeticRegionsStrict(value)
-}
-
-// evalEmbeddedArithmetic is the soft leftmost-compatible wrapper retained for
-// legacy call sites; new money paths must use evalArithmeticInTextStrict.
-func evalEmbeddedArithmetic(value string) string {
-	out, err := evalArithmeticInTextStrict(value)
-	if err != nil {
-		return value
-	}
-	return out
-}
-
-var simpleArithmeticPattern = regexp.MustCompile(`(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*([*/+-])\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)`)
-
-func trimFraction(value string, minPrecision int) string {
-	dot := strings.LastIndex(value, ".")
-	if dot < 0 {
-		return value
-	}
-	for len(value)-dot-1 > minPrecision && strings.HasSuffix(value, "0") {
-		value = strings.TrimSuffix(value, "0")
-	}
-	return value
-}
-
-func decimalPlaces(value string) int {
-	if dot := strings.LastIndex(value, "."); dot >= 0 {
-		return len(value) - dot - 1
-	}
-	return 0
 }

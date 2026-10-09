@@ -23,7 +23,7 @@ func (a *Alipay) translateToOrders(array []string) error {
 	bill.Type = getTxType(array[5])
 	if bill.Type == TypeNil {
 		log.Println("get tx type error:", array[5], array)
-		return fmt.Errorf("Failed to get the tx type %s", array[5])
+		return fmt.Errorf("failed to get the tx type %s", array[5])
 	}
 	bill.TypeOriginal = array[5]
 	bill.Peer = array[2]
