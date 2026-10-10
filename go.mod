@@ -3,11 +3,12 @@ module github.com/deb-sig/double-entry-generator/v2
 go 1.25.0
 
 require (
+	github.com/extrame/goyymmdd v0.0.0-20210114090516-7cc815f00d1a
+	github.com/extrame/ole2 v0.0.0-20160812065207-d69429661ad7
 	github.com/extrame/xls v0.0.2-0.20200426124601-4a6cf263071b
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/onsi/ginkgo/v2 v2.23.0
 	github.com/onsi/gomega v1.36.2
-	github.com/shakinm/xlsReader v0.9.12
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.14.0
 	github.com/xuri/excelize/v2 v2.11.0
@@ -17,8 +18,6 @@ require (
 
 require (
 	github.com/cpuguy83/go-md2man v1.0.10 // indirect
-	github.com/extrame/goyymmdd v0.0.0-20210114090516-7cc815f00d1a // indirect
-	github.com/extrame/ole2 v0.0.0-20160812065207-d69429661ad7 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
@@ -27,7 +26,6 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
-	github.com/metakeule/fmtdate v1.1.2 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect

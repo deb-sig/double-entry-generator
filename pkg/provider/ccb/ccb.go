@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/io/reader"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
-	"github.com/shakinm/xlsReader/xls"
+	billreader "github.com/deb-sig/double-entry-generator/v2/pkg/reader"
 )
 
 // CCB is the provider for China Construction Bank.
@@ -124,32 +125,23 @@ func (ccb *CCB) translateCSV(filename string) (*ir.IR, error) {
 
 // translateExcel handles Excel file parsing
 func (ccb *CCB) translateExcel(filename string) (*ir.IR, error) {
-	log.Printf("Attempting to open Excel file with xlsReader: %s", filename)
+	log.Printf("Attempting to open Excel file .xls: %s", filename)
 
-	xlFile, err := xls.OpenFile(filename)
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("无法打开Excel文件，请检查文件路径或文件是否已损坏。原始错误: %v", err)
+	}
+	sheetRows, err := billreader.XLSRows(data)
 	if err != nil {
 		return nil, fmt.Errorf("无法打开Excel文件，请检查文件路径或文件是否已损坏。原始错误: %v", err)
 	}
 
-	sheet, err := xlFile.GetSheet(0)
-	if err != nil {
-		return nil, fmt.Errorf("无法获取Excel的第一个工作表。原始错误: %v", err)
-	}
-
-	for i := 0; i <= int(sheet.GetNumberRows()); i++ {
-		row, err := sheet.GetRow(i)
-		if err != nil {
-			log.Printf("跳过无法读取的行 %d: %v", i, err)
-			continue
-		}
+	for i, row := range sheetRows {
 		if row == nil {
 			continue
 		}
 
-		var rowData []string
-		for _, col := range row.GetCols() {
-			rowData = append(rowData, col.GetString())
-		}
+		rowData := row
 
 		ccb.LineNum = i + 1
 
@@ -205,31 +197,17 @@ func (ccb *CCB) TranslateFromExcelBytes(fileData []byte) (*ir.IR, error) {
 	log.Printf("TranslateFromExcelBytes called with %d bytes", len(fileData))
 
 	// 使用 xls.OpenReader 从字节流读取
-	xlFile, err := xls.OpenReader(strings.NewReader(string(fileData)))
+	sheetRows, err := billreader.XLSRows(fileData)
 	if err != nil {
 		return nil, fmt.Errorf("无法打开Excel文件。原始错误: %v", err)
 	}
 
-	sheet, err := xlFile.GetSheet(0)
-	if err != nil {
-		return nil, fmt.Errorf("无法获取Excel的第一个工作表。原始错误: %v", err)
-	}
-
-	for i := 0; i <= int(sheet.GetNumberRows()); i++ {
-		row, err := sheet.GetRow(i)
-		if err != nil {
-			log.Printf("跳过无法读取的行 %d: %v", i, err)
-			continue
-		}
-
+	for i, row := range sheetRows {
 		if row == nil {
 			continue
 		}
 
-		var rowData []string
-		for _, col := range row.GetCols() {
-			rowData = append(rowData, col.GetString())
-		}
+		rowData := row
 
 		ccb.LineNum = i + 1
 
