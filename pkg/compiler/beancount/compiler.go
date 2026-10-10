@@ -211,7 +211,7 @@ func (b *BeanCount) writeBills(file io.Writer) error {
 	// If the bills are the same day, the tx which has lower
 	// line number is considered happened earlier than the tx
 	// which has a higher line number by beancount default.
-	sort.Slice(b.IR.Orders, func(i, j int) bool {
+	sort.SliceStable(b.IR.Orders, func(i, j int) bool {
 		return b.IR.Orders[i].PayTime.Before(b.IR.Orders[j].PayTime)
 	})
 
