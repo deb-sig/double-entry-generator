@@ -82,9 +82,9 @@ func TestLookupActionAngleRefsAreRawOnly(t *testing.T) {
 		Amount:   "5.00",
 		Currency: "CNY",
 		Raw: map[string]string{
-			"payee":    "RawPayee",
-			"empty":    "",
-			"商家":       "Original",
+			"payee":     "RawPayee",
+			"empty":     "",
+			"商家":        "Original",
 			"raw.payee": "LiteralRawDot",
 		},
 	}
@@ -102,7 +102,7 @@ func TestLookupActionAngleRefsAreRawOnly(t *testing.T) {
 		{`<商家>`, "Original"},
 		{`<商家>.replace("Original","Replaced")`, "Replaced"},
 		{`<raw.payee>`, "LiteralRawDot"}, // literal key, not namespace
-		{`<Payee>`, ""},                 // no case fold into payee
+		{`<Payee>`, ""},                  // no case fold into payee
 	}
 	for _, tc := range cases {
 		got := resolveActionValue(tc.expr, row, order)

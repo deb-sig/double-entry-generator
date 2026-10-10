@@ -381,7 +381,6 @@ func (p *exprParser) valueOf(token exprToken) string {
 	return conditionFieldValue(token.val, p.row, p.order)
 }
 
-
 func splitRawToken(value string) (string, string) {
 	if !strings.HasPrefix(value, "raw[") {
 		return value, ""

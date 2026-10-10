@@ -372,8 +372,8 @@ type Actions struct {
 	// Direction overrides the template's outflow/inflow decision for this
 	// transaction: "outflow" or "inflow". Use it when only the user knows,
 	// such as which of two wallet addresses is theirs.
-	Direction string `json:"direction,omitempty" yaml:"direction,omitempty"`
-	Postings []string          `json:"postings,omitempty" yaml:"postings,omitempty"`
+	Direction string   `json:"direction,omitempty" yaml:"direction,omitempty"`
+	Postings  []string `json:"postings,omitempty" yaml:"postings,omitempty"`
 	// PostingsMode controls how Postings combine with auto from/to legs.
 	// "" or "append" (DEG legacy default): render from/to then append Postings.
 	// "replace" (Mirato export): Postings are the complete leg set; do not also
