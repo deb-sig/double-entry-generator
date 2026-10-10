@@ -6,6 +6,8 @@
 2. **构建**：`make build`（推荐，会顺带修补中文搜索）或 `uv run mkdocs build`
 3. **本地预览**：**测试中文搜索请用** `make serve-static`（在 `docs/` 下执行；或仓库根目录执行 `make -C docs serve-static`），浏览器打开 **[http://127.0.0.1:8000/double-entry-generator/](http://127.0.0.1:8000/double-entry-generator/)**（与生产路径一致，如 `/configuration/accounts/` 等子路径均可直接访问）。若用 `uv run mkdocs serve`，其启动时会重新构建并覆盖补丁，搜索会无结果。
 
+`Makefile` 默认使用 `docs/.uv-cache/` 作为 `uv` 缓存目录，避免本机全局缓存目录无写入权限时构建失败。如需复用自己的全局缓存，可显式覆盖：`UV_CACHE_DIR="$HOME/.cache/uv" make build`。
+
 ### 线上预览与验证（GitHub Pages）
 
 - **线上地址**：推送并合并到 `main` / `master` 或 `feat/docs` 后，GitHub Actions 会构建并部署到 GitHub Pages。  
@@ -32,4 +34,3 @@
 1. **看 Worker 日志**（F12 控制台）：索引就绪时应看到 `separator= [\s\u200b\-]+`、`doc数`；查询时会执行 `lunr.search`，若报错会打印 `lunr.search 报错`。查询在 worker 内会自动插 `\u200b` 与索引一致。
 2. **确认索引含中文**：控制台执行 `fetch(location.pathname.replace(/\/[^/]*$/, '') + '/search/search_index.json').then(r=>r.json()).then(d=>console.log('doc数', d.docs?.length, '首条text前80', d.docs?.[0]?.text?.slice(0,80)))`，首条 text 应含 `\u200b`。
 3. **仍无结果**：确认已执行 `make build` 或 `make patch-search`（会重建 CJK 索引并打补丁）；若用 `mkdocs serve` 会覆盖补丁，请用 `make serve-static` 预览。
-

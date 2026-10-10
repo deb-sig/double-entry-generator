@@ -34,6 +34,7 @@ var exactMoneyNotYet = []string{
 	"abc_debit", "alipay", "bmo", "boc", "bocom_credit", "bocom_debit", "ccb",
 	"cgb_credit", "citic", "cmb", "hsbchk", "htsec", "icbc",
 	"mt", "spdb_debit", "td", "wechat",
+	"cib_debit", "ibkr", // 上游 2026-10 新增，金额仍走 float64
 }
 
 func providerDirs(t *testing.T) []string {
