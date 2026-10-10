@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
-	xlsreader "github.com/shakinm/xlsReader/xls"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/reader"
 	"github.com/xuri/excelize/v2"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
@@ -220,31 +220,13 @@ func parseXLS(profile *Profile, filename string) ([]Row, error) {
 	if !hasOLEHeader(filename) {
 		return parseCSV(profile, filename)
 	}
-	wb, err := xlsreader.OpenFile(filename)
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	records, err := reader.XLSRows(data)
 	if err != nil {
 		return parseCSV(profile, filename)
-	}
-	sheet, err := wb.GetSheet(0)
-	if err != nil {
-		return nil, fmt.Errorf("xls has no first sheet")
-	}
-	records := make([][]string, 0, int(sheet.GetNumberRows())+1)
-	for i := 0; i <= int(sheet.GetNumberRows()); i++ {
-		row, err := sheet.GetRow(i)
-		if err != nil {
-			records = append(records, nil)
-			continue
-		}
-		if row == nil {
-			records = append(records, nil)
-			continue
-		}
-		cols := row.GetCols()
-		record := make([]string, 0, len(cols))
-		for _, col := range cols {
-			record = append(record, col.GetString())
-		}
-		records = append(records, record)
 	}
 	return recordsToRows(profile, records)
 }

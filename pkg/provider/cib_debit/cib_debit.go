@@ -3,10 +3,11 @@ package cib_debit
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
-	"github.com/shakinm/xlsReader/xls"
+	billreader "github.com/deb-sig/double-entry-generator/v2/pkg/reader"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -57,12 +58,12 @@ func (c *CibDebit) TranslateFiles(filenames []string) (*ir.IR, error) {
 }
 
 func (c *CibDebit) parseExcel(filename string) error {
-	xlFile, err := xls.OpenFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("无法打开Excel文件 %s。原始错误: %w", filename, err)
 	}
-
-	sheet, err := xlFile.GetSheet(0)
+	// 和其它 provider 一样走自带的 xls 读取（不依赖 GPL 的 xlsReader）
+	sheetRows, err := billreader.XLSRows(data)
 	if err != nil {
 		return fmt.Errorf("无法获取Excel的第一个工作表 %s。原始错误: %w", filename, err)
 	}
@@ -73,15 +74,10 @@ func (c *CibDebit) parseExcel(filename string) error {
 	currency := defaultCurrency
 	isDataSection := false
 
-	for rowIdx := 0; rowIdx <= int(sheet.GetNumberRows()); rowIdx++ {
-		row, err := sheet.GetRow(rowIdx)
-		if err != nil || row == nil {
-			continue
-		}
-
-		rowData := make([]string, 0, len(row.GetCols()))
-		for _, col := range row.GetCols() {
-			rowData = append(rowData, strings.TrimSpace(col.GetString()))
+	for rowIdx, row := range sheetRows {
+		rowData := make([]string, 0, len(row))
+		for _, col := range row {
+			rowData = append(rowData, strings.TrimSpace(col))
 		}
 		if len(rowData) == 0 || strings.TrimSpace(strings.Join(rowData, "")) == "" {
 			continue

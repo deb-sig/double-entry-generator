@@ -3,10 +3,11 @@ package spdb_debit
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/deb-sig/double-entry-generator/v2/pkg/ir"
-	"github.com/shakinm/xlsReader/xls"
+	"github.com/deb-sig/double-entry-generator/v2/pkg/reader"
 )
 
 // SpdbDebit is the provider for Shanghai Pudong Development Bank debit card statements.
@@ -52,16 +53,15 @@ func (sd *SpdbDebit) Translate(filename string) (*ir.IR, error) {
 
 // translateExcel handles Excel file parsing.
 func (sd *SpdbDebit) translateExcel(filename string) (*ir.IR, error) {
-	log.Printf("Attempting to open Excel file with xlsReader: %s", filename)
+	log.Printf("Attempting to open Excel file .xls: %s", filename)
 
-	xlFile, err := xls.OpenFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("无法打开Excel文件，请检查文件路径或文件是否已损坏。原始错误: %v", err)
 	}
-
-	sheet, err := xlFile.GetSheet(0)
+	sheetRows, err := reader.XLSRows(data)
 	if err != nil {
-		return nil, fmt.Errorf("无法获取Excel的第一个工作表。原始错误: %v", err)
+		return nil, fmt.Errorf("无法打开Excel文件，请检查文件路径或文件是否已损坏。原始错误: %v", err)
 	}
 
 	// Skip rows until we find the actual transaction data
@@ -74,20 +74,12 @@ func (sd *SpdbDebit) translateExcel(filename string) (*ir.IR, error) {
 	// - 合计行
 	isDataSection := false
 
-	for i := 0; i <= int(sheet.GetNumberRows()); i++ {
-		row, err := sheet.GetRow(i)
-		if err != nil {
-			log.Printf("跳过无法读取的行 %d: %v", i, err)
-			continue
-		}
+	for i, row := range sheetRows {
 		if row == nil {
 			continue
 		}
 
-		var rowData []string
-		for _, col := range row.GetCols() {
-			rowData = append(rowData, col.GetString())
-		}
+		rowData := row
 
 		sd.LineNum = i + 1
 
@@ -140,34 +132,20 @@ func (sd *SpdbDebit) TranslateFromExcelBytes(fileData []byte) (*ir.IR, error) {
 	log.Printf("TranslateFromExcelBytes called with %d bytes", len(fileData))
 
 	// Use xls.OpenReader to read from byte stream
-	xlFile, err := xls.OpenReader(strings.NewReader(string(fileData)))
+	sheetRows, err := reader.XLSRows(fileData)
 	if err != nil {
 		return nil, fmt.Errorf("无法打开Excel文件。原始错误: %v", err)
-	}
-
-	sheet, err := xlFile.GetSheet(0)
-	if err != nil {
-		return nil, fmt.Errorf("无法获取Excel的第一个工作表。原始错误: %v", err)
 	}
 
 	// Skip rows until we find the actual transaction data
 	isDataSection := false
 
-	for i := 0; i <= int(sheet.GetNumberRows()); i++ {
-		row, err := sheet.GetRow(i)
-		if err != nil {
-			log.Printf("跳过无法读取的行 %d: %v", i, err)
-			continue
-		}
-
+	for i, row := range sheetRows {
 		if row == nil {
 			continue
 		}
 
-		var rowData []string
-		for _, col := range row.GetCols() {
-			rowData = append(rowData, col.GetString())
-		}
+		rowData := row
 
 		sd.LineNum = i + 1
 
