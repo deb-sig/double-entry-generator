@@ -1,0 +1,76 @@
+1970/01/01 * Open Balance
+    Assets:IBKR:Cash     0 USD
+    Assets:IBKR:Positions     0 USD
+    Assets:IBKR:Positions:Stocks     0 USD
+    Equity:Opening-Balances     0 USD
+    Expenses:FIXME     0 USD
+    Expenses:IBKR:Fees     0 USD
+    Expenses:IBKR:Tax     0 USD
+    Income:IBKR:PnL     0 USD
+    Equity:Opening Balances 
+2025/01/01 * IBKR - Deposits/Withdrawals-CASH RECEIPTS / ELECTRONIC FUND TRANSFERS 
+    ; account_id: "U123456"
+    ; date_time: "2025-01-01,09:00:00 EST"
+    ; report_date: "2025-01-01"
+    ; settle_date: "2025-01-01"
+    ; transaction_id: "CDEP1"
+    Assets:IBKR:Cash      1000.00 USD
+    Equity:Opening-Balances   - 1000.00 USD
+
+2025/01/02 * IBKR-BUY-TSLA-TESLA INC
+    Assets:IBKR:Cash     -600.00 USD
+    Assets:IBKR:Positions:Stocks     2.00 "TSLA" @@ 600.00 USD; {300.000 USD}
+    Assets:IBKR:Cash     -0.35 USD
+    Expenses:IBKR:Fees     0.35 USD
+
+2025/01/03 * "IBKR" "SELL-TSLA-TESLA INC"
+    Assets:IBKR:Positions:Stocks     -1.00 "TSLA" @ 320.000 USD
+    Assets:IBKR:Cash     320.00 USD
+    Assets:IBKR:Cash     -0.36 USD
+    Expenses:IBKR:Fees     0.36 USD
+    Income:IBKR:PnL
+
+2025/01/04 * IBKR - Forex USD.HKD
+    ; account_id: "U123456"
+    ; asset_category: "CASH"
+    ; commission_currency: "USD"
+    ; exchange: "IDEALFX"
+    ; ib_exec_id: "EXECFX1"
+    ; ib_order_id: "OFX1"
+    ; report_date: "2025-01-04"
+    ; settle_date: "2025-01-06"
+    ; trade_id: "TFX1"
+    ; transaction_id: "TXFX1"
+    Assets:IBKR:Cash   - 78.00 HKD
+    Assets:IBKR:Cash      10.00 USD @@ 78.00 HKD
+
+2025/01/05 * IBKR - Dividends-MSFT(US5949181045) CASH DIVIDEND USD 0.83 PER SHARE (Ordinary Dividend) 
+    ; account_id: "U123456"
+    ; action_id: "ADIV1"
+    ; asset_category: "STK"
+    ; date_time: "2025-01-05,20:20:00 EST"
+    ; isin: "US5949181045"
+    ; report_date: "2025-01-05"
+    ; security_id: "US5949181045"
+    ; settle_date: "2025-01-05"
+    ; sub_category: "COMMON"
+    ; symbol: "MSFT"
+    ; transaction_id: "CDIV1"
+    Assets:IBKR:Cash      0.83 USD
+    Income:IBKR:PnL   - 0.83 USD
+
+2025/01/05 * IBKR - Withholding Tax-MSFT(US5949181045) CASH DIVIDEND USD 0.83 PER SHARE - US TAX 
+    ; account_id: "U123456"
+    ; action_id: "ATAX1"
+    ; asset_category: "STK"
+    ; date_time: "2025-01-05,20:20:00 EST"
+    ; isin: "US5949181045"
+    ; report_date: "2025-01-05"
+    ; security_id: "US5949181045"
+    ; settle_date: "2025-01-05"
+    ; sub_category: "COMMON"
+    ; symbol: "MSFT"
+    ; transaction_id: "CTAX1"
+    Expenses:IBKR:Tax      0.08 USD
+    Assets:IBKR:Cash   - 0.08 USD
+

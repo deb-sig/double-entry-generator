@@ -99,19 +99,19 @@ func processFileFromInput(this js.Value, args []js.Value) interface{} {
 
 		reader.Set("onload", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 			result := reader.Get("result")
-			
+
 			// 获取 ArrayBuffer
 			arrayBuffer := result
 			uint8Array := js.Global().Get("Uint8Array").New(arrayBuffer)
 			length := uint8Array.Get("length").Int()
-			
+
 			// 转换为 Go 字节数组
 			data := make([]byte, length)
 			js.CopyBytesToGo(data, uint8Array)
 
 			// 获取文件名
 			fileName := file.Get("name").String()
-			
+
 			log.Printf("[WASM-Main] 文件读取完成：%s, 大小: %d bytes", fileName, len(data))
 
 			// 处理文件（传递文件名和原始字节）
@@ -143,7 +143,7 @@ func processFileFromInputWithFormat(this js.Value, args []js.Value) interface{} 
 	// 第二个参数：format (string, "beancount" 或 "ledger")
 	fileInputID := "fileInput"
 	format := "beancount"
-	
+
 	if len(args) > 0 && args[0].Type() == js.TypeString {
 		fileInputID = args[0].String()
 	}
@@ -179,19 +179,19 @@ func processFileFromInputWithFormat(this js.Value, args []js.Value) interface{} 
 
 		reader.Set("onload", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 			result := reader.Get("result")
-			
+
 			// 获取 ArrayBuffer
 			arrayBuffer := result
 			uint8Array := js.Global().Get("Uint8Array").New(arrayBuffer)
 			length := uint8Array.Get("length").Int()
-			
+
 			// 转换为 Go 字节数组
 			data := make([]byte, length)
 			js.CopyBytesToGo(data, uint8Array)
 
 			// 获取文件名
 			fileName := file.Get("name").String()
-			
+
 			log.Printf("[WASM-Main] 文件读取完成：%s, 格式: %s, 大小: %d bytes", fileName, format, len(data))
 
 			// 处理文件（传递文件名、原始字节和格式）
@@ -244,7 +244,7 @@ func parseYamlConfig(this js.Value, args []js.Value) interface{} {
 			"error":   fmt.Sprintf("初始化配置失败: %v", err),
 		}
 	}
-	
+
 	cfg := &config.Config{}
 	if err := viper.Unmarshal(cfg); err != nil {
 		log.Printf("配置解析失败: %v", err)
@@ -259,7 +259,7 @@ func parseYamlConfig(this js.Value, args []js.Value) interface{} {
 	// 更新全局配置和文件读取器
 	currentConfig = cfg
 	fileReader = wasm.NewSimpleFileReader(currentConfig)
-	
+
 	// 重要：恢复之前选择的 provider
 	if currentProvider != "" {
 		fileReader.SetProvider(currentProvider)

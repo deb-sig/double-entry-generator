@@ -3,6 +3,8 @@
 .PHONY: build serve serve-static patch-search
 SITE_DIR ?= site
 DOCS_ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+UV_CACHE_DIR ?= $(DOCS_ROOT).uv-cache
+export UV_CACHE_DIR
 
 build:
 	cd $(DOCS_ROOT) && uv run mkdocs build

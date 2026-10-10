@@ -104,7 +104,7 @@ func TestRequiredCapabilitiesRejectUnknown(t *testing.T) {
 func TestTemplateIDScopePreventsGlobalMisuse(t *testing.T) {
 	enabled := true
 	profile := &Profile{
-		ID: "alipay",
+		ID:     "alipay",
 		Schema: "https://double-entry-generator/schema/v2",
 		Template: Template{
 			DefaultCurrency: "CNY",
@@ -128,10 +128,10 @@ func TestTemplateIDScopePreventsGlobalMisuse(t *testing.T) {
 				When:    `payee ~ "咖啡"`,
 				Enabled: &enabled,
 				Actions: Actions{
-					To:   TransferSide{Account: "Expenses:Drink"},
-					From: TransferSide{Account: "Assets:Cash"},
-					Date: "<日期>",
-					Amount: "<金额>",
+					To:       TransferSide{Account: "Expenses:Drink"},
+					From:     TransferSide{Account: "Assets:Cash"},
+					Date:     "<日期>",
+					Amount:   "<金额>",
 					Currency: "CNY",
 				},
 			},
@@ -297,9 +297,9 @@ personalRules:
 			DefaultCurrency: "CNY",
 			SkipLeadingRows: 0,
 			Columns: ColumnMapping{
-				Date:   "日期",
-				Amount: "金额",
-				Payee:  "商家",
+				Date:      "日期",
+				Amount:    "金额",
+				Payee:     "商家",
 				Narration: "说明",
 			},
 			SourceHeaders: []string{"日期", "金额", "商家", "说明", "交易状态"},
@@ -308,13 +308,13 @@ personalRules:
 		PersonalRules: append([]Rule{{
 			ID: "base",
 			Actions: Actions{
-				Date:     "<日期>",
-				Amount:   "<金额>.number",
-				Currency: "CNY",
-				Payee:    "<商家>",
+				Date:      "<日期>",
+				Amount:    "<金额>.number",
+				Currency:  "CNY",
+				Payee:     "<商家>",
 				Narration: "<说明>",
-				From:     TransferSide{Account: "Assets:FIXME"},
-				To:       TransferSide{Account: "Expenses:FIXME"},
+				From:      TransferSide{Account: "Assets:FIXME"},
+				To:        TransferSide{Account: "Expenses:FIXME"},
 			},
 		}}, doc.PersonalRules...),
 	}

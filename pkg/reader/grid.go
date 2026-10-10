@@ -121,7 +121,59 @@ func readXLSX(data []byte, cfg Config) (Table, error) {
 	if err != nil {
 		return Table{}, err
 	}
-	return Table{Rows: rows}, nil
+	raw, err := f.GetRows(name, excelize.Options{RawCellValue: true})
+	if err != nil {
+		return Table{}, err
+	}
+	return Table{Rows: plainNumbers(rows, raw)}, nil
+}
+
+// plainNumbers undoes the zero padding a cell's number format adds.
+// excelize applies custom formats such as "0.000", so a stored 0.85 reads
+// as "0.850", and an amount would gain a decimal place. When the shown
+// text is a plain decimal of the same value as the stored one, its trailing
+// fractional zeros are dropped. Dates, percentages, thousands separators
+// and text cells keep their shown text.
+func plainNumbers(shown, raw [][]string) [][]string {
+	for r, row := range shown {
+		if r >= len(raw) {
+			break
+		}
+		for c, cell := range row {
+			if c >= len(raw[r]) || cell == raw[r][c] || !isPlainDecimal(cell) {
+				continue
+			}
+			a, errA := strconv.ParseFloat(cell, 64)
+			b, errB := strconv.ParseFloat(raw[r][c], 64)
+			if errA != nil || errB != nil || a != b {
+				continue
+			}
+			row[c] = trimFractionZeros(cell)
+		}
+	}
+	return shown
+}
+
+func isPlainDecimal(s string) bool {
+	s = strings.TrimPrefix(s, "-")
+	whole, frac, dotted := strings.Cut(s, ".")
+	digits := func(t string) bool {
+		for _, ch := range t {
+			if ch < '0' || ch > '9' {
+				return false
+			}
+		}
+		return true
+	}
+	return whole != "" && digits(whole) && (!dotted || (frac != "" && digits(frac)))
+}
+
+func trimFractionZeros(s string) string {
+	if !strings.Contains(s, ".") {
+		return s
+	}
+	s = strings.TrimRight(s, "0")
+	return strings.TrimSuffix(s, ".")
 }
 
 // XLSRows returns the cells of the first sheet of an .xls workbook, one
