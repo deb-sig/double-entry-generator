@@ -106,6 +106,6 @@ func New(name string) (Interface, error) {
 	case consts.ProviderIbkr:
 		return ibkr.New(), nil
 	default:
-		return nil, fmt.Errorf("Fail to create the provider for the given name %s", name)
+		return nil, fmt.Errorf("fail to create the provider for the given name %s", name)
 	}
 }

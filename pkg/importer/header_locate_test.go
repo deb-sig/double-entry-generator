@@ -9,7 +9,7 @@ import (
 
 func headerLocateProfile() *Profile {
 	return &Profile{
-		ID: "header-locate",
+		ID:                   "header-locate",
 		RequiredCapabilities: []string{"template.headerLocate"},
 		Template: Template{
 			FileFormat:        "csv",

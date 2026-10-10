@@ -11,7 +11,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser"
+	analyser "github.com/deb-sig/double-entry-generator/v2/pkg/analyser/api"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/importer"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/io/writer"
@@ -60,7 +60,7 @@ func (b *BeanCount) initTemplates() error {
 	var err error
 	normalOrderTemplate, err = template.New("normalOrder").Funcs(funcMap).Parse(normalOrder)
 	if err != nil {
-		return fmt.Errorf("Failed to init the normalOrder template. %v", err)
+		return fmt.Errorf("failed to init the normalOrder template. %v", err)
 	}
 	currencyExchangeOrderTemplate, err = template.New("currencyExchangeOrder").Funcs(funcMap).Parse(currencyExchangeOrder)
 	if err != nil {
@@ -68,35 +68,35 @@ func (b *BeanCount) initTemplates() error {
 	}
 	runtimeOrderTemplate, err = template.New("runtimeOrder").Funcs(funcMap).Parse(runtimeOrder)
 	if err != nil {
-		return fmt.Errorf("Failed to init the runtimeOrder template. %v", err)
+		return fmt.Errorf("failed to init the runtimeOrder template. %v", err)
 	}
 	cryptoOrderTemplate, err = template.New("cryptoOrder").Funcs(funcMap).Parse(cryptoOrder)
 	if err != nil {
-		return fmt.Errorf("Failed to init the cryptoOrder template. %v", err)
+		return fmt.Errorf("failed to init the cryptoOrder template. %v", err)
 	}
 	huobiTradeBuyOrderTemplate, err = template.New("tradeBuyOrder").Funcs(funcMap).Parse(huobiTradeBuyOrder)
 	if err != nil {
-		return fmt.Errorf("Failed to init the tradeBuyOrder template. %v", err)
+		return fmt.Errorf("failed to init the tradeBuyOrder template. %v", err)
 	}
 	huobiTradeBuyOrderDiffCommissionUnitTemplate, err = template.New("tradeBuyOrderDiffCommissionUnit").Funcs(funcMap).Parse(huobiTradeBuyOrderDiffCommissionUnit)
 	if err != nil {
-		return fmt.Errorf("Failed to init the tradeBuyOrderDiffCommissionUnit template. %v", err)
+		return fmt.Errorf("failed to init the tradeBuyOrderDiffCommissionUnit template. %v", err)
 	}
 	huobiTradeSellOrderTemplate, err = template.New("tradeSellOrder").Funcs(funcMap).Parse(huobiTradeSellOrder)
 	if err != nil {
-		return fmt.Errorf("Failed to init the tradeSellOrder template. %v", err)
+		return fmt.Errorf("failed to init the tradeSellOrder template. %v", err)
 	}
 	htsecTradeBuyOrderTemplate, err = template.New("httradeBuyOrder").Funcs(funcMap).Parse(htsecTradeBuyOrder)
 	if err != nil {
-		return fmt.Errorf("Failed to init the httradeBuyOrder template. %v", err)
+		return fmt.Errorf("failed to init the httradeBuyOrder template. %v", err)
 	}
 	htsecTradeSellOrderTemplate, err = template.New("httradeSellOrder").Funcs(funcMap).Parse(htsecTradeSellOrder)
 	if err != nil {
-		return fmt.Errorf("Failed to init the httradeSellOrder template. %v", err)
+		return fmt.Errorf("failed to init the httradeSellOrder template. %v", err)
 	}
 	etfMergeOrderBeancountTemplate, err = template.New("etfMergeOrderBeancount").Funcs(funcMap).Parse(etfMergeOrderBeancount)
 	if err != nil {
-		return fmt.Errorf("Failed to init the etfMergeOrderBeancount template. %v", err)
+		return fmt.Errorf("failed to init the etfMergeOrderBeancount template. %v", err)
 	}
 	return nil
 }
@@ -212,7 +212,7 @@ func (b *BeanCount) writeBills(file io.Writer) error {
 	// If the bills are the same day, the tx which has lower
 	// line number is considered happened earlier than the tx
 	// which has a higher line number by beancount default.
-	sort.Slice(b.IR.Orders, func(i, j int) bool {
+	sort.SliceStable(b.IR.Orders, func(i, j int) bool {
 		return b.IR.Orders[i].PayTime.Before(b.IR.Orders[j].PayTime)
 	})
 
@@ -247,15 +247,16 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 				postings = append(postings, posting.Line)
 			}
 			err = runtimeOrderTemplate.Execute(&buf, &NormalOrderVars{
-				PayTime:  o.PayTime,
-				Peer:     o.Peer,
-				Item:     o.Item,
-				Note:     o.Note,
-				Metadata: o.Metadata,
-				Tags:     o.Tags,
-				Flag:     o.Flag,
-				Links:    o.Links,
-				Postings: postings,
+				PayTime:      o.PayTime,
+				Peer:         o.Peer,
+				Item:         o.Item,
+				Note:         o.Note,
+				Metadata:     o.Metadata,
+				MetadataKeys: o.MetadataKeys,
+				Tags:         o.Tags,
+				Flag:         o.Flag,
+				Links:        o.Links,
+				Postings:     postings,
 			})
 			break
 		}
@@ -385,7 +386,7 @@ func (b *BeanCount) writeBill(file io.Writer, index int) error {
 				CommissionUnit:    o.Units[ir.CommissionUnit],
 			})
 		default:
-			err = fmt.Errorf("Failed to get the TxType.")
+			err = fmt.Errorf("failed to get the TxType")
 		}
 	case ir.OrderTypeSecuritiesTrade:
 		currency := b.getCurrency(o)

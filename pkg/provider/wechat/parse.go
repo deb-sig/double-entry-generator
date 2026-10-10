@@ -35,7 +35,7 @@ func (w *Wechat) translateToOrders(array []string, isCSV bool) error {
 		if w.IgnoreInvalidTxTypes {
 			log.Printf("[WARN] Unknown transaction type %s", array[1])
 		} else {
-			return fmt.Errorf("Failed to get the tx type %s: %v", array[1], err)
+			return fmt.Errorf("failed to get the tx type %s: %v", array[1], err)
 		}
 	}
 	bill.TxTypeOriginal = array[1]
@@ -44,7 +44,7 @@ func (w *Wechat) translateToOrders(array []string, isCSV bool) error {
 	bill.Type = getOrderType(array[4])
 	bill.TypeOriginal = array[4]
 	if bill.Type == OrderTypeUnknown {
-		return fmt.Errorf("Failed to get the order type %s: %v", array[4], err)
+		return fmt.Errorf("failed to get the order type %s: %v", array[4], err)
 	}
 	// deal with the withdraw cash type
 	if bill.TxType == TxTypeCashWithdraw {

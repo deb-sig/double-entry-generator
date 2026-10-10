@@ -136,6 +136,14 @@ alipay:
 
 This option only disables automatic removal of matched refund records and their original orders. Unmatched refunds, partial refunds, refunds across files, rule-level `ignore: true`, and closed non-income/non-expense records keep their existing behavior.
 
+#### With the template provider (`import alipay`)
+
+The template provider handles a bill row by row and does not pair rows, so **refund records are always kept**, as if `keepRefundRecords: true` were set:
+
+- The original order is an expense and the refund is a transaction in the inflow direction (Alipay marks refunds 不计收支; the template's own rule records them as inflow). The two sum to zero, so balances match the result of removing both; the ledger just has two more entries.
+- Closed non-income/non-expense records are still dropped by the template.
+- To leave them out, add `ignore: true` for them in the rules file, but ignore the original order and its refund together; ignoring only one side breaks the balance.
+
 ## Account Relationships
 
 Alipay's account relationships are relatively complex because they involve multiple payment methods:

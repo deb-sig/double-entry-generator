@@ -8,7 +8,7 @@ import (
 	"log"
 	"sort"
 
-	"github.com/deb-sig/double-entry-generator/v2/pkg/analyser"
+	analyser "github.com/deb-sig/double-entry-generator/v2/pkg/analyser/api"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/config"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/importer"
 	"github.com/deb-sig/double-entry-generator/v2/pkg/io/writer"
@@ -56,7 +56,7 @@ func (ledger *Ledger) initTemplates() error {
 	normalOrderTemplate, err = template.New("normalOrder").Funcs(funcMap).Parse(normalOrder)
 
 	if err != nil {
-		return fmt.Errorf("Failed to init the normalOrder Template. %v", err)
+		return fmt.Errorf("failed to init the normalOrder Template. %v", err)
 	}
 	currencyExchangeOrderTemplate, err = template.New("currencyExchangeOrder").Funcs(funcMap).Parse(currencyExchangeOrder)
 	if err != nil {
@@ -65,23 +65,23 @@ func (ledger *Ledger) initTemplates() error {
 
 	huobiTradeBuyOrderTemplate, err = template.New("tradeBuyOrder").Funcs(funcMap).Parse((huobiTradeBuyOrder))
 	if err != nil {
-		return fmt.Errorf("Failed to init the tradeBuyOrder template. %v", err)
+		return fmt.Errorf("failed to init the tradeBuyOrder template. %v", err)
 	}
 	huobiTradeBuyOrderDiffCommissionUnitTemplate, err = template.New("tradeBuyOrderDiffCommissionUnit").Funcs(funcMap).Parse(huobiTradeBuyOrderDiffCommissionUnit)
 	if err != nil {
-		return fmt.Errorf("Failed to init the tradeBuyOrderDiffCommissionUnit template. %v", err)
+		return fmt.Errorf("failed to init the tradeBuyOrderDiffCommissionUnit template. %v", err)
 	}
 	huobiTradeSellOrderTemplate, err = template.New("tradeSellOrder").Funcs(funcMap).Parse(huobiTradeSellOrder)
 	if err != nil {
-		return fmt.Errorf("Failed to init the tradeSellOrder template. %v", err)
+		return fmt.Errorf("failed to init the tradeSellOrder template. %v", err)
 	}
 	htsecTradeBuyOrderTemplate, err = template.New("httradeBuyOrder").Funcs(funcMap).Parse(htsecTradeBuyOrder)
 	if err != nil {
-		return fmt.Errorf("Failed to init the httradeBuyOrder template. %v", err)
+		return fmt.Errorf("failed to init the httradeBuyOrder template. %v", err)
 	}
 	htsecTradeSellOrderTemplate, err = template.New("httradeSellOrder").Funcs(funcMap).Parse(htsecTradeSellOrder)
 	if err != nil {
-		return fmt.Errorf("Failed to init the httradeSellOrder template. %v", err)
+		return fmt.Errorf("failed to init the httradeSellOrder template. %v", err)
 	}
 
 	return nil
@@ -179,7 +179,7 @@ func (ledger *Ledger) writeBills(file io.Writer) error {
 	// If the bills are the same day, the transaction which has lower
 	// line number is considered happened earlier than the transaction
 	// which has a higher line number.
-	sort.Slice(ledger.IR.Orders, func(i, j int) bool {
+	sort.SliceStable(ledger.IR.Orders, func(i, j int) bool {
 		return ledger.IR.Orders[i].PayTime.Before(ledger.IR.Orders[j].PayTime)
 	})
 
@@ -313,7 +313,7 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 				CommissionUnit:    order.Units[ir.CommissionUnit],
 			})
 		default:
-			err = fmt.Errorf("Failed to get the TxType.")
+			err = fmt.Errorf("failed to get the TxType")
 		}
 
 	case ir.OrderTypeSecuritiesTrade:
@@ -354,7 +354,7 @@ func (ledger *Ledger) writeBill(file io.Writer, index int) error {
 				Currency:          currency,
 			})
 		default:
-			err = fmt.Errorf("Failed to get the TxType.")
+			err = fmt.Errorf("failed to get the TxType")
 		}
 	}
 	if err != nil {

@@ -694,7 +694,7 @@ func takePostingCommodity(rest string) (commodity, remaining string) {
 		return "", rest
 	}
 	// Commodity must start with a letter.
-	if c := rest[0]; !(c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z') {
+	if c := rest[0]; (c < 'A' || c > 'Z') && (c < 'a' || c > 'z') {
 		return "", rest
 	}
 	return rest[:i], rest[i:]

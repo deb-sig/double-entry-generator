@@ -119,10 +119,11 @@ func buildItem(tradingPlace, abstract string) string {
 func (b *BocomDebit) updateStatistics(order Order, orderType OrderType, payTime time.Time) {
 	b.Statistics.ParsedItems++
 
-	if orderType == OrderTypeRecv {
+	switch orderType {
+	case OrderTypeRecv:
 		b.Statistics.TotalInRecords++
 		b.Statistics.TotalInMoney += order.TransAmt
-	} else if orderType == OrderTypeSend {
+	case OrderTypeSend:
 		b.Statistics.TotalOutRecords++
 		b.Statistics.TotalOutMoney += order.TransAmt
 	}

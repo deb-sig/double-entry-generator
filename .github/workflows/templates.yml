@@ -1,0 +1,37 @@
+# 模板站（deg-provider-template）的模板都由这个引擎读：DEG 每次改动都把全部模板跑一遍，
+# 期望输出对不上就挡住，保证 DEG 的改动不会悄悄把模板弄坏。
+# 模板站那边反过来也拿 DEG dev-v3 验模板，两边配套。
+name: Verify provider templates
+
+on:
+  pull_request:
+    branches:
+      - dev-v3
+  push:
+    branches:
+      - dev-v3
+  workflow_dispatch:
+
+jobs:
+  templates:
+    runs-on: ubuntu-latest
+    env:
+      TEMPLATE_REPO: ${{ vars.TEMPLATE_REPO || 'fatsheep2/deg-provider-template' }}
+      TEMPLATE_REF: ${{ vars.TEMPLATE_REF || 'dev-v3' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build DEG from this change
+        run: |
+          go build -o "$HOME/deg" .
+          echo "DEG_BIN=$HOME/deg" >> "$GITHUB_ENV"
+
+      - name: Fetch templates
+        run: git clone --depth 1 --branch "$TEMPLATE_REF" "https://github.com/$TEMPLATE_REPO" /tmp/templates
+
+      - name: Verify every template against its expected output
+        run: /tmp/templates/scripts/verify.sh

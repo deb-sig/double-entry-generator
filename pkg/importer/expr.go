@@ -355,15 +355,15 @@ func (p *exprParser) valueOf(token exprToken) string {
 		value := p.row.Raw[field]
 		switch suffix {
 		case "time":
-			if t, err := parseDate(value, ""); err == nil {
+			if t, err := parseDateIn(value, "", p.row.Loc); err == nil {
 				return t.Format("15:04")
 			}
 		case "date":
-			if t, err := parseDate(value, ""); err == nil {
+			if t, err := parseDateIn(value, "", p.row.Loc); err == nil {
 				return t.Format("2006-01-02")
 			}
 		case "timestamp":
-			if t, err := parseDate(value, ""); err == nil {
+			if t, err := parseDateIn(value, "", p.row.Loc); err == nil {
 				return strconv.FormatInt(t.Unix(), 10)
 			}
 		}
@@ -380,7 +380,6 @@ func (p *exprParser) valueOf(token exprToken) string {
 	// name literal. Bare identifiers are always field lookups after tokenize.
 	return conditionFieldValue(token.val, p.row, p.order)
 }
-
 
 func splitRawToken(value string) (string, string) {
 	if !strings.HasPrefix(value, "raw[") {

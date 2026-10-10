@@ -45,7 +45,7 @@ func (h *Htsec) Translate(filename string) (*ir.IR, error) {
 
 		err = h.translateToOrders(row)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to translate bill: line %d: %v", h.LineNum, err)
+			return nil, fmt.Errorf("failed to translate bill: line %d: %v", h.LineNum, err)
 		}
 	}
 
@@ -100,7 +100,7 @@ func (h *Htsec) TranslateFromExcelBytes(fileData []byte) (*ir.IR, error) {
 		}
 
 		if err := h.translateToOrders(row); err != nil {
-			return nil, fmt.Errorf("Failed to translate bill: line %d: %v", h.LineNum, err)
+			return nil, fmt.Errorf("failed to translate bill: line %d: %v", h.LineNum, err)
 		}
 	}
 

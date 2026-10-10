@@ -50,7 +50,7 @@ func (citic *Citic) Translate(filename string) (*ir.IR, error) {
 
 		err = citic.TranslateToOrders(row)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to translate bill: line %d: %v", citic.LineNum, err)
+			return nil, fmt.Errorf("failed to translate bill: line %d: %v", citic.LineNum, err)
 		}
 	}
 
@@ -95,7 +95,7 @@ func (citic *Citic) TranslateFromExcelBytes(fileData []byte) (*ir.IR, error) {
 
 		err = citic.TranslateToOrders(row)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to translate bill: line %d: %v", citic.LineNum, err)
+			return nil, fmt.Errorf("failed to translate bill: line %d: %v", citic.LineNum, err)
 		}
 	}
 

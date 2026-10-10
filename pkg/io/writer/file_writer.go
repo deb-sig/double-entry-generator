@@ -10,6 +10,9 @@ import (
 )
 
 func GetWriter(outputFile string) (OutputWriter, error) {
+	if w, ok := memoryWriter(outputFile); ok {
+		return w, nil
+	}
 	log.Printf("Writing to %s", outputFile)
 	file, err := os.Create(outputFile)
 	if err != nil {
