@@ -1,13 +1,16 @@
 package reader
 
 import (
+	"bytes"
 	"encoding/base64"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/xuri/excelize/v2"
 	"gopkg.in/yaml.v3"
 )
 
@@ -310,3 +313,45 @@ columns: { hash: hash, value: value }
 		t.Fatalf("rows = %q", table.Rows)
 	}
 }
+
+// excelize applies custom number formats: a stored 0.85 in a "0.000" cell
+// reads as "0.850". Amounts must keep the stored value's digits; dates keep
+// their shown text.
+func TestXLSXNumberFormatDoesNotPadAmounts(t *testing.T) {
+	f := excelize.NewFile()
+	defer func() { _ = f.Close() }()
+	sheet := f.GetSheetName(0)
+	three, err := f.NewStyle(&excelize.Style{CustomNumFmt: strPtr("0.000")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	date, err := f.NewStyle(&excelize.Style{CustomNumFmt: strPtr("yyyy-mm-dd")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	must := func(err error) {
+		t.Helper()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	must(f.SetSheetRow(sheet, "A1", &[]any{"日期", "金额", "账号"}))
+	must(f.SetCellValue(sheet, "A2", time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC)))
+	must(f.SetCellStyle(sheet, "A2", "A2", date))
+	must(f.SetCellValue(sheet, "B2", 0.85))
+	must(f.SetCellStyle(sheet, "B2", "B2", three))
+	must(f.SetCellValue(sheet, "C2", "001.100"))
+	var buf bytes.Buffer
+	must(f.Write(&buf))
+
+	table, err := readXLSX(buf.Bytes(), Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := table.Rows[1]
+	if got[0] != "2024-01-02" || got[1] != "0.85" || got[2] != "001.100" {
+		t.Fatalf("row = %q, want date shown, amount unpadded, text untouched", got)
+	}
+}
+
+func strPtr(s string) *string { return &s }
