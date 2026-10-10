@@ -80,16 +80,6 @@ option "operating_currency" "CNY"
 	Expenses:Food:Meal:Dinner 19.81 CNY
 	Liabilities:CC:BoC:1875 -19.81 CNY
 
-2025-02-20 * "" "美团商家代金券-289893081774554007"
-	merchantId: "467192366"
-	method: "美团月付"
-	orderId: "2502200120013716443"
-	payTime: "2025-02-20 14:08:11 +0800 CST"
-	source: "美团"
-	type: "收入"
-	Liabilities:MT:zwyyy456 10.06 CNY
-	Income:Rebate -10.06 CNY
-
 2025-02-20 * "" "美团商家代金券-289893092226646356"
 	merchantId: "467219105"
 	method: "美团月付"
@@ -99,6 +89,16 @@ option "operating_currency" "CNY"
 	type: "收入"
 	Liabilities:MT:zwyyy456 11.77 CNY
 	Income:Rebate -11.77 CNY
+
+2025-02-20 * "" "美团商家代金券-289893081774554007"
+	merchantId: "467192366"
+	method: "美团月付"
+	orderId: "2502200120013716443"
+	payTime: "2025-02-20 14:08:11 +0800 CST"
+	source: "美团"
+	type: "收入"
+	Liabilities:MT:zwyyy456 10.06 CNY
+	Income:Rebate -10.06 CNY
 
 2025-02-22 * "" "纯味斑鱼府代金券"
 	merchantId: "1KUHBMW0L6A04076"
